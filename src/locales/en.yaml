@@ -1,0 +1,66 @@
+login:
+  sign_in: Sign In
+  email: Email address
+  password: Password
+  forgot: Forgot password?
+  errors:
+    required: Required.
+    invalid_email: Invalid email.
+    bad_credentials: Invalid credentials.
+
+forgot:
+  reset: Reset password
+  success: If an account was found, an email was sent to start the process.
+  new_password: New password
+  new_confirm: Confirm new password
+  errors:
+    mismatch: Confirmation does not match password.
+
+reset:
+  title: Error
+  weak_password: Please try a more secure password.
+  code_check: Reset code is not valid.
+
+users:
+  title: Users
+  no_users: No users at the moment.
+  search: Search for users
+  actions:
+    disable: Disable
+    delete: Delete
+  columns:
+    name: Name
+    email: Email
+    tfa: 2FA
+    isadmin: Admin
+    status: Active
+    created_at: Creation Date
+
+user:
+  adding: New User
+
+pagination:
+  showing: Showing {offset} to {limit} of {total}
+
+extensions:
+  containers: Containers
+  select_ext: Please select an extension to get information
+  mobile_message: Please visit page on a computer browser, too much information on this page.
+  official: Official
+  no_gql: This extension does not provide any GraphQL queries, mutations or resolvers.
+  no_routes: This extension does not provide any routes.
+  no_middleware: This extension does not provide any middleware.
+
+system:
+  toast:
+    error: Error
+    success: Success
+  appbar:
+    profile: My Profile
+    logout: Logout
+    lightmode: Light mode
+    darkmode: Dark mode
+  errors:
+    graphql: "SailCMS cannot find the URL to work with."
+    graphql2: "Make sure the"
+    graphql3: "file is on your server."

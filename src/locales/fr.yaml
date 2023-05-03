@@ -1,0 +1,66 @@
+login:
+  sign_in: Connexion
+  email: Adresse courriel
+  password: Mot de passe
+  forgot: Mot de passe oublié ?
+  errors:
+    required: Requis.
+    invalid_email: Courriel invalide.
+    bad_credentials: Informations invalides.
+
+forgot:
+  reset: Réinitialiser
+  success: Si un compte a été trouvé, un courriel a été envoyé.
+  new_password: Nouveau mot de passe
+  new_confirm: Confirmation mot de passe
+  errors:
+    mismatch: Confirmation ne correspond pas au mot de passe.
+
+reset:
+  title: Erreur
+  weak_password: Veuillez essayer un mot de passe plus sécuritaire.
+  code_check: Code de vérification non valide.
+
+users:
+  title: Utilisateurs
+  no_users: Aucun utilisateur pour le moment.
+  search: Recherche d'utilisateurs
+  actions:
+    disable: Désactiver
+    delete: Supprimer
+  columns:
+    name: Nom
+    email: Courriel
+    tfa: IAF
+    isadmin: Admin
+    status: Actif
+    created_at: Date de création
+
+user:
+  adding: Nouvel utilisateur
+
+pagination:
+  showing: Affichage de {offset} à {limit} de {total}
+
+extensions:
+  containers: Conteneurs
+  select_ext: Veuillez choisir une extension pour voir les information
+  mobile_messages: S.v.p. utiliser un navigateur pc, trop d'information sur cette page.
+  official: Officiel
+  no_gql: Cette extension ne fournit aucune query, mutation ou resolver GraphQL.
+  no_routes: Cette extension ne fournit aucune route.
+  no_middleware: Cette extension ne fournit aucun middleware.
+
+system:
+  toast:
+    error: Erreur
+    success: Succès
+  appbar:
+    profile: Mon Profil
+    logout: Déconnexion
+    lightmode: Mode clair
+    darkmode: Mode sombre
+  errors:
+    graphql: "SailCMS ne peut trouver l'url avec laquelle travailler."
+    graphql2: "Assurez-vous que le fichier"
+    graphql3: "soit sur le serveur."
