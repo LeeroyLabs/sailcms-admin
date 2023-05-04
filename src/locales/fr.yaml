@@ -38,6 +38,21 @@ users:
 
 user:
   adding: Nouvel utilisateur
+  firstname: Prénom
+  lastname: Nom
+  email: Adresse courriel
+  roles: Rôles
+  group: Groupe
+  no_groups: Aucun groupe disponible
+  password: Mot de passe
+  passconf: Confirmation mot de passe
+  force_reset: Obliger le changement de mot de passe
+  save: Sauvegarder
+  add: Ajouter
+  cancel: Annuler
+  errors:
+    required: Requis.
+    email: Adresse courriel invalide.
 
 pagination:
   showing: Affichage de {offset} à {limit} de {total}

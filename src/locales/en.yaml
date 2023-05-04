@@ -38,6 +38,21 @@ users:
 
 user:
   adding: New User
+  firstname: First name
+  lastname: Last name
+  email: Email address
+  roles: Roles
+  group: Group
+  no_groups: No groups available
+  password: Password
+  passconf: Confirm password
+  force_reset: Force password reset
+  save: Save
+  add: Add
+  cancel: Cancel
+  errors:
+    required: Required.
+    email: Invalid email address.
 
 pagination:
   showing: Showing {offset} to {limit} of {total}

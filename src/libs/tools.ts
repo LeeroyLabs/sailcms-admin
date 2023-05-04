@@ -43,6 +43,7 @@ declare global {
     interface Window {
         hasPermission: Function;
         isAdmin: Function
+        baseURL: String
     }
 }
 

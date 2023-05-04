@@ -1,23 +1,23 @@
 import { Client } from "./client";
-import RoleQueries from "../queries/roles";
+import GroupQueries from "../queries/groups";
 import gql from "graphql-tag";
-import { Role, RoleConfig } from "../types/roles";
+import { Group } from "../types/groups";
 
-export class Roles
+export class Groups
 {
     /**
      *
-     * Get list of roles
+     * Get list of groups
      *
      */
-    public static async roles(): Promise<Role[]>
+    public static async groups(): Promise<Group[]>
     {
         const client = new Client();
-        let query = RoleQueries.roles;
+        let query = GroupQueries.groups;
         let result = await client.query(gql`${query}`, {});
 
         if (result.data) {
-            return result.data.roles as Role[];
+            return result.data.roles as Group[];
         }
 
         return [];
@@ -25,19 +25,19 @@ export class Roles
 
     /**
      *
-     * Get a single role by id
+     * Get a single group by id
      *
      * @param id
      *
      */
-    public static async role(id: string): Promise<RoleConfig|null>
+    public static async group(id: string): Promise<Group|null>
     {
         const client = new Client();
-        let query = RoleQueries.role;
+        let query = GroupQueries.group;
         let result = await client.query(gql`${query}`, {id: id});
 
         if (result.data) {
-            return result.data.role as RoleConfig;
+            return result.data.group as Group;
         }
 
         return null;

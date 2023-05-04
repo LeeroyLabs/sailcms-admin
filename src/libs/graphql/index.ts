@@ -5,6 +5,7 @@ export { Roles } from './lib/roles';
 export { Assets } from "./lib/assets";
 export { Emails } from "./lib/emails";
 export { Misc } from "./lib/misc";
+export { Groups } from "./lib/groups";
 
 export class SailCMS
 {

@@ -2,34 +2,10 @@
     <v-app>
         <v-card>
             <v-layout class="tw-flex tw-flex-col tw-h-screen">
-                <v-navigation-drawer v-model="mobileStatus" :rail="($vuetify.display.smAndUp && !navigationState)" color="primary-darker" class="!tw-text-white tw-relative">
-                    <v-list density="comfortable">
-                        <v-list-item-media class="tw-max-h-[100px] tw-min-h-[100px]">
-                            <img
-                                :class="{'tw-w-20': (($vuetify.display.smAndUp && navigationState) || $vuetify.display.smAndDown), 'tw-w-10 !tw-mt-3': (!$vuetify.display.mobile && !navigationState)}"
-                                class="tw-rounded-md tw-mx-auto tw-transition-all tw-m-4"
-                                src="https://mir-s3-cdn-cf.behance.net/user/276/7530587.53f253b5e501a.jpg"
-                                alt=""
-                            />
-                        </v-list-item-media>
+                <MobileNavigation v-if="$vuetify.display.mdAndDown" v-model="navigationState"/>
+                <DesktopNavigation v-if="$vuetify.display.lgAndUp" :navigation-state="navigationState"/>
 
-                        <a href="#" v-if="$vuetify.display.smAndDown" @click.prevent="toggleNavigation" class="tw-absolute tw-top-3 tw-right-3">
-                            <v-icon icon="mdi-close"></v-icon>
-                        </a>
-
-                        <v-spacer/>
-
-                        <template v-for="(item, i) in items">
-                            <v-list-item v-if="hasPermission(item.permission)" :key="i" :value="item" :to="item.to" :active="$route.path.includes(item.to)" :title="item.text" active-color="white">
-                                <template v-slot:prepend>
-                                    <v-icon :icon="item.icon" :alt="item.text"></v-icon>
-                                </template>
-                            </v-list-item>
-                        </template>
-                    </v-list>
-                </v-navigation-drawer>
-
-                <v-app-bar :title="store.currentTitle" :color="appStore.theme === 'light' ? 'grey-lighten-3' : ''">
+                <v-app-bar :title="($vuetify.display.xs) ? '' : store.currentTitle" :color="appStore.theme === 'light' ? 'grey-lighten-3' : ''">
                     <template v-slot:prepend>
                         <v-app-bar-nav-icon v-if="!navigationState" @click="toggleNavigation"></v-app-bar-nav-icon>
                         <v-app-bar-nav-icon v-if="navigationState" icon="mdi-menu-open" @click="toggleNavigation"></v-app-bar-nav-icon>
@@ -69,7 +45,7 @@
                 <v-main scrollable>
                     <div class="tw-flex tw-flex-row tw-items-center tw-pr-4 tw-mt-1">
                         <div class="tw-flex-grow">
-                            <v-breadcrumbs :items="store.breadcrumbs">
+                            <v-breadcrumbs v-if="$vuetify.display.smAndUp" :items="store.breadcrumbs">
                                 <template v-slot:prepend>
                                     <router-link :to="{name: 'Dashboard'}">
                                         <v-icon icon="mdi-home" class="tw-ml-2.5 tw-mr-3"></v-icon>
@@ -82,7 +58,7 @@
                             </v-breadcrumbs>
                         </div>
                         <div id="actions">
-
+                            <!-- Use Teleport -->
                         </div>
                     </div>
                     <div class="tw-m-4">
@@ -97,46 +73,26 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useDisplay, useTheme } from "vuetify";
 import { useAppStore } from '@/store/app';
 import { useRouter } from 'vue-router';
 import Toast from '@/components/globals/Toast.vue';
 import { useI18n } from 'vue-i18n';
-import { hasPermission } from "@/libs/tools";
+import MobileNavigation from "@/components/navigation/mobile.vue";
+import DesktopNavigation from "@/components/navigation/desktop.vue";
 
 const NAV_STATE_KEY = 'sailcms_nav_state';
 
 let state = localStorage.getItem(NAV_STATE_KEY) || 'open';
 const navigationState = ref((state === 'open'));
-const display = useDisplay();
 const i18n = useI18n();
 const VuetifyTheme = useTheme();
 
 const store = useAppStore();
 const router = useRouter();
 const appStore = useAppStore();
-
-const items = computed(() =>
-{
-    return [
-        {icon: 'mdi-file-document-outline', text: 'Entries', permission: 'any'},
-        {icon: 'mdi-image-outline', text: 'Assets', permission: 'any'},
-        {icon: 'mdi-menu', text: 'Navigations', permission: 'any'},
-        {icon: 'mdi-shape-outline', text: 'Categories', permission: 'any'},
-        {icon: 'mdi-cloud-search-outline', text: 'SEO', permission: 'any'},
-        {icon: 'mdi-account-group-outline', to: store.baseURL + '/users', text: i18n.t('users.title'), permission: 'read_user'},
-        {icon: 'mdi-puzzle-outline', to: store.baseURL + '/extensions', text: 'Extensions', permission: 'any'},
-        {icon: 'mdi-calendar-check-outline', text: 'Tasks', permission: 'any'},
-        {icon: 'mdi-cog-outline', text: 'Settings', permission: 'any'}
-    ]
-});
-
-const mobileStatus = computed(() =>
-{
-    if (display.mdAndUp.value) return true;
-    return (!navigationState.value) ? display.smAndDown.value : false
-});
+const display = useDisplay();
 
 const toggleNavigation = () =>
 {
@@ -158,5 +114,9 @@ const setTheme = (theme: string) =>
     appStore.setCurrentTheme(theme);
     VuetifyTheme.global.name.value = appStore.theme;
     localStorage.setItem('sailcms_theme', appStore.theme);
+}
+
+if (display.mobile) {
+    navigationState.value = false;
 }
 </script>
