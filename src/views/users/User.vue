@@ -6,7 +6,7 @@
                     <v-icon icon="mdi-camera" color="white"/>
                 </div>
                 <img v-if="currentUser.avatar !== ''" :src="currentUser.avatar" alt="" class="tw-rounded-full"/>
-                <input ref="fileinput" type="file" id="avatar_file" class="tw-hidden"/>
+                <input ref="fileinput" type="file" accept=".jpg,.jpeg,.png,.webp" id="avatar_file" class="tw-hidden" @change="processFile"/>
             </div>
             <v-form class="tw-flex-grow">
                 <div class="md:tw-ml-6 tw-mt-6 md:tw-mt-0">
@@ -114,6 +114,8 @@
         </div>
     </v-card>
     <Loader v-else/>
+
+    <AssetManager :show="true" />
 </template>
 
 <script setup lang="ts">
@@ -128,6 +130,7 @@ import type { User } from "@/libs/graphql/types/users";
 import { EmailRule } from "@/libs/validation";
 import { Group } from "@/libs/graphql/types/groups";
 import { Role } from "@/libs/graphql/types/roles";
+import AssetManager from "@/components/globals/AssetManager.vue";
 
 const store = useAppStore();
 const i18n = useI18n();
@@ -148,6 +151,8 @@ const availableRoles = ref([] as any[]);
 
 const isReady = ref(false);
 const isAdding = ref(true);
+const isImageLoading = ref(false);
+const showingCropper = ref(true);
 
 // User base
 const currentUser = ref({
@@ -223,7 +228,40 @@ const loadUser = async () =>
 const selectFile = () =>
 {
     fileinput.value.click();
-   // document.getElementById('avatar_file').click();
+}
+
+const processFile = (e) =>
+{
+    // Upload was cancelled
+    if (e.target.value === undefined || e.target.value === "") return;
+
+    isImageLoading.value = true;
+    let reader   = new FileReader();
+    let filename = e.target.value.split("fakepath\\")[1];
+
+    const _filename = filename;
+
+    let index = filename.lastIndexOf(".");
+    let ext   = filename.substring(index);
+
+    reader.readAsDataURL(e.target.files[0]);
+    reader.onloadend = async () =>
+    {
+        if (hasCrop) {
+          //  dispatch("selectedFile", reader.result as string);
+        } else {
+            // dispatch("uploading");
+            // let fileb64  = (reader.result as string).split("base64,");
+            // let filedata = fileb64[1];
+            // let data     = {image: filedata, filename: filename, type: type};
+            // let result   = await MiscQueries.uploadAsset(data);
+            //
+            // if (!result.error) value = result.data;
+            // dispatch("uploaded");
+        }
+
+        isImageLoading.value = false;
+    };
 }
 
 // Load list of dropdowns (roles and groups)

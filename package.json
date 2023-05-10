@@ -12,9 +12,11 @@
     "date-fns": "^2.29.3",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
+    "mitt": "^3.0.0",
     "pinia": "^2.0.35",
     "roboto-fontface": "*",
     "vue": "^3.2.47",
+    "vue-advanced-cropper": "^2.8.8",
     "vue-router": "^4.1.6",
     "vuetify": "^3.2.1",
     "webfontloader": "^1.6.28"

@@ -66,6 +66,14 @@ extensions:
   no_routes: This extension does not provide any routes.
   no_middleware: This extension does not provide any middleware.
 
+assets:
+  title: Assets Manager
+  views:
+    modes: View modes
+    grid: Grid
+    compact: Compact
+    list: List
+
 system:
   toast:
     error: Error

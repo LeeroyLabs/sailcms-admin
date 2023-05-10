@@ -66,6 +66,14 @@ extensions:
   no_routes: Cette extension ne fournit aucune route.
   no_middleware: Cette extension ne fournit aucun middleware.
 
+assets:
+  title: Gestionnaire d'actifs
+  views:
+    modes: Mode d'affichage
+    grid: Vue grille
+    compact: Vue compacte
+    list: Vue liste
+
 system:
   toast:
     error: Erreur
