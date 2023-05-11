@@ -3,9 +3,15 @@
         <v-card class="tw-mx-auto tw-h-[95%] tw-max-h-[95%] tw-rounded-lg tw-border tw-border-slate-700 tw-w-11/12 tw-flex tw-flex-col tw-shadow-xl">
             <div class="tw-w-full tw-bg-slate-700 tw-py-3 tw-pl-6 tw-pr-3 tw-text-white tw-items-center tw-text-xl tw-flex tw-flex-row tw-justify-between">
                 {{ $t('assets.title') }}
-                <v-btn icon flat>
-                    <v-icon icon="mdi-close"/>
-                </v-btn>
+
+                <div>
+                    <v-btn flat icon v-if="store.assets.selected.length > 0">
+                        <v-icon icon="mdi-check-circle-outline"/>
+                    </v-btn>
+                    <v-btn icon flat>
+                        <v-icon icon="mdi-close"/>
+                    </v-btn>
+                </div>
             </div>
             <div class="tw-flex-grow tw-max-h-[calc(100%-72px)]" v-if="!showCropper">
                 <div class="tw-flex tw-flex-row tw-max-h-full tw-h-full">
@@ -29,20 +35,30 @@
                                 </v-btn>
                             </div>
                             <div>
-
+                                SEARCH
                             </div>
                             <div>
+                                <v-btn @click="openCropper" flat icon v-if="store.assets.selected.length === 1">
+                                    <v-icon icon="mdi-crop"/>
+                                </v-btn>
+                                <v-btn @click="showMover=true" flat icon v-if="store.assets.selected.length >= 1">
+                                    <v-icon icon="mdi-folder-move-outline"/>
+                                </v-btn>
+                                <v-btn @click="openCropper" flat icon v-if="store.assets.selected.length >= 1">
+                                    <v-icon icon="mdi-trash-can-outline" color="red-lighten-2"/>
+                                </v-btn>
                                 <DisplayModeSelector
                                     :display-mode="currentViewMode"
                                     v-on:change-mode="setCurrentViewMode"
                                 />
                             </div>
                         </div>
-                        <Listing :files="fileList" :display-mode="currentViewMode"/>
+                        <Listing :multi="multi" :files="fileList" :display-mode="currentViewMode" @more="loadNextPage"/>
                     </div>
                 </div>
             </div>
             <CroppingManager v-if="showCropper" :settings="cropping" @close="showCropper = false"/>
+            <FileMover :show="showMover" @cancel="closeMover"/>
         </v-card>
     </v-overlay>
 </template>
@@ -55,8 +71,11 @@ import Listing from "@/components/globals/assetmanager/Listing.vue";
 import DisplayModeSelector from "@/components/globals/assetmanager/DisplayModeSelector.vue";
 import CroppingManager from "@/components/globals/assetmanager/CroppingManager.vue";
 import { Assets } from '@/libs/graphql';
+import { useAppStore } from '@/store/app';
+import FileMover from '@/components/globals/assetmanager/FileMover.vue';
 
 const emitter = inject('emitter');
+const store = useAppStore();
 
 const display = useDisplay();
 const showSidebar = ref(true);
@@ -77,6 +96,9 @@ const currentPage = ref(1);
 const currentSearch = ref('');
 const maxPage = ref(0);
 
+// Moving Files
+const showMover = ref(true);
+
 const show = computed(() => props.show);
 
 const props = defineProps({
@@ -87,6 +109,10 @@ const props = defineProps({
     cropping: {
         type: Object,
         default: {ratio: 0, min: { width: 50, height: 50 }, max: {width: 10000, height: 10000}, lockedType: ''}
+    },
+    multi: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -127,24 +153,48 @@ const loadFolders = async () =>
     folderList.value = await Assets.folders();
     foldersReady.value = true;
 
+    store.setAvailableFolders(folderList.value);
+
     loadFiles('root');
 }
 
-const loadFiles = async (folder) =>
+// Load files
+const loadFiles = async () =>
 {
     const result = await Assets.assets({
-        page: currentPage.value,
+        page: store.assets.currentPage,
         limit: 100,
         folder: activeFolder.value,
         search: currentSearch.value
     });
 
-    maxPage.value = result.pagination.totalPages;
+    store.setAssetPagination(result.pagination.current, result.pagination.totalPages);
     fileList.value.push(...result.list);
+    store.setLoadingPage(false);
+}
+
+// Load Following Page
+const loadNextPage = async () =>
+{
+    store.incrementAssetPage();
+    await loadFiles();
+}
+
+// Open Cropper
+const openCropper = () =>
+{
+    let file = fileList.value.find(f => f._id === store.assets.selected[0]);
+    emitter.emit('crop', {image: store.assets.selected, src: file.url})
 }
 
 // Active folder was changed
 const setActiveFolder = (e) => activeFolder.value = e;
+
+// Close Mover
+const closeMover = () =>
+{
+    showMover.value = false;
+}
 
 loadFolders();
 </script>

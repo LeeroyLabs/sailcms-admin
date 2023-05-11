@@ -2,6 +2,7 @@ export default {
     asset: `
         query asset($id: ID!) {
             asset(id: $id) {
+                _id
                 filename
                 site_id
                 name
@@ -44,6 +45,7 @@ export default {
                     total
                 }
                 list {
+                    _id
                     filename
                     site_id
                     name

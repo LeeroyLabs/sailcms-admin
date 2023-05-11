@@ -115,7 +115,7 @@
     </v-card>
     <Loader v-else/>
 
-    <AssetManager :show="true" />
+    <AssetManager :show="true" :multi="false" :cropping="cropping" />
 </template>
 
 <script setup lang="ts">
@@ -153,6 +153,19 @@ const isReady = ref(false);
 const isAdding = ref(true);
 const isImageLoading = ref(false);
 const showingCropper = ref(true);
+
+const cropping = {
+    ratio: 0,
+    min: {
+        width: 50,
+        height: 50
+    },
+    max: {
+        width: 10000,
+        height: 10000
+    },
+    lockedType: ''
+};
 
 // User base
 const currentUser = ref({

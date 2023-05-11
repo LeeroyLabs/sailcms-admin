@@ -1,6 +1,7 @@
 // Utilities
 import { defineStore } from 'pinia';
 import { User } from "@/libs/graphql/types/users";
+import { Folder } from "@/libs/graphql/types/assets";
 
 const toastLength = 3_500;
 
@@ -18,6 +19,13 @@ export const useAppStore = defineStore('app', {
             show: false,
             text: '',
             mode: 'success'
+        },
+        assets: {
+            currentPage: 1,
+            maxPage: 1,
+            selected: [] as string[],
+            loadingPage: false,
+            folders: [] as Folder[]
         }
     }),
     actions: {
@@ -64,6 +72,41 @@ export const useAppStore = defineStore('app', {
             {
                 this.toast.show = false;
             }, toastLength);
+        },
+        setSelectedFile(file: string, inout: boolean, multi: boolean)
+        {
+            if (multi) {
+                if (!inout) {
+                    // remove
+                    console.log("HEE");
+                    this.assets.selected = this.assets.selected.filter(f => f !== file);
+                } else {
+                    this.assets.selected.push(file);
+                }
+            } else {
+                if (!inout) {
+                    this.assets.selected = [];
+                } else {
+                    this.assets.selected = [file];
+                }
+            }
+        },
+        setAssetPagination(current: number, total: number)
+        {
+            this.assets.currentPage = current;
+            this.assets.maxPage = total;
+        },
+        incrementAssetPage()
+        {
+            this.assets.currentPage++;
+        },
+        setLoadingPage(status: boolean)
+        {
+            this.assets.loadingPage = status;
+        },
+        setAvailableFolders(list: Folder[])
+        {
+            this.assets.folders = list;
         }
     }
 });
