@@ -16,6 +16,12 @@ export type Asset = {
     transforms: Transform[];
 };
 
+export type Folder = {
+    slug: string;
+    name: string;
+    deletable: boolean;
+}
+
 export type AssetListing = {
     pagination: Pagination;
     list: Asset[];

@@ -78,4 +78,13 @@ export default {
             }
         }
     `,
+    folders: `
+        query folders {
+            assetFolders {
+                slug
+                name
+                deletable
+            }
+        }
+    `
 }

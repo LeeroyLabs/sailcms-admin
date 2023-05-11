@@ -7,7 +7,7 @@
                     tw-flex tw-gap-2 tw-left-4
 
                     tw-flex-row tw-flex-wrap tw-top-2
-                    lg:tw-flex-col lg:tw-max-w-full lg:tw-top-[30%]
+                    lg:tw-flex-col lg:tw-max-w-full lg:tw-top-4
                 ">
                     <div @click.prevent="activeMode='square'" class="tw-border tw-border-gray-600 hover:tw-bg-gray-600 rounded-lg tw-p-2 tw-cursor-pointer" :class="{'tw-bg-gray-600': activeMode === 'square'}">
                         <v-icon color="white" icon="mdi-square-outline"/>
@@ -34,6 +34,18 @@
                         <v-icon color="white" icon="mdi-flip-horizontal"/>
                         <v-tooltip activator="parent" open-delay="1000" location="right">Flip Horizontal</v-tooltip>
                     </div>
+
+                    <div class="tw-border tw-hidden md:tw-block tw-my-2 tw-border-gray-700"></div>
+
+                    <div class="tw-hidden md:tw-block tw-border tw-border-gray-600 hover:tw-bg-gray-600 rounded-lg tw-p-2 tw-cursor-pointer">
+                        <v-icon color="white" icon="mdi-check-circle-outline"/>
+                        <v-tooltip activator="parent" open-delay="1000" location="right">Save & Close</v-tooltip>
+                    </div>
+
+                    <div @click.prevent="$emit('close')" class="tw-hidden md:tw-block tw-border tw-border-gray-600 hover:tw-bg-gray-600 rounded-lg tw-p-2 tw-cursor-pointer">
+                        <v-icon color="white" icon="mdi-close-circle-outline"/>
+                        <v-tooltip activator="parent" open-delay="1000" location="right">Cancel</v-tooltip>
+                    </div>
                 </div>
                 <Cropper
                     ref="cropper"
@@ -44,7 +56,6 @@
                     :maxWidth="settings.max.width"
                     :minHeight="settings.min.height"
                     :maxHeight="settings.max.height"
-                    image-restrictions="stencil"
                     :stencil-props="{
                         aspectRatio: settings.ratio
                     }"
@@ -101,7 +112,6 @@ const rotateLeft = () => cropper.value.rotate(-90);
 const rotateRight = () => cropper.value.rotate(90);
 const flipHorizontal = () => cropper.value.flip(1,0);
 const flipVertical = () => cropper.value.flip(0,1);
-
 </script>
 
 <style>

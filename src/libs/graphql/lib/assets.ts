@@ -1,7 +1,7 @@
 import { Client } from "./client";
 import AssetsQueries from "../queries/assets";
 import gql from "graphql-tag";
-import { Asset, AssetListing, AssetsOptions } from "types/assets";
+import { Asset, AssetListing, AssetsOptions, Folder } from "../types/assets";
 
 export class Assets
 {
@@ -56,6 +56,25 @@ export class Assets
             },
             list: []
         };
+    }
+
+    /**
+     *
+     * Get asset folders
+     *
+     */
+    public static async folders(): Promise<Folder[]>
+    {
+        const client = new Client();
+        let query = AssetsQueries.folders;
+
+        let result = await client.query(gql`${query}`, {});
+
+        if (result.data) {
+            return result.data.assetFolders as Folder[];
+        }
+
+        return [];
     }
 
     private static parseLocales(locales: string[]): string

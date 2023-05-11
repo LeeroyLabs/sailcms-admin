@@ -9,7 +9,15 @@
             </div>
             <div class="tw-flex-grow tw-max-h-[calc(100%-72px)]" v-if="!showCropper">
                 <div class="tw-flex tw-flex-row tw-max-h-full tw-h-full">
-                    <Navigation ref="navigation" :show="showSidebar" v-on:close="toggleSidebarPreference" />
+                    <Navigation
+                        ref="navigation"
+                        :active="activeFolder"
+                        :folders="folderList"
+                        :show="showSidebar"
+                        @close="toggleSidebarPreference"
+                        @change="setActiveFolder"
+                    />
+
                     <div
                         class="tw-flex-grow tw-flex tw-flex-col tw-h-full"
                         :class="{'tw-bg-gray-800': $vuetify.theme.name !== 'light', 'tw-bg-gray-100': $vuetify.theme.name === 'light'}"
@@ -28,17 +36,13 @@
                                     :display-mode="currentViewMode"
                                     v-on:change-mode="setCurrentViewMode"
                                 />
-
-<!--                                <v-btn flat icon>-->
-<!--                                    <v-icon icon="mdi-dots-vertical"/>-->
-<!--                                </v-btn>-->
                             </div>
                         </div>
-                        <Listing :display-mode="currentViewMode"/>
+                        <Listing :files="fileList" :display-mode="currentViewMode"/>
                     </div>
                 </div>
             </div>
-            <CroppingManager v-if="showCropper" :settings="cropping"/>
+            <CroppingManager v-if="showCropper" :settings="cropping" @close="showCropper = false"/>
         </v-card>
     </v-overlay>
 </template>
@@ -50,6 +54,7 @@ import Navigation from "@/components/globals/assetmanager/Navigation.vue";
 import Listing from "@/components/globals/assetmanager/Listing.vue";
 import DisplayModeSelector from "@/components/globals/assetmanager/DisplayModeSelector.vue";
 import CroppingManager from "@/components/globals/assetmanager/CroppingManager.vue";
+import { Assets } from '@/libs/graphql';
 
 const emitter = inject('emitter');
 
@@ -57,9 +62,20 @@ const display = useDisplay();
 const showSidebar = ref(true);
 const navigation = ref(null);
 
-const currentPath = ref('root');
+// View mode and cropper control
 const currentViewMode = ref('grid');
 const showCropper = ref(false);
+
+// Folders
+const folderList = ref([]);
+const activeFolder = ref('root');
+const foldersReady = ref(false);
+
+// Files
+const fileList = ref([]);
+const currentPage = ref(1);
+const currentSearch = ref('');
+const maxPage = ref(0);
 
 const show = computed(() => props.show);
 
@@ -104,4 +120,31 @@ const toggleSidebarPreference = () =>
 
 // handle display mode change
 const setCurrentViewMode = (e) => currentViewMode.value = e[0];
+
+// Load folders from the server
+const loadFolders = async () =>
+{
+    folderList.value = await Assets.folders();
+    foldersReady.value = true;
+
+    loadFiles('root');
+}
+
+const loadFiles = async (folder) =>
+{
+    const result = await Assets.assets({
+        page: currentPage.value,
+        limit: 100,
+        folder: activeFolder.value,
+        search: currentSearch.value
+    });
+
+    maxPage.value = result.pagination.totalPages;
+    fileList.value.push(...result.list);
+}
+
+// Active folder was changed
+const setActiveFolder = (e) => activeFolder.value = e;
+
+loadFolders();
 </script>

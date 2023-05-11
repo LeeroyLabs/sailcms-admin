@@ -21,6 +21,10 @@ const props = defineProps({
         type: String,
         default: ''
     },
+    slug: {
+        type: String,
+        default: ''
+    },
     active: {
         type: Boolean,
         default: false

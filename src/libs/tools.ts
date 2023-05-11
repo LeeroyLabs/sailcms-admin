@@ -37,6 +37,33 @@ export function hasPermission(permission: string): boolean
     return userPermissions.includes(permission);
 }
 
+/**
+ *
+ * Human-readable file size (from bytes to TB)
+ *
+ * @param size
+ */
+export function humanFileSize(size: number): string
+{
+    let i = size === 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+
+    // @ts-ignore
+    return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+}
+
+/**
+ *
+ * Get file extension
+ *
+ * @param file
+ *
+ */
+export function fileExtension(file: string): string
+{
+    // @ts-ignore
+    return file.split('.').pop();
+}
+
 // ================================= Export utilities to global scope of the window ================================= //
 
 declare global {

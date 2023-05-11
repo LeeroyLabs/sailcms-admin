@@ -6,8 +6,20 @@
                 class="tw-flex-grow tw-max-h-full tw-w-full tw-flex tw-flex-col tw-justify-between tw-border-r"
                 :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
             >
-                <div class="tw-overflow-y-auto tw-flex tw-flex-col tw-p-4">
-                    <Folder name="root" :active="true"/>
+                <div v-if="folders?.length > 0" class="tw-overflow-y-auto tw-flex tw-flex-col tw-p-4 tw-gap-y-1">
+                    <template v-for="folder in folders">
+                        <Folder
+                            :name="folder.name"
+                            :slug="folder.slug"
+                            :active="active === folder.slug"
+                            @click="$emit('change', folder.slug)"
+                        />
+                    </template>
+                </div>
+                <div v-if="folders?.length === 0" class="tw-flex tw-flex-row tw-items-center tw-w-full tw-h-full">
+                    <div class="tw-flex tw-flex-col tw-items-center tw-w-full">
+                        <v-progress-circular size="large" indeterminate/>
+                    </div>
                 </div>
                 <div class="tw-p-3 tw-border-t" :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}">
                     FOLDER ACTIONS
@@ -42,12 +54,20 @@ import { ref } from "vue";
 import Folder from "@/components/globals/assetmanager/Folder.vue";
 
 const showContent = ref(true);
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'change']);
 
 const props = defineProps({
     show: {
         type: Boolean,
         default: true
+    },
+    folders: {
+        type: Array,
+        default: []
+    },
+    active: {
+        type: String,
+        default: 'root'
     }
 });
 
