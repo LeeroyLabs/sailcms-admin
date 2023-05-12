@@ -68,6 +68,11 @@ extensions:
 
 assets:
   title: Gestionnaire d'actifs
+  move_some: Déplacer
+  file: un fichier
+  files: des fichiers
+  move: Déplacer
+  cancel: Annuler
   views:
     modes: Mode d'affichage
     grid: Vue grille

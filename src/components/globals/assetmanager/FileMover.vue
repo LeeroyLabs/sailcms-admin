@@ -1,51 +1,67 @@
 <template>
     <div v-if="show" class="tw-absolute tw-bg-black/40 tw-inset-0 tw-flex tw-flex-row tw-items-center tw-justify-center">
         <v-card rounded class="tw-p-6">
-            <v-card-title>Move (x) files</v-card-title>
+            <v-card-title>{{ $t('assets.move_some') }} {{ (store.assets.selected.length > 1) ? $t('assets.files') : $t('assets.file') }} ({{ store.assets.selected.length }})</v-card-title>
             <v-card-text class="tw-min-w-[300px] lg:tw-min-w-[450px] tw-mt-4">
                 <v-select
-                    v-model="selectedGroup"
-                    label="current folder"
+                    v-model="selectedFolder"
                     color="primary"
-                    :items="availableGroups"
+                    :items="folders"
                     variant="outlined"
                     density="comfortable"
                     single-line
-                    :no-data-text="$t('user.no_groups')"
-                    placeholder="current folder"
                     class="tw-w-full"
                 ></v-select>
             </v-card-text>
 
             <v-card-actions class="tw-flex tw-flex-row tw-justify-end">
-                <v-btn @click.prevent="$emit('cancel')" flat>Cancel</v-btn>
-                <v-btn variant="tonal">Move</v-btn>
+                <v-btn @click.prevent="$emit('cancel')" flat>{{ $t('assets.cancel') }}</v-btn>
+                <v-btn @click.prevent="moveFiles" variant="tonal" :loading="isLoading">{{ $t('assets.move') }}</v-btn>
             </v-card-actions>
         </v-card>
     </div>
 </template>
 <script setup>
 
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useAppStore } from '@/store/app';
 
 defineEmits(['cancel']);
 
-defineProps({
+const props = defineProps({
     show: {
         type: Boolean,
         default: true
+    },
+    folder: {
+        type: String,
+        default: ''
     }
 });
 
 const store = useAppStore();
 
+const selectedFolder = ref(props.folder);
+const isLoading = ref(false);
+
 const folders = computed(() =>
 {
-    const list = [];
+    const list = [{value: 'root', title: 'Root'}];
 
     for (let i = 0; i < store.assets.folders.length; i++) {
+        const folder = store.assets.folders[i];
 
+        if (folder.slug !== 'root') {
+            list.push({ value: folder.slug, title: folder.name });
+        }
     }
+
+    return list;
 });
+
+const moveFiles = async () =>
+{
+    // TODO
+    isLoading.value = true;
+}
 </script>

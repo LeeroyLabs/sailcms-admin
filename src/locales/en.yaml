@@ -68,6 +68,11 @@ extensions:
 
 assets:
   title: Assets Manager
+  move_some: Move
+  file: file
+  files: files
+  move: Move
+  cancel: Cancel
   views:
     modes: View modes
     grid: Grid

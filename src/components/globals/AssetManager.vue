@@ -5,7 +5,7 @@
                 {{ $t('assets.title') }}
 
                 <div>
-                    <v-btn flat icon v-if="store.assets.selected.length > 0">
+                    <v-btn flat icon v-if="(store.assets.selected.length === 1 && !multi) || (store.assets.selected.length >= 1 && multi)">
                         <v-icon icon="mdi-check-circle-outline"/>
                     </v-btn>
                     <v-btn icon flat>
@@ -47,6 +47,7 @@
                                 <v-btn @click="openCropper" flat icon v-if="store.assets.selected.length >= 1">
                                     <v-icon icon="mdi-trash-can-outline" color="red-lighten-2"/>
                                 </v-btn>
+
                                 <DisplayModeSelector
                                     :display-mode="currentViewMode"
                                     v-on:change-mode="setCurrentViewMode"
@@ -58,7 +59,7 @@
                 </div>
             </div>
             <CroppingManager v-if="showCropper" :settings="cropping" @close="showCropper = false"/>
-            <FileMover :show="showMover" @cancel="closeMover"/>
+            <FileMover :show="showMover" :folder="activeFolder" @cancel="closeMover"/>
         </v-card>
     </v-overlay>
 </template>
@@ -85,6 +86,9 @@ const navigation = ref(null);
 const currentViewMode = ref('grid');
 const showCropper = ref(false);
 
+// Selection Mode
+const selectionMode = ref(false);
+
 // Folders
 const folderList = ref([]);
 const activeFolder = ref('root');
@@ -92,12 +96,10 @@ const foldersReady = ref(false);
 
 // Files
 const fileList = ref([]);
-const currentPage = ref(1);
 const currentSearch = ref('');
-const maxPage = ref(0);
 
 // Moving Files
-const showMover = ref(true);
+const showMover = ref(false);
 
 const show = computed(() => props.show);
 

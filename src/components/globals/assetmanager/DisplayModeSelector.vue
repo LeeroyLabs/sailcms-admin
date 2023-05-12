@@ -1,7 +1,7 @@
 <template>
     <v-btn flat icon>
         <v-icon icon="mdi-view-carousel-outline"/>
-        <v-tooltip activator="parent"  open-delay="1000" location="top">{{ $t('assets.views.modes') }}</v-tooltip>
+        <v-tooltip activator="parent" open-delay="1000" location="bottom">{{ $t('assets.views.modes') }}</v-tooltip>
         <v-menu transition="scale-transition" activator="parent">
             <v-card class="tw-w-full tw-flex tw-flex-col tw-p-2">
                 <div
