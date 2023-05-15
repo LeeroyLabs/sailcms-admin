@@ -88,5 +88,20 @@ export default {
                 deletable
             }
         }
+    `,
+    moveFiles: `
+        mutation moveFiles($ids: [ID!]!, $folder: String!) {
+            moveFiles(ids: $ids, folder: $folder)
+        }
+    `,
+    addFolder: `
+        mutation addFolder($folder: String!) {
+            addFolder(folder: $folder)
+        }
+    `,
+    removeFolder: `
+        mutation removeFolder($folder: String!, $move_to: String!) {
+            removeFolder(folder: $folder, move_to: $move_to)
+        }
     `
 }

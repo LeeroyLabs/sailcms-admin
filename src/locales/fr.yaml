@@ -73,11 +73,19 @@ assets:
   files: des fichiers
   move: Déplacer
   cancel: Annuler
+  add_folder: Ajouter un dossier
+  remove_folder: Supprimer un dossier
+  add: Ajouter
+  remove: Supprimer
+  folder_name: Nom du dossier
   views:
     modes: Mode d'affichage
     grid: Vue grille
     compact: Vue compacte
     list: Vue liste
+  errors:
+    permissions: Vous n'avez pas la permission de porter cette action.
+    exists: Ce dossier existe déjà, veuillez choisir un autre nom.
 
 system:
   toast:

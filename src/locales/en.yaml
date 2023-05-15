@@ -73,11 +73,19 @@ assets:
   files: files
   move: Move
   cancel: Cancel
+  add_folder: Add folder
+  remove_folder: Remove folder
+  add: Add
+  remove: Remove
+  folder_name: Folder name
   views:
     modes: View modes
     grid: Grid
     compact: Compact
     list: List
+  errors:
+    permissions: You do not have the permission to perform this action. Please check with your administrator.
+    exists: This folder already exists, please choose a different name.
 
 system:
   toast:

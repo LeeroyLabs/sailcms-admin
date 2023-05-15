@@ -15,8 +15,8 @@
             </v-card-text>
 
             <v-card-actions class="tw-flex tw-flex-row tw-justify-end">
-                <v-btn @click.prevent="$emit('cancel')" flat>{{ $t('assets.cancel') }}</v-btn>
-                <v-btn @click.prevent="moveFiles" variant="tonal" :loading="isLoading">{{ $t('assets.move') }}</v-btn>
+                <v-btn :disabled="isLoading" @click.prevent="$emit('cancel')" flat>{{ $t('assets.cancel') }}</v-btn>
+                <v-btn type="primary" variant="flat" color="primary" @click.prevent="moveFiles" :loading="isLoading">{{ $t('assets.move') }}</v-btn>
             </v-card-actions>
         </v-card>
     </div>
@@ -25,8 +25,9 @@
 
 import { computed, ref } from 'vue';
 import { useAppStore } from '@/store/app';
+import { Assets } from '@/libs/graphql';
 
-defineEmits(['cancel']);
+const emitter = defineEmits(['cancel', 'moved']);
 
 const props = defineProps({
     show: {
@@ -61,7 +62,12 @@ const folders = computed(() =>
 
 const moveFiles = async () =>
 {
-    // TODO
     isLoading.value = true;
+    await Assets.moveFiles(store.assets.selected, selectedFolder.value);
+    isLoading.value = false;
+
+    emitter('moved', store.assets.selected);
+    selectedFolder.value = 'root';
+    store.clearSelectedAssets();
 }
 </script>

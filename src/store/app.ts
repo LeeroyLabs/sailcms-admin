@@ -91,6 +91,10 @@ export const useAppStore = defineStore('app', {
                 }
             }
         },
+        clearSelectedAssets()
+        {
+            this.assets.selected = [];
+        },
         setAssetPagination(current: number, total: number)
         {
             this.assets.currentPage = current;

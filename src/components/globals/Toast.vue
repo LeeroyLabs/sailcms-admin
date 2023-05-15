@@ -1,7 +1,7 @@
 <template>
     <div
         :class="{'tw-right-2': appStore.toast.show, 'tw-top-4': public, 'tw-top-20': !public, 'tw-right-[-340px] md:tw-right-[-400px]': !appStore.toast.show}"
-        class="tw-fixed tw-top-4 tw-bg-white tw-min-h-4 tw-z-99 tw-transition-all tw-duration-500 tw-ease-in-out tw-shadow-lg"
+        class="tw-fixed tw-rounded-lg tw-top-4 tw-bg-white tw-min-h-4 tw-z-[9999] tw-transition-all tw-duration-500 tw-ease-in-out tw-shadow-lg"
     >
         <v-alert
             :color="(appStore.toast.mode === 'error') ? 'red lighten-2' : 'green lighten-2'"

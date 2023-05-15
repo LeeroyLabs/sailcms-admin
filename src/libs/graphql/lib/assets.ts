@@ -77,6 +77,68 @@ export class Assets
         return [];
     }
 
+    /**
+     *
+     * Move Files from on folder to the other
+     *
+     * @param fileIds
+     * @param folder
+     *
+     */
+    public static async moveFiles(fileIds: string[], folder: string): Promise<boolean>
+    {
+        const client = new Client();
+        let query = AssetsQueries.moveFiles;
+
+        let result = await client.query(gql`${query}`, {ids: fileIds, folder: folder});
+
+        if (result.data) {
+            return result.data.moveFiles;
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     * Add a folder
+     *
+     * response:
+     * 1 = OK
+     * 2 = Permission Denied
+     * 3 = Already Exists
+     *
+     * @param name
+     *
+     */
+    public static async addFolder(name: string): Promise<number>
+    {
+        const client = new Client();
+        let query = AssetsQueries.addFolder;
+
+        let result = await client.query(gql`${query}`, {folder: name});
+
+        if (result.data) {
+            return result.data.addFolder;
+        }
+
+        return 2;
+    }
+
+    public static async removeFolder(active: string, recipient: string): Promise<boolean>
+    {
+        const client = new Client();
+        let query = AssetsQueries.removeFolder;
+
+        let result = await client.query(gql`${query}`, {folder: active, move_to: recipient});
+
+        if (result.data) {
+            return result.data.removeFolder;
+        }
+
+        return false;
+    }
+
     private static parseLocales(locales: string[]): string
     {
         let out = ``;

@@ -9,7 +9,7 @@
         }"
         style="outline-width: 5px;"
     >
-        <img :src="file.url" loading="lazy" class="tw-rounded-lg" width="140" height="140" alt=""/>
+        <img :src="file.url" loading="lazy" class="tw-rounded-lg" :width="($vuetify.display.lgAndUp) ? 140 : 130" :height="($vuetify.display.lgAndUp) ? 140 : 130" alt=""/>
 
         <div class="tw-absolute tw-w-full tw-flex-row tw-items-center tw-justify-between tw-bg-black/60 tw-py-1 tw-px-2 tw-rounded-b-lg tw-text-sm tw-hidden group-hover:tw-flex">
             <span>{{ fileExtension(file.filename) }}</span>

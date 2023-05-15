@@ -22,6 +22,7 @@
                         :show="showSidebar"
                         @close="toggleSidebarPreference"
                         @change="setActiveFolder"
+                        @folder-added="loadFolders"
                     />
 
                     <div
@@ -33,11 +34,28 @@
                                 <v-btn @click.prevent="toggleSidebarPreference" flat icon>
                                     <v-icon icon="mdi-menu" />
                                 </v-btn>
+
+                                <v-btn v-if="$vuetify.display.mobile && !showSidebar" @click.prevent="toggleSearch" flat icon>
+                                    <v-icon icon="mdi-magnify" />
+                                </v-btn>
                             </div>
-                            <div>
-                                SEARCH
+                            <div v-if="!$vuetify.display.mobile">
+                                <v-text-field
+                                    class="tw-w-[300px] lg:tw-w-[400px] tw-my-2"
+                                    density="compact"
+                                    variant="outlined"
+                                    color="primary"
+                                    placeholder="Search"
+                                    rounded
+                                    :hide-details="true"
+                                    prepend-inner-icon="mdi-magnify"
+                                    @keydown.enter="searchFiles"
+                                    v-model="currentSearch"
+                                    :clearable="true"
+                                    @click:clear="searchFiles"
+                                />
                             </div>
-                            <div>
+                            <div v-if="!$vuetify.display.mobile || !showSidebar">
                                 <v-btn @click="openCropper" flat icon v-if="store.assets.selected.length === 1">
                                     <v-icon icon="mdi-crop"/>
                                 </v-btn>
@@ -54,18 +72,35 @@
                                 />
                             </div>
                         </div>
-                        <Listing :multi="multi" :files="fileList" :display-mode="currentViewMode" @more="loadNextPage"/>
+                        <div v-if="showSearch" class="tw-w-full tw-flex tw-flex-row tw-py-2 tw-px-3 tw-border-b" :class="{'tw-bg-slate-800 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-100 tw-border-gray-200': $vuetify.theme.name === 'light'}">
+                            <v-text-field
+                                ref="searchField"
+                                class="tw-w-[300px] lg:tw-w-[400px] tw-my-2"
+                                density="compact"
+                                color="primary"
+                                variant="outlined"
+                                placeholder="Search"
+                                rounded
+                                :hide-details="true"
+                                prepend-inner-icon="mdi-magnify"
+                                @keydown.enter="searchFiles"
+                                v-model="currentSearch"
+                                :clearable="true"
+                                @click:clear="searchFiles"
+                            />
+                        </div>
+                        <Listing v-if="(!showSidebar && $vuetify.display.mobile) || !$vuetify.display.mobile" :loading="store.assets.loadingPage" :multi="multi" :files="fileList" :display-mode="currentViewMode" @more="loadNextPage"/>
                     </div>
                 </div>
             </div>
             <CroppingManager v-if="showCropper" :settings="cropping" @close="showCropper = false"/>
-            <FileMover :show="showMover" :folder="activeFolder" @cancel="closeMover"/>
+            <FileMover :show="showMover" :folder="activeFolder" @cancel="closeMover" @moved="closeMoverAndUpdate"/>
         </v-card>
     </v-overlay>
 </template>
 
 <script setup>
-import { computed, inject, ref } from 'vue';
+import { computed, inject, nextTick, ref } from 'vue';
 import { useDisplay } from "vuetify";
 import Navigation from "@/components/globals/assetmanager/Navigation.vue";
 import Listing from "@/components/globals/assetmanager/Listing.vue";
@@ -88,6 +123,10 @@ const showCropper = ref(false);
 
 // Selection Mode
 const selectionMode = ref(false);
+
+// Search
+const showSearch = ref(false);
+const searchField = ref(null);
 
 // Folders
 const folderList = ref([]);
@@ -119,16 +158,13 @@ const props = defineProps({
 });
 
 // Handler cropper signal
-emitter.on('crop', (event) =>
-{
-    showCropper.value = true;
-});
+emitter.on('crop', (event) => showCropper.value = true);
 
 // Should we show the sidebar on load?
 let pref = localStorage.getItem('sam_nav') || 'show';
 
-if (display.mobile === true) {
-    showSidebar.value = true;
+if (display.mobile.value) {
+    showSidebar.value = false;
 } else {
     showSidebar.value = (pref === 'show');
 }
@@ -150,19 +186,23 @@ const toggleSidebarPreference = () =>
 const setCurrentViewMode = (e) => currentViewMode.value = e[0];
 
 // Load folders from the server
-const loadFolders = async () =>
+const loadFolders = async (skipFiles = false) =>
 {
     folderList.value = await Assets.folders();
     foldersReady.value = true;
 
     store.setAvailableFolders(folderList.value);
 
-    loadFiles('root');
+    if (!skipFiles) loadFiles();
 }
 
 // Load files
 const loadFiles = async () =>
 {
+    if (!store.assets.loadingPage) {
+        store.setLoadingPage(true);
+    }
+
     const result = await Assets.assets({
         page: store.assets.currentPage,
         limit: 100,
@@ -172,6 +212,7 @@ const loadFiles = async () =>
 
     store.setAssetPagination(result.pagination.current, result.pagination.totalPages);
     fileList.value.push(...result.list);
+
     store.setLoadingPage(false);
 }
 
@@ -190,12 +231,36 @@ const openCropper = () =>
 }
 
 // Active folder was changed
-const setActiveFolder = (e) => activeFolder.value = e;
+const setActiveFolder = async (e) =>
+{
+    activeFolder.value = e;
+    currentSearch.value = '';
+    store.setAssetPagination(1, 1);
+    fileList.value = [];
+    await loadFiles();
+}
 
 // Close Mover
-const closeMover = () =>
+const closeMover = () => showMover.value = false;
+const closeMoverAndUpdate = (moved) =>
 {
-    showMover.value = false;
+    closeMover();
+    fileList.value = fileList.value.filter(f => !moved.includes(f._id));
+}
+
+// Toggle search (with autofocus)
+const toggleSearch = () =>
+{
+    showSearch.value = !showSearch.value;
+    nextTick(() => searchField.value.focus());
+}
+
+// Search Now! (reset pagination)
+const searchFiles = async () =>
+{
+    store.setAssetPagination(1, 1);
+    fileList.value = [];
+    await loadFiles();
 }
 
 loadFolders();
