@@ -30,7 +30,10 @@
                         class="tw-flex-grow tw-flex tw-flex-col tw-h-full"
                         :class="{'tw-bg-gray-800': $vuetify.theme.name !== 'light', 'tw-bg-gray-100': $vuetify.theme.name === 'light'}"
                     >
-                        <div :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}" class="tw-p-2.5 tw-pr-3 tw-flex tw-flex-row tw-border-b tw-items-center tw-justify-between">
+                        <div
+                            :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
+                            class="tw-p-2.5 tw-pr-3 tw-flex tw-flex-row tw-border-b tw-items-center tw-justify-between"
+                        >
                             <div>
                                 <v-btn @click.prevent="toggleSidebarPreference" flat icon>
                                     <v-icon icon="mdi-menu" />
@@ -73,7 +76,11 @@
                                 />
                             </div>
                         </div>
-                        <div v-if="showSearch" class="tw-w-full tw-flex tw-flex-row tw-py-2 tw-px-3 tw-border-b" :class="{'tw-bg-slate-800 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-100 tw-border-gray-200': $vuetify.theme.name === 'light'}">
+                        <div
+                            v-if="showSearch"
+                            class="tw-w-full tw-flex tw-flex-row tw-py-2 tw-px-3 tw-border-b"
+                            :class="{'tw-bg-slate-800 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-100 tw-border-gray-200': $vuetify.theme.name === 'light'}"
+                        >
                             <v-text-field
                                 ref="searchField"
                                 class="tw-w-[300px] lg:tw-w-[400px] tw-my-2"
@@ -90,18 +97,40 @@
                                 @click:clear="searchFiles"
                             />
                         </div>
-                        <Listing v-if="(!showSidebar && $vuetify.display.mobile) || !$vuetify.display.mobile" :loading="store.assets.loadingPage" :multi="multi" :files="fileList" :display-mode="currentViewMode" @more="loadNextPage"/>
+                        <Listing
+                            v-if="(!showSidebar && $vuetify.display.mobile) || !$vuetify.display.mobile"
+                            :loading="store.assets.loadingPage"
+                            :multi="multi"
+                            :files="fileList"
+                            :display-mode="currentViewMode"
+                            @more="loadNextPage"
+                        />
+                    </div>
+                    <div class="tw-absolute tw-bottom-8 tw-right-8">
+                        <v-btn density="comfortable" color="green" size="x-large" icon="mdi-plus"></v-btn>
                     </div>
                 </div>
             </div>
-            <CroppingManager v-if="showCropper" :settings="cropping" @close="showCropper = false"/>
-            <FileMover :show="showMover" :folder="activeFolder" @cancel="closeMover" @moved="closeMoverAndUpdate"/>
+
+            <Transition>
+                <CroppingManager v-if="showCropper" :settings="cropping" @close="showCropper = false"/>
+            </Transition>
+
+            <Transition>
+                <FileMover v-if="showMover" :folder="activeFolder" @cancel="closeMover" @moved="closeMoverAndUpdate"/>
+            </Transition>
+
+            <Transition>
+                <UploadPanel v-if="showUploader" :folder="activeFolder"/>
+            </Transition>
 
             <DeleteConfirmation
                 :show="showDeleteConfirm"
                 :loading="deleteLoading"
                 :message="(store.assets.selected.length === 1) ? $t('assets.delete.single_conf') : $t('assets.delete.multi_conf')"
                 :title="(store.assets.selected.length === 1) ? $t('assets.delete.single_title') : $t('assets.delete.multi_title')"
+                @cancel="showDeleteConfirm=false"
+                @accept="deleteSelectedFiles"
             />
         </v-card>
     </v-overlay>
@@ -118,7 +147,10 @@ import { Assets } from '@/libs/graphql';
 import { useAppStore } from '@/store/app';
 import FileMover from '@/components/globals/assetmanager/FileMover.vue';
 import DeleteConfirmation from '@/components/globals/DeleteConfirmation.vue';
+import { useI18n } from 'vue-i18n';
+import UploadPanel from '@/components/globals/assetmanager/UploadPanel.vue';
 
+const i18n = useI18n();
 const emitter = inject('emitter');
 const store = useAppStore();
 
@@ -150,6 +182,9 @@ const showMover = ref(false);
 const showDeleteConfirm = ref(false);
 const deleteLoading = ref(false);
 
+// Uploading
+const showUploader = ref(false);
+
 const show = computed(() => props.show);
 
 const props = defineProps({
@@ -172,12 +207,15 @@ emitter.on('crop', (event) => showCropper.value = true);
 
 // Should we show the sidebar on load?
 let pref = localStorage.getItem('sam_nav') || 'show';
+let viewPref = localStorage.getItem('sam_view') || 'grid';
 
 if (display.mobile.value) {
     showSidebar.value = false;
 } else {
     showSidebar.value = (pref === 'show');
 }
+
+currentViewMode.value = viewPref;
 
 // Toggle the sidebar on or off (or show popup on mobile)
 const toggleSidebarPreference = () =>
@@ -193,7 +231,11 @@ const toggleSidebarPreference = () =>
 }
 
 // handle display mode change
-const setCurrentViewMode = (e) => currentViewMode.value = e[0];
+const setCurrentViewMode = (e) =>
+{
+    currentViewMode.value = e[0];
+    localStorage.setItem('sam_view', e[0]);
+}
 
 // Load folders from the server
 const loadFolders = async (skipFiles = false) =>
@@ -283,5 +325,38 @@ const removeFolder = (e) =>
 // Show delete confirmation
 const confirmDelete = () => showDeleteConfirm.value = true;
 
+const deleteSelectedFiles = async () =>
+{
+    deleteLoading.value = true;
+    const response = await Assets.deleteAssets(store.assets.selected);
+
+    if (response) {
+        // Remove from list
+        fileList.value = fileList.value.filter(f => !store.assets.selected.includes(f._id));
+        store.clearSelectedAssets();
+
+        showDeleteConfirm.value = false;
+        deleteLoading.value = false;
+
+        store.displayToast('success', i18n.t('assets.delete_success'));
+        return;
+    }
+
+    deleteLoading.value = false;
+    store.displayToast('error', i18n.t('assets.errors.permissions'));
+}
+
 loadFolders();
 </script>
+
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.35s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
+</style>

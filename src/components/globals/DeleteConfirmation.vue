@@ -35,4 +35,6 @@ defineProps({
     }
 });
 
+defineEmits(['cancel', 'accept']);
+
 </script>

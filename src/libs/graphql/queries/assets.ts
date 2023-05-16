@@ -103,5 +103,10 @@ export default {
         mutation removeFolder($folder: String!, $move_to: String!) {
             removeFolder(folder: $folder, move_to: $move_to)
         }
+    `,
+    removeAssets: `
+        mutation removeAssets($assets: [ID!]!) {
+            removeAssets(assets: $assets)
+        }
     `
 }

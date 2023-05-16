@@ -69,8 +69,8 @@ export function fileExtension(file: string): string
 declare global {
     interface Window {
         hasPermission: Function;
-        isAdmin: Function
-        baseURL: String
+        isAdmin: Function;
+        baseURL: String;
     }
 }
 

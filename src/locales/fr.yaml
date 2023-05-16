@@ -78,6 +78,8 @@ assets:
   add: Ajouter
   remove: Supprimer
   folder_name: Nom du dossier
+  delete_success: Fichier(s) supprimé(s) avec succès.
+  no_files: Aucun fichier pour le moment.
   delete:
     single_conf: Êtes-vous certains de vouloir supprimer ce fichier ?
     multi_conf: Êtes-vous certains de vouloir supprimer ces fichiers ?

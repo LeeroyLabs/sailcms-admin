@@ -147,6 +147,27 @@ export class Assets
         return false;
     }
 
+    /**
+     *
+     * Delete assets from the given list
+     *
+     * @param files
+     *
+     */
+    public static async deleteAssets(files: string[]): Promise<boolean>
+    {
+        const client = new Client();
+        let query = AssetsQueries.removeAssets;
+
+        let result = await client.query(gql`${query}`, {assets: files});
+
+        if (result.data) {
+            return result.data.removeAssets;
+        }
+
+        return false;
+    }
+
     private static parseLocales(locales: string[]): string
     {
         let out = ``;
