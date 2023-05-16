@@ -125,6 +125,14 @@ export class Assets
         return 2;
     }
 
+    /**
+     *
+     * Remove a folder and move all files to another folder
+     *
+     * @param active
+     * @param recipient
+     *
+     */
     public static async removeFolder(active: string, recipient: string): Promise<boolean>
     {
         const client = new Client();

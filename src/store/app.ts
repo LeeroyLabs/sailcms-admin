@@ -24,7 +24,7 @@ export const useAppStore = defineStore('app', {
             currentPage: 1,
             maxPage: 1,
             selected: [] as string[],
-            loadingPage: false,
+            loadingPage: true,
             folders: [] as Folder[]
         }
     }),
@@ -78,7 +78,6 @@ export const useAppStore = defineStore('app', {
             if (multi) {
                 if (!inout) {
                     // remove
-                    console.log("HEE");
                     this.assets.selected = this.assets.selected.filter(f => f !== file);
                 } else {
                     this.assets.selected.push(file);

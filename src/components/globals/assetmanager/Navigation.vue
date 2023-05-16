@@ -22,12 +22,23 @@
                     </div>
                 </div>
                 <div>
-                    <div class="tw-p-3 tw-border-t tw-flex tw-flex-row tw-gap-x-3" :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}">
-                        <div @click.prevent="showAddFolder=true" class="tw-rounded-full tw-p-0.5 tw-cursor-pointer tw-text-center hover:tw-bg-primary">
+                    <div
+                        class="tw-border-t tw-flex tw-flex-row"
+                        :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
+                    >
+                        <div
+                            @click.prevent="showAddFolder=true"
+                            class="tw-py-2 tw-px-2 tw-cursor-pointer tw-text-center hover:tw-bg-primary tw-border-r"
+                            :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
+                        >
                             <v-icon icon="mdi-plus"/>
                         </div>
-                        <div class="tw-border-r" :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"></div>
-                        <div @click.prevent="showDeleteConfirmationView" class="tw-rounded-full tw-p-0.5 w-cursor-pointer tw-text-center" :class="{'tw-disabled tw-text-gray-400': active === 'root', 'hover:tw-bg-primary': active !== 'root'}">
+
+                        <div
+                            @click.prevent="showDeleteConfirmationView"
+                            class="tw-py-2 tw-px-2 tw-cursor-pointer tw-text-center hover:tw-bg-primary tw-border-r"
+                            :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
+                        >
                             <v-icon icon="mdi-minus"/>
                         </div>
                     </div>
@@ -106,7 +117,7 @@ const store = useAppStore();
 const i18n = useI18n();
 
 const showContent = ref(!display.mobile.value);
-const emitter = defineEmits(['close', 'change', 'folder-added']);
+const emitter = defineEmits(['close', 'change', 'folder-added', 'folder-removed']);
 const form = ref(null);
 const isLoading = ref(false);
 
@@ -225,7 +236,8 @@ const removeFolder = async () =>
 
     isLoading.value = true;
 
-    await Assets.removeFolder(props.active, selectedFolderTransfer);
+    // @ts-ignore
+    await Assets.removeFolder(props.active, selectedFolderTransfer.value);
     emitter('folder-removed', true);
 
     isLoading.value = false;

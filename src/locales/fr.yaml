@@ -78,6 +78,11 @@ assets:
   add: Ajouter
   remove: Supprimer
   folder_name: Nom du dossier
+  delete:
+    single_conf: Êtes-vous certains de vouloir supprimer ce fichier ?
+    multi_conf: Êtes-vous certains de vouloir supprimer ces fichiers ?
+    single_title: Confirmation
+    multi_title: Confirmation
   views:
     modes: Mode d'affichage
     grid: Vue grille
@@ -88,6 +93,8 @@ assets:
     exists: Ce dossier existe déjà, veuillez choisir un autre nom.
 
 system:
+  yes: Oui
+  no: Non
   toast:
     error: Erreur
     success: Succès

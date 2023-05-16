@@ -23,6 +23,7 @@
                         @close="toggleSidebarPreference"
                         @change="setActiveFolder"
                         @folder-added="loadFolders"
+                        @folder-removed="removeFolder"
                     />
 
                     <div
@@ -62,7 +63,7 @@
                                 <v-btn @click="showMover=true" flat icon v-if="store.assets.selected.length >= 1">
                                     <v-icon icon="mdi-folder-move-outline"/>
                                 </v-btn>
-                                <v-btn @click="openCropper" flat icon v-if="store.assets.selected.length >= 1">
+                                <v-btn @click="confirmDelete" flat icon v-if="store.assets.selected.length >= 1">
                                     <v-icon icon="mdi-trash-can-outline" color="red-lighten-2"/>
                                 </v-btn>
 
@@ -95,6 +96,13 @@
             </div>
             <CroppingManager v-if="showCropper" :settings="cropping" @close="showCropper = false"/>
             <FileMover :show="showMover" :folder="activeFolder" @cancel="closeMover" @moved="closeMoverAndUpdate"/>
+
+            <DeleteConfirmation
+                :show="showDeleteConfirm"
+                :loading="deleteLoading"
+                :message="(store.assets.selected.length === 1) ? $t('assets.delete.single_conf') : $t('assets.delete.multi_conf')"
+                :title="(store.assets.selected.length === 1) ? $t('assets.delete.single_title') : $t('assets.delete.multi_title')"
+            />
         </v-card>
     </v-overlay>
 </template>
@@ -109,6 +117,7 @@ import CroppingManager from "@/components/globals/assetmanager/CroppingManager.v
 import { Assets } from '@/libs/graphql';
 import { useAppStore } from '@/store/app';
 import FileMover from '@/components/globals/assetmanager/FileMover.vue';
+import DeleteConfirmation from '@/components/globals/DeleteConfirmation.vue';
 
 const emitter = inject('emitter');
 const store = useAppStore();
@@ -120,9 +129,6 @@ const navigation = ref(null);
 // View mode and cropper control
 const currentViewMode = ref('grid');
 const showCropper = ref(false);
-
-// Selection Mode
-const selectionMode = ref(false);
 
 // Search
 const showSearch = ref(false);
@@ -139,6 +145,10 @@ const currentSearch = ref('');
 
 // Moving Files
 const showMover = ref(false);
+
+// Deleting
+const showDeleteConfirm = ref(false);
+const deleteLoading = ref(false);
 
 const show = computed(() => props.show);
 
@@ -262,6 +272,16 @@ const searchFiles = async () =>
     fileList.value = [];
     await loadFiles();
 }
+
+// React to removing a folder
+const removeFolder = (e) =>
+{
+    activeFolder.value = 'root';
+    loadFolders(true);
+}
+
+// Show delete confirmation
+const confirmDelete = () => showDeleteConfirm.value = true;
 
 loadFolders();
 </script>
