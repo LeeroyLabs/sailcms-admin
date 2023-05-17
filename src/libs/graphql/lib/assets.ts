@@ -1,10 +1,29 @@
 import { Client } from "./client";
 import AssetsQueries from "../queries/assets";
 import gql from "graphql-tag";
-import { Asset, AssetListing, AssetsOptions, Folder } from "../types/assets";
+import { Asset, AssetConfig, AssetListing, AssetsOptions, Folder } from "../types/assets";
 
 export class Assets
 {
+    /**
+     *
+     * Get the configurations for the asset manager
+     *
+     */
+    public static async getConfig(): Promise<AssetConfig>
+    {
+        const client = new Client();
+        let query = AssetsQueries.assetConfig;
+
+        let result = await client.query(gql`${query}`, {});
+
+        if (result.data) {
+            return result.data.assetConfig;
+        }
+
+        return {maxSize: 5_242_880, blacklist: ['php', 'exe', 'sh', 'sql']};
+    }
+
     /**
      *
      * Fetch an asset, pass locales to fetch titles for
@@ -56,6 +75,29 @@ export class Assets
             },
             list: []
         };
+    }
+
+    /**
+     *
+     * Upload an asset
+     *
+     * @param data
+     * @param name
+     * @param folder
+     *
+     */
+    public static async uploadAsset(data: string, name: string, folder: string): Promise<Asset|null>
+    {
+        const client = new Client();
+        let query = AssetsQueries.uploadAsset;
+
+        let result = await client.query(gql`${query}`, {src: data, filename: name, folder: folder});
+
+        if (result.data) {
+            return result.data.uploadAsset;
+        }
+
+        return null;
     }
 
     /**

@@ -47,3 +47,8 @@ export type AssetsOptions = {
     sort?: string;
     direction?: string;
 }
+
+export type AssetConfig = {
+    maxSize: number;
+    blacklist: string[];
+}

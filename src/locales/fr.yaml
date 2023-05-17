@@ -68,6 +68,7 @@ extensions:
 
 assets:
   title: Gestionnaire d'actifs
+  upload: Téléversement
   move_some: Déplacer
   file: un fichier
   files: des fichiers
@@ -80,6 +81,7 @@ assets:
   folder_name: Nom du dossier
   delete_success: Fichier(s) supprimé(s) avec succès.
   no_files: Aucun fichier pour le moment.
+  do_upload: Téléverser
   delete:
     single_conf: Êtes-vous certains de vouloir supprimer ce fichier ?
     multi_conf: Êtes-vous certains de vouloir supprimer ces fichiers ?
@@ -93,6 +95,8 @@ assets:
   errors:
     permissions: Vous n'avez pas la permission de porter cette action.
     exists: Ce dossier existe déjà, veuillez choisir un autre nom.
+    toobig: Fichier trop volumineux
+    notallowed: Type de fichier refusé
 
 system:
   yes: Oui

@@ -8,7 +8,7 @@
                     <v-btn flat icon v-if="(store.assets.selected.length === 1 && !multi) || (store.assets.selected.length >= 1 && multi)">
                         <v-icon icon="mdi-check-circle-outline"/>
                     </v-btn>
-                    <v-btn icon flat>
+                    <v-btn @click="$emit('close')" icon flat>
                         <v-icon icon="mdi-close"/>
                     </v-btn>
                 </div>
@@ -60,6 +60,9 @@
                                 />
                             </div>
                             <div v-if="!$vuetify.display.mobile || !showSidebar">
+                                <v-btn @click="showInfo" flat icon v-if="store.assets.selected.length === 1">
+                                    <v-icon icon="mdi-information-outline"/>
+                                </v-btn>
                                 <v-btn @click="openCropper" flat icon v-if="store.assets.selected.length === 1">
                                     <v-icon icon="mdi-crop"/>
                                 </v-btn>
@@ -103,25 +106,24 @@
                             :multi="multi"
                             :files="fileList"
                             :display-mode="currentViewMode"
+                            ref="listing"
                             @more="loadNextPage"
                         />
                     </div>
                     <div class="tw-absolute tw-bottom-8 tw-right-8">
-                        <v-btn density="comfortable" color="green" size="x-large" icon="mdi-plus"></v-btn>
+                        <v-btn @click.prevent="showUploader=true" density="comfortable" color="green" size="x-large" icon="mdi-plus"></v-btn>
                     </div>
                 </div>
             </div>
 
-            <Transition>
-                <CroppingManager v-if="showCropper" :settings="cropping" @close="showCropper = false"/>
-            </Transition>
+            <CroppingManager v-if="showCropper" :settings="cropping" :file="croppingFile" @close="showCropper = false"/>
 
             <Transition>
                 <FileMover v-if="showMover" :folder="activeFolder" @cancel="closeMover" @moved="closeMoverAndUpdate"/>
             </Transition>
 
             <Transition>
-                <UploadPanel v-if="showUploader" :folder="activeFolder"/>
+                <UploadPanel v-if="showUploader" :folder="activeFolder" @cancel="showUploader=false" @upload="showFile"/>
             </Transition>
 
             <DeleteConfirmation
@@ -149,6 +151,9 @@ import FileMover from '@/components/globals/assetmanager/FileMover.vue';
 import DeleteConfirmation from '@/components/globals/DeleteConfirmation.vue';
 import { useI18n } from 'vue-i18n';
 import UploadPanel from '@/components/globals/assetmanager/UploadPanel.vue';
+import AssetInformationPanel from '@/components/globals/assetmanager/AssetInformationPanel.vue';
+
+defineEmits(['close']);
 
 const i18n = useI18n();
 const emitter = inject('emitter');
@@ -157,10 +162,12 @@ const store = useAppStore();
 const display = useDisplay();
 const showSidebar = ref(true);
 const navigation = ref(null);
+const listing = ref(null);
 
 // View mode and cropper control
 const currentViewMode = ref('grid');
 const showCropper = ref(false);
+const croppingFile = ref(null);
 
 // Search
 const showSearch = ref(false);
@@ -196,14 +203,15 @@ const props = defineProps({
         type: Object,
         default: {ratio: 0, min: { width: 50, height: 50 }, max: {width: 10000, height: 10000}, lockedType: ''}
     },
+    allowed: {
+        type: Array,
+        default: ['.*']
+    },
     multi: {
         type: Boolean,
         default: false
     }
 });
-
-// Handler cropper signal
-emitter.on('crop', (event) => showCropper.value = true);
 
 // Should we show the sidebar on load?
 let pref = localStorage.getItem('sam_nav') || 'show';
@@ -216,6 +224,12 @@ if (display.mobile.value) {
 }
 
 currentViewMode.value = viewPref;
+
+const loadConfig = async () =>
+{
+    const config = await Assets.getConfig();
+    store.setAssetConfig(config);
+}
 
 // Toggle the sidebar on or off (or show popup on mobile)
 const toggleSidebarPreference = () =>
@@ -249,9 +263,11 @@ const loadFolders = async (skipFiles = false) =>
 }
 
 // Load files
-const loadFiles = async () =>
+const loadFiles = async (fromList = false) =>
 {
-    if (!store.assets.loadingPage) {
+    if (fromList) {
+        store.setLoadingMorePage(true);
+    } else if (!fromList) {
         store.setLoadingPage(true);
     }
 
@@ -265,6 +281,7 @@ const loadFiles = async () =>
     store.setAssetPagination(result.pagination.current, result.pagination.totalPages);
     fileList.value.push(...result.list);
 
+    store.setLoadingMorePage(false);
     store.setLoadingPage(false);
 }
 
@@ -272,14 +289,15 @@ const loadFiles = async () =>
 const loadNextPage = async () =>
 {
     store.incrementAssetPage();
-    await loadFiles();
+    await loadFiles(true);
 }
 
 // Open Cropper
 const openCropper = () =>
 {
     let file = fileList.value.find(f => f._id === store.assets.selected[0]);
-    emitter.emit('crop', {image: store.assets.selected, src: file.url})
+    croppingFile.value = file;
+    showCropper.value = true;
 }
 
 // Active folder was changed
@@ -289,7 +307,7 @@ const setActiveFolder = async (e) =>
     currentSearch.value = '';
     store.setAssetPagination(1, 1);
     fileList.value = [];
-    await loadFiles();
+    await loadFiles(false);
 }
 
 // Close Mover
@@ -346,6 +364,16 @@ const deleteSelectedFiles = async () =>
     store.displayToast('error', i18n.t('assets.errors.permissions'));
 }
 
+const showInfo = () =>
+{
+    let file = fileList.value.filter(f => f._id === store.assets.selected[0]);
+    listing.value.openFileInfo(file[0]);
+}
+
+// Show new uploaded file
+const showFile = (file) => fileList.value.unshift(file);
+
+loadConfig();
 loadFolders();
 </script>
 

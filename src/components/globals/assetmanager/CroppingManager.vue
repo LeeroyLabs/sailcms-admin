@@ -49,7 +49,7 @@
                 </div>
                 <Cropper
                     ref="cropper"
-                    src="https://voxatl.org/wp-content/uploads/2019/04/avengers-endgame-poster-square-crop.jpg"
+                    :src="file.url"
                     :stencilComponent="activeMode === 'circle' ? CircleStencil : RectangleStencil"
                     @change="handleResize"
                     :minWidth="settings.min.width"
@@ -80,20 +80,25 @@ import { CircleStencil, RectangleStencil, Cropper, PreviewResult } from "vue-adv
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.compact.css';
 import { ref } from "vue";
+import { useAppStore } from '@/store/app';
 
 const props = defineProps({
     settings: {
         type: Object,
         default: {ratio: '', min: { width: 0, height: 0 }, max: {width: 0, height: 0}, lockedType: ''}
+    },
+    file: {
+        type: Object,
+        default: null
     }
 });
 
-console.log(props.settings);
-
 const activeMode = ref('square');
-const previewer = ref(null);
 const previewImage = ref(null);
 const cropper = ref(null);
+const store = useAppStore();
+
+console.log(store.assets.selected);
 
 const handleResize = (e) =>
 {
@@ -105,7 +110,6 @@ const handleResize = (e) =>
         }
         reader.readAsDataURL(blob);
     }, 'image/webp');
-    console.log(e);
 }
 
 const rotateLeft = () => cropper.value.rotate(-90);

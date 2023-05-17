@@ -1,9 +1,9 @@
 <template>
-    <v-navigation-drawer :rail="navigationState" color="primary-darker" class="!tw-text-white tw-relative">
+    <v-navigation-drawer :rail="!navigationState" color="primary-darker" class="!tw-text-white tw-relative">
         <v-list density="comfortable">
             <v-list-item-media class="tw-max-h-[100px] tw-min-h-[100px]">
                 <img
-                    :class="{'tw-w-20': !navigationState, 'tw-w-10 !tw-mt-3': navigationState}"
+                    :class="{'tw-w-20': navigationState, 'tw-w-10 !tw-mt-3': !navigationState}"
                     class="tw-rounded-md tw-mx-auto tw-transition-all tw-m-4"
                     src="https://mir-s3-cdn-cf.behance.net/user/276/7530587.53f253b5e501a.jpg"
                     alt=""

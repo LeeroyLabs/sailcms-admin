@@ -115,7 +115,7 @@
     </v-card>
     <Loader v-else/>
 
-    <AssetManager :show="true" :multi="false" :cropping="cropping" />
+    <AssetManager :show="showAM" :multi="false" :cropping="cropping" @close="showAM=false" />
 </template>
 
 <script setup lang="ts">
@@ -139,6 +139,8 @@ const router = useRouter();
 
 // Fields
 const fileinput = ref(null);
+
+const showAM = ref(true);
 
 // Fields that are not necessarily sent
 const password = ref('');

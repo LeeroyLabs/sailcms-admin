@@ -108,5 +108,51 @@ export default {
         mutation removeAssets($assets: [ID!]!) {
             removeAssets(assets: $assets)
         }
+    `,
+    assetConfig: `
+        query assetConfig {
+            assetConfig {
+                maxSize
+                blacklist
+            }
+        }
+    `,
+    uploadAsset: `
+        mutation uploadAsset($src: String!, $filename: String!, $folder: String!) {
+            uploadAsset(src: $src, filename: $filename, folder: $folder) {
+                _id
+                filename
+                site_id
+                name
+                title {
+                    fr
+                    en
+                }
+                folder
+                url
+                filesize
+                size {
+                    width
+                    height
+                }
+                is_image
+                uploader {
+                    _id
+                    email
+                    name {
+                        first
+                        last
+                        full
+                    }
+                }
+                created_at
+                transforms {
+                    transform
+                    filename
+                    name
+                    url
+                }
+            }
+        }
     `
 }
