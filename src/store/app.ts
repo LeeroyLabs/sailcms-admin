@@ -12,6 +12,7 @@ export const useAppStore = defineStore('app', {
         breadcrumbs: [] as any[],
         graphQLURL: '',
         baseURL: '',
+        locales: ['fr', 'en'],
         showGQLError: false,
         currentUser: {} as User,
         isLoggedIn: false,
@@ -50,6 +51,10 @@ export const useAppStore = defineStore('app', {
         setBaseURL(url: string)
         {
             this.baseURL = url;
+        },
+        setLocales(locales: string[])
+        {
+            this.locales = locales;
         },
         showGraphQLError()
         {

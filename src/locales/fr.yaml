@@ -82,6 +82,14 @@ assets:
   delete_success: Fichier(s) supprimé(s) avec succès.
   no_files: Aucun fichier pour le moment.
   do_upload: Téléverser
+  img_title: Titre
+  info:
+    filename: Nom
+    filesize: Poids
+    size: Taille
+    transform_count: Transformations
+    uploaded_by: Téléverser par
+    uploaded_on: Téléverser le
   delete:
     single_conf: Êtes-vous certains de vouloir supprimer ce fichier ?
     multi_conf: Êtes-vous certains de vouloir supprimer ces fichiers ?

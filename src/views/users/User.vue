@@ -1,12 +1,10 @@
 <template>
     <v-card :elevation="$vuetify.theme.name === 'light' ? 2 : 4" v-if="isReady" class="tw-p-6 tw-w-full md:tw-w-10/12 lg:tw-w-8/12 xl:tw-w-8/12 2xl:tw-w-7/12 tw-ml-0 ">
         <div class="tw-mx-3 tw-flex tw-flex-col md:tw-flex-row">
-            <div class="tw-group tw-w-32 tw-h-32 tw-rounded-full tw-bg-black tw-relative tw-mx-auto md:tw-mx-0">
+            <div class="tw-group tw-w-32 tw-h-32 tw-rounded-full tw-bg-black tw-relative tw-mx-auto md:tw-mx-0 tw-bg-center tw-bg-cover" :style="'background-image: url(' + currentUser.avatar + ');'">
                 <div @click="selectFile" class="tw-cursor-pointer tw-absolute tw-rounded-full tw-h-full tw-w-full tw-bg-black/50 tw-hidden group-hover:tw-flex tw-flex-row tw-items-center tw-justify-center">
                     <v-icon icon="mdi-camera" color="white"/>
                 </div>
-                <img v-if="currentUser.avatar !== ''" :src="currentUser.avatar" alt="" class="tw-rounded-full"/>
-                <input ref="fileinput" type="file" accept=".jpg,.jpeg,.png,.webp" id="avatar_file" class="tw-hidden" @change="processFile"/>
             </div>
             <v-form class="tw-flex-grow">
                 <div class="md:tw-ml-6 tw-mt-6 md:tw-mt-0">
@@ -115,7 +113,9 @@
     </v-card>
     <Loader v-else/>
 
-    <AssetManager :show="showAM" :multi="false" :cropping="cropping" @close="showAM=false" />
+    <Transition>
+    <AssetManager v-if="showAM" :multi="false" :cropping="cropping" @close="showAM=false" @selected="handleSelectedAsset" />
+    </Transition>
 </template>
 
 <script setup lang="ts">
@@ -137,10 +137,7 @@ const i18n = useI18n();
 const route = useRoute();
 const router = useRouter();
 
-// Fields
-const fileinput = ref(null);
-
-const showAM = ref(true);
+const showAM = ref(false);
 
 // Fields that are not necessarily sent
 const password = ref('');
@@ -154,19 +151,19 @@ const availableRoles = ref([] as any[]);
 const isReady = ref(false);
 const isAdding = ref(true);
 const isImageLoading = ref(false);
-const showingCropper = ref(true);
 
 const cropping = {
+    name: 'avatar',
     ratio: 0,
     min: {
-        width: 50,
-        height: 50
+        width: 200,
+        height: 200
     },
     max: {
-        width: 10000,
-        height: 10000
+        width: 800,
+        height: 800
     },
-    lockedType: ''
+    lockedType: 'circle'
 };
 
 // User base
@@ -240,43 +237,27 @@ const loadUser = async () =>
     isAdding.value = false;
 }
 
-const selectFile = () =>
-{
-    fileinput.value.click();
+const selectFile = () => {
+    console.log("HERE?");
+    showAM.value = true;
 }
 
-const processFile = (e) =>
+const handleSelectedAsset = (files) =>
 {
-    // Upload was cancelled
-    if (e.target.value === undefined || e.target.value === "") return;
+    // Hide Asset Manager
+    showAM.value = false;
 
-    isImageLoading.value = true;
-    let reader   = new FileReader();
-    let filename = e.target.value.split("fakepath\\")[1];
+    // Default to full size url
+    let url = files[0].url;
 
-    const _filename = filename;
-
-    let index = filename.lastIndexOf(".");
-    let ext   = filename.substring(index);
-
-    reader.readAsDataURL(e.target.files[0]);
-    reader.onloadend = async () =>
-    {
-        if (hasCrop) {
-          //  dispatch("selectedFile", reader.result as string);
-        } else {
-            // dispatch("uploading");
-            // let fileb64  = (reader.result as string).split("base64,");
-            // let filedata = fileb64[1];
-            // let data     = {image: filedata, filename: filename, type: type};
-            // let result   = await MiscQueries.uploadAsset(data);
-            //
-            // if (!result.error) value = result.data;
-            // dispatch("uploaded");
+    // Find the Avatar crop (if any)
+    for (let transform of files[0].transforms) {
+        if (transform.transform === 'avatar') {
+            url = transform.url;
         }
+    }
 
-        isImageLoading.value = false;
-    };
+    currentUser.value.avatar = url;
 }
 
 // Load list of dropdowns (roles and groups)
@@ -310,3 +291,15 @@ if (route.params.id === 'add') {
     });
 }
 </script>
+
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.35s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
+</style>

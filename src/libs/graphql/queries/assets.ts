@@ -19,7 +19,6 @@ export default {
                 is_image
                 uploader {
                     _id
-                    email
                     name {
                         first
                         last
@@ -62,7 +61,6 @@ export default {
                     is_image
                     uploader {
                         _id
-                        email
                         name {
                             first
                             last
@@ -125,8 +123,7 @@ export default {
                 site_id
                 name
                 title {
-                    fr
-                    en
+                    #locale#
                 }
                 folder
                 url
@@ -138,7 +135,6 @@ export default {
                 is_image
                 uploader {
                     _id
-                    email
                     name {
                         first
                         last
@@ -153,6 +149,16 @@ export default {
                     url
                 }
             }
+        }
+    `,
+    updateAssetTitle: `
+        mutation updateAssetTitle($id: ID!, $locale: String!, $title: String!) {
+            updateAssetTitle(id: $id, locale: $locale, title: $title)
+        }
+    `,
+    customTransformAsset: `
+        mutation customTransformAsset($id: ID!, $name: String!, $src: String!) {
+            customTransformAsset(id: $id, name: $name, src: $src)
         }
     `
 }

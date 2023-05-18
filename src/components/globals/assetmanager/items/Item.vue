@@ -9,9 +9,12 @@
         }"
         style="outline-width: 5px;"
     >
+        <div @click.prevent="openInfo" class="tw-rounded-full tw-hidden group-hover:tw-block tw-absolute tw-top-2 tw-right-2">
+            <v-icon icon="mdi-information-outline" size="default" class="tw-bg-black tw-rounded-full tw-text-white"/>
+        </div>
         <img :src="thumbnail" loading="lazy" class="tw-rounded-lg tw-max-h-[130px] lg:tw-max-h-[140px]" :width="($vuetify.display.lgAndUp) ? 140 : 130" :height="($vuetify.display.lgAndUp) ? 140 : 130" alt=""/>
 
-        <div class="tw-absolute tw-w-full tw-flex-row tw-items-center tw-justify-between tw-bg-black/60 tw-py-1 tw-px-2 tw-rounded-b-lg tw-text-sm tw-hidden group-hover:tw-flex">
+        <div class="tw-absolute tw-w-full tw-flex-row tw-items-center tw-justify-between tw-bg-black/60 tw-text-white tw-py-1 tw-px-2 tw-rounded-b-lg tw-text-sm tw-hidden group-hover:tw-flex">
             <span>{{ fileExtension(file.filename) }}</span>
             <span>{{ humanFileSize(file.filesize) }}</span>
         </div>
@@ -24,8 +27,7 @@ import { humanFileSize, fileExtension } from '@/libs/tools';
 import { useAppStore } from '@/store/app';
 
 const store = useAppStore();
-
-defineEmits(['openCrop']);
+const emitter = defineEmits(['openInfo']);
 
 const props = defineProps({
     file: {
@@ -37,8 +39,6 @@ const props = defineProps({
         default: false
     }
 });
-
-const emitter = inject('emitter');
 
 const thumbnail = computed(() =>
 {
@@ -55,6 +55,13 @@ const thumbnail = computed(() =>
     if (url === '') url = props.file.url;
     return url;
 });
+
+const openInfo = (e) =>
+{
+    e.preventDefault();
+    e.stopPropagation();
+    emitter('openInfo', props.file);
+}
 
 const toggleSelection = (event, file) =>
 {

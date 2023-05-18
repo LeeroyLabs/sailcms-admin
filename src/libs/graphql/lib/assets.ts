@@ -84,14 +84,16 @@ export class Assets
      * @param data
      * @param name
      * @param folder
+     * @param locales
      *
      */
-    public static async uploadAsset(data: string, name: string, folder: string): Promise<Asset|null>
+    public static async uploadAsset(data: string, name: string, folder: string, locales: string[] = ['fr', 'en']): Promise<Asset|null>
     {
         const client = new Client();
         let query = AssetsQueries.uploadAsset;
 
-        let result = await client.query(gql`${query}`, {src: data, filename: name, folder: folder});
+        query = query.replace('#locale#', Assets.parseLocales(locales));
+        let result = await client.mutation(gql`${query}`, {src: data, filename: name, folder: folder});
 
         if (result.data) {
             return result.data.uploadAsset;
@@ -132,7 +134,7 @@ export class Assets
         const client = new Client();
         let query = AssetsQueries.moveFiles;
 
-        let result = await client.query(gql`${query}`, {ids: fileIds, folder: folder});
+        let result = await client.mutation(gql`${query}`, {ids: fileIds, folder: folder});
 
         if (result.data) {
             return result.data.moveFiles;
@@ -158,7 +160,7 @@ export class Assets
         const client = new Client();
         let query = AssetsQueries.addFolder;
 
-        let result = await client.query(gql`${query}`, {folder: name});
+        let result = await client.mutation(gql`${query}`, {folder: name});
 
         if (result.data) {
             return result.data.addFolder;
@@ -180,7 +182,7 @@ export class Assets
         const client = new Client();
         let query = AssetsQueries.removeFolder;
 
-        let result = await client.query(gql`${query}`, {folder: active, move_to: recipient});
+        let result = await client.mutation(gql`${query}`, {folder: active, move_to: recipient});
 
         if (result.data) {
             return result.data.removeFolder;
@@ -201,13 +203,59 @@ export class Assets
         const client = new Client();
         let query = AssetsQueries.removeAssets;
 
-        let result = await client.query(gql`${query}`, {assets: files});
+        let result = await client.mutation(gql`${query}`, {assets: files});
 
         if (result.data) {
             return result.data.removeAssets;
         }
 
         return false;
+    }
+
+    /**
+     *
+     * Update an asset's title
+     *
+     * @param id
+     * @param locale
+     * @param title
+     *
+     */
+    public static async updateAssetTitle(id: string, locale: string, title: string): Promise<boolean>
+    {
+        const client = new Client();
+        let query = AssetsQueries.updateAssetTitle;
+
+        let result = await client.mutation(gql`${query}`, {id: id, locale: locale, title: title});
+
+        if (result.data) {
+            return result.data.updateAssetTitle;
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     * Create a custom transform based on the cropping tool
+     *
+     * @param id
+     * @param name
+     * @param src
+     *
+     */
+    public static async createTransform(id: string, name: string, src: string): Promise<string>
+    {
+        const client = new Client();
+        let query = AssetsQueries.customTransformAsset;
+
+        let result = await client.mutation(gql`${query}`, {id: id, name: name, src: src});
+
+        if (result.data) {
+            return result.data.customTransformAsset;
+        }
+
+        return '';
     }
 
     private static parseLocales(locales: string[]): string

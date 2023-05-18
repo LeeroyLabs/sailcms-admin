@@ -9,7 +9,7 @@
   "dependencies": {
     "@apollo/client": "^3.7.12",
     "@mdi/font": "7.2.96",
-    "date-fns": "^2.29.3",
+    "date-fns": "^2.30.0",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
     "mitt": "^3.0.0",
@@ -22,6 +22,7 @@
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {
+    "@types/date-fns": "^2.6.0",
     "@babel/types": "^7.21.4",
     "@commitlint/cli": "^17.6.1",
     "@commitlint/config-conventional": "^17.6.1",

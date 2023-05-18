@@ -1,11 +1,11 @@
 <template>
-    <v-overlay content-class="tw-flex tw-flex-row tw-items-center tw-w-full tw-h-full" persistent scroll-strategy="block" location-strategy="static" v-model="show">
+    <v-overlay v-model="showing" content-class="tw-flex tw-flex-row tw-items-center tw-w-full tw-h-full" persistent scroll-strategy="block" location-strategy="static">
         <v-card class="tw-mx-auto tw-h-[95%] tw-max-h-[95%] tw-rounded-lg tw-border tw-border-slate-700 tw-w-11/12 tw-flex tw-flex-col tw-shadow-xl">
             <div class="tw-w-full tw-bg-slate-700 tw-py-3 tw-pl-6 tw-pr-3 tw-text-white tw-items-center tw-text-xl tw-flex tw-flex-row tw-justify-between">
                 {{ $t('assets.title') }}
 
                 <div>
-                    <v-btn flat icon v-if="(store.assets.selected.length === 1 && !multi) || (store.assets.selected.length >= 1 && multi)">
+                    <v-btn @click="$emit('selected', selectedFileObjects)" flat icon v-if="!showCropper && ((store.assets.selected.length === 1 && !multi) || (store.assets.selected.length >= 1 && multi))">
                         <v-icon icon="mdi-check-circle-outline"/>
                     </v-btn>
                     <v-btn @click="$emit('close')" icon flat>
@@ -74,6 +74,7 @@
                                 </v-btn>
 
                                 <DisplayModeSelector
+                                    v-if="!$vuetify.display.mobile"
                                     :display-mode="currentViewMode"
                                     v-on:change-mode="setCurrentViewMode"
                                 />
@@ -111,12 +112,12 @@
                         />
                     </div>
                     <div class="tw-absolute tw-bottom-8 tw-right-8">
-                        <v-btn @click.prevent="showUploader=true" density="comfortable" color="green" size="x-large" icon="mdi-plus"></v-btn>
+                        <v-btn @click.prevent="showUploader=true" density="comfortable" color="green-darken-2" size="x-large" icon="mdi-plus"></v-btn>
                     </div>
                 </div>
             </div>
 
-            <CroppingManager v-if="showCropper" :settings="cropping" :file="croppingFile" @close="showCropper = false"/>
+            <CroppingManager v-if="showCropper" :settings="cropping" :file="croppingFile" @close="showCropper = false" @generated="handleCropping"/>
 
             <Transition>
                 <FileMover v-if="showMover" :folder="activeFolder" @cancel="closeMover" @moved="closeMoverAndUpdate"/>
@@ -153,11 +154,13 @@ import { useI18n } from 'vue-i18n';
 import UploadPanel from '@/components/globals/assetmanager/UploadPanel.vue';
 import AssetInformationPanel from '@/components/globals/assetmanager/AssetInformationPanel.vue';
 
-defineEmits(['close']);
+defineEmits(['close', 'selected']);
 
 const i18n = useI18n();
 const emitter = inject('emitter');
 const store = useAppStore();
+
+const showing = ref(true);
 
 const display = useDisplay();
 const showSidebar = ref(true);
@@ -195,13 +198,9 @@ const showUploader = ref(false);
 const show = computed(() => props.show);
 
 const props = defineProps({
-    show: {
-        type: Boolean,
-        default: false
-    },
     cropping: {
         type: Object,
-        default: {ratio: 0, min: { width: 50, height: 50 }, max: {width: 10000, height: 10000}, lockedType: ''}
+        default: {name: '', ratio: 0, min: { width: 50, height: 50 }, max: {width: 10000, height: 10000}, lockedType: ''}
     },
     allowed: {
         type: Array,
@@ -211,6 +210,12 @@ const props = defineProps({
         type: Boolean,
         default: false
     }
+});
+
+// Get file Objects for the select items
+const selectedFileObjects = computed(() =>
+{
+    return fileList.value.filter(f => store.assets.selected.includes(f._id));
 });
 
 // Should we show the sidebar on load?
@@ -276,7 +281,7 @@ const loadFiles = async (fromList = false) =>
         limit: 100,
         folder: activeFolder.value,
         search: currentSearch.value
-    });
+    }, store.locales);
 
     store.setAssetPagination(result.pagination.current, result.pagination.totalPages);
     fileList.value.push(...result.list);
@@ -372,6 +377,19 @@ const showInfo = () =>
 
 // Show new uploaded file
 const showFile = (file) => fileList.value.unshift(file);
+
+const handleCropping = async () =>
+{
+    showCropper.value = false;
+
+    // Reload fresh copy of the image data
+    let fileIndex = fileList.value.findIndex(f => f._id === store.assets.selected[0]);
+    let newCopy = await Assets.asset(store.assets.selected[0], store.locales);
+
+    if (newCopy) {
+        fileList.value[fileIndex] = newCopy;
+    }
+}
 
 loadConfig();
 loadFolders();

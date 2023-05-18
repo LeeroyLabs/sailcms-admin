@@ -185,7 +185,7 @@ const startUpload = async () =>
             total++;
             promises.push(new Promise(async (resolve, reject) =>
             {
-                let asset = await Assets.uploadAsset(file.data, file.file.name, props.folder);
+                let asset = await Assets.uploadAsset(file.data, file.file.name, props.folder, store.locales);
                 progressValue.value += itemValue;
 
                 // Tell the ui we have a new file

@@ -35,6 +35,7 @@ router.beforeEach(async (to, from) =>
         SailCMS.setConfig(json.sailcms_url, tokenStr);
         appStore.setGraphQLURL(json.sailcms_url);
         appStore.setBaseURL(json.base_url);
+        appStore.setLocales(json.locales);
         window.baseURL = json.base_url;
     } catch (e) {
         appStore.showGraphQLError();
