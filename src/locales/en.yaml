@@ -21,12 +21,20 @@ reset:
   weak_password: Please try a more secure password.
   code_check: Reset code is not valid.
 
+usergroups:
+  title: User Groups
+
+roles:
+  title: Roles
+
 users:
   title: Users
   no_users: No users at the moment.
   search: Search for users
+  add: Add User
   actions:
     disable: Disable
+    enable: Enable
     delete: Delete
   columns:
     name: Name
@@ -50,9 +58,16 @@ user:
   save: Save
   add: Add
   cancel: Cancel
+  save_success: "{user} saved successfully!"
   errors:
     required: Required.
     email: Invalid email address.
+    password_match: Does not match password.
+    at_least_one: You must select at least 1 role.
+    email_exists: Email address is already in use, please choose another one.
+    weak_password: Password is too weak, please choose a stronger password.
+    unknown_error: Unknown error.
+    invalid_email: Invalid email address.
 
 pagination:
   showing: Showing {offset} to {limit} of {total}
@@ -90,6 +105,14 @@ assets:
     transform_count: Transforms
     uploaded_by: Uploaded by
     uploaded_on: Uploaded on
+  cropper:
+    square: Square
+    circle: Circle
+    rotate_left: Rotate Left
+    rotate_right: Rotate Right
+    flip_vertical: Flip Vertical
+    flip_horizontal: Flip Horizontal
+    save_close: Save & Close
   delete:
     single_conf: Are you sure you want to delete this file?
     multi_conf: Are you sure you want to delete these files?

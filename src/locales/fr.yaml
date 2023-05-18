@@ -21,12 +21,20 @@ reset:
   weak_password: Veuillez essayer un mot de passe plus sécuritaire.
   code_check: Code de vérification non valide.
 
+usergroups:
+  title: User Groups
+
+roles:
+  title: Rôles
+
 users:
   title: Utilisateurs
   no_users: Aucun utilisateur pour le moment.
   search: Recherche d'utilisateurs
+  add: Ajouter un utilisateur
   actions:
     disable: Désactiver
+    enable: Activer
     delete: Supprimer
   columns:
     name: Nom
@@ -50,9 +58,16 @@ user:
   save: Sauvegarder
   add: Ajouter
   cancel: Annuler
+  save_success: "{user} saved successfully!"
   errors:
     required: Requis.
     email: Adresse courriel invalide.
+    password_match: Ne coresspond pas au mot de passe
+    at_least_one: Vous devez choisir au moins 1 rôle.
+    email_exists: L'adresse courriel existe déjà, veuillez en choisir une différente.
+    weak_password: Le mode passe est trop faible, veuillez en choisir un plus sécuritaire.
+    unknown_error: Erreur inconnue.
+    invalid_email: Adresse courriel invalide.
 
 pagination:
   showing: Affichage de {offset} à {limit} de {total}
@@ -90,6 +105,14 @@ assets:
     transform_count: Transformations
     uploaded_by: Téléverser par
     uploaded_on: Téléverser le
+  cropper:
+    square: Carré
+    circle: Cercle
+    rotate_left: Rotation Gauche
+    rotate_right: Rotation Droite
+    flip_vertical: Retournement Vertical
+    flip_horizontal: Retournement Horizontal
+    save_close: Sauvegarder et fermer
   delete:
     single_conf: Êtes-vous certains de vouloir supprimer ce fichier ?
     multi_conf: Êtes-vous certains de vouloir supprimer ces fichiers ?

@@ -18,7 +18,7 @@
                         :class="{'tw-bg-gray-600': activeMode === 'square', 'tw-pointer-events-none tw-opacity-30': settings.lockedType === 'circle'}"
                     >
                         <v-icon color="white" icon="mdi-square-outline"/>
-                        <v-tooltip activator="parent" open-delay="1000" location="right">Square Crop</v-tooltip>
+                        <v-tooltip activator="parent" open-delay="1000" location="right">{{ $t('assets.cropper.square') }}</v-tooltip>
                     </div>
                     <div
                         @click.prevent="activeMode='circle'"
@@ -26,36 +26,36 @@
                         :class="{'tw-bg-gray-600': activeMode === 'circle', 'tw-opacity-30': settings.lockedType === 'square'}"
                     >
                         <v-icon color="white" icon="mdi-circle-outline"/>
-                        <v-tooltip activator="parent" open-delay="1000" location="right">Circle Crop</v-tooltip>
+                        <v-tooltip activator="parent" open-delay="1000" location="right">{{ $t('assets.cropper.circle') }}</v-tooltip>
                     </div>
                     <div @click.prevent="rotateLeft" class="tw-border tw-border-gray-600 hover:tw-bg-gray-600 rounded-lg tw-p-2 tw-cursor-pointer">
                         <v-icon color="white" icon="mdi-restore"/>
-                        <v-tooltip activator="parent" open-delay="1000" location="right">Rotate Left</v-tooltip>
+                        <v-tooltip activator="parent" open-delay="1000" location="right">{{ $t('assets.cropper.rotate_left') }}</v-tooltip>
                     </div>
                     <div @click.prevent="rotateRight" class="tw-border tw-border-gray-600 hover:tw-bg-gray-600 rounded-lg tw-p-2 tw-cursor-pointer">
                         <v-icon color="white" icon="mdi-refresh"/>
-                        <v-tooltip activator="parent" open-delay="1000" location="right">Rotate Right</v-tooltip>
+                        <v-tooltip activator="parent" open-delay="1000" location="right">{{ $t('assets.cropper.rotate_right') }}</v-tooltip>
                     </div>
 
                     <div @click.prevent="flipVertical" class="tw-border tw-border-gray-600 hover:tw-bg-gray-600 rounded-lg tw-p-2 tw-cursor-pointer">
                         <v-icon color="white" icon="mdi-flip-vertical"/>
-                        <v-tooltip activator="parent" open-delay="1000" location="right">Flip Vertical</v-tooltip>
+                        <v-tooltip activator="parent" open-delay="1000" location="right">{{ $t('assets.cropper.flip_vertical') }}</v-tooltip>
                     </div>
                     <div @click.prevent="flipHorizontal" class="tw-border tw-border-gray-600 hover:tw-bg-gray-600 rounded-lg tw-p-2 tw-cursor-pointer">
                         <v-icon color="white" icon="mdi-flip-horizontal"/>
-                        <v-tooltip activator="parent" open-delay="1000" location="right">Flip Horizontal</v-tooltip>
+                        <v-tooltip activator="parent" open-delay="1000" location="right">{{ $t('assets.cropper.flip_horizontal') }}</v-tooltip>
                     </div>
 
                     <div class="tw-border tw-hidden md:tw-block tw-my-2 tw-border-gray-700"></div>
 
                     <div @click.prevent="saveAndClose" class="tw-hidden md:tw-block tw-border tw-border-gray-600 hover:tw-bg-gray-600 rounded-lg tw-p-2 tw-cursor-pointer">
                         <v-icon color="white" icon="mdi-check-circle-outline"/>
-                        <v-tooltip activator="parent" open-delay="1000" location="right">Save & Close</v-tooltip>
+                        <v-tooltip activator="parent" open-delay="1000" location="right">{{ $t('assets.cropper.save_close') }}</v-tooltip>
                     </div>
 
                     <div @click.prevent="$emit('close')" class="tw-hidden md:tw-block tw-border tw-border-gray-600 hover:tw-bg-gray-600 rounded-lg tw-p-2 tw-cursor-pointer">
                         <v-icon color="white" icon="mdi-close-circle-outline"/>
-                        <v-tooltip activator="parent" open-delay="1000" location="right">Cancel</v-tooltip>
+                        <v-tooltip activator="parent" open-delay="1000" location="right">{{ $t('assets.assets.cancel') }}</v-tooltip>
                     </div>
                 </div>
                 <Cropper

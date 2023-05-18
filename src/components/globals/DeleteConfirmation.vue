@@ -1,5 +1,5 @@
 <template>
-    <div v-if="show" class="tw-absolute tw-bg-black/40 tw-inset-0 tw-flex tw-flex-row tw-items-center tw-justify-center">
+    <div v-if="show" :class="{'tw-absolute': !overall, 'tw-fixed': overall}" class="tw-bg-black/40 tw-inset-0 tw-flex tw-flex-row tw-items-center tw-justify-center tw-z-[9999]">
         <v-card rounded class="tw-p-6">
             <v-card-title>{{ title }}</v-card-title>
             <v-card-text class="tw-min-w-[300px] lg:tw-min-w-[450px] tw-mt-4">
@@ -18,6 +18,10 @@
 
 defineProps({
     show: {
+        type: Boolean,
+        default: false
+    },
+    overall: {
         type: Boolean,
         default: false
     },

@@ -13,6 +13,22 @@ export type User = {
     created_at: number;
     validated: boolean;
     locale: string;
+    highest_level: number;
+}
+
+export type UserData = {
+    name: UserNameInput;
+    email: string;
+    password: string;
+    roles: string[];
+    group: string;
+    avatar: string;
+    locale?: string;
+}
+
+export type UserNameInput = {
+    first: string;
+    last: string;
 }
 
 export type UserListing = {
