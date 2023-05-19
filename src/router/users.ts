@@ -6,7 +6,8 @@ export const userRoutes = [
         meta: {
             guarded: true,
             permission: 'read_user',
-            layout: 'private'
+            layout: 'private',
+            parent: ''
         }
     },
     {
@@ -16,7 +17,8 @@ export const userRoutes = [
         meta: {
             guarded: true,
             permission: 'readwrite_user',
-            layout: 'private'
+            layout: 'private',
+            parent: 'Users'
         }
     },
     {
@@ -26,7 +28,8 @@ export const userRoutes = [
         meta: {
             guarded: true,
             permission: 'readwrite_group',
-            layout: 'private'
+            layout: 'private',
+            parent: ''
         }
     },
 ]

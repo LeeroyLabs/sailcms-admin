@@ -13,7 +13,15 @@
             <v-spacer/>
 
             <template v-for="(item, i) in navigationItems">
-                <v-list-item v-if="hasPermission(item.permission)" :key="i" :value="item" :to="item.to" :active="$route.path.includes(item.to)" :title="item.text" active-color="white">
+                <v-list-item
+                    v-if="hasPermission(item.permission)"
+                    :key="i"
+                    :value="item"
+                    :to="item.to"
+                    :active="(item.to && ($route.name === item.to.name) || (item.to && item.to.name === $route.meta.parent))"
+                    :title="item.text"
+                    active-color="white"
+                >
                     <template v-slot:prepend>
                         <v-icon :icon="item.icon" :alt="item.text"></v-icon>
                     </template>
