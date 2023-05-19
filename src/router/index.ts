@@ -12,67 +12,54 @@ const routes = [
     ...userRoutes
 ];
 
-const router = createRouter({
-    history: createWebHistory(),
-    routes
-});
-
-// Guarding
-router.beforeEach(async (to, from) =>
+function routerInit()
 {
-    const appStore = useAppStore();
-    const url = window.location.origin + '/conf.json';
+    const router = createRouter({
+        history: createWebHistory(SailCMS.getBaseURL()),
+        routes
+    });
 
-    // This is required or subpages will cause major crash (do not know why)
-    appStore.setBreadcrumbs([]);
-    window.baseURL = '';
+    // Guarding
+    router.beforeEach(async (to, from) =>
+    {
+        const appStore = useAppStore();
+        appStore.setBreadcrumbs([]);
 
-    try {
-        let response = await fetch(url);
-        let json     = await response.json();
+        const token = localStorage.getItem(import.meta.env.VITE_SAILCMS_TOKEN) || '';
 
-        let tokenStr = localStorage.getItem(import.meta.env.VITE_SAILCMS_TOKEN) || '';
-        SailCMS.setConfig(json.sailcms_url, tokenStr);
-        appStore.setGraphQLURL(json.sailcms_url);
-        appStore.setBaseURL(json.base_url);
-        appStore.setLocales(json.locales);
-        window.baseURL = json.base_url;
-    } catch (e) {
-        appStore.showGraphQLError();
-        return false;
-    }
+        if (!appStore.isLoggedIn && token !== '') {
+            // Check if we have a valid session
+            const user = await Users.userWithToken();
 
-    const token = localStorage.getItem(import.meta.env.VITE_SAILCMS_TOKEN) || '';
-
-    if (!appStore.isLoggedIn && token !== '') {
-        // Check if we have a valid session
-        const user = await Users.userWithToken();
-
-        if (user) {
-            appStore.setCurrentUser(user);
-            appStore.setLoginState(true);
+            if (user) {
+                appStore.setCurrentUser(user);
+                appStore.setLoginState(true);
+            }
         }
-    }
 
-    if (token !== '' && to.path === '/') {
-        // Force redirect to dashboard (we are already logged in)
-        window.location.href = '/dashboard';
+        if (token !== '' && to.path === '/') {
+            // Force redirect to dashboard (we are already logged in)
+            window.location.href = 'dashboard';
+            return true;
+        }
+
+        if (to.meta.guarded && appStore.isLoggedIn) {
+            // any permission
+            if (to.meta.permission === 'any') return true;
+
+            // Check permission
+            return hasPermission(to.meta.permission as string);
+        } else if (to.meta.guarded) {
+            localStorage.removeItem(import.meta.env.VITE_SAILCMS_TOKEN);
+            window.location.href = '/';
+            return false;
+        }
+
         return true;
-    }
+    });
 
-    if (to.meta.guarded && appStore.isLoggedIn) {
-        // any permission
-        if (to.meta.permission === 'any') return true;
+    return router;
+}
 
-        // Check permission
-        return hasPermission(to.meta.permission as string);
-    } else if (to.meta.guarded) {
-        localStorage.removeItem(import.meta.env.VITE_SAILCMS_TOKEN);
-        window.location.href = '/';
-        return false;
-    }
 
-    return true;
-});
-
-export default router;
+export default routerInit;

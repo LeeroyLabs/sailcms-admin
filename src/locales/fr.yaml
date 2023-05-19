@@ -22,7 +22,7 @@ reset:
   code_check: Code de vérification non valide.
 
 usergroups:
-  title: User Groups
+  title: Groupes Utilisateurs
 
 roles:
   title: Rôles

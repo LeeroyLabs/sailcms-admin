@@ -19,4 +19,14 @@ export const userRoutes = [
             layout: 'private'
         }
     },
+    {
+        path: '/user-groups',
+        name: 'UserGroups',
+        component: () => import(/* webpackChunkName: "usergroups" */ '@/views/groups/Groups.vue'),
+        meta: {
+            guarded: true,
+            permission: 'readwrite_group',
+            layout: 'private'
+        }
+    },
 ]

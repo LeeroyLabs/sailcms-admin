@@ -131,11 +131,13 @@ import { ref } from "vue";
 import { Roles, Users, Groups } from "@/libs/graphql";
 import { EmailRule } from "@/libs/validation";
 import AssetManager from "@/components/globals/AssetManager.vue";
+import { usePage } from '@/libs/page';
 
 const store = useAppStore();
 const i18n = useI18n();
 const route = useRoute();
 const router = useRouter();
+const page = usePage();
 
 const showAM = ref(false);
 const form = ref(null);
@@ -242,26 +244,21 @@ const saveUser = async () =>
 // Setup page data
 const setupPage = (name = '') =>
 {
-    const bc = [
-        {title: 'Dashboard', to: store.baseURL + '/dashboard'},
-        {title: i18n.t('users.title'), to: '/users', disabled: false},
-    ];
+    const bc = [{title: 'users.title', to: '/users', disabled: false}];
 
     if (route.params.id === 'add') {
-        bc.push({title: i18n.t('user.adding'), disabled: true, to: ''});
+        bc.push({title: 'user.adding', disabled: true, to: ''});
     } else {
         bc.push({title: name, disabled: true, to: ''});
     }
 
     // Set Breadcrumb
-    store.setBreadcrumbs(bc);
+    page.setBreadcrumbs(bc);
 
     if (route.params.id === 'add') {
-        store.setPageTitle(i18n.t('users.title'));
-        document.title = i18n.t('users.title') + ' — SailCMS'
+        page.setPageTitle('users.title');
     } else {
-        store.setPageTitle(name);
-        document.title = name + ' — SailCMS'
+        page.setPageTitle(name);
     }
 }
 

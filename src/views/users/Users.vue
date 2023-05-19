@@ -170,9 +170,11 @@ import Pagination from "@/components/globals/Pagination.vue";
 import SmartTH from "@/components/globals/table/SmartTH.vue";
 import { isAdmin, hasPermission } from "@/libs/tools";
 import DeleteConfirmation from '@/components/globals/DeleteConfirmation.vue';
+import { usePage } from '@/libs/page';
 
 const i18n = useI18n();
 const store = useAppStore();
+const page = usePage();
 const users = ref([]);
 const pagination = ref({total: 0, current: 0, totalPages: 0});
 const isLoading = ref(true);
@@ -212,30 +214,14 @@ const userListing = computed(() =>
     return users.value.filter(u => u.email !== 'anonymous@mail.io');
 });
 
-// Update some things when locale changes
-watch(i18n.locale, () =>
-{
-    setupPage();
-});
-
 const levelIsHigher = (user) =>
 {
     let level = store.currentUser.highest_level;
     return user.highest_level <= level;
 };
 
-// Setup page data
-const setupPage = () =>
-{
-    // Set Breadcrumb
-    store.setBreadcrumbs([
-        {title: 'Dashboard', disabled: false, to: store.baseURL + '/dashboard'},
-        {title: i18n.t('users.title')}
-    ]);
-
-    store.setPageTitle(i18n.t('users.title'));
-    document.title = i18n.t('users.title') + ' — SailCMS'
-}
+page.setPageTitle('users.title');
+page.setBreadcrumbs([{title: 'users.title', disable: true, to: ''}]);
 
 // Load users
 const loadUsers = async () =>
@@ -358,7 +344,7 @@ const confirmDelete = async () =>
     selectedAction.value = null;
     selectedUsers.value = [];
 }
-setupPage();
+
 loadUsers();
 </script>
 
