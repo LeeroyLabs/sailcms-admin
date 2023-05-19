@@ -35,8 +35,6 @@ const props = defineProps({
     }
 });
 
-
-
 const state = computed(() =>
 {
     return props.navigationState;

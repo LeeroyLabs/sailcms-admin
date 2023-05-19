@@ -16,5 +16,10 @@ export default {
                 slug
             }
         }
+    `,
+    deleteGroup: `
+        mutation deleteGroup($id: ID!) {
+            deleteGroup(id: $id)
+        }
     `
 }

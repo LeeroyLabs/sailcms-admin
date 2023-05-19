@@ -17,7 +17,7 @@ export class Groups
         let result = await client.query(gql`${query}`, {});
 
         if (result.data) {
-            return result.data.roles as Group[];
+            return result.data.groups as Group[];
         }
 
         return [];
@@ -41,5 +41,25 @@ export class Groups
         }
 
         return null;
+    }
+
+    /**
+     *
+     * Delete a group
+     *
+     * @param id
+     *
+     */
+    public static async delete(id: string): Promise<boolean>
+    {
+        const client = new Client();
+        let query = GroupQueries.deleteGroup;
+        let result = await client.mutation(gql`${query}`, {id: id});
+
+        if (result.data) {
+            return result.data.deleteGroup;
+        }
+
+        return false;
     }
 }

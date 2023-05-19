@@ -148,9 +148,9 @@
                 v-if="showDeleteConfirm"
                 :show="true"
                 :overall="true"
-                title="Confirm"
+                :title="$t('users.confirm')"
                 :loading="applyingAction"
-                message="Are you sure you want to delete ?"
+                :message="$t('users.confirm_msg')"
                 @cancel="showDeleteConfirm=false"
                 @accept="confirmDelete"
             />

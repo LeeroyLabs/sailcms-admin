@@ -23,6 +23,10 @@ reset:
 
 usergroups:
   title: Groupes Utilisateurs
+  add: Ajouter un groupe
+  no_groups: Aucun group d'utilisateur pour le moment
+  confirm: Confirmation
+  confirm_delete: Êtes-vous certain de vouloir supprimer le groupe "{group}" ?
 
 roles:
   title: Rôles
@@ -32,6 +36,8 @@ users:
   no_users: Aucun utilisateur pour le moment.
   search: Recherche d'utilisateurs
   add: Ajouter un utilisateur
+  confirm: Confirmation
+  confirm_msg: Êtes-vous certain de vouloir supprimer l'(les) utilisateurs ?
   actions:
     disable: Désactiver
     enable: Activer
