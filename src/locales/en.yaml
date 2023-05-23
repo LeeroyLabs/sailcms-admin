@@ -27,6 +27,14 @@ usergroups:
   no_groups: No user groups at the moment.
   confirm: Confirmation
   confirm_delete: Are you sure you want to delete the "{group}" group?
+  group_name: Group Name
+  add_a_group: Add a group
+  edit_group: Edit a group
+  add_success: Group added successfully.
+  update_success: Group updated successfully.
+  errors:
+    unknown_error: An unknown error occurred, please try again.
+    already_exists: A group with this name already exists, please choose another.
 
 roles:
   title: Roles
@@ -138,6 +146,10 @@ assets:
 system:
   yes: Yes
   no: No
+  search: Search
+  cancel: Cancel
+  add: Add
+  save: Save
   toast:
     error: Error
     success: Success

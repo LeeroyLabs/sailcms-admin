@@ -22,11 +22,11 @@
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {
-    "@types/date-fns": "^2.6.0",
     "@babel/types": "^7.21.4",
     "@commitlint/cli": "^17.6.1",
     "@commitlint/config-conventional": "^17.6.1",
     "@intlify/unplugin-vue-i18n": "^0.10.0",
+    "@types/date-fns": "^2.6.0",
     "@types/node": "^18.16.1",
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^4.2.1",

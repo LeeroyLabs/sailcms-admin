@@ -21,5 +21,15 @@ export default {
         mutation deleteGroup($id: ID!) {
             deleteGroup(id: $id)
         }
+    `,
+    createGroup: `
+        mutation createGroup($name: String!) {
+            createGroup(name: $name)
+        }
+    `,
+    updateGroup: `
+        mutation updateGroup($id: ID!, $name: String!) {
+            updateGroup(id: $id, name: $name)
+        }
     `
 }
