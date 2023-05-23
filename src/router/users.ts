@@ -16,7 +16,8 @@ export const userRoutes = [
         meta: {
             guarded: true,
             permission: 'readwrite_user',
-            layout: 'private'
+            layout: 'private',
+            parent: 'Users'
         }
     },
     {
@@ -26,6 +27,16 @@ export const userRoutes = [
         meta: {
             guarded: true,
             permission: 'readwrite_group',
+            layout: 'private'
+        }
+    },
+    {
+        path: '/roles',
+        name: 'Roles',
+        component: () => import(/* webpackChunkName: "roles" */ '@/views/roles/Roles.vue'),
+        meta: {
+            guarded: true,
+            permission: 'readwrite_role',
             layout: 'private'
         }
     },
