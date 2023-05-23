@@ -1,5 +1,5 @@
 <template>
-    <v-card :elevation="$vuetify.theme.name === 'light' ? 2 : 4" v-if="isReady" class="tw-p-6 tw-w-full md:tw-w-10/12 lg:tw-w-8/12 xl:tw-w-8/12 2xl:tw-w-7/12 tw-ml-0 ">
+    <div v-if="isReady" class="tw-p-6 tw-w-full md:tw-w-10/12 lg:tw-w-8/12 xl:tw-w-8/12 2xl:tw-w-7/12 tw-ml-0 ">
         <div class="tw-mx-3 tw-flex tw-flex-col md:tw-flex-row">
             <div class="tw-group tw-w-32 tw-h-32 tw-rounded-full tw-bg-black tw-relative tw-mx-auto md:tw-mx-0 tw-bg-center tw-bg-cover" :style="'background-image: url(' + currentUser.avatar + ');'">
                 <div @click="selectFile" class="tw-cursor-pointer tw-absolute tw-rounded-full tw-h-full tw-w-full tw-bg-black/50 tw-hidden group-hover:tw-flex tw-flex-row tw-items-center tw-justify-center">
@@ -107,13 +107,13 @@
                         <template v-else>{{ $t('user.save') }}</template>
                     </v-btn>
 
-                    <v-btn @click.prevent="$router.push({name: 'Users'})" color="text">
+                    <v-btn flat @click.prevent="$router.push({name: 'Users'})" color="text">
                         {{ $t('user.cancel') }}
                     </v-btn>
                 </div>
             </v-form>
         </div>
-    </v-card>
+    </div>
     <Loader v-else/>
 
     <Transition>

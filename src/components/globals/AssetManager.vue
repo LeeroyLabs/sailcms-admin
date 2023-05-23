@@ -49,7 +49,7 @@
                                     density="compact"
                                     variant="outlined"
                                     color="primary"
-                                    placeholder="Search"
+                                    :placeholder="$('system.search')"
                                     rounded
                                     :hide-details="true"
                                     prepend-inner-icon="mdi-magnify"
