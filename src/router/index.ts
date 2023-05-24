@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import { useAppStore } from "@/store/app";
 import { SailCMS, Users } from "@/libs/graphql";
 import { userRoutes } from "@/router/users";
+import { categoriesRoutes } from "@/router/categories";
 import { publicRoutes } from "@/router/public";
 import { miscRoutes } from "@/router/misc";
 import { hasPermission } from "@/libs/tools";
@@ -9,29 +10,30 @@ import { hasPermission } from "@/libs/tools";
 const routes = [
     ...publicRoutes,
     ...miscRoutes,
-    ...userRoutes
+    ...userRoutes,
+    ...categoriesRoutes,
 ];
 
 const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes,
 });
 
 // Guarding
-router.beforeEach(async (to, from) =>
-{
+router.beforeEach(async (to, from) => {
     const appStore = useAppStore();
-    const url = window.location.origin + '/conf.json';
+    const url = window.location.origin + "/conf.json";
 
     // This is required or subpages will cause major crash (do not know why)
     appStore.setBreadcrumbs([]);
-    window.baseURL = '';
+    window.baseURL = "";
 
     try {
         let response = await fetch(url);
-        let json     = await response.json();
+        let json = await response.json();
 
-        let tokenStr = localStorage.getItem(import.meta.env.VITE_SAILCMS_TOKEN) || '';
+        let tokenStr =
+            localStorage.getItem(import.meta.env.VITE_SAILCMS_TOKEN) || "";
         SailCMS.setConfig(json.sailcms_url, tokenStr);
         appStore.setGraphQLURL(json.sailcms_url);
         appStore.setBaseURL(json.base_url);
@@ -41,9 +43,10 @@ router.beforeEach(async (to, from) =>
         return false;
     }
 
-    const token = localStorage.getItem(import.meta.env.VITE_SAILCMS_TOKEN) || '';
+    const token =
+        localStorage.getItem(import.meta.env.VITE_SAILCMS_TOKEN) || "";
 
-    if (!appStore.isLoggedIn && token !== '') {
+    if (!appStore.isLoggedIn && token !== "") {
         // Check if we have a valid session
         const user = await Users.userWithToken();
 
@@ -53,21 +56,21 @@ router.beforeEach(async (to, from) =>
         }
     }
 
-    if (token !== '' && to.path === '/') {
+    if (token !== "" && to.path === "/") {
         // Force redirect to dashboard (we are already logged in)
-        window.location.href = '/dashboard';
+        window.location.href = "/dashboard";
         return true;
     }
 
     if (to.meta.guarded && appStore.isLoggedIn) {
         // any permission
-        if (to.meta.permission === 'any') return true;
+        if (to.meta.permission === "any") return true;
 
         // Check permission
         return hasPermission(to.meta.permission as string);
     } else if (to.meta.guarded) {
         localStorage.removeItem(import.meta.env.VITE_SAILCMS_TOKEN);
-        window.location.href = '/';
+        window.location.href = "/";
         return false;
     }
 
