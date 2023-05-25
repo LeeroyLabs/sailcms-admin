@@ -42,6 +42,7 @@ export const useAppStore = defineStore('app', {
         },
         setBreadcrumbs(list: any[])
         {
+            this.breadcrumbs = [];
             this.breadcrumbs = list;
         },
         setGraphQLURL(url: string)

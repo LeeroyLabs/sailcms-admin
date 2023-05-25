@@ -9,7 +9,7 @@
         <div v-if="groups.length > 0" class="tw-mt-8 tw-flex tw-flex-row tw-flex-wrap tw-gap-6 tw-w-full">
             <v-card v-for="group in groups" variant="tonal" class="tw-group tw-relative tw-p-6 tw-flex tw-flex-row tw-items-center tw-justify-center tw-min-w-[225px] tw-min-h-[130px] tw-text-xl">
                 {{ group.name }}
-                <div class="tw-hidden group-hover:tw-flex tw-flex-row tw-items-center tw-justify-center tw-absolute tw-inset-0 bg-primary-darker-60">
+                <div class="tw-hidden group-hover:tw-flex tw-flex-row tw-items-center tw-justify-center tw-absolute tw-inset-0 tw-bg-black/40">
                     <v-btn @click="editGroup(group)" variant="flat" icon color="primary" class="tw-mr-2">
                         <v-icon icon="mdi-pen"/>
                     </v-btn>
@@ -71,7 +71,6 @@ const currentGroup = ref(null);
 const isLoading = ref(false);
 
 page.setPageTitle('usergroups.title');
-page.setBreadcrumbs([{title: 'usergroups.title', disable: true, to: ''}]);
 
 const store = useAppStore();
 const i18n = useI18n();

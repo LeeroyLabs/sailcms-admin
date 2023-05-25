@@ -221,7 +221,6 @@ const levelIsHigher = (user) =>
 };
 
 page.setPageTitle('users.title');
-page.setBreadcrumbs([{title: 'users.title', disable: true, to: ''}]);
 
 // Load users
 const loadUsers = async () =>

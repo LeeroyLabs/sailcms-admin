@@ -13,9 +13,8 @@
             <v-spacer/>
 
             <template v-for="(item, i) in navigationItems">
-                {{ $route.name }} {{item.to}}
-<!--                TODO: FIX HIGHLIGHT c-->
-                <v-list-item v-if="hasPermission(item.permission)" :key="i" :value="item" :to="item.to" :active="$route.name === item.to.name" :title="item.text" active-color="white">
+                <v-list-item v-if="hasPermission(item.permission)" :key="i" :value="item" :to="item.to" :active="(item.to && $route.meta.parent === item.to.name) || ($route.name === item.parent) || (item.to && $route.name === item.to.name)" :title="item.text" active-color="white">
+                    {{ $route.name }} {{item.to}}
                     <template v-slot:prepend>
                         <v-icon :icon="item.icon" :alt="item.text"></v-icon>
                     </template>

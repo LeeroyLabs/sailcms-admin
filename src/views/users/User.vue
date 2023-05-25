@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isReady" class="tw-p-6 tw-w-full md:tw-w-10/12 lg:tw-w-8/12 xl:tw-w-8/12 2xl:tw-w-7/12 tw-ml-0 ">
+    <div v-if="isReady" class="tw-p-6 tw-w-full md:tw-w-10/12 lg:tw-w-8/12 xl:tw-w-8/12 2xl:tw-w-7/12 tw-ml-0">
         <div class="tw-mx-3 tw-flex tw-flex-col md:tw-flex-row">
             <div class="tw-group tw-w-32 tw-h-32 tw-rounded-full tw-bg-black tw-relative tw-mx-auto md:tw-mx-0 tw-bg-center tw-bg-cover" :style="'background-image: url(' + currentUser.avatar + ');'">
                 <div @click="selectFile" class="tw-cursor-pointer tw-absolute tw-rounded-full tw-h-full tw-w-full tw-bg-black/50 tw-hidden group-hover:tw-flex tw-flex-row tw-items-center tw-justify-center">
@@ -204,7 +204,7 @@ const saveUser = async () =>
 {
     if (isLoading.value) return;
     const status = await form.value.validate();
-    if (!status) return;
+    if (!status.valid) return;
 
     isLoading.value = true;
 
@@ -244,17 +244,6 @@ const saveUser = async () =>
 // Setup page data
 const setupPage = (name = '') =>
 {
-    const bc = [{title: 'users.title', to: '/users', disabled: false}];
-
-    if (route.params.id === 'add') {
-        bc.push({title: 'user.adding', disabled: true, to: ''});
-    } else {
-        bc.push({title: name, disabled: true, to: ''});
-    }
-
-    // Set Breadcrumb
-    page.setBreadcrumbs(bc);
-
     if (route.params.id === 'add') {
         page.setPageTitle('users.title');
     } else {
@@ -329,7 +318,12 @@ const loadLists = async () =>
         availableRoles.value.push({value: role.slug, title: role.name});
     });
 
-    availableGroups.value = results[1].value;
+    const theGroups = results[1].value;
+    availableGroups.value = [];
+
+    for (let group of theGroups) {
+        availableGroups.value.push({value: group.slug, title: group.name});
+    }
 }
 
 setupPage();

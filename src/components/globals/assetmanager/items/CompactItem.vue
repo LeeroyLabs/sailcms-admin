@@ -15,7 +15,6 @@
 
 <script setup>
 import { inject } from 'vue';
-import { humanFileSize, fileExtension } from '@/libs/tools';
 import { useAppStore } from '@/store/app';
 
 const store = useAppStore();

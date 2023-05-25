@@ -32,4 +32,26 @@ export const userRoutes = [
             parent: ''
         }
     },
+    {
+        path: '/roles',
+        name: 'Roles',
+        component: () => import(/* webpackChunkName: "roles" */ '@/views/roles/Roles.vue'),
+        meta: {
+            guarded: true,
+            permission: 'readwrite_role',
+            layout: 'private',
+            parent: ''
+        }
+    },
+    {
+        path: '/roles/:id',
+        name: 'SingleRole',
+        component: () => import(/* webpackChunkName: "roles" */ '@/views/roles/Role.vue'),
+        meta: {
+            guarded: true,
+            permission: 'readwrite_role',
+            layout: 'private',
+            parent: 'Roles'
+        }
+    }
 ]

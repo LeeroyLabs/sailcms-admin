@@ -38,6 +38,21 @@ usergroups:
 
 roles:
   title: Rôles
+  no_roles: Aucun rôle pour le moment.
+  add_role: Ajouter un rôle
+
+role:
+  name: Nom
+  description: Description
+  level: Niveau
+  permissions: Permissions
+  save: Sauvegarder
+  add: Ajouter
+  save_sucess: Rôle sauvegardé avec succès.
+  save_error: Le rôle existe déjà, veuillez choisir un autre nom.
+  no_permission: Aucune permission
+  adding_role: Ajouter un rôle
+  edit: Modification d'un rôle
 
 users:
   title: Utilisateurs
