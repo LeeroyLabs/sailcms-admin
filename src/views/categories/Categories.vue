@@ -121,7 +121,7 @@ import { useI18n } from "vue-i18n";
 import Loader from "@/components/globals/Loader.vue";
 import NestedList from "@/components/globals/categories/NestedList.vue";
 import type { Category } from "@/libs/graphql/types/categories";
-import Categories from "@/libs/graphql/queries/categories";
+import { Categories } from "@/libs/graphql";
 import { SailCMS } from "@/libs/graphql";
 
 const store = useAppStore();
@@ -188,6 +188,7 @@ const categories = ref<Category[]>([
     },
 ]);
 
+// Get categories
 const categoryFullTree = async (parent_id: string, site_id: string) => {
     const responseCategoryFullTree = await Categories.categoryFullTree(
         parent_id,
