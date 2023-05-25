@@ -42,26 +42,14 @@
                     </v-btn>
                 </v-app-bar>
 
-                <v-main scrollable>
-                    <div class="tw-flex tw-flex-row tw-items-center tw-pr-4 tw-mt-1">
-                        <div class="tw-flex-grow">
-                            <v-breadcrumbs v-if="$vuetify.display.smAndUp" :items="store.breadcrumbs">
-                                <template v-slot:prepend>
-                                    <router-link :to="{name: 'Dashboard'}">
-                                        <v-icon icon="mdi-home" class="tw-ml-2.5 tw-mr-3"></v-icon>
-                                    </router-link>
-                                </template>
-
-                                <template v-slot:divider>
-                                    <v-icon icon="mdi-chevron-right"></v-icon>
-                                </template>
-                            </v-breadcrumbs>
-                        </div>
+                <v-main scrollable id="mainSection">
+                    <div class="tw-flex tw-flex-row tw-items-center tw-pr-4 tw-pt-4">
+                        <div class="tw-flex-grow"></div>
                         <div id="actions">
                             <!-- Use Teleport -->
                         </div>
                     </div>
-                    <div class="tw-m-4">
+                    <div class="tw-m-6">
                         <slot/>
                     </div>
                 </v-main>

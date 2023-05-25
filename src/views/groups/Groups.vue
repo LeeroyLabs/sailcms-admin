@@ -10,10 +10,10 @@
             <v-card v-for="group in groups" variant="tonal" class="tw-group tw-relative tw-p-6 tw-flex tw-flex-row tw-items-center tw-justify-center tw-min-w-[225px] tw-min-h-[130px] tw-text-xl">
                 {{ group.name }}
                 <div class="tw-hidden group-hover:tw-flex tw-flex-row tw-items-center tw-justify-center tw-absolute tw-inset-0 bg-primary-darker-60">
-                    <v-btn @click="editGroup(group)" flat icon color="primary" class="tw-mr-2">
+                    <v-btn @click="editGroup(group)" variant="flat" icon color="primary" class="tw-mr-2">
                         <v-icon icon="mdi-pen"/>
                     </v-btn>
-                    <v-btn @click="confirmDelete(group)" flat icon color="red">
+                    <v-btn @click="confirmDelete(group)" variant="flat" icon color="red">
                         <v-icon icon="mdi-trash-can"/>
                     </v-btn>
                 </div>
@@ -57,7 +57,6 @@ const currentGroup = ref(null);
 const isLoading = ref(false);
 
 page.setPageTitle('usergroups.title');
-page.setBreadcrumbs([{title: 'usergroups.title', disable: true, to: ''}]);
 
 const loadGroups = async () =>
 {
