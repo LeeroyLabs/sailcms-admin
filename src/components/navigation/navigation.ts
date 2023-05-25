@@ -15,6 +15,7 @@ export const navigationItems = computed(() =>
         {icon: 'mdi-account-group-outline', to: {name: 'UserGroups'}, parent: '', text: i18n.global.t('usergroups.title'), permission: 'read_group'},
         {icon: 'mdi-account', to: {name: 'Users'}, parent: '', text: i18n.global.t('users.title'), permission: 'read_user'},
         {icon: 'mdi-puzzle-outline', to: {name: 'Extensions'}, parent: '', text: 'Extensions', permission: 'any'},
+        {icon: 'mdi-email-outline', parent: '', text: 'Emails', permission:'any'},
         {icon: 'mdi-calendar-check-outline', parent: '', text: 'Tasks', permission: 'any'},
         {icon: 'mdi-cog-outline', parent: '', text: 'Settings', permission: 'any'}
     ]

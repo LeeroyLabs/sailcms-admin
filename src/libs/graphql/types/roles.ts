@@ -1,3 +1,5 @@
+import { LocaleObject } from "./general";
+
 export type Role = {
     _id: string;
     name: string;
@@ -16,4 +18,11 @@ export type RoleConfig = {
 export type ACL = {
     category: string;
     value: string;
+}
+
+export type Permission = {
+    name: string;
+    group: string;
+    category: string;
+    description: LocaleObject;
 }
