@@ -18,11 +18,27 @@ export default {
                 }
                 slug
                 order
-                parent_id
-                children {
-                    _id 
-                }
+                parent_id 
             }
+        }
+    }
+`,
+
+    createCategory: `
+    mutation createCategory($name: LocaleFieldInput!, $parent_id: ID!, $site_id: String!) {
+        createCategory(name: $name, parent_id: $parent_id, site_id: $site_id)
+    }
+`,
+
+    updateCategory: `
+    mutation updateCategory($id: ID!, $name: LocaleFieldInput!, $parent_id: ID!) {
+        updateCategory(id: $id, name: $name, parent_id: $parent_id)
+    }
+`,
+
+    deleteCategory: `
+    mutation deleteCategory($id: ID!) {
+        deleteCategory(id: $id)
     }
 `,
 };

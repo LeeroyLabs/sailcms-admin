@@ -25,7 +25,7 @@ export const navigationItems = computed(() => {
         },
         {
             icon: "mdi-shape-outline",
-            to: window.baseURL + "/categories",
+            to: { name: "Categories" },
             text: "Categories",
             parent: "",
             permission: "any",

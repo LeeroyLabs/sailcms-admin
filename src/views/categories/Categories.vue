@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isLoading">
+    <div v-if="!isLoading">
         <section
             class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between"
         >
@@ -15,26 +15,7 @@
                                 type="text"
                                 clearable
                                 density="comfortable"
-                                v-model="categoryNameInput"
-                                @keydown.enter="runSearch"
-                                @click:clear="clearSearch"
-                            >
-                                <template v-slot:append-inner>
-                                    <div class="tw-opacity-[0.20]">
-                                        <v-icon icon="mdi-keyboard-return" />
-                                    </div>
-                                </template>
-                            </v-text-field>
-
-                            <v-text-field
-                                color="primary"
-                                :label="$t('categories.form.slug')"
-                                variant="outlined"
-                                :hide-details="true"
-                                type="text"
-                                clearable
-                                density="comfortable"
-                                v-model="categorySlugInput"
+                                v-model="categoryNameInput[getLocale()]"
                                 @keydown.enter="runSearch"
                                 @click:clear="clearSearch"
                             >
@@ -47,7 +28,13 @@
 
                             <v-btn
                                 v-if="action === 'add'"
-                                @click="handleAddCategory"
+                                @click="
+                                    handleAddCategory(
+                                        categoryNameInput,
+                                        '',
+                                        siteId
+                                    )
+                                "
                                 color="primary"
                                 prepend-icon="mdi-account-plus"
                                 :disabled="!categoryNameInput"
@@ -67,7 +54,10 @@
                                     {{ $t("categories.form.cancel") }}
                                 </v-btn>
                                 <v-btn
-                                    @click="handleEditCategory"
+                                    v-if="selectedCategory"
+                                    @click="
+                                        handleEditCategory(selectedCategory)
+                                    "
                                     color="primary"
                                     :disabled="!categoryNameInput"
                                     class="tw-flex-grow"
@@ -102,7 +92,7 @@
                             <v-card
                                 class="tw-p-4 tw-h-[calc(100vh-300px)] tw-overflow-auto"
                             >
-                                <NestedList :items="categories" />
+                                <NestedList :categories="categoriesList" />
                             </v-card>
                         </div>
                     </v-col>
@@ -115,78 +105,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject } from "vue";
+import { ref, inject, onMounted } from "vue";
 import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
 import Loader from "@/components/globals/Loader.vue";
 import NestedList from "@/components/globals/categories/NestedList.vue";
 import type { Category } from "@/libs/graphql/types/categories";
+import type { LocaleObject } from "@/libs/graphql/types/general";
 import { Categories } from "@/libs/graphql";
 import { SailCMS } from "@/libs/graphql";
 
 const store = useAppStore();
 const i18n = useI18n();
 const isLoading = ref<boolean>(true);
+const siteId = ref(SailCMS.getSiteId());
 
-const categories = ref<Category[]>([
-    {
-        name: "Music",
-        items: [
-            {
-                name: "Metal",
-                items: [
-                    {
-                        name: "Trash",
-                        items: [
-                            {
-                                name: "Sub Trash 1",
-                                items: [],
-                            },
-                            {
-                                name: "Sub Trash 2",
-                                items: [],
-                            },
-                        ],
-                    },
-                    {
-                        name: "Progressive",
-                        items: [],
-                    },
-                ],
-            },
-            {
-                name: "Rap",
-                items: [],
-            },
-            {
-                name: "Pop",
-                items: [
-                    {
-                        name: "Sub Pop 1",
-                        items: [],
-                    },
-                    {
-                        name: "Sub Pop 2",
-                        items: [],
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        name: "Sport",
-        items: [
-            {
-                name: "Basketball",
-                items: [],
-            },
-            {
-                name: "Hockey",
-                items: [],
-            },
-        ],
-    },
-]);
+// Return the locale as string
+const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
+
+const categoriesList = ref<Category[]>([]);
+const selectedCategory = ref<Category>();
+
+// Search & Actions
+const action = ref("add");
+const categoryNameInput = ref<LocaleObject>({ en: "", fr: "" });
+const currentSearch = ref("");
 
 // Get categories
 const categoryFullTree = async (parent_id: string, site_id: string) => {
@@ -195,91 +138,63 @@ const categoryFullTree = async (parent_id: string, site_id: string) => {
         site_id
     );
     if (responseCategoryFullTree) {
+        categoriesList.value = responseCategoryFullTree;
+        isLoading.value = false;
         console.log(responseCategoryFullTree);
     }
 };
-categoryFullTree("", SailCMS.siteId);
 
 // Emits
 const emitter: any = inject("emitter");
 emitter.on("delete-item", (item: Category) => handleDeleteCategory(item));
 emitter.on("edit-item", (item: Category) => {
     action.value = "edit";
-    editCategoryName.value = item.name;
+    selectedCategory.value = item;
     categoryNameInput.value = item.name;
 });
 
 // Add a category
-const handleAddCategory = () => {
-    categories.value.push({ name: categoryNameInput.value, items: [] });
-};
-
-const renameCategory = (
-    categories: Category[],
-    categoryName: string,
-    oldCategoryName: string
+const handleAddCategory = async (
+    name: LocaleObject,
+    parent_id: string,
+    site_id: string
 ) => {
-    const cat = categories.find((el) => {
-        if (el.items.length) {
-            renameCategory(el.items, categoryName, oldCategoryName);
-        }
-
-        return el.name === oldCategoryName;
-    });
-
-    if (cat) {
-        cat.name = categoryName;
+    const responseAddCategory = await Categories.createCategory(
+        name,
+        parent_id,
+        site_id
+    );
+    if (responseAddCategory) {
+        categoryFullTree("", siteId.value);
     }
 };
 
 // Edit a category
-const handleEditCategory = () => {
-    renameCategory(
-        categories.value,
+const handleEditCategory = async (item: Category) => {
+    const responseEditCategory = await Categories.updateCategory(
+        item._id,
         categoryNameInput.value,
-        editCategoryName.value
+        ""
     );
-
-    categoryNameInput.value = "";
-    categorySlugInput.value = "";
-    action.value = "add";
+    if (responseEditCategory) {
+        categoryNameInput.value = { en: "", fr: "" };
+        action.value = "add";
+    }
 };
 
 // Cancel edit
 const handleCancel = () => {
-    categoryNameInput.value = "";
-    categorySlugInput.value = "";
+    categoryNameInput.value = { en: "", fr: "" };
     action.value = "add";
 };
 
-const removeCategory = (
-    categories: Category[],
-    category: Category
-): Category[] => {
-    const filteredCategories = categories.filter((el) => {
-        if (el.name === category.name) return;
-
-        if (el.items.length) {
-            el.items = removeCategory(el.items, category);
-            return el;
-        }
-        return el.name !== category.name;
-    });
-
-    return filteredCategories;
-};
-
 // Delete a category
-const handleDeleteCategory = (item: Category) => {
-    categories.value = removeCategory(categories.value, item);
+const handleDeleteCategory = async (item: Category) => {
+    const responseDeleteCategory = await Categories.deleteCategory(item._id);
+    if (responseDeleteCategory) {
+        categoryFullTree("", siteId.value);
+    }
 };
-
-// Search
-const action = ref("add");
-const categoryNameInput = ref("");
-const categorySlugInput = ref(categoryNameInput);
-const currentSearch = ref("");
-const editCategoryName = ref("");
 
 // Run Search
 const runSearch = async () => {
@@ -307,7 +222,10 @@ const setupPage = () => {
     document.title = i18n.t("categories.title") + " — SailCMS";
 };
 
-setupPage();
+onMounted(() => {
+    categoryFullTree("", siteId.value);
+    setupPage();
+});
 </script>
 
 <style lang="scss" scoped>

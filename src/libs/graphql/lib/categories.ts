@@ -1,5 +1,6 @@
 import { Client } from "./client";
 import type { Category } from "../types/categories";
+import type { LocaleObject } from "../types/general";
 import CategoriesQueries from "../queries/categories";
 import gql from "graphql-tag";
 
@@ -29,6 +30,91 @@ export class Categories {
 
         if (result.data) {
             return result.data.categoryFullTree;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * createCategory
+     *
+     * @param name
+     * @param parent_id
+     * @param site_id
+     *
+     *
+     */
+    public static async createCategory(
+        name: LocaleObject,
+        parent_id: string,
+        site_id: string
+    ): Promise<boolean | null> {
+        const client = new Client();
+        const mutation = CategoriesQueries.createCategory;
+        const result = await client.mutation(
+            gql`
+                ${mutation}
+            `,
+            { name: name, parent_id: parent_id, site_id: site_id }
+        );
+
+        if (result.data) {
+            return result.data.createCategory;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * updateCategory
+     *
+     * @param id
+     *
+     *
+     */
+    public static async updateCategory(
+        id: string,
+        name: LocaleObject,
+        parent_id: string
+    ): Promise<boolean | null> {
+        const client = new Client();
+        const mutation = CategoriesQueries.updateCategory;
+        const result = await client.mutation(
+            gql`
+                ${mutation}
+            `,
+            { id: id, name: name, parent_id: parent_id }
+        );
+
+        if (result.data) {
+            return result.data.updateCategory;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * deleteCategory
+     *
+     * @param id
+     *
+     *
+     */
+    public static async deleteCategory(id: string): Promise<boolean | null> {
+        const client = new Client();
+        const mutation = CategoriesQueries.deleteCategory;
+        const result = await client.mutation(
+            gql`
+                ${mutation}
+            `,
+            { id: id }
+        );
+
+        if (result.data) {
+            return result.data.deleteCategory;
         }
 
         return null;

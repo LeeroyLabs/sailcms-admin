@@ -2,12 +2,12 @@
     <draggable
         class="dragArea"
         tag="ul"
-        :list="items"
+        :list="categories"
         :group="{ name: 'categories' }"
         item-key="name"
     >
         <template #item="{ element }">
-            <li v-if="element.items.length">
+            <li v-if="element.children && element.children.length">
                 <div
                     class="tw-flex tw-items-center tw-p-3 tw-rounded"
                     :class="
@@ -18,7 +18,7 @@
                 >
                     <v-icon icon="mdi-drag" class="tw-mr-2" />
                     <p @click="toggleOpenList(element)" class="tw-w-full">
-                        {{ element.name }}
+                        {{ element.name[$i18n.locale] }}
                         <v-icon
                             :icon="
                                 isListOpened.includes(element)
@@ -42,8 +42,8 @@
                     </div>
                 </div>
                 <NestedList
-                    v-if="element.items.length"
-                    :items="element.items"
+                    v-if="element.children && element.children.length"
+                    :categories="element.children"
                     :class="
                         isListOpened.includes(element)
                             ? 'tw-block'
@@ -63,7 +63,7 @@
                 >
                     <v-icon icon="mdi-drag" class="tw-mr-2" />
                     <p class="tw-w-full">
-                        {{ element.name }}
+                        {{ element.name[$i18n.locale] }}
                     </p>
 
                     <div class="tw-flex tw-gap-2">
@@ -80,8 +80,8 @@
                     </div>
                 </div>
                 <NestedList
-                    v-if="element.items.length"
-                    :items="element.items"
+                    v-if="element.children && element.children.length"
+                    :categories="element.children"
                 />
             </li>
         </template>
@@ -92,23 +92,35 @@
 import { ref, inject } from "vue";
 import draggable from "vuedraggable";
 import type { Category } from "@/libs/graphql/types/categories";
+import { useI18n } from "vue-i18n";
 
 type Props = {
-    items: Category[];
+    categories: Category[];
 };
 const props = defineProps<Props>();
+const i18n = useI18n();
 const emitter: any = inject("emitter");
 
-const isListOpened = ref<Category[]>(props.items.filter((el) => el));
+// Return the locale
+const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
 
-// Open/Close a list with sub categories
+// Open lists having children by default
+const isListOpened = ref<Category[]>(
+    props.categories.filter((el) => {
+        if (el.children && el.children.length) {
+            return el;
+        }
+    })
+);
+
+// Toggle Open/Close a list having children
 const toggleOpenList = (list: Category) => {
     const categoriesList = isListOpened.value.find(
-        (el) => el.name === list.name
+        (el) => el.name[getLocale()] === list.name[getLocale()]
     );
     if (categoriesList) {
         isListOpened.value = isListOpened.value.filter(
-            (el) => el.name !== list.name
+            (el) => el.name[getLocale()] !== list.name[getLocale()]
         );
     } else {
         isListOpened.value.push(list);
