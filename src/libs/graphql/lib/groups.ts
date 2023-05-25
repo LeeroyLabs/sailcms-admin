@@ -50,7 +50,7 @@ export class Groups
      * @param id
      *
      */
-    public static async delete(id: string): Promise<boolean>
+    public static async deleteGroup(id: string): Promise<boolean>
     {
         const client = new Client();
         let query = GroupQueries.deleteGroup;
@@ -58,6 +58,54 @@ export class Groups
 
         if (result.data) {
             return result.data.deleteGroup;
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     * Create a group
+     *
+     * @param name
+     *
+     */
+    public static async createGroup(name: string): Promise<string>
+    {
+        const client = new Client();
+        let query = GroupQueries.createGroup;
+        let result = await client.mutation(gql`${query}`, {name});
+
+        if (result.error) {
+            return 'already_exists';
+        }
+
+        if (result.data) {
+            return result.data.createGroup;
+        }
+
+        return 'error';
+    }
+
+    /**
+     *
+     * Update a group
+     *
+     * @param id
+     * @param name
+     */
+    public static async updateGroup(id: string, name: string): Promise<boolean>
+    {
+        const client = new Client();
+        let query = GroupQueries.updateGroup;
+        let result = await client.mutation(gql`${query}`, {id, name});
+
+        if (result.error) {
+            return false;
+        }
+
+        if (result.data) {
+            return result.data.updateGroup;
         }
 
         return false;

@@ -107,7 +107,7 @@
                         <template v-else>{{ $t('user.save') }}</template>
                     </v-btn>
 
-                    <v-btn @click.prevent="$router.push({name: 'Users'})" color="text">
+                    <v-btn flat @click.prevent="$router.push({name: 'Users'})" color="text">
                         {{ $t('user.cancel') }}
                     </v-btn>
                 </div>
