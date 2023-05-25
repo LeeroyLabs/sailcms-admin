@@ -21,12 +21,49 @@ reset:
   weak_password: Veuillez essayer un mot de passe plus sécuritaire.
   code_check: Code de vérification non valide.
 
+usergroups:
+  title: Groupes Utilisateurs
+  add: Ajouter un groupe
+  no_groups: Aucun group d'utilisateur pour le moment
+  confirm: Confirmation
+  confirm_delete: Êtes-vous certain de vouloir supprimer le groupe "{group}" ?
+  group_name: Nom du groupe
+  add_a_grouo: Ajouter un groupe
+  edit_group: Modification d'un groupe
+  add_success: Groupe ajouté avec succès.
+  update_success: Groupe modifié avec succès.
+  errors:
+    unknown_error: Une erreur inconnue est survenue, veuillez réessayer.
+    already_exists: Un groupe avec ce nom existe déjà, veuillez en choisir un différent.
+
+roles:
+  title: Rôles
+  no_roles: Aucun rôle pour le moment.
+  add_role: Ajouter un rôle
+
+role:
+  name: Nom
+  description: Description
+  level: Niveau
+  permissions: Permissions
+  save: Sauvegarder
+  add: Ajouter
+  save_sucess: Rôle sauvegardé avec succès.
+  save_error: Le rôle existe déjà, veuillez choisir un autre nom.
+  no_permission: Aucune permission
+  adding_role: Ajouter un rôle
+  edit: Modification d'un rôle
+
 users:
   title: Utilisateurs
   no_users: Aucun utilisateur pour le moment.
   search: Recherche d'utilisateurs
+  add: Ajouter un utilisateur
+  confirm: Confirmation
+  confirm_msg: Êtes-vous certain de vouloir supprimer l'(les) utilisateurs ?
   actions:
     disable: Désactiver
+    enable: Activer
     delete: Supprimer
   columns:
     name: Nom
@@ -50,9 +87,16 @@ user:
   save: Sauvegarder
   add: Ajouter
   cancel: Annuler
+  save_success: "{user} saved successfully!"
   errors:
     required: Requis.
     email: Adresse courriel invalide.
+    password_match: Ne coresspond pas au mot de passe
+    at_least_one: Vous devez choisir au moins 1 rôle.
+    email_exists: L'adresse courriel existe déjà, veuillez en choisir une différente.
+    weak_password: Le mode passe est trop faible, veuillez en choisir un plus sécuritaire.
+    unknown_error: Erreur inconnue.
+    invalid_email: Adresse courriel invalide.
 
 pagination:
   showing: Affichage de {offset} à {limit} de {total}
@@ -68,6 +112,7 @@ extensions:
 
 assets:
   title: Gestionnaire d'actifs
+  upload: Téléversement
   move_some: Déplacer
   file: un fichier
   files: des fichiers
@@ -80,6 +125,23 @@ assets:
   folder_name: Nom du dossier
   delete_success: Fichier(s) supprimé(s) avec succès.
   no_files: Aucun fichier pour le moment.
+  do_upload: Téléverser
+  img_title: Titre
+  info:
+    filename: Nom
+    filesize: Poids
+    size: Taille
+    transform_count: Transformations
+    uploaded_by: Téléverser par
+    uploaded_on: Téléverser le
+  cropper:
+    square: Carré
+    circle: Cercle
+    rotate_left: Rotation Gauche
+    rotate_right: Rotation Droite
+    flip_vertical: Retournement Vertical
+    flip_horizontal: Retournement Horizontal
+    save_close: Sauvegarder et fermer
   delete:
     single_conf: Êtes-vous certains de vouloir supprimer ce fichier ?
     multi_conf: Êtes-vous certains de vouloir supprimer ces fichiers ?
@@ -93,10 +155,16 @@ assets:
   errors:
     permissions: Vous n'avez pas la permission de porter cette action.
     exists: Ce dossier existe déjà, veuillez choisir un autre nom.
+    toobig: Fichier trop volumineux
+    notallowed: Type de fichier refusé
 
 system:
   yes: Oui
   no: Non
+  search: Recherche
+  cancel: Annuler
+  add: Ajouter
+  save: Sauvegarder
   toast:
     error: Erreur
     success: Succès

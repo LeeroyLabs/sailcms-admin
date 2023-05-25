@@ -42,26 +42,14 @@
                     </v-btn>
                 </v-app-bar>
 
-                <v-main scrollable>
-                    <div class="tw-flex tw-flex-row tw-items-center tw-pr-4 tw-mt-1">
-                        <div class="tw-flex-grow">
-                            <v-breadcrumbs v-if="$vuetify.display.smAndUp" :items="store.breadcrumbs">
-                                <template v-slot:prepend>
-                                    <router-link :to="{name: 'Dashboard'}">
-                                        <v-icon icon="mdi-home" class="tw-ml-2.5 tw-mr-3"></v-icon>
-                                    </router-link>
-                                </template>
-
-                                <template v-slot:divider>
-                                    <v-icon icon="mdi-chevron-right"></v-icon>
-                                </template>
-                            </v-breadcrumbs>
-                        </div>
+                <v-main scrollable id="mainSection">
+                    <div class="tw-flex tw-flex-row tw-items-center tw-pr-4 tw-pt-4">
+                        <div class="tw-flex-grow"></div>
                         <div id="actions">
                             <!-- Use Teleport -->
                         </div>
                     </div>
-                    <div class="tw-m-4">
+                    <div class="tw-m-6">
                         <slot/>
                     </div>
                 </v-main>
@@ -73,19 +61,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from "vue";
 import { useDisplay, useTheme } from "vuetify";
-import { useAppStore } from '@/store/app';
-import { useRouter } from 'vue-router';
-import Toast from '@/components/globals/Toast.vue';
-import { useI18n } from 'vue-i18n';
+import { useAppStore } from "@/store/app";
+import { useRouter } from "vue-router";
+import Toast from "@/components/globals/Toast.vue";
+import { useI18n } from "vue-i18n";
 import MobileNavigation from "@/components/navigation/mobile.vue";
 import DesktopNavigation from "@/components/navigation/desktop.vue";
 
 const NAV_STATE_KEY = 'sailcms_nav_state';
 
-let state = localStorage.getItem(NAV_STATE_KEY) || 'open';
-const navigationState = ref((state === 'open'));
 const i18n = useI18n();
 const VuetifyTheme = useTheme();
 
@@ -94,10 +80,18 @@ const router = useRouter();
 const appStore = useAppStore();
 const display = useDisplay();
 
+const navigationState = ref(true);
+
+onMounted(() =>
+{
+    let state = localStorage.getItem(NAV_STATE_KEY) || 'open';
+    navigationState.value = (state === 'open');
+});
+
 const toggleNavigation = () =>
 {
-    navigationState.value = !navigationState.value;
-    const status = (!navigationState.value) ? 'closed' : 'open';
+    navigationState.value = (!navigationState.value);
+    const status = (navigationState.value) ? 'open' : 'close';
     localStorage.setItem(NAV_STATE_KEY, status);
 }
 

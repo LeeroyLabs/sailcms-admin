@@ -46,4 +46,10 @@ export type AssetsOptions = {
     search?: string;
     sort?: string;
     direction?: string;
+    site_id: string;
+}
+
+export type AssetConfig = {
+    maxSize: number;
+    blacklist: string[];
 }

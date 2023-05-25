@@ -24,5 +24,7 @@ const app = createApp(App);
 
 app.provide('emitter', emitter);
 
-registerPlugins(app);
-app.mount('#app');
+registerPlugins(app).then(() =>
+{
+    app.mount('#app');
+});

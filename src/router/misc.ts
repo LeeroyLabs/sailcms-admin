@@ -6,7 +6,8 @@ export const miscRoutes = [
         meta: {
             guarded: true,
             permission: 'any',
-            layout: 'private'
+            layout: 'private',
+            parent: ''
         }
     },
     {
@@ -16,7 +17,8 @@ export const miscRoutes = [
         meta: {
             guarded: true,
             permission: 'any',
-            layout: 'private'
+            layout: 'private',
+            parent: ''
         }
     }
 ];

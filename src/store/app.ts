@@ -1,7 +1,7 @@
 // Utilities
 import { defineStore } from 'pinia';
 import { User } from "@/libs/graphql/types/users";
-import { Folder } from "@/libs/graphql/types/assets";
+import { AssetConfig, Folder } from "@/libs/graphql/types/assets";
 
 const toastLength = 3_500;
 
@@ -12,6 +12,7 @@ export const useAppStore = defineStore('app', {
         breadcrumbs: [] as any[],
         graphQLURL: '',
         baseURL: '',
+        locales: ['fr', 'en'],
         showGQLError: false,
         currentUser: {} as User,
         isLoggedIn: false,
@@ -24,8 +25,10 @@ export const useAppStore = defineStore('app', {
             currentPage: 1,
             maxPage: 1,
             selected: [] as string[],
+            loadingMorePage: true,
             loadingPage: true,
-            folders: [] as Folder[]
+            folders: [] as Folder[],
+            config: {maxSize: 0, blacklist: []} as AssetConfig
         }
     }),
     actions: {
@@ -39,6 +42,7 @@ export const useAppStore = defineStore('app', {
         },
         setBreadcrumbs(list: any[])
         {
+            this.breadcrumbs = [];
             this.breadcrumbs = list;
         },
         setGraphQLURL(url: string)
@@ -48,6 +52,10 @@ export const useAppStore = defineStore('app', {
         setBaseURL(url: string)
         {
             this.baseURL = url;
+        },
+        setLocales(locales: string[])
+        {
+            this.locales = locales;
         },
         showGraphQLError()
         {
@@ -107,9 +115,17 @@ export const useAppStore = defineStore('app', {
         {
             this.assets.loadingPage = status;
         },
+        setLoadingMorePage(status: boolean)
+        {
+            this.assets.loadingMorePage = status;
+        },
         setAvailableFolders(list: Folder[])
         {
             this.assets.folders = list;
+        },
+        setAssetConfig(config: AssetConfig)
+        {
+            this.assets.config = config;
         }
     }
 });

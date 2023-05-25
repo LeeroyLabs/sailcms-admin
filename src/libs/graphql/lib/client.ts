@@ -67,11 +67,12 @@ export class Client
             });
 
             if (response.data) {
-                return {error: null, data: response.data};
+                return {error: null, detailed: null, data: response.data};
             }
 
             return {
                 error: response.error?.message || 'unknown error',
+                detailed: response.error,
                 data: null
             }
         } catch (e) {
@@ -79,6 +80,7 @@ export class Client
 
             return {
                 error: error.message,
+                detailed: error,
                 data: null
             }
         }
@@ -101,11 +103,12 @@ export class Client
             });
 
             if (response.data) {
-                return {error: null, data: response.data};
+                return {error: null, detailed: null, data: response.data};
             }
 
             return {
                 error: (response.errors) ? response.errors[0].toString() : 'unknown error',
+                detailed: response.errors,
                 data: null
             }
         } catch (e) {
@@ -113,6 +116,7 @@ export class Client
 
             return {
                 error: error.message,
+                detailed: error,
                 data: null
             }
         }

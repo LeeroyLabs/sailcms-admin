@@ -25,6 +25,7 @@ export default {
                 created_at
                 validated
                 locale
+                highest_level
                 #meta#
             }
         }
@@ -48,6 +49,7 @@ export default {
                 created_at
                 validated
                 locale
+                highest_level
                 #meta#
             }
         }
@@ -83,6 +85,7 @@ export default {
                 created_at
                 validated
                 locale
+                highest_level
                 #meta#
             }
         }
@@ -105,6 +108,7 @@ export default {
                 created_at
                 validated
                 locale
+                highest_level
                 #meta#
             }
         }
@@ -133,9 +137,30 @@ export default {
                     created_at
                     validated
                     locale
+                    highest_level
                     #meta#
                 }
             }
+        }
+    `,
+    createUser: `
+        mutation createUser($name: UserNameInput!, $email: String!, $password: String!, $avatar: String, $meta: UserMetaInput!, $locale: String, $roles: [String!], $createWithSetPassword: Boolean) {
+            createUser(name: $name, email: $email, password: $password, avatar: $avatar, meta: $meta, locale: $locale, roles: $roles, createWithSetPassword: $createWithSetPassword)
+        }
+    `,
+    updateUser: `
+        mutation updateUser($id: ID!, $name: UserNameInput!, $email: String, $password: String, $roles: [String!], $avatar: String, $locale: String) {
+            updateUser(id: $id, name: $name, email: $email, password: $password, roles: $roles, avatar: $avatar, locale: $locale)
+        }
+    `,
+    changeUserStatus: `
+        mutation changeUserStatus($ids: [ID!]!, $status: Boolean!) {
+            changeUserStatus(ids: $ids, status: $status)
+        }
+    `,
+    deleteUsers: `
+        mutation deleteUsers($ids: [ID!]!) {
+            deleteUsers(ids: $ids)
         }
     `
 };

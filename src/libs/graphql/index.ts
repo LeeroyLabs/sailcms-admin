@@ -12,17 +12,32 @@ export class SailCMS {
     private static url: string = "";
     private static accessToken: string = "";
 
+    private static locales: string[] = ["fr", "en"];
+    private static baseURL: string = "";
+    private static siteId: string = "default";
+
     /**
      *
      * Set both url and token for the cms
      *
      * @param url
      * @param accessToken
+     * @param locales
+     * @param baseURL
      *
      */
-    public static setConfig(url: string, accessToken: string = ""): void {
+    public static setConfig(
+        url: string,
+        accessToken: string = "",
+        locales: string[] = ["fr", "en"],
+        baseURL: string,
+        siteId: string
+    ): void {
         SailCMS.url = url;
         SailCMS.accessToken = accessToken;
+        SailCMS.locales = locales;
+        SailCMS.baseURL = baseURL;
+        SailCMS.siteId = siteId;
     }
 
     /**
@@ -41,6 +56,33 @@ export class SailCMS {
      */
     public static getToken(): string {
         return SailCMS.accessToken;
+    }
+
+    /**
+     *
+     * Get Site ID
+     *
+     */
+    public static getSiteId(): string {
+        return SailCMS.siteId;
+    }
+
+    /**
+     *
+     * Get available locales in the cms
+     *
+     */
+    public static getLocales(): string[] {
+        return SailCMS.locales;
+    }
+
+    /**
+     *
+     * Get admin base url
+     *
+     */
+    public static getBaseURL(): string {
+        return SailCMS.baseURL;
     }
 
     /**

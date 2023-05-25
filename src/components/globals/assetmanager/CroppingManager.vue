@@ -1,5 +1,11 @@
 <template>
     <div class="tw-flex-grow tw-max-h-[calc(100%-72px)]">
+        <div
+            v-if="savingCrop"
+            class="tw-absolute tw-bg-black/50 tw-inset-0 tw-z-[9999] tw-flex tw-flex-row tw-items-center tw-justify-center"
+        >
+            <v-progress-circular indeterminate size="200" width="6" />
+        </div>
         <div class="tw-flex tw-flex-col tw-h-full tw-max-h-full">
             <div
                 class="tw-flex tw-flex-row tw-max-h-full tw-h-full tw-w-full tw-relative"
@@ -10,27 +16,34 @@
                     <div
                         @click.prevent="activeMode = 'square'"
                         class="tw-border tw-border-gray-600 hover:tw-bg-gray-600 rounded-lg tw-p-2 tw-cursor-pointer"
-                        :class="{ 'tw-bg-gray-600': activeMode === 'square' }"
+                        :class="{
+                            'tw-bg-gray-600': activeMode === 'square',
+                            'tw-pointer-events-none tw-opacity-30':
+                                settings.lockedType === 'circle',
+                        }"
                     >
                         <v-icon color="white" icon="mdi-square-outline" />
                         <v-tooltip
                             activator="parent"
                             open-delay="1000"
                             location="right"
-                            >Square Crop</v-tooltip
+                            >{{ $t("assets.cropper.square") }}</v-tooltip
                         >
                     </div>
                     <div
                         @click.prevent="activeMode = 'circle'"
                         class="tw-border tw-border-gray-600 hover:tw-bg-gray-600 rounded-lg tw-p-2 tw-cursor-pointer"
-                        :class="{ 'tw-bg-gray-600': activeMode === 'circle' }"
+                        :class="{
+                            'tw-bg-gray-600': activeMode === 'circle',
+                            'tw-opacity-30': settings.lockedType === 'square',
+                        }"
                     >
                         <v-icon color="white" icon="mdi-circle-outline" />
                         <v-tooltip
                             activator="parent"
                             open-delay="1000"
                             location="right"
-                            >Circle Crop</v-tooltip
+                            >{{ $t("assets.cropper.circle") }}</v-tooltip
                         >
                     </div>
                     <div
@@ -42,7 +55,7 @@
                             activator="parent"
                             open-delay="1000"
                             location="right"
-                            >Rotate Left</v-tooltip
+                            >{{ $t("assets.cropper.rotate_left") }}</v-tooltip
                         >
                     </div>
                     <div
@@ -54,7 +67,7 @@
                             activator="parent"
                             open-delay="1000"
                             location="right"
-                            >Rotate Right</v-tooltip
+                            >{{ $t("assets.cropper.rotate_right") }}</v-tooltip
                         >
                     </div>
 
@@ -67,7 +80,7 @@
                             activator="parent"
                             open-delay="1000"
                             location="right"
-                            >Flip Vertical</v-tooltip
+                            >{{ $t("assets.cropper.flip_vertical") }}</v-tooltip
                         >
                     </div>
                     <div
@@ -79,7 +92,9 @@
                             activator="parent"
                             open-delay="1000"
                             location="right"
-                            >Flip Horizontal</v-tooltip
+                            >{{
+                                $t("assets.cropper.flip_horizontal")
+                            }}</v-tooltip
                         >
                     </div>
 
@@ -88,6 +103,7 @@
                     ></div>
 
                     <div
+                        @click.prevent="saveAndClose"
                         class="tw-hidden md:tw-block tw-border tw-border-gray-600 hover:tw-bg-gray-600 rounded-lg tw-p-2 tw-cursor-pointer"
                     >
                         <v-icon color="white" icon="mdi-check-circle-outline" />
@@ -95,7 +111,7 @@
                             activator="parent"
                             open-delay="1000"
                             location="right"
-                            >Save & Close</v-tooltip
+                            >{{ $t("assets.cropper.save_close") }}</v-tooltip
                         >
                     </div>
 
@@ -108,13 +124,13 @@
                             activator="parent"
                             open-delay="1000"
                             location="right"
-                            >Cancel</v-tooltip
+                            >{{ $t("assets.assets.cancel") }}</v-tooltip
                         >
                     </div>
                 </div>
                 <Cropper
                     ref="cropper"
-                    src="https://voxatl.org/wp-content/uploads/2019/04/avengers-endgame-poster-square-crop.jpg"
+                    :src="file.url"
                     :stencilComponent="
                         activeMode === 'circle'
                             ? CircleStencil
@@ -153,36 +169,69 @@ import {
 import "vue-advanced-cropper/dist/style.css";
 import "vue-advanced-cropper/dist/theme.compact.css";
 import { ref } from "vue";
+import { useAppStore } from "@/store/app";
+import { Assets } from "@/libs/graphql";
 
 const props = defineProps({
     settings: {
         type: Object,
         default: {
+            name: "",
             ratio: "",
             min: { width: 0, height: 0 },
             max: { width: 0, height: 0 },
             lockedType: "",
         },
     },
+    file: {
+        type: Object,
+        default: null,
+    },
 });
 
-console.log(props.settings);
+const emitter = defineEmits(["close", "generated"]);
 
-const activeMode = ref("square");
-const previewer = ref(null);
+const activeMode = ref(
+    props.settings.lockedType !== "circle" ? "square" : "circle"
+);
 const previewImage = ref(null);
 const cropper = ref(null);
+const store = useAppStore();
+
+const cropName = ref(props.settings.name);
+const currentCrop = ref("");
+const savingCrop = ref(false);
 
 const handleResize = (e) => {
     e.canvas.toBlob((blob) => {
         // @ts-ignore
         const reader = new FileReader();
-        reader.onloadend = () => {
+        reader.onloadend = async () => {
+            let img = new Image();
+            img.src = reader.result;
+            await img.decode();
+
+            if (props.settings.name === "") {
+                cropName.value = img.width + "x" + img.height;
+            }
+
             previewImage.value = reader.result;
+            currentCrop.value = reader.result.split("base64,")[1];
         };
         reader.readAsDataURL(blob);
     }, "image/webp");
-    console.log(e);
+};
+
+// Save crop
+const saveAndClose = async () => {
+    savingCrop.value = true;
+    await Assets.createTransform(
+        props.file._id,
+        cropName.value,
+        currentCrop.value
+    );
+    savingCrop.value = false;
+    emitter("generated");
 };
 
 const rotateLeft = () => cropper.value.rotate(-90);

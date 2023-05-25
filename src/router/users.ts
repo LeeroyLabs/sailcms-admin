@@ -6,7 +6,8 @@ export const userRoutes = [
         meta: {
             guarded: true,
             permission: 'read_user',
-            layout: 'private'
+            layout: 'private',
+            parent: ''
         }
     },
     {
@@ -16,7 +17,41 @@ export const userRoutes = [
         meta: {
             guarded: true,
             permission: 'readwrite_user',
-            layout: 'private'
+            layout: 'private',
+            parent: 'Users'
         }
     },
+    {
+        path: '/user-groups',
+        name: 'UserGroups',
+        component: () => import(/* webpackChunkName: "usergroups" */ '@/views/groups/Groups.vue'),
+        meta: {
+            guarded: true,
+            permission: 'readwrite_group',
+            layout: 'private',
+            parent: ''
+        }
+    },
+    {
+        path: '/roles',
+        name: 'Roles',
+        component: () => import(/* webpackChunkName: "roles" */ '@/views/roles/Roles.vue'),
+        meta: {
+            guarded: true,
+            permission: 'readwrite_role',
+            layout: 'private',
+            parent: ''
+        }
+    },
+    {
+        path: '/roles/:id',
+        name: 'SingleRole',
+        component: () => import(/* webpackChunkName: "roles" */ '@/views/roles/Role.vue'),
+        meta: {
+            guarded: true,
+            permission: 'readwrite_role',
+            layout: 'private',
+            parent: 'Roles'
+        }
+    }
 ]

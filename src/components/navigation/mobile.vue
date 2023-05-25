@@ -13,10 +13,12 @@
             <v-spacer/>
 
             <template v-for="(item, i) in navigationItems">
-                <v-list-item v-if="hasPermission(item.permission)" :key="i" :value="item" :to="item.to" :active="$route.path.includes(item.to)" :title="item.text" active-color="white">
+                <v-list-item v-if="hasPermission(item.permission)" :key="i" :value="item" :to="item.to" :active="(item.to && $route.meta.parent === item.to.name) || ($route.name === item.parent) || (item.to && $route.name === item.to.name)" :title="item.text" active-color="white">
+                    {{ $route.name }} {{item.to}}
                     <template v-slot:prepend>
                         <v-icon :icon="item.icon" :alt="item.text"></v-icon>
                     </template>
+
                 </v-list-item>
             </template>
         </v-list>
@@ -27,6 +29,7 @@
 import { hasPermission } from '@/libs/tools';
 import { navigationItems } from '@/components/navigation/navigation';
 import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 
 const props = defineProps({
     navigationState: {
@@ -35,6 +38,8 @@ const props = defineProps({
     }
 });
 
+const route = useRoute();
+console.log(route);
 
 
 const state = computed(() =>

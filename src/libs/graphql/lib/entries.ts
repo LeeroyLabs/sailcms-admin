@@ -1,7 +1,7 @@
 import { Client } from "./client";
 import EntryQueries from "../queries/entries";
 import gql from "graphql-tag";
-import { Entry } from "types/entries";
+import { Entry } from "../types/entries";
 
 export class Entries
 {

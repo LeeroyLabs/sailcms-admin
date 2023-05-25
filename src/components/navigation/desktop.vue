@@ -1,9 +1,9 @@
 <template>
-    <v-navigation-drawer :rail="navigationState" color="primary-darker" class="!tw-text-white tw-relative">
+    <v-navigation-drawer :rail="!navigationState" color="primary-darker" class="!tw-text-white tw-relative">
         <v-list density="comfortable">
             <v-list-item-media class="tw-max-h-[100px] tw-min-h-[100px]">
                 <img
-                    :class="{'tw-w-20': !navigationState, 'tw-w-10 !tw-mt-3': navigationState}"
+                    :class="{'tw-w-20': navigationState, 'tw-w-10 !tw-mt-3': !navigationState}"
                     class="tw-rounded-md tw-mx-auto tw-transition-all tw-m-4"
                     src="https://mir-s3-cdn-cf.behance.net/user/276/7530587.53f253b5e501a.jpg"
                     alt=""
@@ -13,7 +13,7 @@
             <v-spacer/>
 
             <template v-for="(item, i) in navigationItems">
-                <v-list-item v-if="hasPermission(item.permission)" :key="i" :value="item" :to="item.to" :active="$route.path.includes(item.to)" :title="item.text" active-color="white">
+                <v-list-item v-if="hasPermission(item.permission)" :key="i" :value="item" :to="item.to" :active="(item.to && $route.meta.parent === item.to.name) || ($route.name === item.parent) || (item.to && $route.name === item.to.name)" :title="item.text" active-color="white">
                     <template v-slot:prepend>
                         <v-icon :icon="item.icon" :alt="item.text"></v-icon>
                     </template>

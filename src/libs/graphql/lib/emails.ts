@@ -1,7 +1,7 @@
 import { Client } from "./client";
 import EmailQueries from "../queries/emails";
 import gql from "graphql-tag";
-import { Email } from "types/emails";
+import { Email } from "../types/emails";
 
 export class Emails
 {

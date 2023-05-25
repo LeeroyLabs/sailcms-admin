@@ -3,11 +3,13 @@ import {
     LoginResult,
     PasswordChangeResult,
     User,
+    UserData,
     UserListArguments,
     UserListing,
 } from "../types/users";
 import UserQueries from "../queries/user";
 import gql from "graphql-tag";
+import { useAppStore } from "@/store/app";
 
 export class Users {
     /**
@@ -283,5 +285,193 @@ export class Users {
             },
             list: [],
         };
+    }
+
+    /**
+     *
+     * Create a new user
+     *
+     * @param data
+     * @param forceNewPassword
+     *
+     */
+    public static async createUser(
+        data: UserData,
+        forceNewPassword: boolean
+    ): Promise<string> {
+        const client = new Client();
+        let query = UserQueries.createUser;
+
+        const store = useAppStore();
+
+        let result = await client.mutation(
+            gql`
+                ${query}
+            `,
+            {
+                name: data.name,
+                email: data.email,
+                password: data.password,
+                roles: data.roles,
+                group: data.group,
+                meta: { flags: { use2fa: false } },
+                avatar: data.avatar,
+                locale: store.locales[0],
+                createWithSetPassword: forceNewPassword,
+            }
+        );
+
+        if (result.detailed) {
+            let code = parseInt(
+                result.detailed.graphQLErrors[0].extensions.debugMessage.substring(
+                    0,
+                    4
+                )
+            );
+
+            switch (code) {
+                case 9001:
+                default:
+                    return "email-used";
+
+                case 9002:
+                    return "weak-password";
+            }
+        }
+
+        if (result.data) {
+            return result.data.createUser;
+        }
+
+        return "";
+    }
+
+    /**
+     *
+     * Update a user
+     *
+     * @param id
+     * @param data
+     *
+     */
+    public static async updateUser(
+        id: string,
+        data: UserData
+    ): Promise<string> {
+        const client = new Client();
+        let query = UserQueries.updateUser;
+
+        const store = useAppStore();
+
+        let result = await client.mutation(
+            gql`
+                ${query}
+            `,
+            {
+                id: id,
+                name: { first: data.name.first, last: data.name.last },
+                email: data.email,
+                password: data.password,
+                roles: data.roles,
+                group: data.group,
+                avatar: data.avatar,
+                locale: data.locale,
+            }
+        );
+
+        if (result.detailed) {
+            let code = parseInt(
+                result.detailed.graphQLErrors[0].extensions.debugMessage.substring(
+                    0,
+                    4
+                )
+            );
+
+            switch (code) {
+                case 9001:
+                default:
+                    return "email-used";
+
+                case 9002:
+                    return "weak-password";
+
+                case 9003:
+                    return "invalid-email";
+            }
+        }
+
+        if (result.data) {
+            return result.data.updateUser ? "true" : "false";
+        }
+
+        return "false";
+    }
+
+    /**
+     *
+     * Enable given users
+     *
+     * @param ids
+     *
+     */
+    public static async enableUsers(ids: string[]): Promise<boolean> {
+        return await Users.changeStatus(ids, true);
+    }
+
+    /**
+     *
+     * Disable given users
+     *
+     * @param ids
+     *
+     */
+    public static async disableUsers(ids: string[]): Promise<boolean> {
+        return await Users.changeStatus(ids, false);
+    }
+
+    /**
+     *
+     * Delete a list of users
+     *
+     * @param ids
+     *
+     */
+    public static async deleteUsers(ids: string[]): Promise<boolean> {
+        const client = new Client();
+        let query = UserQueries.deleteUsers;
+
+        let result = await client.query(
+            gql`
+                ${query}
+            `,
+            { ids: ids }
+        );
+
+        if (result.data) {
+            return result.data.deleteUsers;
+        }
+
+        return false;
+    }
+
+    private static async changeStatus(
+        ids: string[],
+        status: boolean
+    ): Promise<boolean> {
+        const client = new Client();
+        let query = UserQueries.changeUserStatus;
+
+        let result = await client.query(
+            gql`
+                ${query}
+            `,
+            { ids: ids, status: status }
+        );
+
+        if (result.data) {
+            return result.data.changeUserStatus;
+        }
+
+        return false;
     }
 }

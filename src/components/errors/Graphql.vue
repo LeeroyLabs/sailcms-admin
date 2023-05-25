@@ -7,7 +7,7 @@
             <v-card-text>
                 {{ $t('system.errors.graphql') }}<br/>
                 {{ $t('system.errors.graphql2')}}
-                <span class="tw-bg-gray-200 tw-px-1 tw-py-1">conf.json</span>
+                <span class="tw-px-1 tw-py-1 tw-italic tw-font-bold">conf.json</span>
                 {{ $t('system.errors.graphql3')}}
             </v-card-text>
             <v-card-actions>

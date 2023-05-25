@@ -9,13 +9,12 @@
         }"
         style="outline-width: 3px;"
     >
-        <img :src="file.url" loading="lazy" class="tw-rounded-lg" :width="($vuetify.display.lgAndUp) ? 90 : 80" :height="($vuetify.display.lgAndUp) ? 90 : 80" alt=""/>
+        <img :src="file.url" loading="lazy" class="tw-rounded-lg tw-max-h-[80px] lg:tw-max-h-[90px]" :width="($vuetify.display.lgAndUp) ? 90 : 80" :height="($vuetify.display.lgAndUp) ? 90 : 80" alt=""/>
     </div>
 </template>
 
 <script setup>
 import { inject } from 'vue';
-import { humanFileSize, fileExtension } from '@/libs/tools';
 import { useAppStore } from '@/store/app';
 
 const store = useAppStore();

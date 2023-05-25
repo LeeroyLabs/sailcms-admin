@@ -120,18 +120,16 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import { useI18n } from "vue-i18n";
+<script setup>
+import { computed, ref } from "vue";
 import { useAppStore } from "@/store/app";
 import { Misc } from "@/libs/graphql";
-import { RegisteredExtensions } from "@/libs/graphql/types/misc";
 import Loader from "@/components/globals/Loader.vue";
+import { usePage } from "@/libs/page";
 
-const i18n  = useI18n();
 const store = useAppStore();
 
-const extensions = ref({modules: [], containers: []} as RegisteredExtensions);
+const extensions = ref({modules: [], containers: []});
 const selectedExtension = ref(null);
 
 const isReady = ref(false);
@@ -158,24 +156,9 @@ const providedGQQLCount = computed(() =>
     return q+m+r;
 });
 
-// Update some things when locale changes
-watch(i18n.locale, () =>
-{
-    setupPage();
-});
-
-// Setup page data
-const setupPage = () =>
-{
-    // Set Breadcrumb
-    store.setBreadcrumbs([
-        {title: "Dashboard", disable: false, to: "/dashboard"},
-        {title: "Extensions"}
-    ]);
-
-    store.setPageTitle("Extensions");
-    document.title = "Extensions — SailCMS";
-};
+const page = usePage();
+page.setPageTitle('Extensions');
+page.setBreadcrumbs([{title: 'Extensions', disable: true, to: ''}]);
 
 const loadExtensions = async () =>
 {
@@ -183,7 +166,7 @@ const loadExtensions = async () =>
     isReady.value = true;
 };
 
-const showExtension = (type: string, index: number) =>
+const showExtension = (type, index) =>
 {
     if (type === 'container') {
         // @ts-ignore
@@ -195,6 +178,5 @@ const showExtension = (type: string, index: number) =>
     selectedExtension.value = extensions.value.modules[index];
 }
 
-setupPage();
 loadExtensions();
 </script>

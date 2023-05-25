@@ -1,5 +1,6 @@
 export type GraphQLOutput = {
     data: GraphObject|null;
+    detailed: any|null;
     error: string|null;
 }
 
