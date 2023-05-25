@@ -2,6 +2,7 @@ import { Client } from "./client";
 import AssetsQueries from "../queries/assets";
 import gql from "graphql-tag";
 import { Asset, AssetConfig, AssetListing, AssetsOptions, Folder } from "../types/assets";
+import { SailCMS } from "@/libs/graphql";
 
 export class Assets
 {
@@ -15,7 +16,7 @@ export class Assets
         const client = new Client();
         let query = AssetsQueries.assetConfig;
 
-        let result = await client.query(gql`${query}`, {});
+        let result = await client.query(gql`${query}`, {site_id: SailCMS.getSiteId()});
 
         if (result.data) {
             return result.data.assetConfig;
@@ -60,6 +61,8 @@ export class Assets
         const client = new Client();
         let query = AssetsQueries.assets;
 
+        args.site_id = SailCMS.getSiteId();
+
         query = query.replace('#locale#', Assets.parseLocales(locales));
         let result = await client.query(gql`${query}`, args);
 
@@ -93,7 +96,12 @@ export class Assets
         let query = AssetsQueries.uploadAsset;
 
         query = query.replace('#locale#', Assets.parseLocales(locales));
-        let result = await client.mutation(gql`${query}`, {src: data, filename: name, folder: folder});
+        let result = await client.mutation(gql`${query}`, {
+            src: data,
+            filename: name,
+            folder: folder,
+            site_id: SailCMS.getSiteId()
+        });
 
         if (result.data) {
             return result.data.uploadAsset;
@@ -112,7 +120,7 @@ export class Assets
         const client = new Client();
         let query = AssetsQueries.folders;
 
-        let result = await client.query(gql`${query}`, {});
+        let result = await client.query(gql`${query}`, {site_id: SailCMS.getSiteId()});
 
         if (result.data) {
             return result.data.assetFolders as Folder[];
@@ -160,7 +168,7 @@ export class Assets
         const client = new Client();
         let query = AssetsQueries.addFolder;
 
-        let result = await client.mutation(gql`${query}`, {folder: name});
+        let result = await client.mutation(gql`${query}`, {folder: name, site_id: SailCMS.getSiteId()});
 
         if (result.data) {
             return result.data.addFolder;
@@ -182,7 +190,11 @@ export class Assets
         const client = new Client();
         let query = AssetsQueries.removeFolder;
 
-        let result = await client.mutation(gql`${query}`, {folder: active, move_to: recipient});
+        let result = await client.mutation(gql`${query}`, {
+            folder: active,
+            move_to: recipient,
+            site_id: SailCMS.getSiteId()
+        });
 
         if (result.data) {
             return result.data.removeFolder;

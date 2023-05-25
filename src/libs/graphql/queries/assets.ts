@@ -36,8 +36,8 @@ export default {
         }
     `,
     assets: `
-        query assets($page: Int!, $limit: Int!, $folder: String, $search: String, $sort: String, $direction: SortingOrder) {
-            assets(page: $page, limit: $limit, folder: $folder, search: $search, sort: $sort, direction: $direction) {
+        query assets($page: Int!, $limit: Int!, $folder: String, $search: String, $sort: String, $direction: SortingOrder, $site_id: String!) {
+            assets(page: $page, limit: $limit, folder: $folder, search: $search, sort: $sort, direction: $direction, site_id: $site_id) {
                 pagination {
                     current
                     totalPages
@@ -79,8 +79,8 @@ export default {
         }
     `,
     folders: `
-        query folders {
-            assetFolders {
+        query folders($site_id: String!) {
+            assetFolders(site_id: $site_id) {
                 slug
                 name
                 deletable
@@ -93,13 +93,13 @@ export default {
         }
     `,
     addFolder: `
-        mutation addFolder($folder: String!) {
-            addFolder(folder: $folder)
+        mutation addFolder($folder: String!, $site_id: String!) {
+            addFolder(folder: $folder, site_id: $site_id)
         }
     `,
     removeFolder: `
-        mutation removeFolder($folder: String!, $move_to: String!) {
-            removeFolder(folder: $folder, move_to: $move_to)
+        mutation removeFolder($folder: String!, $move_to: String!, $site_id: String!) {
+            removeFolder(folder: $folder, move_to: $move_to, site_id: $site_id)
         }
     `,
     removeAssets: `
@@ -116,8 +116,8 @@ export default {
         }
     `,
     uploadAsset: `
-        mutation uploadAsset($src: String!, $filename: String!, $folder: String!) {
-            uploadAsset(src: $src, filename: $filename, folder: $folder) {
+        mutation uploadAsset($src: String!, $filename: String!, $folder: String!, $site_id: String!) {
+            uploadAsset(src: $src, filename: $filename, folder: $folder, site_id: $site_id) {
                 _id
                 filename
                 site_id
