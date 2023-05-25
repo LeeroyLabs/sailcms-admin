@@ -14,7 +14,7 @@
                 </small>
                 <small class="tw-mt-4"><strong>{{ role.member_count }}</strong> members</small>
 
-                <div class="tw-hidden group-hover:tw-flex tw-flex-row tw-items-center tw-justify-center tw-absolute tw-inset-0 bg-primary-darker-60">
+                <div class="tw-hidden group-hover:tw-flex tw-flex-row tw-items-center tw-justify-center tw-absolute tw-inset-0 tw-bg-black/40">
                     <v-btn @click.prevent="editRole(role._id)" variant="flat" icon color="primary" class="tw-mr-2">
                         <v-icon icon="mdi-pen"/>
                     </v-btn>
