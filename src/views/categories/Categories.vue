@@ -9,13 +9,13 @@
                         <div class="tw-flex tw-flex-col tw-gap-4">
                             <v-text-field
                                 color="primary"
-                                :label="$t('categories.add.name')"
+                                :label="$t('categories.form.name')"
                                 variant="outlined"
                                 :hide-details="true"
                                 type="text"
                                 clearable
                                 density="comfortable"
-                                v-model="newCategoryName"
+                                v-model="categoryNameInput"
                                 @keydown.enter="runSearch"
                                 @click:clear="clearSearch"
                             >
@@ -28,13 +28,13 @@
 
                             <v-text-field
                                 color="primary"
-                                :label="$t('categories.add.handle')"
+                                :label="$t('categories.form.slug')"
                                 variant="outlined"
                                 :hide-details="true"
                                 type="text"
                                 clearable
                                 density="comfortable"
-                                v-model="newCategoryName"
+                                v-model="categorySlugInput"
                                 @keydown.enter="runSearch"
                                 @click:clear="clearSearch"
                             >
@@ -46,13 +46,35 @@
                             </v-text-field>
 
                             <v-btn
+                                v-if="action === 'add'"
                                 @click="handleAddCategory"
                                 color="primary"
                                 prepend-icon="mdi-account-plus"
-                                :disabled="!newCategoryName"
+                                :disabled="!categoryNameInput"
                             >
-                                {{ $t("categories.add.add_category") }}
+                                {{ $t("categories.form.add_category") }}
                             </v-btn>
+
+                            <div
+                                v-else
+                                class="tw-flex tw-gap-2 tw-justify-between tw-flex-wrap"
+                            >
+                                <v-btn
+                                    @click="handleCancel"
+                                    color="primary"
+                                    class="tw-flex-grow"
+                                >
+                                    {{ $t("categories.form.cancel") }}
+                                </v-btn>
+                                <v-btn
+                                    @click="handleEditCategory"
+                                    color="primary"
+                                    :disabled="!categoryNameInput"
+                                    class="tw-flex-grow"
+                                >
+                                    {{ $t("categories.form.edit_category") }}
+                                </v-btn>
+                            </div>
                         </div>
                     </v-col>
 
@@ -98,17 +120,15 @@ import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
 import Loader from "@/components/globals/Loader.vue";
 import NestedList from "@/components/globals/categories/NestedList.vue";
+import type { Category } from "@/libs/graphql/types/categories";
+import Categories from "@/libs/graphql/queries/categories";
+import { SailCMS } from "@/libs/graphql";
 
 const store = useAppStore();
 const i18n = useI18n();
 const isLoading = ref<boolean>(true);
 
-interface Item {
-    name: string;
-    items: Item[] | [];
-}
-
-const categories = ref<Item[]>([
+const categories = ref<Category[]>([
     {
         name: "Music",
         items: [
@@ -168,22 +188,73 @@ const categories = ref<Item[]>([
     },
 ]);
 
+const categoryFullTree = async (parent_id: string, site_id: string) => {
+    const responseCategoryFullTree = await Categories.categoryFullTree(
+        parent_id,
+        site_id
+    );
+    if (responseCategoryFullTree) {
+        console.log(responseCategoryFullTree);
+    }
+};
+categoryFullTree("", SailCMS.siteId);
+
 // Emits
-const emitter = inject("emitter");
-emitter.on("delete-item", (item: Item) => handleDeleteCategory(item));
-emitter.on("edit-item", (item: Item) => handleEditCategory(item));
+const emitter: any = inject("emitter");
+emitter.on("delete-item", (item: Category) => handleDeleteCategory(item));
+emitter.on("edit-item", (item: Category) => {
+    action.value = "edit";
+    editCategoryName.value = item.name;
+    categoryNameInput.value = item.name;
+});
 
 // Add a category
 const handleAddCategory = () => {
-    categories.value.push({ name: newCategoryName.value, items: [] });
+    categories.value.push({ name: categoryNameInput.value, items: [] });
+};
+
+const renameCategory = (
+    categories: Category[],
+    categoryName: string,
+    oldCategoryName: string
+) => {
+    const cat = categories.find((el) => {
+        if (el.items.length) {
+            renameCategory(el.items, categoryName, oldCategoryName);
+        }
+
+        return el.name === oldCategoryName;
+    });
+
+    if (cat) {
+        cat.name = categoryName;
+    }
 };
 
 // Edit a category
-const handleEditCategory = (item: Item) => {
-    console.log("EDIT");
+const handleEditCategory = () => {
+    renameCategory(
+        categories.value,
+        categoryNameInput.value,
+        editCategoryName.value
+    );
+
+    categoryNameInput.value = "";
+    categorySlugInput.value = "";
+    action.value = "add";
 };
 
-const removeCategory = (categories: Item[], category: Item): Item[] => {
+// Cancel edit
+const handleCancel = () => {
+    categoryNameInput.value = "";
+    categorySlugInput.value = "";
+    action.value = "add";
+};
+
+const removeCategory = (
+    categories: Category[],
+    category: Category
+): Category[] => {
     const filteredCategories = categories.filter((el) => {
         if (el.name === category.name) return;
 
@@ -198,18 +269,19 @@ const removeCategory = (categories: Item[], category: Item): Item[] => {
 };
 
 // Delete a category
-const handleDeleteCategory = (item: Item) => {
+const handleDeleteCategory = (item: Category) => {
     categories.value = removeCategory(categories.value, item);
 };
 
 // Search
-const newCategoryName = ref("");
-
-// Search
+const action = ref("add");
+const categoryNameInput = ref("");
+const categorySlugInput = ref(categoryNameInput);
 const currentSearch = ref("");
+const editCategoryName = ref("");
 
 // Run Search
-const runSearch = async (e) => {
+const runSearch = async () => {
     console.log("RUN SEARCH");
 };
 
@@ -237,4 +309,9 @@ const setupPage = () => {
 setupPage();
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+:deep(.v-color-picker-preview__dot) {
+    @apply tw-border tw-border-solid tw-border-[#E5E7EB]/80;
+    @apply tw-bg-none;
+}
+</style>

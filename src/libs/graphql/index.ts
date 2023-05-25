@@ -1,16 +1,16 @@
 import { Client } from "./lib/client";
 export { Client } from "./lib/client";
-export { Users } from './lib/users';
-export { Roles } from './lib/roles';
+export { Users } from "./lib/users";
+export { Categories } from "./lib/categories";
+export { Roles } from "./lib/roles";
 export { Assets } from "./lib/assets";
 export { Emails } from "./lib/emails";
 export { Misc } from "./lib/misc";
 export { Groups } from "./lib/groups";
 
-export class SailCMS
-{
-    private static url: string = '';
-    private static accessToken: string = '';
+export class SailCMS {
+    private static url: string = "";
+    private static accessToken: string = "";
 
     /**
      *
@@ -20,8 +20,7 @@ export class SailCMS
      * @param accessToken
      *
      */
-    public static setConfig(url: string, accessToken: string = ''): void
-    {
+    public static setConfig(url: string, accessToken: string = ""): void {
         SailCMS.url = url;
         SailCMS.accessToken = accessToken;
     }
@@ -31,8 +30,7 @@ export class SailCMS
      * Get the GraphQL URL
      *
      */
-    public static getURL(): string
-    {
+    public static getURL(): string {
         return SailCMS.url;
     }
 
@@ -41,8 +39,7 @@ export class SailCMS
      * Get the Access Token
      *
      */
-    public static getToken(): string
-    {
+    public static getToken(): string {
         return SailCMS.accessToken;
     }
 
@@ -53,8 +50,7 @@ export class SailCMS
      * @param token
      *
      */
-    public static setToken(token: string): void
-    {
+    public static setToken(token: string): void {
         SailCMS.accessToken = token;
         Client.updateClient();
     }

@@ -91,22 +91,18 @@
 <script setup lang="ts">
 import { ref, inject } from "vue";
 import draggable from "vuedraggable";
-
-interface Item {
-    name: string;
-    items: Item[] | [];
-}
+import type { Category } from "@/libs/graphql/types/categories";
 
 type Props = {
-    items: Item[];
+    items: Category[];
 };
 const props = defineProps<Props>();
-const emitter = inject("emitter");
+const emitter: any = inject("emitter");
 
-const isListOpened = ref<Item[]>(props.items.filter((el) => el));
+const isListOpened = ref<Category[]>(props.items.filter((el) => el));
 
 // Open/Close a list with sub categories
-const toggleOpenList = (list: Item) => {
+const toggleOpenList = (list: Category) => {
     const categoriesList = isListOpened.value.find(
         (el) => el.name === list.name
     );
@@ -120,12 +116,12 @@ const toggleOpenList = (list: Item) => {
 };
 
 // Delete a category
-const handleDeleteItem = (item: Item) => {
+const handleDeleteItem = (item: Category) => {
     emitter.emit("delete-item", item);
 };
 
 // Edit a category
-const handleEditItem = (item: Item) => {
+const handleEditItem = (item: Category) => {
     emitter.emit("edit-item", item);
 };
 </script>

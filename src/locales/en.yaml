@@ -113,7 +113,9 @@ system:
 categories:
   title: Categories
   search: Search for categories
-  add:
+  form:
     name: Name of the category
-    handle: Handle of the category
+    slug: Slug of the category
     add_category: Add category
+    edit_category: Edit category
+    cancel: Cancel

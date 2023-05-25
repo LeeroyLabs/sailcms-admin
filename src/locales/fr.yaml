@@ -113,7 +113,9 @@ system:
 categories:
   title: Catégories
   search: Recherche de catégories
-  add:
+  form:
     name: Nom de la catégorie
-    handle: Titre de la catégorie
+    slug: Identifiant unique de la catégorie
     add_category: Ajouter une categorie
+    edit_category: Mettre à jour une categorie
+    cancel: Cancel
