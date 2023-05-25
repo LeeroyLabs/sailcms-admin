@@ -27,11 +27,19 @@
                             "
                         />
                     </p>
-                    <v-icon
-                        icon="mdi-delete"
-                        class="tw-hidden"
-                        @click="handleDeleteItem(element)"
-                    />
+
+                    <div class="tw-flex tw-gap-2">
+                        <v-icon
+                            icon="mdi-square-edit-outline"
+                            class="tw-hidden"
+                            @click="handleEditItem(element)"
+                        />
+                        <v-icon
+                            icon="mdi-trash-can-outline"
+                            class="tw-hidden"
+                            @click="handleDeleteItem(element)"
+                        />
+                    </div>
                 </div>
                 <NestedList
                     v-if="element.items.length"
@@ -57,15 +65,23 @@
                     <p class="tw-w-full">
                         {{ element.name }}
                     </p>
-                    <v-icon
-                        icon="mdi-delete"
-                        class="tw-hidden"
-                        @click="handleDeleteItem(element)"
-                    />
+
+                    <div class="tw-flex tw-gap-2">
+                        <v-icon
+                            icon="mdi-square-edit-outline"
+                            class="tw-hidden"
+                            @click="handleEditItem(element)"
+                        />
+                        <v-icon
+                            icon="mdi-trash-can-outline"
+                            class="tw-hidden"
+                            @click="handleDeleteItem(element)"
+                        />
+                    </div>
                 </div>
                 <NestedList
                     v-if="element.items.length"
-                    v-model:items="element.items"
+                    :items="element.items"
                 />
             </li>
         </template>
@@ -104,7 +120,14 @@ const toggleOpenList = (list: Item) => {
 };
 
 // Delete a category
-const handleDeleteItem = (item: Item) => emitter.emit("delete-item", item);
+const handleDeleteItem = (item: Item) => {
+    emitter.emit("delete-item", item);
+};
+
+// Edit a category
+const handleEditItem = (item: Item) => {
+    emitter.emit("edit-item", item);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -114,7 +137,8 @@ ul {
         @apply tw-pl-10 tw-py-2;
 
         div:hover {
-            .mdi-delete {
+            .mdi-trash-can-outline,
+            .mdi-square-edit-outline {
                 @apply tw-block;
             }
         }

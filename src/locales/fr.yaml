@@ -109,3 +109,11 @@ system:
     graphql: "SailCMS ne peut trouver l'url avec laquelle travailler."
     graphql2: "Assurez-vous que le fichier"
     graphql3: "soit sur le serveur."
+
+categories:
+  title: Catégories
+  search: Recherche de catégories
+  add:
+    name: Nom de la catégorie
+    handle: Titre de la catégorie
+    add_category: Ajouter une categorie

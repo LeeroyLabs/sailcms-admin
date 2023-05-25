@@ -3,9 +3,60 @@
         <section
             class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between"
         >
-            <v-container class="tw-m-0 tw-mx-auto">
+            <v-container class="tw-m-0" fluid>
                 <v-row>
-                    <v-col cols="3" sm="3">
+                    <v-col cols="12" xs="12" md="3">
+                        <div class="tw-flex tw-flex-col tw-gap-4">
+                            <v-text-field
+                                color="primary"
+                                :label="$t('categories.add.name')"
+                                variant="outlined"
+                                :hide-details="true"
+                                type="text"
+                                clearable
+                                density="comfortable"
+                                v-model="newCategoryName"
+                                @keydown.enter="runSearch"
+                                @click:clear="clearSearch"
+                            >
+                                <template v-slot:append-inner>
+                                    <div class="tw-opacity-[0.20]">
+                                        <v-icon icon="mdi-keyboard-return" />
+                                    </div>
+                                </template>
+                            </v-text-field>
+
+                            <v-text-field
+                                color="primary"
+                                :label="$t('categories.add.handle')"
+                                variant="outlined"
+                                :hide-details="true"
+                                type="text"
+                                clearable
+                                density="comfortable"
+                                v-model="newCategoryName"
+                                @keydown.enter="runSearch"
+                                @click:clear="clearSearch"
+                            >
+                                <template v-slot:append-inner>
+                                    <div class="tw-opacity-[0.20]">
+                                        <v-icon icon="mdi-keyboard-return" />
+                                    </div>
+                                </template>
+                            </v-text-field>
+
+                            <v-btn
+                                @click="handleAddCategory"
+                                color="primary"
+                                prepend-icon="mdi-account-plus"
+                                :disabled="!newCategoryName"
+                            >
+                                {{ $t("categories.add.add_category") }}
+                            </v-btn>
+                        </div>
+                    </v-col>
+
+                    <v-col cols="12" xs="12" md="9">
                         <div class="tw-flex tw-flex-col tw-gap-4">
                             <v-text-field
                                 color="primary"
@@ -26,41 +77,10 @@
                                 </template>
                             </v-text-field>
 
-                            <v-btn
-                                @click="handleAddCategory"
-                                color="primary"
-                                prepend-icon="mdi-account-plus"
-                            >
-                                Add Category
-                            </v-btn>
-                        </div>
-                    </v-col>
-
-                    <v-col cols="9" sm="9">
-                        <div class="tw-flex tw-flex-col tw-gap-4">
-                            <v-text-field
-                                color="primary"
-                                :label="$t('categories.search')"
-                                variant="outlined"
-                                :hide-details="true"
-                                type="text"
-                                clearable
-                                density="comfortable"
-                                v-model="addCategory"
-                                @keydown.enter="runSearch"
-                                @click:clear="clearSearch"
-                            >
-                                <template v-slot:append-inner>
-                                    <div class="tw-opacity-[0.20]">
-                                        <v-icon icon="mdi-keyboard-return" />
-                                    </div>
-                                </template>
-                            </v-text-field>
-
                             <v-card
-                                class="tw-p-4 tw-h-[500px] tw-overflow-auto"
+                                class="tw-p-4 tw-h-[calc(100vh-300px)] tw-overflow-auto"
                             >
-                                <NestedList v-model:items="categories" />
+                                <NestedList :items="categories" />
                             </v-card>
                         </div>
                     </v-col>
@@ -81,7 +101,7 @@ import NestedList from "@/components/globals/categories/NestedList.vue";
 
 const store = useAppStore();
 const i18n = useI18n();
-const isLoading = ref(true);
+const isLoading = ref<boolean>(true);
 
 interface Item {
     name: string;
@@ -148,9 +168,25 @@ const categories = ref<Item[]>([
     },
 ]);
 
-// Find a category within the selected nested list
+// Emits
+const emitter = inject("emitter");
+emitter.on("delete-item", (item: Item) => handleDeleteCategory(item));
+emitter.on("edit-item", (item: Item) => handleEditCategory(item));
+
+// Add a category
+const handleAddCategory = () => {
+    categories.value.push({ name: newCategoryName.value, items: [] });
+};
+
+// Edit a category
+const handleEditCategory = (item: Item) => {
+    console.log("EDIT");
+};
+
 const removeCategory = (categories: Item[], category: Item): Item[] => {
     const filteredCategories = categories.filter((el) => {
+        if (el.name === category.name) return;
+
         if (el.items.length) {
             el.items = removeCategory(el.items, category);
             return el;
@@ -158,27 +194,16 @@ const removeCategory = (categories: Item[], category: Item): Item[] => {
         return el.name !== category.name;
     });
 
-    console.log("ELEMENT", filteredCategories);
     return filteredCategories;
 };
 
-// Emits
-const emitter = inject("emitter");
-emitter.on("delete-item", (event: Item) => handleDeleteCategory(event));
-
 // Delete a category
-const handleDeleteCategory = (category: Item) => {
-    console.log("DELETE", category);
-    categories.value = removeCategory(categories.value, category);
-};
-
-// Add a category
-const handleAddCategory = () => {
-    categories.value.push({ name: currentSearch.value, items: [] });
+const handleDeleteCategory = (item: Item) => {
+    categories.value = removeCategory(categories.value, item);
 };
 
 // Search
-const addCategory = ref("");
+const newCategoryName = ref("");
 
 // Search
 const currentSearch = ref("");
