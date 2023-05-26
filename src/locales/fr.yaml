@@ -32,6 +32,8 @@ roles:
   title: Rôles
   no_roles: Aucun rôle pour le moment.
   add_role: Ajouter un rôle
+  confirm: Confirmation
+  confirm_delete: Êtes-vous certain de vouloir supprimer le rôle "{role}" ?
 
 role:
   name: Nom

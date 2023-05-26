@@ -18,7 +18,7 @@
                     <v-btn @click.prevent="editRole(role._id)" variant="flat" icon color="primary" class="tw-mr-2">
                         <v-icon icon="mdi-pen"/>
                     </v-btn>
-                    <v-btn @click="confirmDelete(group)" variant="flat" icon color="red">
+                    <v-btn @click="confirmDelete(role)" variant="flat" icon color="red">
                         <v-icon icon="mdi-trash-can"/>
                     </v-btn>
                 </div>
@@ -37,10 +37,10 @@
             :show="true"
             :overall="true"
             :loading="isLoading"
-            :title="$t('usergroups.confirm')"
-            :message="$t('usergroups.confirm_delete', {group: (currentGroup) ? currentGroup.name : ''})"
+            :title="$t('roles.confirm')"
+            :message="$t('roles.confirm_delete', {role: (currentRole) ? currentRole.name : ''})"
             @cancel="showDeleteConfirm=false"
-            @accept="deleteGroup"
+            @accept="deleteRole"
         />
     </Transition>
 </template>
@@ -58,6 +58,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const isReady = ref(false);
 const showDeleteConfirm = ref(false);
+const currentRole = ref(null);
 const isLoading = ref(false);
 const roles = ref([]);
 
@@ -68,6 +69,22 @@ const loadRoles = async () =>
 {
     roles.value = await Roles.roles();
     isReady.value = true;
+}
+
+const confirmDelete = (role) =>
+{
+    currentRole.value = role;
+    showDeleteConfirm.value = true;
+}
+
+const deleteRole = async () =>
+{
+    isLoading.value = true;
+    await Roles.deleteRole(currentRole.value._id);
+    await loadRoles();
+    isLoading.value = false;
+    showDeleteConfirm.value = false;
+    currentRole.value = null;
 }
 
 const editRole = (id) => router.push({name: 'SingleRole', params: {id: id}});
