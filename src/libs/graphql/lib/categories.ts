@@ -97,6 +97,37 @@ export class Categories {
 
     /**
      *
+     * updateCategory
+     *
+     * @param parent_id
+     * @param order
+     * @param site_id
+     *
+     *
+     */
+    public static async updateCategoryOrders(
+        parent_id: string,
+        order: string[],
+        site_id: string
+    ): Promise<boolean | null> {
+        const client = new Client();
+        const mutation = CategoriesQueries.updateCategoryOrders;
+        const result = await client.mutation(
+            gql`
+                ${mutation}
+            `,
+            { parent_id: parent_id, order: order, site_id: site_id }
+        );
+
+        if (result.data) {
+            return result.data.updateCategoryOrders;
+        }
+
+        return null;
+    }
+
+    /**
+     *
      * deleteCategory
      *
      * @param id

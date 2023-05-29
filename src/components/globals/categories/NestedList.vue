@@ -4,7 +4,8 @@
         tag="ul"
         :list="categories"
         :group="{ name: 'categories' }"
-        item-key="name"
+        item-key="id"
+        @end="selectedCategory = $event.item._underlying_vm_"
     >
         <template #item="{ element }">
             <li v-if="element.children && element.children.length">
@@ -42,8 +43,7 @@
                     </div>
                 </div>
                 <NestedList
-                    v-if="element.children && element.children.length"
-                    :categories="element.children"
+                    :categories="element.children || []"
                     :class="
                         isListOpened.includes(element)
                             ? 'tw-block'
@@ -79,20 +79,19 @@
                         />
                     </div>
                 </div>
-                <NestedList
-                    v-if="element.children && element.children.length"
-                    :categories="element.children"
-                />
+                <NestedList :categories="element.children || []" />
             </li>
         </template>
     </draggable>
 </template>
 
 <script setup lang="ts">
-import { ref, inject } from "vue";
+import { ref, inject, watch } from "vue";
 import draggable from "vuedraggable";
 import type { Category } from "@/libs/graphql/types/categories";
+import { Categories } from "@/libs/graphql";
 import { useI18n } from "vue-i18n";
+import { SailCMS } from "@/libs/graphql";
 
 type Props = {
     categories: Category[];
@@ -100,18 +99,24 @@ type Props = {
 const props = defineProps<Props>();
 const i18n = useI18n();
 const emitter: any = inject("emitter");
+const siteId = ref(SailCMS.getSiteId());
 
 // Return the locale
 const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
 
 // Open lists having children by default
-const isListOpened = ref<Category[]>(
-    props.categories.filter((el) => {
+const openList = (array: Category[]) => {
+    const openCategoriesList = array.filter((el) => {
         if (el.children && el.children.length) {
-            return el;
+            openList(el.children);
         }
-    })
-);
+        return el;
+    });
+    return openCategoriesList;
+};
+
+const isListOpened = ref<Category[]>(openList(props.categories));
+const selectedCategory = ref<Category>();
 
 // Toggle Open/Close a list having children
 const toggleOpenList = (list: Category) => {
@@ -136,9 +141,34 @@ const handleDeleteItem = (item: Category) => {
 const handleEditItem = (item: Category) => {
     emitter.emit("edit-item", item);
 };
+
+// Update category orders & parent id
+const updateCategoryOrders = async (categories: Category[]) => {
+    const categoriesId = categories.map((cat) => cat._id);
+    const parentId = categories.find(
+        (cat) => cat.parent_id !== selectedCategory.value?.parent_id
+    )?.parent_id;
+
+    const responseUpdateCategoryOrders = await Categories.updateCategoryOrders(
+        parentId || "",
+        categoriesId,
+        siteId.value
+    );
+    if (responseUpdateCategoryOrders) {
+        console.log("UPDATED");
+    }
+};
+
+watch(props.categories, (newValue) => {
+    updateCategoryOrders(newValue);
+});
 </script>
 
 <style lang="scss" scoped>
+.dragArea {
+    min-height: 50px;
+    outline: 1px dashed;
+}
 ul {
     li {
         @apply tw-cursor-pointer;
