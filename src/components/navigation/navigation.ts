@@ -2,11 +2,25 @@
 
 import { computed } from "vue";
 import { i18n } from "@/plugins/i18n";
+import { useAppStore } from "@/store/app";
 
 export const navigationItems = computed(() =>
 {
+    const store = useAppStore();
+    let dynamics = [];
+
+    for (let type of store.configuration.dataTypes) {
+        dynamics.push({
+            icon: 'mdi-file-document-outline',
+            to: {name: 'EntryList', params: {name: type.handle}},
+            parent: '',
+            text: store.configuration.customLocales[i18n.global.locale.value].types[type.handle] || type.title,
+            permission: 'read_' + type.handle
+        });
+    }
+
     return [
-        {icon: 'mdi-file-document-outline', parent: '', text: 'Entries', permission: 'any'},
+        ...dynamics,
         {icon: 'mdi-image-outline', text: 'Assets', parent: '', permission: 'any'},
         {icon: 'mdi-menu', text: 'Navigations', parent: '', permission: 'any'},
         {icon: 'mdi-shape-outline', text: 'Categories', parent: '', permission: 'any'},
@@ -17,6 +31,6 @@ export const navigationItems = computed(() =>
         {icon: 'mdi-puzzle-outline', to: {name: 'Extensions'}, parent: '', text: 'Extensions', permission: 'any'},
         {icon: 'mdi-email-outline', parent: '', text: 'Emails', permission:'any'},
         {icon: 'mdi-calendar-check-outline', parent: '', text: 'Tasks', permission: 'any'},
-        {icon: 'mdi-cog-outline', parent: '', text: 'Settings', permission: 'any'}
+        {icon: 'mdi-cog-outline', to: {name: 'Settings'}, parent: '', text: i18n.global.t('system.settings'), permission: 'any'}
     ]
 });

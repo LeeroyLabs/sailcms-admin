@@ -152,9 +152,49 @@ assets:
     toobig: Fichier trop volumineux
     notallowed: Type de fichier refusé
 
+entries:
+  title: Entrées
+
+entry_types:
+  title: Type d'entrées
+  add: Ajouter un type
+  type_title: Titre
+  handle: Nom
+  prefix: Préfixe URL ({locale})
+  save_success: Le type {name} a été sauvegardé avec succès.
+  leave_blank: Laisser vide pour aucun
+  no_types: Aucun type d'entrée pour le moment.
+  delete_confirm: Êtes-vous certains de vouloir supprimer le type '{name}' ?
+  delete_success: "{name} a êté supprimé avec succès!"
+  delete_fail: "{name} n'a pu être supprimé, veuillez réessayer."
+  errors:
+    already_exists: Un type nommé {name} existe déjà. Veuillez en choisir un autre.
+    reserved_keyword: "{name} est un mot-clée réservé. Veuillez en choisir un autre."
+    unknown_error: Une erreur inconnue est survenue. Veuillez en choisir un autre.
+    cannot_change_default: Impossible de mettre à jour le type par défaut.
+
+layouts:
+  title: Dispositions
+  no_layout: Aucune disposition pour le moment.
+  active: Actives
+  trashed: Supprimées
+  add: Ajouter une dispositions
+  columns:
+    title: Nom
+    created_by: Créé par
+    last_update: Dernière mise à jour
+    used_by: Utilisé par
+    num_records: Nombre d'entrées
+
 system:
+  settings: Réglages
+  entry_types: Types
+  entry_layouts: Mises en page
   yes: Oui
   no: Non
+  add: Ajouter
+  save: Enregistrer
+  cancel: Annuler
   toast:
     error: Erreur
     success: Succès

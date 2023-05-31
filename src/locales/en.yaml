@@ -152,9 +152,49 @@ assets:
     toobig: File is too big
     notallowed: Filetype is not allowed
 
+entries:
+  title: Entries
+
+entry_types:
+  title: Entry Types
+  add: Add Type
+  type_title: Title
+  handle: Handle
+  prefix: URL prefix ({locale})
+  save_success: Entry type {name} saved successfully.
+  leave_blank: Leave blank for none
+  no_types: No entry types at the moment.
+  delete_confirm: Are you sure you wish to delete type '{name}'?
+  delete_success: "{name} deleted successfully!"
+  delete_fail: "{name} could not be deleted. Please try again."
+  errors:
+    already_exists: A type named {name} already exists, please choose an other name.
+    reserved_keyword: "{name} is a reserved keyword, please choose an other name."
+    unknown_error: An unknown error occurred, please try again.
+    cannot_change_default: Cannot update default type.
+
+layouts:
+  title: Entry Layouts
+  no_layout: No layouts at the moment
+  active: Active
+  trashed: Trashed
+  add: Add Layout
+  columns:
+    title: Name
+    created_by: Created by
+    last_update: Last updated on
+    used_by: Used by
+    num_records: Record count
+
 system:
+  settings: Settings
+  entry_types: Types
+  entry_layouts: Layouts
   yes: Yes
   no: No
+  add: Add
+  save: Save
+  cancel: Cancel
   toast:
     error: Error
     success: Success

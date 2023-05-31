@@ -13,6 +13,7 @@
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",
+    "lodash-inflection": "^1.5.0",
     "mitt": "^3.0.0",
     "pinia": "^2.0.35",
     "roboto-fontface": "*",

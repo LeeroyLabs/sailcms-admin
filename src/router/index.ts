@@ -4,12 +4,14 @@ import { SailCMS, Users } from "@/libs/graphql";
 import { userRoutes } from "@/router/users";
 import { publicRoutes } from "@/router/public";
 import { miscRoutes } from "@/router/misc";
+import { entryRoutes } from "@/router/entries";
 import { hasPermission } from "@/libs/tools";
 
 const routes = [
     ...publicRoutes,
     ...miscRoutes,
-    ...userRoutes
+    ...userRoutes,
+    ...entryRoutes
 ];
 
 function routerInit()

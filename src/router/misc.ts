@@ -18,5 +18,15 @@ export const miscRoutes = [
             permission: 'any',
             layout: 'private'
         }
+    },
+    {
+        path: '/settings',
+        name: 'Settings',
+        component: () => import(/* webpackChunkName: "settings" */ '@/views/misc/Settings.vue'),
+        meta: {
+            guarded: true,
+            permission: 'any',
+            layout: 'private'
+        }
     }
 ];

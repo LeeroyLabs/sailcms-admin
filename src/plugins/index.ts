@@ -14,6 +14,8 @@ import routerInit from "../router";
 import type { App } from "vue";
 import { i18n } from "./i18n";
 import { SailCMS } from "@/libs/graphql";
+import { Entries } from "@/libs/graphql/lib/entries";
+import { useAppStore } from "@/store/app";
 
 export async function registerPlugins(app: App)
 {
@@ -30,7 +32,11 @@ export async function registerPlugins(app: App)
 
             let tokenStr = localStorage.getItem(import.meta.env.VITE_SAILCMS_TOKEN) || '';
             SailCMS.setConfig(json.sailcms_url, tokenStr, json.locales, json.base_url, json.site_id);
+
             window.baseURL = json.base_url;
+
+            // Call the basic settings from server (type data mostly)
+            const types = await Entries.entryTypes(json.locales);
 
             let router = routerInit();
 
@@ -40,6 +46,10 @@ export async function registerPlugins(app: App)
                 .use(router)
                 .use(pinia)
                 .use(i18n);
+
+            const store = useAppStore();
+            store.setDataTypes(types);
+            store.customLocales(json.strings);
         } catch (e) {
             console.error(`SailCMS: Cannot load json from ${url}, please make sure the json is valid.`);
         }

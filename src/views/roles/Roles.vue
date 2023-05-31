@@ -92,3 +92,15 @@ const editRole = (id) => router.push({name: 'SingleRole', params: {id: id}});
 loadRoles();
 
 </script>
+
+<style lang="postcss">
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.35s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
+</style>

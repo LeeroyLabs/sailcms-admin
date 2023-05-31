@@ -8,7 +8,6 @@
         <section class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between">
             <div class="tw-flex tw-flex-row tw-w-full lg:tw-w-3/12 tw-items-center" v-if="hasPermission('readwrite_user')">
                 <v-select
-                    v-if="hasPermission('readwrite_user')"
                     v-model="selectedAction"
                     label="Actions"
                     color="primary"
