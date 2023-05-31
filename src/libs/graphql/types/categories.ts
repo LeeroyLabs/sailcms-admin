@@ -9,3 +9,9 @@ export interface Category {
     slug: string;
     children: Category[];
 }
+
+export interface CategorySortItem {
+    id: string;
+    parent: string;
+    order: number;
+}

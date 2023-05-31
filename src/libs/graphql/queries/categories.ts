@@ -37,8 +37,8 @@ export default {
 `,
 
     updateCategoryOrders: `
-    mutation updateCategoryOrders($parent_id: ID!, $order: [String!]!, $site_id: String!) {
-        updateCategoryOrders(parent_id: $parent_id, order: $order, site_id: $site_id)
+    mutation updateCategoryOrders($tree: [CategorySortItem!]!, $site_id: String!) {
+        updateCategoryOrders(tree: $tree, site_id: $site_id)
     }
 `,
 

@@ -1,5 +1,5 @@
 import { Client } from "./client";
-import type { Category } from "../types/categories";
+import type { Category, CategorySortItem } from "../types/categories";
 import type { LocaleObject } from "../types/general";
 import CategoriesQueries from "../queries/categories";
 import gql from "graphql-tag";
@@ -106,8 +106,7 @@ export class Categories {
      *
      */
     public static async updateCategoryOrders(
-        parent_id: string,
-        order: string[],
+        tree: CategorySortItem[],
         site_id: string
     ): Promise<boolean | null> {
         const client = new Client();
@@ -116,7 +115,7 @@ export class Categories {
             gql`
                 ${mutation}
             `,
-            { parent_id: parent_id, order: order, site_id: site_id }
+            { tree: tree, site_id: site_id }
         );
 
         if (result.data) {

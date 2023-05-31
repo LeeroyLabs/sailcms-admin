@@ -140,7 +140,6 @@ const categoryFullTree = async (parent_id: string, site_id: string) => {
     if (responseCategoryFullTree) {
         categoriesList.value = responseCategoryFullTree;
         isLoading.value = false;
-        console.log(responseCategoryFullTree);
     }
 };
 
@@ -166,6 +165,7 @@ const handleAddCategory = async (
     );
     if (responseAddCategory) {
         categoryFullTree("", siteId.value);
+        categoryNameInput.value = { en: "", fr: "" };
     }
 };
 
