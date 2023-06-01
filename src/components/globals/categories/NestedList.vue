@@ -17,12 +17,12 @@ import { SailCMS } from "@/libs/graphql";
 
 type Props = {
     categories?: Category[];
+    currentSearch: string;
 };
 interface List {
     id: string;
     text: string;
     parent: string;
-    children: Category[];
 }
 
 const props = defineProps<Props>();
@@ -49,7 +49,6 @@ const formattedCategoriesList = (categoriesList: Category[]) => {
             id: cat._id,
             text: cat.name[getLocale()],
             parent: cat.parent_id,
-            children: cat.children,
         };
     });
 
@@ -103,13 +102,25 @@ const findCategory = (categories: Category[], id: string) => {
     selectedCategory.value = [...selectedCategory.value, ...category];
 };
 
+// Toggle open list
+const toggleOpenList = () => {
+    const openedLists = document.querySelectorAll(".list-group-item.sublist");
+    openedLists.forEach((cat: Element) => {
+        const content = cat.querySelector(".list-group-item--content");
+        if (content) {
+            content.addEventListener("click", () => {
+                cat.classList.toggle("opened");
+            });
+        }
+    });
+};
+
 // Lifecycle functions
 onMounted(() => {
     new NestedSort({
         data: formattedCategories.value,
         actions: {
-            // Children key from type CategorySortItem is removed by the library
-            onDrop(data: Omit<CategorySortItem, "children">[]) {
+            onDrop(data: CategorySortItem[]) {
                 updateCategoryOrders(data);
             },
         },
@@ -132,6 +143,7 @@ onMounted(() => {
     });
 
     hasChildren(categoriesList.value!);
+    toggleOpenList();
 
     // Actions
     const lists = document.querySelectorAll(".list-group-item");
@@ -151,17 +163,6 @@ onMounted(() => {
             findCategory(categoriesList.value!, categoryId);
             emitter.emit("delete-item", selectedCategory.value[0]);
         });
-    });
-
-    // Toggle open list
-    const openedLists = document.querySelectorAll(".list-group-item.sublist");
-    openedLists.forEach((cat: Element) => {
-        const content = cat.querySelector(".list-group-item--content");
-        if (content) {
-            content.addEventListener("click", () => {
-                cat.classList.toggle("opened");
-            });
-        }
     });
 
     // Class
