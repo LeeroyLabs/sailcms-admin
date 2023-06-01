@@ -19,6 +19,46 @@ export default {
                 slug
                 order
                 parent_id 
+                children {
+                    _id
+                    name {
+                        en
+                        fr
+                    }
+                    slug
+                    order
+                    parent_id
+                    children {
+                        _id
+                        name {
+                            en
+                            fr
+                        }
+                        slug
+                        order
+                        parent_id
+                        children {
+                            _id
+                            name {
+                                en
+                                fr
+                            }
+                            slug
+                            order
+                            parent_id
+                            children {
+                                _id
+                                name {
+                                    en
+                                    fr
+                                }
+                                slug
+                                order
+                                parent_id
+                            }
+                        }
+                    }
+                }
             }
         }
     }
