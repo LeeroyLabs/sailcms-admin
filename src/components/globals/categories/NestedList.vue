@@ -3,8 +3,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, onMounted } from "vue";
+import { ref, inject, onMounted, onUpdated } from "vue";
 import { useI18n } from "vue-i18n";
+import { useTheme } from "vuetify";
 
 import NestedSort from "nested-sort";
 import type {
@@ -28,6 +29,7 @@ const props = defineProps<Props>();
 const i18n = useI18n();
 const emitter: any = inject("emitter");
 const siteId = ref(SailCMS.getSiteId());
+const theme = useTheme();
 
 const categoriesList = ref(props.categories);
 const formattedCategories = ref<List[]>([]);
@@ -66,27 +68,48 @@ const updateCategoryOrders = async (sortedCategories: CategorySortItem[]) => {
         siteId.value
     );
     if (responseUpdateCategoryOrders) {
-        console.log("UPDATED");
+        emitter.emit("update-list");
     }
+};
+
+// Check if a category has children
+const hasChildren = (categories: Category[]) => {
+    const categoriesId = categories
+        .map((cat) => {
+            if (cat.children && cat.children.length) {
+                hasChildren(cat.children);
+                return cat._id;
+            }
+        })
+        .filter((el) => el);
+
+    // Add class if element has children
+    const lists = document.querySelectorAll(".list-group-item");
+    lists.forEach((list: any) => {
+        if (categoriesId.includes(list.dataset.id)) {
+            list.classList.add("sublist");
+        }
+    });
+
+    return categoriesId;
 };
 
 // Return the category corresponding to the id
 const findCategory = (categories: Category[], id: string) => {
     const category = categories.filter((cat) => {
         if (cat.children && cat.children.length) findCategory(cat.children, id);
-        if (cat._id === id) {
-            return cat;
-        }
+        if (cat._id === id) return cat;
     });
     selectedCategory.value = [...selectedCategory.value, ...category];
 };
 
+// Lifecycle functions
 onMounted(() => {
     new NestedSort({
         data: formattedCategories.value,
         actions: {
+            // Children key from type CategorySortItem is removed by the library
             onDrop(data: Omit<CategorySortItem, "children">[]) {
-                // Children key from type CategorySortItem is removed by the library
                 updateCategoryOrders(data);
             },
         },
@@ -95,20 +118,20 @@ onMounted(() => {
         listItemClassNames: "list-group-item",
         renderListItem: (el: any, item: List) => {
             el.innerHTML = `
-                <div class='list-group-item--content' :class='{}'>
-                    <p>${el.innerText}</p>
-                    <div class='action'>
-                        <span class='action-edit'>U</span>
-                        <span class='action-delete'>D</span>
-                    </div>
+            <div class='list-group-item--content'>
+                <p><span class='mdi mdi-drag'></span>${el.innerText}</p>
+                <div class='action'>
+                    <span class='action-edit mdi mdi-square-edit-outline'></span>
+                    <span class='action-delete mdi mdi-trash-can-outline'></span>
                 </div>
-            `;
-            item.children && item.children.length
-                ? el.classList.add("open")
-                : el.classList.remove("open");
+            </div>
+        `;
+
             return el;
         },
     });
+
+    hasChildren(categoriesList.value!);
 
     // Actions
     const lists = document.querySelectorAll(".list-group-item");
@@ -129,6 +152,29 @@ onMounted(() => {
             emitter.emit("delete-item", selectedCategory.value[0]);
         });
     });
+
+    // Toggle open list
+    const openedLists = document.querySelectorAll(".list-group-item.sublist");
+    openedLists.forEach((cat: Element) => {
+        const content = cat.querySelector(".list-group-item--content");
+        if (content) {
+            content.addEventListener("click", () => {
+                cat.classList.toggle("opened");
+            });
+        }
+    });
+
+    // Class
+    const listContent = document.querySelectorAll(".list-group-item--content");
+    listContent.forEach((li: Element) => {
+        theme.name.value === "light"
+            ? li.classList.toggle("hover:tw-bg-[#E5E7EB]/20")
+            : li.classList.toggle("hover:tw-bg-white/20");
+    });
+});
+
+onUpdated(() => {
+    hasChildren(categoriesList.value!);
 });
 </script>
 
@@ -137,17 +183,61 @@ onMounted(() => {
     @apply tw-relative tw-cursor-move;
 
     .list-group-item--content {
-        @apply tw-relative;
+        @apply tw-relative tw-rounded tw-p-3;
+
+        p {
+            @apply tw-flex tw-items-center tw-gap-2;
+
+            span {
+                font: normal normal normal 24px/1 "Material Design Icons";
+            }
+        }
+
+        &:hover {
+            .action-edit,
+            .action-delete {
+                @apply tw-block;
+            }
+        }
     }
 
     .action {
         @apply tw-flex tw-items-center tw-gap-2;
-        @apply tw-h-full tw-w-10;
-        @apply tw-absolute tw-top-2/4 tw-right-0 tw--translate-y-2/4;
+        @apply tw-absolute tw-top-2/4 tw-right-4 tw--translate-y-2/4;
 
-        &-edit,
+        &-edit {
+            @apply tw-cursor-pointer tw-hidden;
+            font: normal normal normal 24px/1 "Material Design Icons";
+        }
+
         &-delete {
-            @apply tw-cursor-pointer;
+            @apply tw-cursor-pointer tw-hidden;
+            font: normal normal normal 24px/1 "Material Design Icons";
+        }
+    }
+
+    &.sublist {
+        > .list-group-item--content > p {
+            @apply tw-w-max tw-relative;
+
+            &:before {
+                @apply tw-content-['\F0140'] tw-absolute tw--right-8 tw-cursor-pointer;
+                font: normal normal normal 24px/1 "Material Design Icons";
+            }
+        }
+
+        &.opened {
+            > ol {
+                @apply tw-hidden;
+            }
+
+            > .list-group-item--content > p {
+                @apply tw-w-max tw-relative;
+
+                &:before {
+                    @apply tw-rotate-180;
+                }
+            }
         }
     }
 }

@@ -23,9 +23,10 @@ export class Categories {
 
         const result = await client.query(
             gql`
-                ${query}
+                ${query},
             `,
-            { parent_id: parent_id, site_id: site_id }
+            { parent_id: parent_id, site_id: site_id },
+            false
         );
 
         if (result.data) {

@@ -90,9 +90,12 @@
                             </v-text-field>
 
                             <v-card
-                                class="tw-p-4 tw-h-[calc(100vh-300px)] tw-overflow-auto"
+                                class="tw-h-[calc(100vh-300px)] tw-overflow-auto"
                             >
-                                <NestedList :categories="categoriesList" />
+                                <NestedList
+                                    :categories="categoriesList"
+                                    :key="categoriesListKey"
+                                />
                             </v-card>
                         </div>
                     </v-col>
@@ -124,6 +127,7 @@ const siteId = ref(SailCMS.getSiteId());
 const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
 
 const categoriesList = ref<Category[]>([]);
+const categoriesListKey = ref<number>(0);
 const selectedCategory = ref<Category>();
 
 // Search & Actions
@@ -139,6 +143,7 @@ const categoryFullTree = async (parent_id: string, site_id: string) => {
     );
     if (responseCategoryFullTree) {
         categoriesList.value = responseCategoryFullTree;
+        categoriesListKey.value++;
         isLoading.value = false;
     }
 };
@@ -151,6 +156,7 @@ emitter.on("edit-item", (item: Category) => {
     selectedCategory.value = item;
     categoryNameInput.value = item.name;
 });
+emitter.on("update-list", () => categoryFullTree("", siteId.value));
 
 // Add a category
 const handleAddCategory = async (
@@ -177,6 +183,7 @@ const handleEditCategory = async (item: Category) => {
         ""
     );
     if (responseEditCategory) {
+        categoryFullTree("", siteId.value);
         categoryNameInput.value = { en: "", fr: "" };
         action.value = "add";
     }
