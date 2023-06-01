@@ -28,10 +28,10 @@ interface List {
 const props = defineProps<Props>();
 const i18n = useI18n();
 const emitter: any = inject("emitter");
-const siteId = ref(SailCMS.getSiteId());
+const siteId = ref<string>(SailCMS.getSiteId());
 const theme = useTheme();
 
-const categoriesList = ref(props.categories);
+const categoriesList = ref<Category[]>(props.categories!);
 const formattedCategories = ref<List[]>([]);
 const selectedCategory = ref<Category[]>([]);
 
@@ -97,7 +97,7 @@ const hasChildren = (categories: Category[]) => {
 const findCategory = (categories: Category[], id: string) => {
     const category = categories.filter((cat) => {
         if (cat.children && cat.children.length) findCategory(cat.children, id);
-        if (cat._id === id) return cat;
+        return cat._id === id;
     });
     selectedCategory.value = [...selectedCategory.value, ...category];
 };
@@ -127,7 +127,7 @@ onMounted(() => {
         el: "#nested-sort-wrap",
         listClassNames: ["nested-sort"],
         listItemClassNames: "list-group-item",
-        renderListItem: (el: any, item: List) => {
+        renderListItem: (el: HTMLElement, item: List) => {
             el.innerHTML = `
             <div class='list-group-item--content'>
                 <p><span class='mdi mdi-drag'></span>${el.innerText}</p>
