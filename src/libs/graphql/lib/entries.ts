@@ -1,7 +1,7 @@
 import { Client } from "./client";
 import EntryQueries from "../queries/entries";
 import gql from "graphql-tag";
-import { Entry, EntryLayout, EntryType } from "../types/entries";
+import { Entry, EntryLayout, EntryType, FieldInfo } from "../types/entries";
 import { LocaleObject } from "@/libs/graphql/types/general";
 
 export class Entries
@@ -176,6 +176,25 @@ export class Entries
 
         if (result.data) {
             return result.data.entryLayouts;
+        }
+
+        return [];
+    }
+
+    /**
+     *
+     * Get all available fields for the UI
+     *
+     */
+    public static async fields(): Promise<FieldInfo[]>
+    {
+        const client = new Client();
+        let query = EntryQueries.fields;
+
+        let result = await client.query(gql`${query}`, {});
+
+        if (result.data) {
+            return result.data.fields;
         }
 
         return [];

@@ -120,3 +120,33 @@ export type EntryLayout = {
     dates: Dates;
     is_trashed: boolean;
 };
+
+export type FieldInfo = {
+    name: string;
+    fullname: string;
+    handle: string;
+    description: string;
+    storingType: string;
+    searchable: boolean;
+    inputs: FieldInputInfo[];
+};
+
+export type FieldInputInfo = {
+    name: string;
+    fullname: string;
+    type: string;
+    inputKey: string;
+    availableSettings: SettingInfo[];
+};
+
+export type SettingInfo = {
+    name: string;
+    value: string;
+    options: Option[];
+    type: string;
+};
+
+export type Option = {
+    value: string;
+    label: string;
+};

@@ -27,6 +27,14 @@ usergroups:
   no_groups: Aucun group d'utilisateur pour le moment
   confirm: Confirmation
   confirm_delete: Êtes-vous certain de vouloir supprimer le groupe "{group}" ?
+  group_name: Nom du groupe
+  add_a_grouo: Ajouter un groupe
+  edit_group: Modification d'un groupe
+  add_success: Groupe ajouté avec succès.
+  update_success: Groupe modifié avec succès.
+  errors:
+    unknown_error: Une erreur inconnue est survenue, veuillez réessayer.
+    already_exists: Un groupe avec ce nom existe déjà, veuillez en choisir un différent.
 
 roles:
   title: Rôles
@@ -185,6 +193,10 @@ layouts:
     last_update: Dernière mise à jour
     used_by: Utilisé par
     num_records: Nombre d'entrées
+
+layout:
+  add: Nouvelle Disposition
+  edit: Dispositions
 
 system:
   settings: Réglages

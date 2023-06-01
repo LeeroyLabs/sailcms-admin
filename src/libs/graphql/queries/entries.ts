@@ -170,5 +170,36 @@ export default {
                 used_by
             }
         }
+    `,
+    fields: `
+        query fields {
+            fields {
+                name
+                fullname
+                handle
+                description {
+                    fr
+                    en
+                }
+                category
+                storingType
+                searchable
+                inputs {
+                    name
+                    fullname
+                    type
+                    inputKey
+                    availableSettings {
+                        name
+                        value
+                        options {
+                            value
+                            label
+                        }
+                        type
+                    }
+                }
+            }
+        }
     `
 }

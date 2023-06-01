@@ -1,7 +1,7 @@
 <template>
     <div v-if="isReady">
         <Teleport to="#actions">
-            <v-btn @click="showGroupAdd=true" color="primary" v-if="hasPermission('readwrite_group')">
+            <v-btn @click="openForAdd" color="primary" v-if="hasPermission('readwrite_group')">
                 {{ $t('usergroups.add') }}
             </v-btn>
         </Teleport>
@@ -38,6 +38,18 @@
             @accept="deleteGroup"
         />
     </Transition>
+
+    <Transition>
+        <AddEdit
+            v-if="showAdder"
+            :isAdding="isAdding"
+            :isLoading="isSaving"
+            :group="group"
+            @cancel="showAdder=false"
+            @add="addEditGroup"
+        />
+    </Transition>
+
 </template>
 
 <script setup>
@@ -47,16 +59,26 @@ import { hasPermission } from '@/libs/tools';
 import { Groups } from '@/libs/graphql';
 import Loader from '@/components/globals/Loader.vue';
 import DeleteConfirmation from '@/components/globals/DeleteConfirmation.vue';
+import AddEdit from '@/components/groups/AddEdit.vue';
+import { useAppStore } from '@/store/app';
+import { useI18n } from 'vue-i18n';
 
 const page = usePage();
 const isReady = ref(false);
-const showGroupAdd = ref(false);
 const showDeleteConfirm = ref(false);
 const groups = ref([]);
 const currentGroup = ref(null);
 const isLoading = ref(false);
 
 page.setPageTitle('usergroups.title');
+
+const store = useAppStore();
+const i18n = useI18n();
+
+const showAdder = ref(false);
+const isAdding = ref(false);
+const isSaving = ref(false);
+const group = ref(null);
 
 const loadGroups = async () =>
 {
@@ -74,12 +96,65 @@ const deleteGroup = async () =>
 {
     isLoading.value = true;
 
-    await Groups.delete(currentGroup.value._id);
+    await Groups.deleteGroup(currentGroup.value._id);
     await loadGroups();
 
     isLoading.value = false;
     showDeleteConfirm.value = false;
     currentGroup.value = null;
+}
+
+const openForAdd = () =>
+{
+    isAdding.value = true;
+    showAdder.value = true;
+}
+
+const editGroup = (groupObj) =>
+{
+    group.value = groupObj;
+    isAdding.value = false;
+    showAdder.value = true;
+}
+
+const addEditGroup = async (name) =>
+{
+    if (isSaving.value) return;
+
+    isSaving.value = true;
+
+    if (isAdding.value) {
+        let result = await Groups.createGroup(name);
+
+        if (result === 'error') {
+            store.displayToast('error', i18n.t('usergroups.errors.unknown_error'));
+            isSaving.value = false;
+            return;
+        } else if (result === 'already_exists') {
+            store.displayToast('error', i18n.t('usergroups.errors.already_exists'));
+            isSaving.value = false;
+            return;
+        } else {
+            store.displayToast('success', i18n.t('usergroups.add_success'));
+        }
+    } else {
+        let result = await Groups.updateGroup(group.value._id, name);
+
+        if (result) {
+            store.displayToast('success', i18n.t('usergroups.update_success'));
+        } else {
+            store.displayToast('error', i18n.t('usergroups.errors.already_exists'));
+            isSaving.value = false;
+            return;
+        }
+    }
+
+    loadGroups();
+
+    isAdding.value = false;
+    isSaving.value = false;
+    showAdder.value = false;
+    group.value = null;
 }
 
 loadGroups();
