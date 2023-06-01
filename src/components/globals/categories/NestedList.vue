@@ -106,9 +106,9 @@ const findCategory = (categories: Category[], id: string) => {
 const toggleOpenList = () => {
     const openedLists = document.querySelectorAll(".list-group-item.sublist");
     openedLists.forEach((cat: Element) => {
-        const content = cat.querySelector(".list-group-item--content");
-        if (content) {
-            content.addEventListener("click", () => {
+        const pTag = cat.querySelector(".list-group-item--content p");
+        if (pTag) {
+            pTag.addEventListener("click", () => {
                 cat.classList.toggle("opened");
             });
         }
