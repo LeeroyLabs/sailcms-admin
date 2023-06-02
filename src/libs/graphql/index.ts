@@ -1,20 +1,20 @@
 import { Client } from "./lib/client";
 export { Client } from "./lib/client";
-export { Users } from './lib/users';
-export { Roles } from './lib/roles';
+export { Users } from "./lib/users";
+export { Categories } from "./lib/categories";
+export { Roles } from "./lib/roles";
 export { Assets } from "./lib/assets";
 export { Emails } from "./lib/emails";
 export { Misc } from "./lib/misc";
 export { Groups } from "./lib/groups";
 
-export class SailCMS
-{
-    private static url: string = '';
-    private static accessToken: string = '';
+export class SailCMS {
+    private static url: string = "";
+    private static accessToken: string = "";
 
-    private static locales: string[] = ['fr', 'en'];
-    private static baseURL: string = '';
-    private static siteId: string = 'default';
+    private static locales: string[] = ["fr", "en"];
+    private static baseURL: string = "";
+    private static siteId: string = "default";
 
     /**
      *
@@ -27,8 +27,13 @@ export class SailCMS
      * @param siteId
      *
      */
-    public static setConfig(url: string, accessToken: string = '', locales: string[] = ['fr', 'en'], baseURL: string, siteId: string): void
-    {
+    public static setConfig(
+        url: string,
+        accessToken: string = "",
+        locales: string[] = ["fr", "en"],
+        baseURL: string,
+        siteId: string
+    ): void {
         SailCMS.url = url;
         SailCMS.accessToken = accessToken;
         SailCMS.locales = locales;
@@ -41,8 +46,7 @@ export class SailCMS
      * Get the GraphQL URL
      *
      */
-    public static getURL(): string
-    {
+    public static getURL(): string {
         return SailCMS.url;
     }
 
@@ -51,8 +55,7 @@ export class SailCMS
      * Get the Access Token
      *
      */
-    public static getToken(): string
-    {
+    public static getToken(): string {
         return SailCMS.accessToken;
     }
 
@@ -61,8 +64,7 @@ export class SailCMS
      * Get Site ID
      *
      */
-    public static getSiteId(): string
-    {
+    public static getSiteId(): string {
         return SailCMS.siteId;
     }
 
@@ -71,8 +73,7 @@ export class SailCMS
      * Get available locales in the cms
      *
      */
-    public static getLocales(): string[]
-    {
+    public static getLocales(): string[] {
         return SailCMS.locales;
     }
 
@@ -81,8 +82,7 @@ export class SailCMS
      * Get admin base url
      *
      */
-    public static getBaseURL(): string
-    {
+    public static getBaseURL(): string {
         return SailCMS.baseURL;
     }
 
@@ -93,8 +93,7 @@ export class SailCMS
      * @param token
      *
      */
-    public static setToken(token: string): void
-    {
+    public static setToken(token: string): void {
         SailCMS.accessToken = token;
         Client.updateClient();
     }
