@@ -51,5 +51,10 @@ export default {
         mutation updateRole($id: ID!, $name: String, $description: String, $level: Int, $permissions: [String!]) {
             updateRole(id: $id, name: $name, description: $description, level: $level, permissions: $permissions)
         }
+    `,
+    deleteRole: `
+        mutation deleteRole($id: ID!) {
+            deleteRole(id: $id)
+        }
     `
 }

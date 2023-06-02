@@ -74,7 +74,7 @@ export class Roles
         const client = new Client();
         let query = RoleQueries.createRole;
 
-        let result = await client.query(gql`${query}`, {
+        let result = await client.mutation(gql`${query}`, {
             name: role.name,
             description: role.description,
             level: role.level,
@@ -105,7 +105,7 @@ export class Roles
         const client = new Client();
         let query = RoleQueries.updateRole;
 
-        let result = await client.query(gql`${query}`, {
+        let result = await client.mutation(gql`${query}`, {
             id: id,
             name: role.name,
             description: role.description,
@@ -119,6 +119,31 @@ export class Roles
 
         if (result.data) {
             return result.data.updateRole;
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     * Delete a role
+     *
+     * @param id
+     *
+     */
+    public static async deleteRole(id: string): Promise<boolean>
+    {
+        const client = new Client();
+        let query = RoleQueries.deleteRole;
+
+        let result = await client.mutation(gql`${query}`, {id: id});
+
+        if (result.error) {
+            return false;
+        }
+
+        if (result.data) {
+            return result.data.deleteRole;
         }
 
         return false;

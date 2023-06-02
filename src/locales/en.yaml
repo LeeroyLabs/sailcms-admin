@@ -40,6 +40,8 @@ roles:
   title: Roles
   no_roles: No roles at the moment.
   add: Add Role
+  confirm: Confirmation
+  confirm_delete: Are you sure you want to delete the "{role}" role?
 
 role:
   name: Name
@@ -158,7 +160,99 @@ assets:
     toobig: File is too big
     notallowed: Filetype is not allowed
 
+entries:
+  title: Entries
+
+entry_types:
+  title: Entry Types
+  add: Add Type
+  type_title: Title
+  handle: Handle
+  prefix: URL prefix ({locale})
+  save_success: Entry type {name} saved successfully.
+  leave_blank: Leave blank for none
+  no_types: No entry types at the moment.
+  delete_confirm: Are you sure you wish to delete type '{name}'?
+  delete_success: "{name} deleted successfully!"
+  delete_fail: "{name} could not be deleted. Please try again."
+  errors:
+    already_exists: A type named {name} already exists, please choose an other name.
+    reserved_keyword: "{name} is a reserved keyword, please choose an other name."
+    unknown_error: An unknown error occurred, please try again.
+    cannot_change_default: Cannot update default type.
+
+layouts:
+  title: Entry Layouts
+  no_layout: No layouts at the moment
+  active: Active
+  trashed: Trashed
+  add: Add Layout
+  columns:
+    title: Name
+    created_by: Created by
+    last_update: Last updated on
+    used_by: Used by
+    num_records: Record count
+
+layout:
+  add: New Entry Layout
+  edit: Entry Layouts
+  no_fields: There are no fields in this layout at the moment.
+  field_key: The key is used in your code to get the value of this field.
+  untitled: Untitled
+  inputs:
+    text: Text Inputs
+    select: Select Inputs
+    datetime: Date & Time Inputs
+    special: Special Inputs
+  names:
+    AssetImage: Image Asset
+    AssetFile: File Asset
+    Entry: Entry
+    Email: Email Address
+    HTML: HTML Content
+    Text: Text Content
+    Textarea: Multiline Text Content
+    Number: Numeric Value
+    Url: URL
+    Date: Date
+    DateTime: Date & Time
+    Time: Time
+    MultipleSelect: Multiple Selections
+    Select: Dropdown Selection
+  configs:
+    required: Required
+    multiline: Multiline
+    maxLength: Maximum Length
+    minLength: Minimum Length
+    min: Minimum value
+    max: Maximum value
+    step: Step
+    format: Format
+    pattern: Match Pattern
+    title_fr: French Title
+    title_en: English Title
+    key: Field Key
+    cropName: Cropping Key
+    ratio: Ratio
+    minWidth: Minimum Width
+    minHeight: Minimum Height
+    maxWidth: Maximum Width
+    maxHeight: Maximum Height
+    lockedType: Locked Cropping Shape
+    multiple: Multiple
+    allowedFormats: Allowed File Extensions
+  explain:
+    cropName: The key is used in your code to get the url of the crop.
+    lockedType: Lock either a square, round or user's choice.
+  mobile:
+    wait: Wait!
+    explain: The layouts cannot be managed using a phone. Please use a tablet or bigger. We recommend using a laptop or desktop.
+
 system:
+  settings: Settings
+  entry_types: Types
+  entry_layouts: Layouts
   yes: Yes
   no: No
   search: Search

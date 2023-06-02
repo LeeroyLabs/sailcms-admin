@@ -1,4 +1,4 @@
-import { LocaleObject } from "types/general";
+import { LocaleObject } from "./general";
 
 export type Entry = {
     _id: string;
@@ -20,6 +20,14 @@ export type Entry = {
     schema: LayoutField[];
     seo?: EntrySeo;
 };
+
+export type EntryType = {
+    _id: string;
+    title: string;
+    handle: string;
+    url_prefix: JsonObject;
+    entry_layout_id: string;
+}
 
 export type Parent = {
     handle: string;
@@ -101,4 +109,44 @@ export type SocialMeta = {
 export type SocialMetaContent = {
     name: string;
     content: string;
+};
+
+export type EntryLayout = {
+    _id: string;
+    slug?: string;
+    titles: LocaleObject;
+    schema: LayoutField[];
+    authors: Authors;
+    dates: Dates;
+    is_trashed: boolean;
+};
+
+export type FieldInfo = {
+    name: string;
+    fullname: string;
+    handle: string;
+    description: string;
+    storingType: string;
+    searchable: boolean;
+    inputs: FieldInputInfo[];
+};
+
+export type FieldInputInfo = {
+    name: string;
+    fullname: string;
+    type: string;
+    inputKey: string;
+    availableSettings: SettingInfo[];
+};
+
+export type SettingInfo = {
+    name: string;
+    value: string;
+    options: Option[];
+    type: string;
+};
+
+export type Option = {
+    value: string;
+    label: string;
 };

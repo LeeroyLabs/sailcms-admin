@@ -2,10 +2,10 @@
     <th>
         <div class="tw-flex tw-flex-row tw-items-center">
             {{ text }}
-            <v-btn flat class="tw-ml-2" size="x-small" icon @click.prevent="$emit('sort')">
+            <v-btn v-if="sortable" variant="flat" class="tw-ml-2" size="x-small" icon @click.prevent="$emit('sort')">
                 <v-icon :icon="(ascending) ? 'mdi-chevron-up' : 'mdi-chevron-down'"></v-icon>
             </v-btn>
-            <div :class="{'tw-invisible': condition}" class="tw-ml-2">
+            <div v-if="sortable" :class="{'tw-invisible': condition}" class="tw-ml-2">
                 <v-progress-circular indeterminate  size="x-small" :width="3" />
             </div>
         </div>

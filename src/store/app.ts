@@ -2,6 +2,7 @@
 import { defineStore } from 'pinia';
 import { User } from "@/libs/graphql/types/users";
 import { AssetConfig, Folder } from "@/libs/graphql/types/assets";
+import { data } from "autoprefixer";
 
 const toastLength = 3_500;
 
@@ -16,6 +17,10 @@ export const useAppStore = defineStore('app', {
         showGQLError: false,
         currentUser: {} as User,
         isLoggedIn: false,
+        configuration: {
+            dataTypes: [] as any[],
+            customLocales: {fr: [], en: []}
+        },
         toast: {
             show: false,
             text: '',
@@ -126,6 +131,15 @@ export const useAppStore = defineStore('app', {
         setAssetConfig(config: AssetConfig)
         {
             this.assets.config = config;
+        },
+        setDataTypes(dataTypes: any[])
+        {
+            this.configuration.dataTypes = dataTypes;
+        },
+        customLocales(locales: object)
+        {
+            // @ts-ignore
+            this.configuration.customLocales = locales;
         }
     }
 });

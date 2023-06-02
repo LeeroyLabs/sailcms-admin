@@ -24,6 +24,7 @@ export class SailCMS {
      * @param accessToken
      * @param locales
      * @param baseURL
+     * @param siteId
      *
      */
     public static setConfig(

@@ -5,6 +5,7 @@ import { userRoutes } from "@/router/users";
 import { categoriesRoutes } from "@/router/categories";
 import { publicRoutes } from "@/router/public";
 import { miscRoutes } from "@/router/misc";
+import { entryRoutes } from "@/router/entries";
 import { hasPermission } from "@/libs/tools";
 
 const routes = [
@@ -12,6 +13,7 @@ const routes = [
     ...miscRoutes,
     ...userRoutes,
     ...categoriesRoutes,
+    ...entryRoutes
 ];
 
 function routerInit() {

@@ -42,8 +42,8 @@
                     </v-btn>
                 </v-app-bar>
 
-                <v-main scrollable id="mainSection">
-                    <div class="tw-flex tw-flex-row tw-items-center tw-pr-4 tw-pt-4">
+                <v-main scrollable id="mainSection" :class="{'tw-bg-gray-200': $vuetify.theme.name === 'light', 'tw-bg-[#111111]': $vuetify.theme.name === 'dark'}">
+                    <div class="tw-flex tw-flex-row tw-items-center tw-pr-4 tw-pt-4" :class="{'tw-bg-gray-200': $vuetify.theme.name === 'light', 'tw-bg-[#111111]': $vuetify.theme.name === 'dark'}">
                         <div class="tw-flex-grow"></div>
                         <div id="actions">
                             <!-- Use Teleport -->

@@ -2,5 +2,19 @@
     "sailcms_url": "https://sailcms.leeroy.codes/graphql",
     "base_url": "/admin",
     "site_id": "default",
-    "locales": ["en", "fr"]
+    "locales": ["en", "fr"],
+    "strings": {
+        "fr": {
+            "types": {
+                "page": "Pages",
+                "product": "Produits"
+            }
+        },
+        "en": {
+            "types": {
+                "page": "Pages",
+                "product": "Products"
+            }
+        }
+    }
 }

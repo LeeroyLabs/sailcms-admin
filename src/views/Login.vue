@@ -64,7 +64,7 @@
 import { useI18n } from "vue-i18n";
 import { EmailRule } from "@/libs/validation";
 import { ref } from "vue";
-import { Users } from "@/libs/graphql";
+import { SailCMS, Users } from "@/libs/graphql";
 import { useAppStore } from "@/store/app";
 import { useRouter } from "vue-router";
 
@@ -110,7 +110,7 @@ const validateAndSubmit = async () =>
             localStorage.setItem(import.meta.env.VITE_SAILCMS_TOKEN, user.auth_token);
             isLoading.value = false;
 
-            router.push({name: 'Dashboard'});
+            window.location.href = appStore.baseURL + '/dashboard';
             return;
         }
     } else {

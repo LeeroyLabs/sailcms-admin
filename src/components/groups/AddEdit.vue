@@ -43,7 +43,7 @@ const props = defineProps({
     }
 });
 
-const groupName = ref(props.group.name);
+const groupName = ref((props.group) ? props.group.name : '');
 
 const cancelGroup = () =>
 {
