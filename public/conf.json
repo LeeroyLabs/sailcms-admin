@@ -1,5 +1,5 @@
 {
-    "sailcms_url": "https://saildev.com:8890/graphql",
+    "sailcms_url": "https://sailcms.leeroy.codes/graphql",
     "base_url": "/admin",
     "site_id": "default",
     "locales": ["en", "fr"]

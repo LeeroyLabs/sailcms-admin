@@ -177,3 +177,13 @@ system:
     graphql: "SailCMS cannot find the URL to work with."
     graphql2: "Make sure the"
     graphql3: "file is on your server."
+
+categories:
+  title: Categories
+  search: Search for categories
+  form:
+    name: Name of the category
+    slug: Slug of the category
+    add_category: Add category
+    edit_category: Edit category
+    cancel: Cancel
