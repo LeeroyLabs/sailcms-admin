@@ -16,7 +16,6 @@
                                 clearable
                                 density="comfortable"
                                 v-model="categoryNameInput[getLocale()]"
-                                @keydown.enter="runSearch"
                                 @click:clear="clearSearch"
                             >
                                 <template v-slot:append-inner>
@@ -70,27 +69,8 @@
 
                     <v-col cols="12" xs="12" md="9">
                         <div class="tw-flex tw-flex-col tw-gap-4">
-                            <v-text-field
-                                color="primary"
-                                :label="$t('categories.search')"
-                                variant="outlined"
-                                :hide-details="true"
-                                type="text"
-                                clearable
-                                density="comfortable"
-                                v-model="currentSearch"
-                                @keydown.enter="runSearch"
-                                @click:clear="clearSearch"
-                            >
-                                <template v-slot:append-inner>
-                                    <div class="tw-opacity-[0.20]">
-                                        <v-icon icon="mdi-keyboard-return" />
-                                    </div>
-                                </template>
-                            </v-text-field>
-
                             <v-card
-                                class="tw-h-[calc(100vh-300px)] tw-overflow-auto"
+                                class="tw-p-4 tw-h-[calc(100vh-300px)] tw-overflow-auto"
                             >
                                 <NestedList
                                     :categories="categoriesList"
@@ -131,9 +111,9 @@ const categoriesListKey = ref<number>(0);
 const selectedCategory = ref<Category>();
 
 // Search & Actions
-const action = ref("add");
+const action = ref<string>("add");
 const categoryNameInput = ref<LocaleObject>({ en: "", fr: "" });
-const currentSearch = ref("");
+const currentSearch = ref<string>("");
 
 // Get categories
 const categoryFullTree = async (parent_id: string, site_id: string) => {
@@ -203,14 +183,9 @@ const handleDeleteCategory = async (item: Category) => {
     }
 };
 
-// Run Search
-const runSearch = async () => {
-    console.log("RUN SEARCH");
-};
-
 // Clear Search Button Handler
 const clearSearch = async () => {
-    console.log("CLEAR SEARCH");
+    currentSearch.value = "";
 };
 
 // Setup page data

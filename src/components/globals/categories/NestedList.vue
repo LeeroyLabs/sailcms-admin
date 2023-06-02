@@ -17,7 +17,6 @@ import { SailCMS } from "@/libs/graphql";
 
 type Props = {
     categories?: Category[];
-    currentSearch: string;
 };
 interface List {
     id: string;
@@ -184,7 +183,7 @@ onUpdated(() => {
     @apply tw-relative tw-cursor-move;
 
     .list-group-item--content {
-        @apply tw-relative tw-rounded tw-p-3;
+        @apply tw-relative tw-rounded tw-p-2;
 
         p {
             @apply tw-flex tw-items-center tw-gap-2;
@@ -244,11 +243,11 @@ onUpdated(() => {
 }
 
 :deep(.nested-sort li) {
-    @apply tw-list-none tw-p-3;
+    @apply tw-list-none tw-p-3 tw-mb-1;
 }
 
 :deep(.nested-sort li ol) {
-    @apply tw-p-0 tw-mt-2;
+    @apply tw-p-0 tw-px-2 tw-mt-3 tw--mb-5;
 }
 
 :deep(.nested-sort .ns-dragged) {
