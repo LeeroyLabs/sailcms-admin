@@ -25,45 +25,56 @@
                                 </template>
                             </v-text-field>
 
-                            <v-btn
-                                v-if="action === 'add'"
-                                @click="
-                                    handleAddCategory(
-                                        categoryNameInput,
-                                        '',
-                                        siteId
-                                    )
-                                "
-                                color="primary"
-                                prepend-icon="mdi-account-plus"
-                                :disabled="!categoryNameInput"
-                            >
-                                {{ $t("categories.form.add_category") }}
-                            </v-btn>
+                            <v-select
+                                clearable
+                                :label="$t('categories.form.select_parent')"
+                                variant="outlined"
+                                :items="formattedCategories"
+                                v-model="selectedParentId"
+                                item-title="name"
+                                item-value="id"
+                            />
 
-                            <div
-                                v-else
-                                class="tw-flex tw-gap-2 tw-justify-between tw-flex-wrap"
+                            <v-card
+                                :title="
+                                    !selectedCategory
+                                        ? $t('categories.form.add_category')
+                                        : $t('categories.form.edit_category')
+                                "
+                                class="tw-flex tw-flex-col tw-gap-3 tw-px-3"
                             >
                                 <v-btn
-                                    @click="handleCancel"
-                                    color="primary"
-                                    class="tw-flex-grow"
-                                >
-                                    {{ $t("categories.form.cancel") }}
-                                </v-btn>
-                                <v-btn
-                                    v-if="selectedCategory"
+                                    v-if="!selectedCategory"
                                     @click="
-                                        handleEditCategory(selectedCategory)
+                                        handleAddCategory(
+                                            categoryNameInput,
+                                            selectedParentId || '',
+                                            siteId
+                                        )
                                     "
                                     color="primary"
-                                    :disabled="!categoryNameInput"
-                                    class="tw-flex-grow"
+                                    class="tw-w-full"
+                                >
+                                    {{ $t("categories.form.add_category") }}
+                                </v-btn>
+                                <v-btn
+                                    v-else
+                                    @click="
+                                        handleEditCategory(selectedCategory!)
+                                    "
+                                    color="primary"
+                                    class="tw-w-full"
                                 >
                                     {{ $t("categories.form.edit_category") }}
                                 </v-btn>
-                            </div>
+                                <v-btn
+                                    @click="handleCancel"
+                                    color="primary"
+                                    class="tw-w-full"
+                                >
+                                    {{ $t("categories.form.cancel") }}
+                                </v-btn>
+                            </v-card>
                         </div>
                     </v-col>
 
@@ -88,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, onMounted } from "vue";
+import { ref, inject, onMounted, watch } from "vue";
 import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
 import Loader from "@/components/globals/Loader.vue";
@@ -108,12 +119,31 @@ const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
 
 const categoriesList = ref<Category[]>([]);
 const categoriesListKey = ref<number>(0);
-const selectedCategory = ref<Category>();
+const selectedCategory = ref<Category | null>(null);
+const formattedCategories = ref<
+    {
+        id: string;
+        name: string;
+    }[]
+>([]);
+const selectedParentId = ref<string | null>(null);
 
 // Search & Actions
-const action = ref<string>("add");
 const categoryNameInput = ref<LocaleObject>({ en: "", fr: "" });
 const currentSearch = ref<string>("");
+
+// Emits
+const emitter: any = inject("emitter");
+emitter.on("delete-item", (item: Category) => handleDeleteCategory(item));
+emitter.on("edit-item", (item: Category) => {
+    selectedCategory.value = item;
+    selectedParentId.value = item.parent_id;
+    categoryNameInput.value = item.name;
+    formattedCategories.value = formattedCategories.value.filter(
+        (el) => el.id !== selectedCategory?.value?._id
+    );
+});
+emitter.on("update-list", () => categoryFullTree("", siteId.value));
 
 // Get categories
 const categoryFullTree = async (parent_id: string, site_id: string) => {
@@ -123,20 +153,30 @@ const categoryFullTree = async (parent_id: string, site_id: string) => {
     );
     if (responseCategoryFullTree) {
         categoriesList.value = responseCategoryFullTree;
+        formattedCategoriesList(categoriesList.value);
         categoriesListKey.value++;
         isLoading.value = false;
     }
 };
 
-// Emits
-const emitter: any = inject("emitter");
-emitter.on("delete-item", (item: Category) => handleDeleteCategory(item));
-emitter.on("edit-item", (item: Category) => {
-    action.value = "edit";
-    selectedCategory.value = item;
-    categoryNameInput.value = item.name;
-});
-emitter.on("update-list", () => categoryFullTree("", siteId.value));
+// Format the categories to display within the dropdown
+const formattedCategoriesList = (categoriesList: Category[]) => {
+    const formattedList = categoriesList.map((cat) => {
+        if (cat.children && cat.children.length) {
+            formattedCategoriesList(cat.children);
+        }
+
+        return {
+            id: cat._id,
+            name: cat.name["en"],
+        };
+    });
+
+    formattedCategories.value = [
+        ...formattedCategories.value,
+        ...formattedList,
+    ];
+};
 
 // Add a category
 const handleAddCategory = async (
@@ -152,6 +192,7 @@ const handleAddCategory = async (
     if (responseAddCategory) {
         categoryFullTree("", siteId.value);
         categoryNameInput.value = { en: "", fr: "" };
+        selectedParentId.value = null;
     }
 };
 
@@ -165,14 +206,15 @@ const handleEditCategory = async (item: Category) => {
     if (responseEditCategory) {
         categoryFullTree("", siteId.value);
         categoryNameInput.value = { en: "", fr: "" };
-        action.value = "add";
+        selectedCategory.value = null;
     }
 };
 
 // Cancel edit
 const handleCancel = () => {
     categoryNameInput.value = { en: "", fr: "" };
-    action.value = "add";
+    selectedCategory.value = null;
+    selectedParentId.value = null;
 };
 
 // Delete a category
@@ -208,6 +250,8 @@ onMounted(() => {
     categoryFullTree("", siteId.value);
     setupPage();
 });
+
+watch(selectedParentId, (value) => console.log("VALUE", value));
 </script>
 
 <style lang="scss" scoped>

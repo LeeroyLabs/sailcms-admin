@@ -32,7 +32,7 @@ const theme = useTheme();
 
 const categoriesList = ref<Category[]>(props.categories!);
 const formattedCategories = ref<List[]>([]);
-const selectedCategory = ref<Category[]>([]);
+const selectedCategory = ref<Category | null>(null);
 
 // Return the locale as a string
 const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
@@ -94,11 +94,11 @@ const hasChildren = (categories: Category[]) => {
 
 // Return the category corresponding to the id
 const findCategory = (categories: Category[], id: string) => {
-    const category = categories.filter((cat) => {
+    if (selectedCategory.value) return;
+    categories.forEach((cat) => {
         if (cat.children && cat.children.length) findCategory(cat.children, id);
-        return cat._id === id;
+        if (cat._id === id) selectedCategory.value = cat;
     });
-    selectedCategory.value = [...selectedCategory.value, ...category];
 };
 
 // Toggle open list
@@ -129,10 +129,10 @@ onMounted(() => {
         renderListItem: (el: HTMLElement, item: List) => {
             el.innerHTML = `
             <div class='list-group-item--content'>
-                <p><span class='mdi mdi-drag'></span>${el.innerText}</p>
+                <p>${el.innerText}</p>
                 <div class='action'>
-                    <span class='action-edit mdi mdi-square-edit-outline'></span>
-                    <span class='action-delete mdi mdi-trash-can-outline'></span>
+                    <span class='action-edit mdi mdi-square-edit-outline' data-id='${item.id}'></span>
+                    <span class='action-delete mdi mdi-trash-can-outline tw-text-red-600' data-id='${item.id}'></span>
                 </div>
             </div>
         `;
@@ -147,20 +147,23 @@ onMounted(() => {
     // Actions
     const lists = document.querySelectorAll(".list-group-item");
     lists.forEach((list: any) => {
-        const categoryId: string = list.dataset.id;
         const editIcon: Element = list.querySelector(".action-edit");
         const deleteIcon: Element = list.querySelector(".action-delete");
 
         // Edit
-        editIcon.addEventListener("click", () => {
+        editIcon.addEventListener("click", (event: any) => {
+            const categoryId: string = event.target.dataset.id;
             findCategory(categoriesList.value!, categoryId);
-            emitter.emit("edit-item", selectedCategory.value[0]);
+            emitter.emit("edit-item", selectedCategory.value);
+            selectedCategory.value = null;
         });
 
         // Delete
-        deleteIcon.addEventListener("click", () => {
+        deleteIcon.addEventListener("click", (event: any) => {
+            const categoryId: string = event.target.dataset.id;
             findCategory(categoriesList.value!, categoryId);
-            emitter.emit("delete-item", selectedCategory.value[0]);
+            emitter.emit("delete-item", selectedCategory.value);
+            selectedCategory.value = null;
         });
     });
 
@@ -180,7 +183,7 @@ onUpdated(() => {
 
 <style lang="scss" scoped>
 :deep(.nested-sort--enabled li) {
-    @apply tw-relative tw-cursor-move;
+    @apply tw-relative tw-cursor-grab;
 
     .list-group-item--content {
         @apply tw-relative tw-rounded tw-p-2;
@@ -243,11 +246,12 @@ onUpdated(() => {
 }
 
 :deep(.nested-sort li) {
-    @apply tw-list-none tw-p-3 tw-mb-1;
+    @apply tw-list-none tw-p-3;
 }
 
 :deep(.nested-sort li ol) {
-    @apply tw-p-0 tw-px-2 tw-mt-3 tw--mb-5;
+    @apply tw-p-0 tw-px-2 tw-mt-3 tw--mb-1;
+    @apply tw-border tw-border-dashed tw-border-[#ddd]/75;
 }
 
 :deep(.nested-sort .ns-dragged) {
