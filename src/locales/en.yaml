@@ -197,6 +197,57 @@ layouts:
 layout:
   add: New Entry Layout
   edit: Entry Layouts
+  no_fields: There are no fields in this layout at the moment.
+  field_key: The key is used in your code to get the value of this field.
+  untitled: Untitled
+  inputs:
+    text: Text Inputs
+    select: Select Inputs
+    datetime: Date & Time Inputs
+    special: Special Inputs
+  names:
+    AssetImage: Image Asset
+    AssetFile: File Asset
+    Entry: Entry
+    Email: Email Address
+    HTML: HTML Content
+    Text: Text Content
+    Textarea: Multiline Text Content
+    Number: Numeric Value
+    Url: URL
+    Date: Date
+    DateTime: Date & Time
+    Time: Time
+    MultipleSelect: Multiple Selections
+    Select: Dropdown Selection
+  configs:
+    required: Required
+    multiline: Multiline
+    maxLength: Maximum Length
+    minLength: Minimum Length
+    min: Minimum value
+    max: Maximum value
+    step: Step
+    format: Format
+    pattern: Match Pattern
+    title_fr: French Title
+    title_en: English Title
+    key: Field Key
+    cropName: Cropping Key
+    ratio: Ratio
+    minWidth: Minimum Width
+    minHeight: Minimum Height
+    maxWidth: Maximum Width
+    maxHeight: Maximum Height
+    lockedType: Locked Cropping Shape
+    multiple: Multiple
+    allowedFormats: Allowed File Extensions
+  explain:
+    cropName: The key is used in your code to get the url of the crop.
+    lockedType: Lock either a square, round or user's choice.
+  mobile:
+    wait: Wait!
+    explain: The layouts cannot be managed using a phone. Please use a tablet or bigger. We recommend using a laptop or desktop.
 
 system:
   settings: Settings

@@ -197,6 +197,57 @@ layouts:
 layout:
   add: Nouvelle Disposition
   edit: Dispositions
+  no_fields: Il n'y aucun champ dans cette disposition pour le moment.
+  field_key: La clée utilisée dans le code pour retrouver ce champ.
+  untitled: Sans titre
+  inputs:
+    text: Champs Texte
+    select: Champs Sélection
+    datetime: Champs Date/Heure
+    special: Champs Spéciaux
+  names:
+    AssetImage: Image
+    AssetFile: Fichier
+    Entry: Entrée
+    Email: Adresse Courriel
+    HTML: Contenu HTML
+    Text: Contenu Texte
+    Textarea: Contenu Texte Multi-ligne
+    Number: Valeur Numérique
+    Url: URL
+    Date: Date
+    DateTime: Date & Heure
+    Time: Heure
+    MultipleSelect: Sélection Multiple
+    Select: Menu Déroulant
+  configs:
+    required: Requis
+    multiline: Multi-ligne
+    maxLength: Longueur maximum
+    minLength: Longueur minimum
+    min: Valeur minimum
+    max: Valeur maximum
+    step: Équart
+    format: Format
+    pattern: Suivre modèle
+    title_fr: Titre français
+    title_en: Title english
+    key: Clée de champ
+    cropName: Clé de recadrage
+    ratio: Ratio
+    minWidth: Largeur minimum
+    minHeight: Hauteur minimum
+    maxWidth: Largeur maximum
+    maxHeight: Hauteur maximum
+    lockedType: Forme de recadrage assigné
+    multiple: Multiple
+    allowedFormats: Type de fichiers acceptés
+  explain:
+    cropName: Le nom qui sera utilisé pour retrouver le recadrage.
+    lockedType: Assigner un recadrage carré, rond ou choix de l'utilisateur.
+  mobile:
+    wait: Attendez!
+    explain: Les dipositions ne peuvent être administrer sur un téléphone. Veuillez utiliser une tablet ou plus grand. Nous recommandons un portable ou ordinateur de bureau.
 
 system:
   settings: Réglages

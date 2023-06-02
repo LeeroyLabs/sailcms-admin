@@ -13,7 +13,7 @@ export const entryRoutes = [
     {
         path: '/settings/entry-types',
         name: 'EntryTypes',
-        component: () => import(/* webpackChunkName: "entries" */ '@/views/entries/EntryTypes.vue'),
+        component: () => import(/* webpackChunkName: "entries" */ '@/views/entries/types/EntryTypes.vue'),
         meta: {
             guarded: true,
             permission: 'read_entry_type',

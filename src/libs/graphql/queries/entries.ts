@@ -192,6 +192,7 @@ export default {
                     availableSettings {
                         name
                         value
+                        explain
                         options {
                             value
                             label
