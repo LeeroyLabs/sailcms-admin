@@ -23,7 +23,7 @@ export const navigationItems = computed(() =>
         ...dynamics,
         {icon: 'mdi-image-outline', text: 'Assets', parent: '', permission: 'any'},
         {icon: 'mdi-menu', text: 'Navigations', parent: '', permission: 'any'},
-        {icon: 'mdi-shape-outline', text: 'Categories', parent: '', permission: 'any'},
+        {icon: 'mdi-shape-outline', to: {name: 'Categories'}, text: i18n.global.t('categories.title'), parent: '', permission: 'readwrite_category'},
         {icon: 'mdi-cloud-search-outline', parent: '', text: 'SEO', permission: 'any'},
         {icon: 'mdi-account-tie-hat', to: {name: 'Roles'}, parent: '', text: i18n.global.t('roles.title'), permission: 'read_role'},
         {icon: 'mdi-account-group-outline', to: {name: 'UserGroups'}, parent: '', text: i18n.global.t('usergroups.title'), permission: 'read_group'},
