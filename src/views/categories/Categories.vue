@@ -35,54 +35,48 @@
                                 item-value="id"
                             />
 
-                            <v-card
-                                :title="
+                            <h3>
+                                {{
                                     !selectedCategory
-                                        ? $t('categories.form.add_category')
-                                        : $t('categories.form.edit_category')
+                                        ? $t("categories.form.add_category")
+                                        : $t("categories.form.edit_category")
+                                }}
+                            </h3>
+                            <v-btn
+                                v-if="!selectedCategory"
+                                @click="
+                                    handleAddCategory(
+                                        categoryNameInput,
+                                        selectedParentId || '',
+                                        siteId
+                                    )
                                 "
-                                class="tw-flex tw-flex-col tw-gap-3 tw-px-3"
+                                color="primary"
+                                class="tw-w-full"
                             >
-                                <v-btn
-                                    v-if="!selectedCategory"
-                                    @click="
-                                        handleAddCategory(
-                                            categoryNameInput,
-                                            selectedParentId || '',
-                                            siteId
-                                        )
-                                    "
-                                    color="primary"
-                                    class="tw-w-full"
-                                >
-                                    {{ $t("categories.form.add_category") }}
-                                </v-btn>
-                                <v-btn
-                                    v-else
-                                    @click="
-                                        handleEditCategory(selectedCategory!)
-                                    "
-                                    color="primary"
-                                    class="tw-w-full"
-                                >
-                                    {{ $t("categories.form.edit_category") }}
-                                </v-btn>
-                                <v-btn
-                                    @click="handleCancel"
-                                    color="primary"
-                                    class="tw-w-full"
-                                >
-                                    {{ $t("categories.form.cancel") }}
-                                </v-btn>
-                            </v-card>
+                                {{ $t("categories.form.add_category") }}
+                            </v-btn>
+                            <v-btn
+                                v-else
+                                @click="handleEditCategory(selectedCategory!)"
+                                color="primary"
+                                class="tw-w-full"
+                            >
+                                {{ $t("categories.form.edit_category") }}
+                            </v-btn>
+                            <v-btn
+                                @click="handleCancel"
+                                color="primary"
+                                class="tw-w-full"
+                            >
+                                {{ $t("categories.form.cancel") }}
+                            </v-btn>
                         </div>
                     </v-col>
 
                     <v-col cols="12" xs="12" md="9">
                         <div class="tw-flex tw-flex-col tw-gap-4">
-                            <v-card
-                                class="tw-p-4 tw-h-[calc(100vh-300px)] tw-overflow-auto"
-                            >
+                            <v-card class="tw-p-4 tw-h-[80vh] tw-overflow-auto">
                                 <NestedList
                                     :categories="categoriesList"
                                     :key="categoriesListKey"
