@@ -6,6 +6,9 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview"
   },
+  "engines" : {
+    "node" : ">=18.0.0"
+  },
   "dependencies": {
     "@apollo/client": "^3.7.12",
     "@mdi/font": "7.2.96",
