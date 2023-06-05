@@ -276,9 +276,12 @@ categories:
   title: Categories
   search: Search for categories
   form:
-    name: Name of the category
-    slug: Slug of the category
+    title_add: Add Category
+    title_edit: Edit Category
+    name:
+      en: Name in english
+      fr: Name in french
     select_parent: Select a parent
-    add_category: Add category
-    edit_category: Edit category
+    add_category_btn: Add
+    edit_category_btn: Save
     cancel: Cancel

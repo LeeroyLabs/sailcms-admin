@@ -276,9 +276,12 @@ categories:
   title: Catégories
   search: Recherche de catégories
   form:
-    name: Nom de la catégorie
-    slug: Identifiant unique de la catégorie
+    title_add: Ajouter une catégorie
+    title_edit: Mettre à jour la catégorie
+    name:
+      en: Nom en anglais
+      fr: Nom en français
     select_parent: Sélectionner un parent
-    add_category: Ajouter une categorie
-    edit_category: Mettre à jour une categorie
-    cancel: Cancel
+    add_category_btn: Ajouter
+    edit_category_btn: Sauvegarder
+    cancel: Annuler
