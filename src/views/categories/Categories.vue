@@ -116,15 +116,18 @@
 </template>
 
 <script setup lang="ts">
+// Vue
 import { ref, inject, onMounted, watch } from "vue";
 import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
-import Loader from "@/components/globals/Loader.vue";
-import NestedList from "@/components/globals/categories/NestedList.vue";
+// Helpers & Libs
 import type { Category } from "@/libs/graphql/types/categories";
 import type { LocaleObject } from "@/libs/graphql/types/general";
 import { Categories } from "@/libs/graphql";
 import { SailCMS } from "@/libs/graphql";
+// Components
+import Loader from "@/components/globals/Loader.vue";
+import NestedList from "@/components/globals/categories/NestedList.vue";
 
 const store = useAppStore();
 const i18n = useI18n();
@@ -184,6 +187,7 @@ const categoryFullTree = async (parent_id: string, site_id: string) => {
     );
     if (responseCategoryFullTree) {
         categoriesList.value = responseCategoryFullTree;
+        formattedCategories.value = [];
         formatCategoriesList(categoriesList.value);
         categoriesListKey.value++;
         isLoading.value = false;
@@ -243,7 +247,7 @@ const handleEditCategory = async (item: Category) => {
     }
 };
 
-// Cancel edit
+// Cancel
 const handleCancel = () => {
     categoryNameInput.value = { en: "", fr: "" };
     selectedCategory.value = null;

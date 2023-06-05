@@ -3,6 +3,7 @@ import { useAppStore } from "@/store/app";
 import { SailCMS, Users } from "@/libs/graphql";
 import { userRoutes } from "@/router/users";
 import { categoriesRoutes } from "@/router/categories";
+import { navigationsRoutes } from "@/router/navigations";
 import { publicRoutes } from "@/router/public";
 import { miscRoutes } from "@/router/misc";
 import { entryRoutes } from "@/router/entries";
@@ -13,7 +14,8 @@ const routes = [
     ...miscRoutes,
     ...userRoutes,
     ...categoriesRoutes,
-    ...entryRoutes
+    ...navigationsRoutes,
+    ...entryRoutes,
 ];
 
 function routerInit() {

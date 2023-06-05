@@ -285,3 +285,9 @@ categories:
     add_category_btn: Add
     edit_category_btn: Save
     cancel: Cancel
+
+navigations:
+  title: Navigations
+  form:
+    title_add: Add Navigation
+    label: Enter label
