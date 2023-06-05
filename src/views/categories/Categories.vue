@@ -184,17 +184,17 @@ const categoryFullTree = async (parent_id: string, site_id: string) => {
     );
     if (responseCategoryFullTree) {
         categoriesList.value = responseCategoryFullTree;
-        formattedCategoriesList(categoriesList.value);
+        formatCategoriesList(categoriesList.value);
         categoriesListKey.value++;
         isLoading.value = false;
     }
 };
 
 // Format the categories to display within the parent id dropdown
-const formattedCategoriesList = (categoriesList: Category[]) => {
+const formatCategoriesList = (categoriesList: Category[]) => {
     const formattedList = categoriesList.map((cat) => {
         if (cat.children && cat.children.length) {
-            formattedCategoriesList(cat.children);
+            formatCategoriesList(cat.children);
         }
 
         return {
@@ -206,7 +206,7 @@ const formattedCategoriesList = (categoriesList: Category[]) => {
     formattedCategories.value = [
         ...formattedCategories.value,
         ...formattedList,
-    ].sort((a, b) => a.name - b.name);
+    ].sort((a, b) => a.name.localeCompare(b.name));
 };
 
 // Add a category
@@ -279,7 +279,8 @@ const setupPage = () => {
 
 watch(i18n.locale, () => {
     categoriesListKey.value++;
-    formattedCategoriesList(categoriesList.value);
+    formattedCategories.value = [];
+    formatCategoriesList(categoriesList.value);
 });
 
 onMounted(() => {
