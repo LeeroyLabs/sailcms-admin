@@ -149,6 +149,8 @@ const categoryFullTree = async (parent_id: string, site_id: string) => {
         categoriesList.value = responseCategoryFullTree;
         formattedCategoriesList(categoriesList.value);
         categoriesListKey.value++;
+        categoryNameInput.value = { en: "", fr: "" };
+        selectedParentId.value = null;
         isLoading.value = false;
     }
 };
