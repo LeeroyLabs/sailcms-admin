@@ -278,6 +278,7 @@ categories:
   form:
     name: Nom de la catégorie
     slug: Identifiant unique de la catégorie
+    select_parent: Sélectionner un parent
     add_category: Ajouter une categorie
     edit_category: Mettre à jour une categorie
     cancel: Cancel
