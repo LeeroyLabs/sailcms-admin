@@ -291,3 +291,5 @@ navigations:
   form:
     title_add: Add Navigation
     label: Enter label
+    url: Enter url
+    add_navigation_btn: Add

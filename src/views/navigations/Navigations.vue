@@ -22,7 +22,7 @@
                             >
                                 <v-text-field
                                     color="primary"
-                                    :label="$t(`categories.form.name`)"
+                                    :label="$t(`navigations.form.label`)"
                                     variant="outlined"
                                     :hide-details="true"
                                     type="text"
@@ -31,6 +31,28 @@
                                     required
                                     :rules="navigationNameRules"
                                     v-model="navigationStructureInput.label"
+                                    @click:clear="handleCancel"
+                                >
+                                    <template v-slot:append-inner>
+                                        <div class="tw-opacity-[0.20]">
+                                            <v-icon
+                                                icon="mdi-keyboard-return"
+                                            />
+                                        </div>
+                                    </template>
+                                </v-text-field>
+
+                                <v-text-field
+                                    color="primary"
+                                    :label="$t(`navigations.form.url`)"
+                                    variant="outlined"
+                                    :hide-details="true"
+                                    type="text"
+                                    clearable
+                                    density="comfortable"
+                                    required
+                                    :rules="navigationNameRules"
+                                    v-model="navigationStructureInput.url"
                                     @click:clear="handleCancel"
                                 >
                                     <template v-slot:append-inner>
@@ -56,7 +78,11 @@
                                     color="primary"
                                     class="tw-w-full"
                                 >
-                                    {{ $t("categories.form.add_category_btn") }}
+                                    {{
+                                        $t(
+                                            "navigations.form.add_navigation_btn"
+                                        )
+                                    }}
                                 </v-btn>
                                 <!--                                 <v-btn
                                     v-else
