@@ -18,7 +18,7 @@
                                 ref="categoryForm"
                                 @submit.prevent
                                 v-model="isFormValid"
-                                class="tw-flex tw-flex-col tw-gap-4"
+                                class="tw-flex tw-flex-col tw-gap-2"
                             >
                                 <v-text-field
                                     v-for="locale in siteLocales"
@@ -28,7 +28,6 @@
                                         $t(`categories.form.name.${locale}`)
                                     "
                                     variant="outlined"
-                                    :hide-details="true"
                                     type="text"
                                     clearable
                                     density="comfortable"
@@ -50,49 +49,60 @@
                                     clearable
                                     :label="$t('categories.form.select_parent')"
                                     variant="outlined"
+                                    density="comfortable"
                                     :items="formattedCategories"
                                     v-model="selectedParentId"
                                     item-title="name"
                                     item-value="id"
                                 />
 
-                                <v-btn
-                                    v-if="!selectedCategory"
-                                    @click="
-                                        handleAddCategory(
-                                            categoryNameInput,
-                                            selectedParentId || '',
-                                            siteId
-                                        )
-                                    "
-                                    type="submit"
-                                    block
-                                    color="primary"
-                                    class="tw-w-full"
-                                >
-                                    {{ $t("categories.form.add_category_btn") }}
-                                </v-btn>
-                                <v-btn
-                                    v-else
-                                    @click="
-                                        handleEditCategory(selectedCategory!)
-                                    "
-                                    type="submit"
-                                    block
-                                    color="primary"
-                                    class="tw-w-full"
-                                >
-                                    {{
-                                        $t("categories.form.edit_category_btn")
-                                    }}
-                                </v-btn>
-                                <v-btn
-                                    @click="handleCancel"
-                                    color="primary"
-                                    class="tw-w-full"
-                                >
-                                    {{ $t("categories.form.cancel") }}
-                                </v-btn>
+                                <div class="tw-flex tw-flex-col tw-gap-8">
+                                    <v-btn
+                                        v-if="!selectedCategory"
+                                        @click="
+                                            handleAddCategory(
+                                                categoryNameInput,
+                                                selectedParentId || '',
+                                                siteId
+                                            )
+                                        "
+                                        type="submit"
+                                        block
+                                        color="primary"
+                                        class="tw-w-full"
+                                    >
+                                        {{
+                                            $t(
+                                                "categories.form.add_category_btn"
+                                            )
+                                        }}
+                                    </v-btn>
+                                    <v-btn
+                                        v-else
+                                        @click="
+                                            handleEditCategory(
+                                                selectedCategory!
+                                            )
+                                        "
+                                        type="submit"
+                                        block
+                                        color="primary"
+                                        class="tw-w-full"
+                                    >
+                                        {{
+                                            $t(
+                                                "categories.form.edit_category_btn"
+                                            )
+                                        }}
+                                    </v-btn>
+                                    <v-btn
+                                        @click="handleCancel"
+                                        color="primary"
+                                        class="tw-w-full"
+                                    >
+                                        {{ $t("categories.form.cancel") }}
+                                    </v-btn>
+                                </div>
                             </v-form>
                         </div>
                     </v-col>
@@ -159,11 +169,9 @@ const categoryNameRules = [
         return "Name is requred.";
     },
 ];
+// Reset form
 const reset = () => {
     categoryForm.value.reset();
-};
-const resetValidation = () => {
-    categoryForm.value.resetValidation();
 };
 
 // Emits
@@ -254,7 +262,6 @@ const handleCancel = () => {
     selectedParentId.value = null;
     isFormValid.value = false;
     reset();
-    resetValidation();
 };
 
 // Delete a category

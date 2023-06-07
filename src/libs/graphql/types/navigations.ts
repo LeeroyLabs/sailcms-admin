@@ -17,6 +17,7 @@ export interface NavigationDetails {
 
 export interface createNavigation {
     name: string;
-    structure: NavigationItem;
+    structure: NavigationItem[];
     locale: string;
+    site_id: string;
 }

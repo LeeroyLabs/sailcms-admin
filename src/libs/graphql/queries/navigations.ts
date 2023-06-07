@@ -86,13 +86,13 @@ export default {
 `,
 
     createNavigation: `
-    mutation createNavigation($name: String!, $structure: NavigationItemInput!, locale: String!) {
-        createNavigation(name: $name, structure: $structure, locale: $locale)
+    mutation createNavigation($name: String!, $structure: [NavigationItemInput!]!, $locale: String!, $site_id: String!) {
+        createNavigation(name: $name, structure: $structure, locale: $locale, site_id: $site_id)
     }
 `,
 
     updateNavigation: `
-    mutation updateNavigation($name: String!, $structure: NavigationItemInput!, locale: String!) {
+    mutation updateNavigation($name: String!, $structure: NavigationItemInput!, $locale: String!) {
         updateNavigation(name: $name, structure: $structure, locale: $locale)
     }
 `,

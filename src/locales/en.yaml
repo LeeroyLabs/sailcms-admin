@@ -290,6 +290,8 @@ navigations:
   title: Navigations
   form:
     title_add: Add Navigation
+    title_edit: Edit Navigation
+    name: Enter name
     label: Enter label
     url: Enter url
     add_navigation_btn: Add

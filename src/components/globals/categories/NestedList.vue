@@ -188,14 +188,6 @@ onUpdated(() => {
     .list-group-item--content {
         @apply tw-relative tw-rounded tw-p-2;
 
-        p {
-            @apply tw-flex tw-items-center tw-gap-2;
-
-            span {
-                font: normal normal normal 24px/1 "Material Design Icons";
-            }
-        }
-
         &:hover {
             .action-edit,
             .action-delete {
@@ -206,7 +198,7 @@ onUpdated(() => {
 
     .action {
         @apply tw-flex tw-items-center tw-gap-2;
-        @apply tw-absolute tw-top-2/4 tw-right-4 tw--translate-y-2/4;
+        @apply tw-absolute tw-top-2/4 tw-right-2 tw--translate-y-2/4;
 
         &-edit {
             @apply tw-cursor-pointer tw-hidden;
