@@ -31,15 +31,7 @@
                                     :rules="[navFormValidations.required]"
                                     v-model="navName"
                                     @click:clear="handleCancel"
-                                >
-                                    <template v-slot:append-inner>
-                                        <div class="tw-opacity-[0.20]">
-                                            <v-icon
-                                                icon="mdi-keyboard-return"
-                                            />
-                                        </div>
-                                    </template>
-                                </v-text-field>
+                                />
 
                                 <v-text-field
                                     color="primary"
@@ -51,19 +43,11 @@
                                     :rules="[navFormValidations.required]"
                                     v-model="navItemStructure.label"
                                     @click:clear="handleCancel"
-                                >
-                                    <template v-slot:append-inner>
-                                        <div class="tw-opacity-[0.20]">
-                                            <v-icon
-                                                icon="mdi-keyboard-return"
-                                            />
-                                        </div>
-                                    </template>
-                                </v-text-field>
+                                />
 
                                 <v-select
                                     clearable
-                                    :label="$t('categories.form.select_parent')"
+                                    :label="$t('navigations.form.select_type')"
                                     variant="outlined"
                                     density="comfortable"
                                     :items="[
@@ -71,6 +55,7 @@
                                         IS_ENTRY,
                                         IS_CATEGORY,
                                     ]"
+                                    :rules="[navFormValidations.required]"
                                     v-model="navItemType"
                                 />
 
@@ -80,15 +65,27 @@
                                         navItemType !== IS_EXTERNAL_URL
                                     "
                                     ref="navItemTypeRef"
-                                    :label="$t('categories.form.select_parent')"
+                                    :label="
+                                        navItemType === IS_ENTRY
+                                            ? $t(
+                                                  'navigations.form.select_entry'
+                                              )
+                                            : $t(
+                                                  'navigations.form.select_category'
+                                              )
+                                    "
                                     :items="
                                         navItemType === 'Entry'
-                                            ? ['Entry 1', 'Entry 2', 'Entry 3']
+                                            ? [
+                                                  { nameToDisplay: 'Entry 1' },
+                                                  { nameToDisplay: 'Entry 2' },
+                                                  { nameToDisplay: 'Entry 3' },
+                                              ]
                                             : formattedCategories
                                     "
-                                    v-model="navItemUrl"
-                                    item-title="name"
-                                    item-value="id"
+                                    v-model="navItemTypeObject"
+                                    item-title="nameToDisplay"
+                                    return-object
                                     variant="outlined"
                                     density="comfortable"
                                 />
@@ -110,15 +107,22 @@
                                     v-model="navItemStructure.url"
                                     :disabled="navItemType !== IS_EXTERNAL_URL"
                                     @click:clear="handleCancel"
-                                >
-                                    <template v-slot:append-inner>
-                                        <div class="tw-opacity-[0.20]">
-                                            <v-icon
-                                                icon="mdi-keyboard-return"
-                                            />
-                                        </div>
-                                    </template>
-                                </v-text-field>
+                                />
+
+                                <v-autocomplete
+                                    :label="
+                                        $t('navigations.form.select_parent')
+                                    "
+                                    :items="navParentsList"
+                                    v-model="navItemParent"
+                                    item-title="label"
+                                    return-object
+                                    variant="outlined"
+                                    density="comfortable"
+                                    :disabled="
+                                        !navigationDetails?.structure.length
+                                    "
+                                />
 
                                 <div class="tw-flex tw-flex-col tw-gap-8">
                                     <v-btn
@@ -135,20 +139,21 @@
                                             )
                                         }}
                                     </v-btn>
-                                    <!--                                 <v-btn
-                                       v-else
-                                       @click="
-                                           handleEditCategory(selectedNavigation!)
-                                       "
-                                       type="submit"
-                                       block
-                                       color="primary"
-                                       class="tw-w-full"
-                                   >
-                                       {{
-                                           $t("categories.form.edit_category_btn")
-                                       }}
-                                   </v-btn> -->
+                                    <v-btn
+                                        v-else
+                                        @click="handleEditNavigation"
+                                        type="submit"
+                                        block
+                                        :disabled="!isFormValid"
+                                        color="primary"
+                                        class="tw-w-full"
+                                    >
+                                        {{
+                                            $t(
+                                                "navigations.form.edit_navigation_btn"
+                                            )
+                                        }}
+                                    </v-btn>
                                     <v-btn
                                         @click="handleCancel"
                                         color="primary"
@@ -164,8 +169,8 @@
                     <v-col cols="12" xs="12" md="9">
                         <div class="tw-flex tw-flex-col tw-gap-4">
                             <v-card class="tw-p-4 tw-h-[80vh] tw-overflow-auto">
-                                <NestedList
-                                    :navStructure="navigationDetails!.structure"
+                                <NavNestedList
+                                    :items="formattedNavItemsList"
                                     @edit-item="handleEditNavItem"
                                     @delete-item="handleDeleteNavItem"
                                 />
@@ -182,28 +187,37 @@
 
 <script setup lang="ts">
 // Vue
-import { ref, onMounted, watch } from "vue";
+import { ref, inject, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useAppStore } from "@/store/app";
 // Helpers & Libs
 import type {
     NavigationItem,
+    SortedNavigationItem,
     NavigationDetails,
 } from "@/libs/graphql/types/navigations";
 import type { Category } from "@/libs/graphql/types/categories";
 import { Navigations } from "@/libs/graphql/lib/navigations";
 import { SailCMS } from "@/libs/graphql";
 import { Categories } from "@/libs/graphql";
+import { v4 as uuidv4 } from "uuid";
 // Components
 import Loader from "@/components/globals/Loader.vue";
 import NestedList from "@/components/globals/navigations/NestedList.vue";
+import NavNestedList from "@/components/globals/navigations/NavNestedList.vue";
 
+const store = useAppStore();
 const i18n = useI18n();
 const isLoading = ref<boolean>(true);
 const siteId = ref<string>(SailCMS.getSiteId());
+
 const navigationsList = ref<NavigationItem[]>([]);
+const sortedNavigationsList = ref<SortedNavigationItem[]>([]);
 const navigationDetails = ref<NavigationDetails>();
-const selectedNavigation = ref<NavigationItem | null>(null);
+const navigationFullStructure = ref<NavigationItem[]>([]);
+const selectedNavigation = ref<string>("Header");
 const selectedNavItem = ref<NavigationItem | null>(null);
+const formattedNavItemsList = ref<NavigationItem[]>([]);
 
 // Template Refs
 const navFormRef = ref();
@@ -224,14 +238,32 @@ const navItemStructure = ref<NavigationItem>({
     label: "",
     url: "",
     is_entry: false,
+    is_category: false,
     entry_id: "",
     external: true,
     children: [],
 });
 const navItemType = ref<string | null>(null);
-const navItemUrl = ref<string | null>(null);
+
+// TODO: Change for real Entry type once entries are created
+interface Entry {
+    id: string;
+}
+type NavItemType = Category & Entry & { nameToDisplay: string };
+const navItemTypeObject = ref<NavItemType | { nameToDisplay: string } | null>(
+    null
+);
+const navItemTypeLink = ref<{
+    type: string | null;
+    selection: Category | { name: string } | null;
+}>({
+    type: null,
+    selection: null,
+});
+const navItemParent = ref<NavigationItem | null>(null);
+const navParentsList = ref<NavigationItem[]>([]);
 const navFormValidations = {
-    required: (value: string) => !!value || "Required.",
+    required: (value: string) => !!value || "Required",
 };
 
 // Reset
@@ -239,28 +271,90 @@ const reset = (input: any) => {
     input.reset();
 };
 
+// Emits
+const emitter: any = inject("emitter");
+emitter.on("update-list", (sortedList: SortedNavigationItem[]) => {
+    sortedNavigationsList.value = sortedList;
+    const structure = setNavStructure(
+        formattedNavItemsList.value,
+        sortedNavigationsList.value
+    );
+    console.log("STRUCTURE", structure);
+
+    /* navigationFullStructure.value = formatNavFullStructure(structure);
+    handleEditNavigation(); */
+});
+
 // Return the locale as string
 const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
 
-// Get the navigations
-const getNavigation = async (name: string) => {
-    const responseNavigation = await Navigations.navigation(name);
-    if (responseNavigation) {
-        navigationsList.value = responseNavigation;
-        console.log("LIST", navigationsList.value);
-        categoryFullTree("", siteId.value);
-        isLoading.value = false;
-    }
-};
-
+// Get the navigations list
 const getNavigationDetails = async (name: string) => {
     const responseNavigationDetails = await Navigations.navigationDetails(name);
     if (responseNavigationDetails) {
         navigationDetails.value = responseNavigationDetails;
-        console.log("LIST", navigationDetails.value);
-        categoryFullTree("", siteId.value);
+        formatNavItemsList(navigationDetails.value.structure);
+        navParentsList.value = formattedNavItemsList.value.sort((a, b) =>
+            a.label.localeCompare(b.label)
+        );
         isLoading.value = false;
     }
+};
+
+// Flatten the list + add id & parent_id to every nav items
+const formatNavItemsList = (navItemsList: NavigationItem[]) => {
+    const list = navItemsList.map((item) => {
+        const currentItemId = uuidv4();
+        if (item.children && item.children.length) {
+            formatNavItemsList(item.children);
+            return { ...item, id: uuidv4(), parent_id: currentItemId };
+        }
+        return { ...item, id: currentItemId, parent_id: "" };
+    });
+    formattedNavItemsList.value = [...formattedNavItemsList.value, ...list];
+};
+
+// Remove useless keys from items (id, parent_id) once structure is complete
+const formatNavFullStructure = (navStructure: NavigationItem[]) => {
+    const formattedStructure = navStructure.map((item) => {
+        if (item.children && item.children.length) {
+            formatNavFullStructure(item.children);
+            const formattedChildren = item.children.map((child) => {
+                const { id, parent_id, ...itemObject } = child;
+                return itemObject;
+            });
+            item.children = [...formattedChildren];
+        }
+        const { id, parent_id, ...itemObject } = item;
+        return itemObject;
+    });
+    return formattedStructure;
+};
+
+// Sort the nav items & assign them to their parent
+const setNavStructure = (
+    formattedNavItems: NavigationItem[],
+    sortedNavItems: SortedNavigationItem[]
+): NavigationItem[] => {
+    const list = formattedNavItems.flatMap((item) => {
+        const nestedList = sortedNavItems.map((sortedItem) => {
+            if (item.id === sortedItem.parent) {
+                const navItemObject = formattedNavItems.find(
+                    (el) => el.id === sortedItem.id
+                );
+                if (navItemObject) {
+                    item.children.push({
+                        ...navItemObject,
+                        parent_id: item.id,
+                    });
+                    return item;
+                }
+            }
+        });
+        return nestedList;
+    });
+
+    return list.filter((el) => el) as NavigationItem[];
 };
 
 // Add a navigation
@@ -275,42 +369,60 @@ const handleAddNavigation = async () => {
         if (responseAddCategory) {
             getNavigationDetails(navNameSlug.value);
             handleCancel();
-            console.log("RESPONSE", responseAddCategory);
         }
+    }
+};
+
+// Edit a navigation
+const handleEditNavigation = async () => {
+    const responseUpdateCategory = await Navigations.updateNavigation({
+        id: navigationDetails.value?._id!,
+        name: navName.value,
+        structure:
+            navigationFullStructure.value ||
+            navigationDetails.value?.structure!,
+        locale: i18n.locale.value,
+    });
+    if (responseUpdateCategory) {
+        getNavigationDetails(navNameSlug.value);
+        handleCancel();
     }
 };
 
 const handleEditNavItem = (item: NavigationItem) => {
     selectedNavItem.value = item;
-    console.log("EDIT", item);
+    navItemStructure.value.label = item.label;
+    navItemStructure.value.url = item.url;
+    console.log("EDIT ITEM", item);
 };
 
 const handleDeleteNavItem = (item: NavigationItem) => {
     selectedNavItem.value = item;
-    console.log("DELETE", item);
+    console.log("DELETE ITEM", item);
 };
 
 // Cancel
 const handleCancel = () => {
     isFormValid.value = false;
     selectedNavItem.value = null;
+    navItemTypeObject.value = null;
+    navItemTypeLink.value = { type: null, selection: null };
     reset(navFormRef.value);
 };
 
-watch(navItemType, (newValue) => {
+watch(navItemType, (newValueType) => {
     reset(navItemTypeRef.value);
-    navItemStructure.value.is_entry = newValue === "Entry" ? true : false;
+    navItemStructure.value.is_entry = newValueType === "Entry" ? true : false;
     navItemStructure.value.external = !navItemStructure.value.is_entry;
 });
 
 // Categories
 const categoriesList = ref<Category[]>([]);
-const formattedCategories = ref<
-    {
-        id: string;
-        name: string;
-    }[]
->([]);
+
+interface FormattedCategories extends Category {
+    nameToDisplay: string;
+}
+const formattedCategories = ref<FormattedCategories[]>([]);
 
 // Get categories
 const categoryFullTree = async (parent_id: string, site_id: string) => {
@@ -326,7 +438,7 @@ const categoryFullTree = async (parent_id: string, site_id: string) => {
     }
 };
 
-// Format the categories to display within the parent id dropdown
+// Format the categories to display within the dropdown
 const formatCategoriesList = (categoriesList: Category[]) => {
     const formattedList = categoriesList.map((cat) => {
         if (cat.children && cat.children.length) {
@@ -334,20 +446,37 @@ const formatCategoriesList = (categoriesList: Category[]) => {
         }
 
         return {
-            id: cat._id,
-            name: cat.name[getLocale()],
+            ...cat,
+            nameToDisplay: cat.name[getLocale()],
         };
     });
 
     formattedCategories.value = [
         ...formattedCategories.value,
         ...formattedList,
-    ].sort((a, b) => a.name.localeCompare(b.name));
+    ].sort((a, b) => a.nameToDisplay.localeCompare(b.nameToDisplay));
+};
+
+// Setup page data
+const setupPage = () => {
+    // Set Breadcrumb
+    store.setBreadcrumbs([
+        {
+            title: "Dashboard",
+            disabled: false,
+            to: store.baseURL + "/dashboard",
+        },
+        { title: i18n.t("navigations.title") },
+    ]);
+
+    store.setPageTitle(i18n.t("navigations.title"));
+    document.title = i18n.t("navigations.title") + " — SailCMS";
 };
 
 onMounted(() => {
-    //getNavigation(navNameSlug.value);
     getNavigationDetails(navNameSlug.value);
+    setupPage();
+    categoryFullTree("", siteId.value);
 });
 </script>
 

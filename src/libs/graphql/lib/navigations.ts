@@ -3,6 +3,7 @@ import type {
     NavigationItem,
     NavigationDetails,
     createNavigation,
+    updateNavigation,
 } from "../types/navigations";
 import NavigationsQueries from "../queries/navigations";
 import gql from "graphql-tag";
@@ -100,6 +101,7 @@ export class Navigations {
      *
      * updateNavigation
      *
+     * @param id
      * @param name
      * @param structure
      * @param locale
@@ -107,7 +109,7 @@ export class Navigations {
      *
      */
     public static async updateNavigation(
-        navigationInput: createNavigation
+        navigationInput: updateNavigation
     ): Promise<NavigationDetails | null> {
         const client = new Client();
         const mutation = NavigationsQueries.updateNavigation;

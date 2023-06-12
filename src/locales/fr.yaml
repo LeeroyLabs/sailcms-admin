@@ -294,4 +294,9 @@ navigations:
     name: Entrer un nom
     label: Entrer un label
     url: Entrer l'url
+    select_type: Sélectioner un type de menu
+    select_entry: Sélectioner une entrée
+    select_category: Sélectioner une catégorie
+    select_parent: Sélectioner un parent
     add_navigation_btn: Ajouter
+    edit_navigation_btn: Sauvegarder

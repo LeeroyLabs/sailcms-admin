@@ -92,8 +92,8 @@ export default {
 `,
 
     updateNavigation: `
-    mutation updateNavigation($name: String!, $structure: NavigationItemInput!, $locale: String!) {
-        updateNavigation(name: $name, structure: $structure, locale: $locale)
+    mutation updateNavigation($id: ID!, $name: String!, $structure: [NavigationItemInput!]!, $locale: String!) {
+        updateNavigation(id: $id, name: $name, structure: $structure, locale: $locale)
     }
 `,
 };

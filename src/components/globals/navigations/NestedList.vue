@@ -26,23 +26,30 @@
                     >
                     </span>
                 </div>
+
+                <NestedList
+                    v-if="item.children && item.children.length"
+                    :navStructure="item.children"
+                />
             </div>
         </li>
     </ul>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from "vue";
 import { NavigationItem } from "@/libs/graphql/types/navigations";
 
 interface Props {
     navStructure: NavigationItem[];
 }
-defineProps<Props>();
+const props = defineProps<Props>();
+const navItemsList = ref(props.navStructure);
 </script>
 
 <style lang="scss" scoped>
 .list-item--content {
-    @apply tw-w-full tw-relative tw-p-2 tw-rounded;
+    @apply tw-w-full tw-relative tw-p-2 tw-rounded tw-cursor-grab;
 
     &:hover {
         .action-edit,
