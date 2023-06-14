@@ -82,7 +82,7 @@
                                               ]
                                             : formattedCategories
                                     "
-                                    v-model="navItemTypeObject"
+                                    v-model="navItemTypeEntry"
                                     clearable
                                     item-title="nameToDisplay"
                                     return-object
@@ -121,18 +121,18 @@
                                     density="comfortable"
                                     clearable
                                     :disabled="
-                                        !navigationDetails?.structure.length
+                                        !navigationsList?.structure.length
                                     "
                                 />
 
                                 <div class="tw-flex tw-flex-col tw-gap-8">
                                     <v-btn
-                                        v-if="!selectedNavigation"
+                                        v-if="selectedAction === CREATE_ACTION"
                                         type="submit"
                                         block
                                         color="primary"
                                         class="tw-w-full"
-                                        @click="handleAddNavigation"
+                                        @click="handleCreateNavigationItem"
                                     >
                                         {{
                                             $t(
@@ -142,7 +142,7 @@
                                     </v-btn>
                                     <v-btn
                                         v-else
-                                        @click="handleEditNavigation"
+                                        @click="handleUpdateNavigation"
                                         type="submit"
                                         block
                                         :disabled="!isFormValid"
@@ -172,6 +172,7 @@
                             <v-card class="tw-p-4 tw-h-[80vh] tw-overflow-auto">
                                 <NavNestedList
                                     :items="formattedNavItemsList"
+                                    :key="navigationsKey"
                                     @edit-item="editActionSelected"
                                     @delete-item="deleteActionSelected"
                                 />
@@ -211,12 +212,12 @@ const i18n = useI18n();
 const isLoading = ref<boolean>(true);
 const siteId = ref<string>(SailCMS.getSiteId());
 
-const navigationDetails = ref<NavigationDetails>();
+const navigationsList = ref<NavigationDetails>();
 const selectedNavigation = ref<string>("Header");
-const navigationFullStructure = ref<NavigationItem[] | null>(null);
 const sortedNavigationsList = ref<SortedNavigationItem[]>([]);
 const selectedNavItem = ref<NavigationItem | null>(null);
 const formattedNavItemsList = ref<NavigationItem[]>([]);
+const navigationsKey = ref<number>(0);
 
 // Template Refs
 const navFormRef = ref();
@@ -226,9 +227,12 @@ const navItemTypeRef = ref();
 const IS_EXTERNAL_URL = "External url";
 const IS_ENTRY = "Entry";
 const IS_CATEGORY = "Category";
+const CREATE_ACTION = "create";
+const UPDATE_ACTION = "update";
 
 // Search & Validations
 const isFormValid = ref<boolean>(false);
+const selectedAction = ref<string>(CREATE_ACTION);
 const navName = ref<string>("Header");
 const navNameSlug = ref<string>(
     navName.value.toLowerCase().replaceAll(" ", "-")
@@ -252,14 +256,7 @@ type NavItemType =
     | (Category & { nameToDisplay: string })
     | (Entry & { nameToDisplay: string });
 
-const navItemTypeObject = ref<NavItemType | null>(null);
-const navItemTypeLink = ref<{
-    type: string | null;
-    selection: Category | { name: string } | null;
-}>({
-    type: null,
-    selection: null,
-});
+const navItemTypeEntry = ref<NavItemType | null>(null);
 const navItemParent = ref<NavigationItem | null>(null);
 const navParentsList = ref<NavigationItem[]>([]);
 const navFormValidations = {
@@ -275,7 +272,7 @@ const reset = (input: any) => {
 const emitter: any = inject("emitter");
 emitter.on("update-list", (sortedList: SortedNavigationItem[]) => {
     sortedNavigationsList.value = sortedList;
-    handleEditNavigation();
+    handleUpdateNavigation();
 });
 emitter.on("edit-item", (navItem: NavigationItem) =>
     editActionSelected(navItem)
@@ -291,8 +288,9 @@ const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
 const getNavigationDetails = async (name: string) => {
     const responseNavigationDetails = await Navigations.navigationDetails(name);
     if (responseNavigationDetails) {
-        navigationDetails.value = responseNavigationDetails;
-        formatNavItemsList(navigationDetails.value.structure);
+        navigationsList.value = responseNavigationDetails;
+
+        formatNavItemsList(navigationsList.value.structure);
         navParentsList.value = formattedNavItemsList.value.sort((a, b) =>
             a.label.localeCompare(b.label)
         );
@@ -301,52 +299,66 @@ const getNavigationDetails = async (name: string) => {
 };
 
 // Flatten the list + add id & parent_id to every nav items
+let itemParentId: string = "";
 const formatNavItemsList = (navItemsList: NavigationItem[]) => {
     const list = navItemsList.map((item) => {
-        const currentItemId = uuidv4();
+        const itemId = uuidv4();
         if (item.children && item.children.length) {
+            itemParentId = uuidv4();
             formatNavItemsList(item.children);
-            return { ...item, id: uuidv4(), parent_id: currentItemId };
+            return { ...item, id: itemParentId, parent_id: "" };
         }
-        return { ...item, id: currentItemId, parent_id: "" };
+        return { ...item, id: itemId, parent_id: itemParentId };
     });
     formattedNavItemsList.value = [...formattedNavItemsList.value, ...list];
 };
 
 // Assign the nav items to their parent + remove id & parent_id
 const setNavStructure = (navItems: NavigationItem[]) => {
-    // Group items together by parent_id
+    // Group items together according to the parent_id
     const groupedList = navItems.reduce((group, item) => {
         const { id, parent_id, ...itemObject } = item;
         if (parent_id) {
             group[parent_id] = group[parent_id] ?? [];
             group[parent_id].push(itemObject);
+        } else {
+            group["root"] = group["root"] ?? [];
+            group["root"].push(item);
         }
         return group;
     }, {});
+    console.log("GROUP", groupedList);
 
-    // Iterate through items and assign children according to id
+    // Iterate through items and assign children according to the id
     const nestedList = navItems.flatMap((nav) => {
-        const { id, parent_id, ...navItemObject } = nav;
         if (groupedList[nav.id])
             nav = {
-                ...navItemObject,
+                ...nav,
                 children: [...groupedList[nav.id]],
             };
-
         return nav;
     });
+    console.log("NESTED", nestedList);
 
     // Return only top level items
-    return nestedList.filter((el) => !el.id && !el.parent_id);
+    return nestedList
+        .flatMap((el) => {
+            return groupedList["root"].flatMap((rootItem) => {
+                if (el.id === rootItem.id) {
+                    const { id, parent_id, ...navItemObject } = el;
+                    return navItemObject;
+                }
+            });
+        })
+        .filter((el) => el);
 };
 
 const updateNavItems = (
     navItems: NavigationItem[],
     sortedNavItems: SortedNavigationItem[]
-) => {
+): NavigationItem[] => {
     const updatedList = navItems.flatMap((item) => {
-        // Check if parent_id has been changed
+        // Check if parent_id has changed
         if (sortedNavItems && sortedNavItems.length) {
             const sortedList = sortedNavItems.flatMap((sortedItem) => {
                 if (item.id === sortedItem.id)
@@ -365,11 +377,11 @@ const updateNavItems = (
             return item;
         }
     });
-    return updatedList;
+    return updatedList as NavigationItem[];
 };
 
-// Add a navigation
-const handleAddNavigation = async () => {
+// Create a navigation
+const handleCreateNavigation = async () => {
     if (isFormValid.value) {
         const responseAddCategory = await Navigations.createNavigation({
             name: navName.value,
@@ -384,64 +396,84 @@ const handleAddNavigation = async () => {
     }
 };
 
-// Edit a navigation
-const handleEditNavigation = async () => {
+// Create a navigation item
+const handleCreateNavigationItem = async () => {
+    if (isFormValid.value) {
+        const newItem = {
+            ...navItemStructure.value,
+            id: uuidv4(),
+            parent_id: navItemParent.value?.id || "",
+        };
+        formattedNavItemsList.value.push(newItem);
+        handleUpdateNavigation();
+    }
+};
+
+// Update a navigation
+const handleUpdateNavigation = async () => {
     formattedNavItemsList.value = updateNavItems(
         formattedNavItemsList.value,
         sortedNavigationsList.value
     );
-    console.log("FORMATTED", formattedNavItemsList.value);
+
     const navStructure = setNavStructure(formattedNavItemsList.value);
     console.log("STRUCTURE", navStructure);
 
     const responseUpdateCategory = await Navigations.updateNavigation({
-        id: navigationDetails.value?._id!,
+        id: navigationsList.value?._id!,
         name: navName.value,
         structure: navStructure,
         locale: i18n.locale.value,
     });
     if (responseUpdateCategory) {
         getNavigationDetails(navNameSlug.value);
+        navigationsKey.value += 1;
         handleCancel();
-        sortedNavigationsList.value = [];
     }
 };
 
 // Edit action selected before updating the navigation
 const editActionSelected = (item: NavigationItem) => {
+    selectedAction.value = UPDATE_ACTION;
     selectedNavItem.value = item;
     navItemStructure.value.label = item.label;
     navItemStructure.value.url = item.url;
     navItemParent.value =
         formattedNavItemsList.value.find((el) => el.id === item.parent_id) ||
         null;
+    navParentsList.value = navParentsList.value.filter(
+        (nav) => nav.id !== selectedNavItem.value?.id
+    );
+    navItemTypeEntry.value =
+        formattedCategories.value.find((cat) => cat._id === item.entry_id) ||
+        null;
+    navItemStructure.value.entry_id = navItemTypeEntry.value?._id! || "";
+
     if (item.external) navItemType.value = IS_EXTERNAL_URL;
-    else if (item.entry_id) {
-        navItemType.value = IS_ENTRY;
-    } else {
-        navItemType.value = IS_CATEGORY;
-        navItemTypeObject.value =
-            formattedCategories.value.find(
-                (cat) => cat._id === item.entry_id
-            ) || null;
-        navItemStructure.value.url = navItemTypeObject.value?.slug!;
-        navItemStructure.value.entry_id = navItemTypeObject.value?._id! || "";
-    }
+    else if (item.is_entry) navItemType.value = IS_ENTRY;
+    else navItemType.value = IS_CATEGORY;
 };
 
 // Delete action selected before updating the navigation
 const deleteActionSelected = (item: NavigationItem) => {
     selectedNavItem.value = item;
-    console.log("DELETE ITEM", item);
+    formattedNavItemsList.value = formattedNavItemsList.value.filter(
+        (el) => el.id !== selectedNavItem.value?.id
+    );
+    handleUpdateNavigation();
 };
 
 // Cancel
 const handleCancel = () => {
     isFormValid.value = false;
     selectedNavItem.value = null;
-    navItemTypeObject.value = null;
-    navItemTypeLink.value = { type: null, selection: null };
+    navItemTypeEntry.value = null;
     navItemParent.value = null;
+    navParentsList.value = formattedNavItemsList.value.sort((a, b) =>
+        a.label.localeCompare(b.label)
+    );
+    sortedNavigationsList.value = [];
+    selectedAction.value = CREATE_ACTION;
     reset(navFormRef.value);
 };
 
@@ -468,6 +500,14 @@ watch(navItemType, (newValueType) => {
             navItemStructure.value.external = false;
             navItemStructure.value.is_entry = false;
             navItemStructure.value.is_category = false;
+    }
+});
+
+watch(navItemTypeEntry, (newValue) => {
+    navItemTypeEntry.value = newValue;
+    if (navItemTypeEntry.value) {
+        navItemStructure.value.entry_id = navItemTypeEntry.value._id;
+        navItemStructure.value.url = navItemTypeEntry.value.slug;
     }
 });
 

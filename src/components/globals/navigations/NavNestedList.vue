@@ -67,6 +67,9 @@ onMounted(() => {
                 emitter.emit("update-list", data);
             },
         },
+        propertyMap: {
+            parent: "parent_id",
+        },
         el: "#nested-sort-wrap",
         listClassNames: ["nested-sort"],
         listItemClassNames: "list-group-item",
