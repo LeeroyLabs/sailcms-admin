@@ -64,7 +64,6 @@ onMounted(() => {
         data: formattedItems.value,
         actions: {
             onDrop(data: SortedNavigationItem[]) {
-                console.log(data);
                 emitter.emit("update-list", data);
             },
         },

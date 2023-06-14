@@ -49,30 +49,35 @@ export default {
               label
               url
               is_entry
+              is_category
               entry_id
               external
               children {
                 label
                 url
                 is_entry
+                is_category
                 entry_id
                 external
                 children {
                     label
                     url
                     is_entry
+                    is_category
                     entry_id
                     external
                     children {
                         label
                         url
                         is_entry
+                        is_category
                         entry_id
                         external
                         children {
                             label
                             url
                             is_entry
+                            is_category
                             entry_id
                             external
                         }
