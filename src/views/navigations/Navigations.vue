@@ -272,6 +272,10 @@ const reset = (input: any) => {
 const emitter: any = inject("emitter");
 emitter.on("update-list", (sortedList: SortedNavigationItem[]) => {
     sortedNavigationsList.value = sortedList;
+    updateNavItemsList(
+        formattedNavItemsList.value,
+        sortedNavigationsList.value
+    );
     handleUpdateNavigation();
 });
 emitter.on("edit-item", (navItem: NavigationItem) =>
@@ -290,7 +294,10 @@ const getNavigationDetails = async (name: string) => {
     if (responseNavigationDetails) {
         navigationsList.value = responseNavigationDetails;
 
-        formatNavItemsList(navigationsList.value.structure);
+        formattedNavItemsList.value = [];
+        formatNavItemsList(navigationsList.value.structure, "");
+        console.log("FORMATTED", formattedNavItemsList.value);
+
         navParentsList.value = formattedNavItemsList.value.sort((a, b) =>
             a.label.localeCompare(b.label)
         );
@@ -299,85 +306,76 @@ const getNavigationDetails = async (name: string) => {
 };
 
 // Flatten the list + add id & parent_id to every nav items
-let itemParentId: string = "";
-const formatNavItemsList = (navItemsList: NavigationItem[]) => {
+const formatNavItemsList = (
+    navItemsList: NavigationItem[],
+    parentId: string
+) => {
     const list = navItemsList.map((item) => {
         const itemId = uuidv4();
         if (item.children && item.children.length) {
-            itemParentId = uuidv4();
-            formatNavItemsList(item.children);
-            return { ...item, id: itemParentId, parent_id: "" };
+            formatNavItemsList(item.children, itemId);
         }
-        return { ...item, id: itemId, parent_id: itemParentId };
+        return {
+            ...item,
+            id: itemId,
+            parent_id: parentId,
+            order: navItemsList.indexOf(item) + 1,
+        };
     });
+
     formattedNavItemsList.value = [...formattedNavItemsList.value, ...list];
 };
 
-// Assign the nav items to their parent + remove id & parent_id
-const setNavStructure = (navItems: NavigationItem[]) => {
-    // Group items together according to the parent_id
-    const groupedList = navItems.reduce((group, item) => {
-        const { id, parent_id, ...itemObject } = item;
-        if (parent_id) {
-            group[parent_id] = group[parent_id] ?? [];
-            group[parent_id].push(itemObject);
-        } else {
-            group["root"] = group["root"] ?? [];
-            group["root"].push(item);
-        }
-        return group;
-    }, {});
-    console.log("GROUP", groupedList);
-
-    // Iterate through items and assign children according to the id
-    const nestedList = navItems.flatMap((nav) => {
-        if (groupedList[nav.id])
-            nav = {
-                ...nav,
-                children: [...groupedList[nav.id]],
-            };
-        return nav;
-    });
-    console.log("NESTED", nestedList);
-
-    // Return only top level items
-    return nestedList
-        .flatMap((el) => {
-            return groupedList["root"].flatMap((rootItem) => {
-                if (el.id === rootItem.id) {
-                    const { id, parent_id, ...navItemObject } = el;
-                    return navItemObject;
-                }
-            });
-        })
-        .filter((el) => el);
-};
-
-const updateNavItems = (
+// Update the list if an item has been moved or edited
+const updateNavItemsList = (
     navItems: NavigationItem[],
     sortedNavItems: SortedNavigationItem[]
-): NavigationItem[] => {
-    const updatedList = navItems.flatMap((item) => {
+) => {
+    navItems.forEach((item) => {
         // Check if parent_id has changed
-        if (sortedNavItems && sortedNavItems.length) {
-            const sortedList = sortedNavItems.flatMap((sortedItem) => {
-                if (item.id === sortedItem.id)
-                    return { ...item, parent_id: sortedItem.parent };
-            });
-            return sortedList.filter((el) => el);
-        } else {
-            // Check if item has been selected to edit
-            if (item.id === selectedNavItem.value?.id) {
-                item = {
-                    ...navItemStructure.value,
-                    id: selectedNavItem.value?.id,
-                    parent_id: navItemParent.value?.id,
-                };
+        sortedNavItems.forEach((sortedItem) => {
+            if (item.id === sortedItem.id) {
+                item.parent_id = sortedItem.parent_id || "";
+                item.order = sortedItem.order;
             }
-            return item;
-        }
+        });
     });
-    return updatedList as NavigationItem[];
+};
+
+// Group items together according to parent_id
+const makeIndex = (items: NavigationItem[], indexer: Function) => {
+    const append = (group, parentId: string, navItem: NavigationItem) => {
+        return group.set(
+            parentId,
+            (group.get(parentId) || []).concat([navItem])
+        );
+    };
+    return items.reduce(
+        (group, navItem) => append(group, indexer(navItem), navItem),
+        new Map()
+    );
+};
+
+// Assign the nav items to their parent
+const setNavStructure = (group, root = "") => {
+    const many = (all = []) => all.map(one);
+    const one = (navItem = {}) => ({
+        ...navItem,
+        children: many(group.get(navItem.id)),
+    });
+
+    return many(group.get(root));
+};
+
+// Remove id, parent_id & order from items
+const formatNavStructure = (structure: NavigationItem[]) => {
+    structure.sort((a, b) => a.order! - b.order!);
+    structure.forEach((el) => {
+        if (el.children && el.children.length) formatNavStructure(el.children);
+        delete el.id;
+        delete el.parent_id;
+        delete el.order;
+    });
 };
 
 // Create a navigation
@@ -404,20 +402,34 @@ const handleCreateNavigationItem = async () => {
             id: uuidv4(),
             parent_id: navItemParent.value?.id || "",
         };
-        formattedNavItemsList.value.push(newItem);
+        formattedNavItemsList.value = [...formattedNavItemsList.value, newItem];
         handleUpdateNavigation();
     }
 };
 
 // Update a navigation
 const handleUpdateNavigation = async () => {
-    formattedNavItemsList.value = updateNavItems(
-        formattedNavItemsList.value,
-        sortedNavigationsList.value
+    if (selectedNavItem.value) {
+        formattedNavItemsList.value = formattedNavItemsList.value.map((el) => {
+            if (el.id === selectedNavItem.value!.id!) {
+                return (el = {
+                    ...navItemStructure.value,
+                    id: selectedNavItem.value?.id,
+                    parent_id: navItemParent.value?.id || "",
+                });
+            }
+            return el;
+        });
+    }
+
+    const navStructure = setNavStructure(
+        makeIndex(
+            formattedNavItemsList.value,
+            (navItem: NavigationItem) => navItem.parent_id
+        )
     );
 
-    const navStructure = setNavStructure(formattedNavItemsList.value);
-    console.log("STRUCTURE", navStructure);
+    formatNavStructure(navStructure);
 
     const responseUpdateCategory = await Navigations.updateNavigation({
         id: navigationsList.value?._id!,

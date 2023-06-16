@@ -8,12 +8,13 @@ export interface NavigationItem {
     children: NavigationItem[];
     id?: string;
     parent_id?: string;
+    order?: number;
 }
 
 export interface SortedNavigationItem {
     id: string;
     order: number;
-    parent: string;
+    parent_id: string;
 }
 
 export interface NavigationDetails {

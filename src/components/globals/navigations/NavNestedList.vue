@@ -60,6 +60,8 @@ const toggleOpenList = () => {
 };
 
 onMounted(() => {
+    console.log("ITEMS", props.items);
+
     new NestedSort({
         data: formattedItems.value,
         actions: {
@@ -103,6 +105,7 @@ onMounted(() => {
             const selectedNavItem = props.items.find(
                 (item) => item.id === navItemId
             );
+            console.log("ITEM", navItemId, props.items, selectedNavItem);
             emitter.emit("edit-item", selectedNavItem);
         });
 
