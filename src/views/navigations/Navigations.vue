@@ -63,7 +63,6 @@
                                         navItemType &&
                                         navItemType !== IS_EXTERNAL_URL
                                     "
-                                    ref="navItemTypeRef"
                                     :label="
                                         navItemType === IS_ENTRY
                                             ? $t(
@@ -92,7 +91,6 @@
 
                                 <v-text-field
                                     v-else
-                                    ref="navItemTypeRef"
                                     color="primary"
                                     :label="$t('navigations.form.url')"
                                     variant="outlined"
@@ -225,7 +223,6 @@ const navigationsKey = ref<number>(0);
 
 // Template Refs
 const navFormRef = ref();
-const navItemTypeRef = ref();
 
 // Constants
 const IS_EXTERNAL_URL = "External url";
@@ -447,9 +444,13 @@ const handleUpdateNavigation = async () => {
 
 // Edit action selected before updating the navigation
 const editActionSelected = (item: NavigationItem) => {
-    console.log(item);
     selectedAction.value = UPDATE_ACTION;
     selectedNavItem.value = item;
+
+    if (item.external) navItemType.value = IS_EXTERNAL_URL;
+    else if (item.is_entry) navItemType.value = IS_ENTRY;
+    else navItemType.value = IS_CATEGORY;
+
     navItemStructure.value.label = item.label;
     navItemStructure.value.url = item.url;
     navItemParent.value =
@@ -462,10 +463,6 @@ const editActionSelected = (item: NavigationItem) => {
         formattedCategories.value.find((cat) => cat._id === item.entry_id) ||
         null;
     navItemStructure.value.entry_id = navItemTypeEntry.value?._id! || "";
-
-    if (item.external) navItemType.value = IS_EXTERNAL_URL;
-    else if (item.is_entry) navItemType.value = IS_ENTRY;
-    else navItemType.value = IS_CATEGORY;
 };
 
 // Delete action selected before updating the navigation
@@ -494,7 +491,6 @@ const handleCancel = () => {
 
 // Watch the type of item (external, entry or category)
 watch(navItemType, (newValueType) => {
-    reset(navItemTypeRef.value);
     switch (newValueType) {
         case IS_EXTERNAL_URL:
             navItemStructure.value.external = true;

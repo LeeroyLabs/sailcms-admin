@@ -123,6 +123,7 @@ onMounted(() => {
                 updateCategoryOrders(data);
             },
         },
+        nestingLevels: 4,
         el: "#nested-sort-wrap",
         listClassNames: ["nested-sort"],
         listItemClassNames: "list-group-item",
