@@ -171,6 +171,10 @@
                         <div class="tw-flex tw-flex-col tw-gap-4">
                             <v-card class="tw-p-4 tw-h-[80vh] tw-overflow-auto">
                                 <NavNestedList
+                                    v-if="
+                                        formattedNavItemsList &&
+                                        formattedNavItemsList.length
+                                    "
                                     :items="formattedNavItemsList"
                                     :key="navigationsKey"
                                     @edit-item="editActionSelected"
@@ -293,11 +297,7 @@ const getNavigationDetails = async (name: string) => {
     const responseNavigationDetails = await Navigations.navigationDetails(name);
     if (responseNavigationDetails) {
         navigationsList.value = responseNavigationDetails;
-
-        formattedNavItemsList.value = [];
         formatNavItemsList(navigationsList.value.structure, "");
-        console.log("FORMATTED", formattedNavItemsList.value);
-
         navParentsList.value = formattedNavItemsList.value.sort((a, b) =>
             a.label.localeCompare(b.label)
         );
@@ -438,6 +438,7 @@ const handleUpdateNavigation = async () => {
         locale: i18n.locale.value,
     });
     if (responseUpdateCategory) {
+        formattedNavItemsList.value = [];
         getNavigationDetails(navNameSlug.value);
         navigationsKey.value += 1;
         handleCancel();
@@ -446,6 +447,7 @@ const handleUpdateNavigation = async () => {
 
 // Edit action selected before updating the navigation
 const editActionSelected = (item: NavigationItem) => {
+    console.log(item);
     selectedAction.value = UPDATE_ACTION;
     selectedNavItem.value = item;
     navItemStructure.value.label = item.label;
@@ -487,6 +489,7 @@ const handleCancel = () => {
     sortedNavigationsList.value = [];
     selectedAction.value = CREATE_ACTION;
     reset(navFormRef.value);
+    navName.value = selectedNavigation.value;
 };
 
 // Watch the type of item (external, entry or category)

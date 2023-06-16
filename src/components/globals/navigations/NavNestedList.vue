@@ -42,7 +42,6 @@ const hasChildren = (navItems: NavigationItem[]) => {
             list.classList.add("sublist");
         }
     });
-
     return navItemsId;
 };
 
@@ -60,8 +59,6 @@ const toggleOpenList = () => {
 };
 
 onMounted(() => {
-    console.log("ITEMS", props.items);
-
     new NestedSort({
         data: formattedItems.value,
         actions: {
@@ -72,6 +69,7 @@ onMounted(() => {
         propertyMap: {
             parent: "parent_id",
         },
+        nestingLevels: 2,
         el: "#nested-sort-wrap",
         listClassNames: ["nested-sort"],
         listItemClassNames: "list-group-item",
@@ -105,7 +103,6 @@ onMounted(() => {
             const selectedNavItem = props.items.find(
                 (item) => item.id === navItemId
             );
-            console.log("ITEM", navItemId, props.items, selectedNavItem);
             emitter.emit("edit-item", selectedNavItem);
         });
 
