@@ -30,5 +30,27 @@ export const miscRoutes = [
             permission: 'any',
             layout: 'private'
         }
+    },
+    {
+        path: '/extras/:param',
+        name: 'DynamicContent',
+        component: () => import(/* webpackChunkName: "misc" */ '@/views/misc/Dynamic.vue'),
+        meta: {
+            guarded: true,
+            permission: 'any',
+            layout: 'private'
+        }
+    },
+    {
+        path: '/settings/extras/:param',
+        name: 'SettingsDynamicContent',
+        component: () => import(/* webpackChunkName: "misc" */ '@/views/misc/Dynamic.vue'),
+        meta: {
+            guarded: true,
+            permission: 'any',
+            layout: 'private',
+            parent: 'Settings',
+            settings: true
+        }
     }
 ];

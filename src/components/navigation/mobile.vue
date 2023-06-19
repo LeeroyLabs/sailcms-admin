@@ -36,7 +36,6 @@
                     :title="item.text"
                     color="white"
                 >
-                    {{ $route.name }} {{ item.to }}
                     <template v-slot:prepend>
                         <v-icon :icon="item.icon" :alt="item.text"></v-icon>
                     </template>

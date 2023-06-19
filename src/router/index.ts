@@ -7,13 +7,15 @@ import { publicRoutes } from "@/router/public";
 import { miscRoutes } from "@/router/misc";
 import { entryRoutes } from "@/router/entries";
 import { hasPermission } from "@/libs/tools";
+import { emailRoutes } from "@/router/emails";
 
 const routes = [
     ...publicRoutes,
     ...miscRoutes,
     ...userRoutes,
     ...categoriesRoutes,
-    ...entryRoutes
+    ...entryRoutes,
+    ...emailRoutes
 ];
 
 function routerInit() {

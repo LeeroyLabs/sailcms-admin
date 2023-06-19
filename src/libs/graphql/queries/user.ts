@@ -144,8 +144,8 @@ export default {
         }
     `,
     createUser: `
-        mutation createUser($name: UserNameInput!, $email: String!, $password: String!, $avatar: String, $meta: UserMetaInput!, $locale: String, $roles: [String!], $createWithSetPassword: Boolean) {
-            createUser(name: $name, email: $email, password: $password, avatar: $avatar, meta: $meta, locale: $locale, roles: $roles, createWithSetPassword: $createWithSetPassword)
+        mutation createUser($name: UserNameInput!, $email: String!, $password: String!, $avatar: String, $meta: UserMetaInput!, $locale: String, $roles: [String!], $create_with_set_password: Boolean, $pre_activated: Boolean) {
+            createUser(name: $name, email: $email, password: $password, avatar: $avatar, meta: $meta, locale: $locale, roles: $roles, create_with_set_password: $createWithSetPassword, pre_activated: $pre_activated)
         }
     `,
     updateUser: `

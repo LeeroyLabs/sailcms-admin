@@ -61,4 +61,89 @@ export default {
             }
         }
     `,
+    testEmail: `
+        mutation testEmail($email: String!) {
+            testEmail(email: $email)
+        }
+    `,
+    navigationElements: `
+        query navigationElements {
+            navigationElements {
+                post_entries {
+                    name
+                    icon
+                    url
+                    slug
+                    label {
+                        #locale#
+                    }
+                    parent
+                    permission
+                }
+                pre_users {
+                    name
+                    icon
+                    url
+                    slug
+                    label {
+                        #locale#
+                    }
+                    parent
+                    permission
+                }
+                pre_settings {
+                    name
+                    icon
+                    url
+                    slug
+                    label {
+                        #locale#
+                    }
+                    parent
+                    permission
+                }
+            }
+        }
+    `,
+    handshakeKey: `
+        query handshakeKey {
+            handshakeKey
+        }
+    `,
+    settingsElements: `
+        query settingsElements {
+            settingsElements {
+                entries {
+                    name
+                    icon
+                    url
+                    slug
+                    label {
+                        #locale#
+                    }
+                    permission
+                }
+                emails {
+                    name
+                    icon
+                    url
+                    slug
+                    label {
+                        #locale#
+                    }
+                    permission
+                }
+                others {
+                    name
+                    icon
+                    url
+                    slug
+                    label {
+                        #locale#
+                    }
+                    permission
+                }
+            }
+        }
+    `
 }
