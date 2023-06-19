@@ -1,3 +1,5 @@
+import { LocaleObject } from "./general";
+
 export type RegisteredExtensions = {
     modules: Module[];
     containers: Container[];
@@ -54,4 +56,25 @@ export type Routes = {
     put: string[];
     delete: string[];
     redirect: string[];
+};
+
+export type NavigationElement = {
+    icon: string;
+    url: string;
+    label: LocaleObject;
+    parent: string;
+    permission: string;
+};
+
+export type SettingsElements = {
+    entries: SettingsElement[];
+    emails: SettingsElement[];
+    others: SettingsElement[];
+}
+
+export type SettingsElement = {
+    icon: string;
+    url: string;
+    label: LocaleObject;
+    permission: string;
 };

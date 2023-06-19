@@ -317,7 +317,8 @@ export class Users {
                 meta: { flags: { use2fa: false } },
                 avatar: data.avatar,
                 locale: store.locales[0],
-                createWithSetPassword: forceNewPassword,
+                create_with_set_password: forceNewPassword,
+                pre_activated: true
             }
         );
 
