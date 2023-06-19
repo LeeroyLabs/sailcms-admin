@@ -285,3 +285,18 @@ categories:
     add_category_btn: Ajouter
     edit_category_btn: Sauvegarder
     cancel: Annuler
+
+navigations:
+  title: Navigations
+  form:
+    title_add: Ajouter une navigation
+    title_edit: Mettre à jour la Navigation
+    name: Entrer un nom
+    label: Entrer un label
+    url: Entrer l'url
+    select_type: Sélectioner un type de menu
+    select_entry: Sélectioner une entrée
+    select_category: Sélectioner une catégorie
+    select_parent: Sélectioner un parent
+    add_navigation_btn: Ajouter
+    edit_navigation_btn: Sauvegarder

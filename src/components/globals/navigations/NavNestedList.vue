@@ -4,126 +4,72 @@
 
 <script setup lang="ts">
 import { ref, inject, onMounted, onUpdated } from "vue";
-import { useI18n } from "vue-i18n";
+import {
+    NavigationItem,
+    SortedNavigationItem,
+} from "@/libs/graphql/types/navigations";
 import { useTheme } from "vuetify";
-
 import NestedSort from "nested-sort";
-import type {
-    Category,
-    CategorySortItem,
-} from "@/libs/graphql/types/categories";
-import { Categories } from "@/libs/graphql";
-import { SailCMS } from "@/libs/graphql";
 
-type Props = {
-    categories?: Category[];
-};
+interface Props {
+    items: NavigationItem[];
+}
 interface List {
     id: string;
     text: string;
     parent: string;
 }
-
 const props = defineProps<Props>();
-const i18n = useI18n();
 const emitter: any = inject("emitter");
-const siteId = ref<string>(SailCMS.getSiteId());
 const theme = useTheme();
 
-const categoriesList = ref<Category[]>(props.categories!);
-const formattedCategories = ref<List[]>([]);
-const selectedCategory = ref<Category | null>(null);
+const formattedItems = ref(
+    props.items.map((item) => {
+        return { ...item, text: item.label };
+    })
+);
 
-// Return the locale as a string
-const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
-
-// Format the categories to display in the NestedSort component
-const formattedCategoriesList = (categoriesList: Category[]) => {
-    const formattedList = categoriesList.map((cat) => {
-        if (cat.children && cat.children.length) {
-            formattedCategoriesList(cat.children);
-        }
-
-        return {
-            id: cat._id,
-            text: cat.name[getLocale()],
-            parent: cat.parent_id,
-        };
+// Check if a nav item has children
+const hasChildren = (navItems: NavigationItem[]) => {
+    const navItemsId = navItems.map((item) => {
+        if (item.children && item.children.length) return item.id;
     });
-
-    formattedCategories.value = [
-        ...formattedCategories.value,
-        ...formattedList,
-    ];
-};
-
-formattedCategoriesList(categoriesList.value!);
-
-// Update category orders & parent id
-const updateCategoryOrders = async (sortedCategories: CategorySortItem[]) => {
-    const responseUpdateCategoryOrders = await Categories.updateCategoryOrders(
-        sortedCategories,
-        siteId.value
-    );
-    if (responseUpdateCategoryOrders) {
-        emitter.emit("update-list");
-    }
-};
-
-// Check if a category has children
-const hasChildren = (categories: Category[]) => {
-    const categoriesId = categories
-        .map((cat) => {
-            if (cat.children && cat.children.length) {
-                hasChildren(cat.children);
-                return cat._id;
-            }
-        })
-        .filter((el) => el);
 
     // Add class if element has children
     const lists = document.querySelectorAll(".list-group-item");
     lists.forEach((list: any) => {
-        if (categoriesId.includes(list.dataset.id)) {
+        if (navItemsId.includes(list.dataset.id)) {
             list.classList.add("sublist");
         }
     });
-
-    return categoriesId;
-};
-
-// Return the category corresponding to the id
-const findCategory = (categories: Category[], id: string) => {
-    if (selectedCategory.value) return;
-    categories.forEach((cat) => {
-        if (cat.children && cat.children.length) findCategory(cat.children, id);
-        if (cat._id === id) selectedCategory.value = cat;
-    });
+    return navItemsId;
 };
 
 // Toggle open list
 const toggleOpenList = () => {
     const openedLists = document.querySelectorAll(".list-group-item.sublist");
-    openedLists.forEach((cat: Element) => {
-        const pTag = cat.querySelector(".list-group-item--content p");
+    openedLists.forEach((list: Element) => {
+        const pTag = list.querySelector(".list-group-item--content p");
         if (pTag) {
             pTag.addEventListener("click", () => {
-                cat.classList.toggle("opened");
+                list.classList.toggle("opened");
             });
         }
     });
 };
 
-// Lifecycle functions
 onMounted(() => {
     new NestedSort({
-        data: formattedCategories.value,
+        data: formattedItems.value,
         actions: {
-            onDrop(data: CategorySortItem[]) {
-                updateCategoryOrders(data);
+            onDrop(data: SortedNavigationItem[]) {
+                emitter.emit("update-list", data);
             },
         },
-        nestingLevels: 4,
+        propertyMap: {
+            parent: "parent_id",
+        },
+        nestingLevels: 2,
         el: "#nested-sort-wrap",
         listClassNames: ["nested-sort"],
         listItemClassNames: "list-group-item",
@@ -142,7 +88,7 @@ onMounted(() => {
         },
     });
 
-    hasChildren(categoriesList.value!);
+    hasChildren(formattedItems.value);
     toggleOpenList();
 
     // Actions
@@ -153,18 +99,20 @@ onMounted(() => {
 
         // Edit
         editIcon.addEventListener("click", (event: any) => {
-            const categoryId: string = event.target.dataset.id;
-            findCategory(categoriesList.value!, categoryId);
-            emitter.emit("edit-item", selectedCategory.value);
-            selectedCategory.value = null;
+            const navItemId: string = event.target.dataset.id;
+            const selectedNavItem = props.items.find(
+                (item) => item.id === navItemId
+            );
+            emitter.emit("edit-item", selectedNavItem);
         });
 
         // Delete
         deleteIcon.addEventListener("click", (event: any) => {
-            const categoryId: string = event.target.dataset.id;
-            findCategory(categoriesList.value!, categoryId);
-            emitter.emit("delete-item", selectedCategory.value);
-            selectedCategory.value = null;
+            const navItemId: string = event.target.dataset.id;
+            const selectedNavItem = props.items.find(
+                (item) => item.id === navItemId
+            );
+            emitter.emit("delete-item", selectedNavItem);
         });
     });
 
@@ -178,7 +126,7 @@ onMounted(() => {
 });
 
 onUpdated(() => {
-    hasChildren(categoriesList.value!);
+    hasChildren(formattedItems.value);
 });
 </script>
 

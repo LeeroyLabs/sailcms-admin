@@ -18,7 +18,7 @@
                                 ref="categoryForm"
                                 @submit.prevent
                                 v-model="isFormValid"
-                                class="tw-flex tw-flex-col tw-gap-4"
+                                class="tw-flex tw-flex-col tw-gap-2"
                             >
                                 <v-text-field
                                     v-for="locale in siteLocales"
@@ -28,7 +28,6 @@
                                         $t(`categories.form.name.${locale}`)
                                     "
                                     variant="outlined"
-                                    :hide-details="true"
                                     type="text"
                                     clearable
                                     density="comfortable"
@@ -50,49 +49,60 @@
                                     clearable
                                     :label="$t('categories.form.select_parent')"
                                     variant="outlined"
+                                    density="comfortable"
                                     :items="formattedCategories"
                                     v-model="selectedParentId"
                                     item-title="name"
                                     item-value="id"
                                 />
 
-                                <v-btn
-                                    v-if="!selectedCategory"
-                                    @click="
-                                        handleAddCategory(
-                                            categoryNameInput,
-                                            selectedParentId || '',
-                                            siteId
-                                        )
-                                    "
-                                    type="submit"
-                                    block
-                                    color="primary"
-                                    class="tw-w-full"
-                                >
-                                    {{ $t("categories.form.add_category_btn") }}
-                                </v-btn>
-                                <v-btn
-                                    v-else
-                                    @click="
-                                        handleEditCategory(selectedCategory!)
-                                    "
-                                    type="submit"
-                                    block
-                                    color="primary"
-                                    class="tw-w-full"
-                                >
-                                    {{
-                                        $t("categories.form.edit_category_btn")
-                                    }}
-                                </v-btn>
-                                <v-btn
-                                    @click="handleCancel"
-                                    color="primary"
-                                    class="tw-w-full"
-                                >
-                                    {{ $t("categories.form.cancel") }}
-                                </v-btn>
+                                <div class="tw-flex tw-flex-col tw-gap-8">
+                                    <v-btn
+                                        v-if="!selectedCategory"
+                                        @click="
+                                            handleAddCategory(
+                                                categoryNameInput,
+                                                selectedParentId || '',
+                                                siteId
+                                            )
+                                        "
+                                        type="submit"
+                                        block
+                                        color="primary"
+                                        class="tw-w-full"
+                                    >
+                                        {{
+                                            $t(
+                                                "categories.form.add_category_btn"
+                                            )
+                                        }}
+                                    </v-btn>
+                                    <v-btn
+                                        v-else
+                                        @click="
+                                            handleEditCategory(
+                                                selectedCategory!
+                                            )
+                                        "
+                                        type="submit"
+                                        block
+                                        color="primary"
+                                        class="tw-w-full"
+                                    >
+                                        {{
+                                            $t(
+                                                "categories.form.edit_category_btn"
+                                            )
+                                        }}
+                                    </v-btn>
+                                    <v-btn
+                                        @click="handleCancel"
+                                        color="primary"
+                                        class="tw-w-full"
+                                    >
+                                        {{ $t("categories.form.cancel") }}
+                                    </v-btn>
+                                </div>
                             </v-form>
                         </div>
                     </v-col>
@@ -116,15 +126,18 @@
 </template>
 
 <script setup lang="ts">
+// Vue
 import { ref, inject, onMounted, watch } from "vue";
 import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
-import Loader from "@/components/globals/Loader.vue";
-import NestedList from "@/components/globals/categories/NestedList.vue";
+// Helpers & Libs
 import type { Category } from "@/libs/graphql/types/categories";
 import type { LocaleObject } from "@/libs/graphql/types/general";
 import { Categories } from "@/libs/graphql";
 import { SailCMS } from "@/libs/graphql";
+// Components
+import Loader from "@/components/globals/Loader.vue";
+import NestedList from "@/components/globals/categories/NestedList.vue";
 
 const store = useAppStore();
 const i18n = useI18n();
@@ -156,11 +169,9 @@ const categoryNameRules = [
         return "Name is requred.";
     },
 ];
+// Reset form
 const reset = () => {
     categoryForm.value.reset();
-};
-const resetValidation = () => {
-    categoryForm.value.resetValidation();
 };
 
 // Emits
@@ -184,6 +195,7 @@ const categoryFullTree = async (parent_id: string, site_id: string) => {
     );
     if (responseCategoryFullTree) {
         categoriesList.value = responseCategoryFullTree;
+        formattedCategories.value = [];
         formatCategoriesList(categoriesList.value);
         categoriesListKey.value++;
         isLoading.value = false;
@@ -243,14 +255,13 @@ const handleEditCategory = async (item: Category) => {
     }
 };
 
-// Cancel edit
+// Cancel
 const handleCancel = () => {
     categoryNameInput.value = { en: "", fr: "" };
     selectedCategory.value = null;
     selectedParentId.value = null;
     isFormValid.value = false;
     reset();
-    resetValidation();
 };
 
 // Delete a category
