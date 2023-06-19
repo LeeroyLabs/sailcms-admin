@@ -1,25 +1,18 @@
 <template>
     <div v-if="!isLoading">
-        <section
-            class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between"
-        >
-            <v-container class="tw-m-0" fluid>
+        <section class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between">
+            <v-container class="tw-m-0" :fluid="true">
                 <v-row>
                     <v-col cols="12" xs="12" md="3">
                         <div class="tw-flex tw-flex-col tw-gap-4">
-                            <h3>
+                            <h3 class="tw-font-medium tw-text-xl">
                                 {{
                                     !selectedCategory
                                         ? $t("categories.form.title_add")
                                         : $t("categories.form.title_edit")
                                 }}
                             </h3>
-                            <v-form
-                                ref="categoryForm"
-                                @submit.prevent
-                                v-model="isFormValid"
-                                class="tw-flex tw-flex-col tw-gap-2"
-                            >
+                            <v-form ref="categoryForm" @submit.prevent v-model="isFormValid" class="tw-flex tw-flex-col tw-gap-4">
                                 <v-text-field
                                     v-for="locale in siteLocales"
                                     :key="locale"
@@ -29,34 +22,29 @@
                                     "
                                     variant="outlined"
                                     type="text"
-                                    clearable
+                                    :clearable="true"
                                     density="comfortable"
                                     required
+                                    :hide-details="true"
                                     :rules="categoryNameRules"
                                     v-model="categoryNameInput[locale]"
                                     @click:clear="handleCancel"
                                 >
-                                    <template v-slot:append-inner>
-                                        <div class="tw-opacity-[0.20]">
-                                            <v-icon
-                                                icon="mdi-keyboard-return"
-                                            />
-                                        </div>
-                                    </template>
                                 </v-text-field>
 
                                 <v-select
-                                    clearable
+                                    :clearable="true"
                                     :label="$t('categories.form.select_parent')"
                                     variant="outlined"
                                     density="comfortable"
                                     :items="formattedCategories"
                                     v-model="selectedParentId"
                                     item-title="name"
+                                    :hide-details="true"
                                     item-value="id"
                                 />
 
-                                <div class="tw-flex tw-flex-col tw-gap-8">
+                                <div class="tw-mt-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-gap-6 tw-w-full tw-max-w-full">
                                     <v-btn
                                         v-if="!selectedCategory"
                                         @click="
@@ -67,15 +55,11 @@
                                             )
                                         "
                                         type="submit"
-                                        block
                                         color="primary"
-                                        class="tw-w-full"
+                                        density="default"
+                                        class="tw-w-full lg:tw-w-6/12"
                                     >
-                                        {{
-                                            $t(
-                                                "categories.form.add_category_btn"
-                                            )
-                                        }}
+                                        {{ $t("categories.form.add_category_btn") }}
                                     </v-btn>
                                     <v-btn
                                         v-else
@@ -85,20 +69,17 @@
                                             )
                                         "
                                         type="submit"
-                                        block
+                                        density="default"
                                         color="primary"
-                                        class="tw-w-full"
+                                        class="tw-w-full lg:tw-w-5/12"
                                     >
-                                        {{
-                                            $t(
-                                                "categories.form.edit_category_btn"
-                                            )
-                                        }}
+                                        {{ $t("categories.form.edit_category_btn") }}
                                     </v-btn>
                                     <v-btn
                                         @click="handleCancel"
                                         color="primary"
-                                        class="tw-w-full"
+                                        density="default"
+                                        class="tw-w-full lg:tw-w-6/12"
                                     >
                                         {{ $t("categories.form.cancel") }}
                                     </v-btn>
@@ -110,10 +91,9 @@
                     <v-col cols="12" xs="12" md="9">
                         <div class="tw-flex tw-flex-col tw-gap-4">
                             <v-card class="tw-p-4 tw-h-[80vh] tw-overflow-auto">
-                                <NestedList
-                                    :categories="categoriesList"
-                                    :key="categoriesListKey"
-                                />
+                                <div class="">
+                                    <NestedDraggable :categories="categoriesList"/>
+                                </div>
                             </v-card>
                         </div>
                     </v-col>
@@ -127,7 +107,7 @@
 
 <script setup lang="ts">
 // Vue
-import { ref, inject, onMounted, watch } from "vue";
+import { ref, inject, onMounted, watch, computed } from "vue";
 import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
 // Helpers & Libs
@@ -137,7 +117,7 @@ import { Categories } from "@/libs/graphql";
 import { SailCMS } from "@/libs/graphql";
 // Components
 import Loader from "@/components/globals/Loader.vue";
-import NestedList from "@/components/globals/categories/NestedList.vue";
+import NestedDraggable from "@/components/globals/categories/Nested.vue";
 
 const store = useAppStore();
 const i18n = useI18n();

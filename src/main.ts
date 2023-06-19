@@ -29,6 +29,9 @@ registerPlugins(app).then(() =>
     app.mount('#app');
 });
 
+import draggable from 'vuedraggable';
+app.component('draggable', draggable);
+
 export const UI_VERSION = '1.0.0.next-51';
 export const UI_VERSION_MAJOR = 1;
 export const UI_VERSION_MINOR = 0;

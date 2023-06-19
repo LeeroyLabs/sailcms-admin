@@ -57,6 +57,7 @@ export const navigationItems = computed(() => {
 
     return [
         ...dynamics,
+        ...post_entries,
         {
             icon: "mdi-image-outline",
             text: "Assets",
@@ -83,6 +84,7 @@ export const navigationItems = computed(() => {
             text: "SEO",
             permission: "any",
         },
+        ...pre_users,
         {
             icon: "mdi-account-tie-hat",
             to: { name: "Roles" },
@@ -123,85 +125,13 @@ export const navigationItems = computed(() => {
             text: "Tasks",
             permission: "any",
         },
+        ...pre_settings,
         {
             icon: "mdi-cog-outline",
             to: { name: "Settings" },
             parent: "",
             text: i18n.global.t("system.settings"),
             permission: "any",
-        },
-        ...post_entries,
-        {
-            icon: 'mdi-image-outline',
-            text: 'Assets',
-            parent: '',
-            permission: 'any'
-        },
-        {
-            icon: 'mdi-menu',
-            text: 'Navigations',
-            parent: '',
-            permission: 'any'
-        },
-        {
-            icon: 'mdi-shape-outline',
-            to: {name: "Categories"},
-            text: i18n.global.t('categories.title'),
-            parent: '',
-            permission: 'read_category'
-        },
-        {
-            icon: 'mdi-cloud-search-outline',
-            parent: '',
-            text: 'SEO',
-            permission: 'any'
-        },
-        ...pre_users,
-        {
-            icon: 'mdi-account-tie-hat',
-            to: {name: 'Roles'},
-            parent: '',
-            text: i18n.global.t('roles.title'),
-            permission: 'read_role'
-        },
-        {
-            icon: 'mdi-account-group-outline',
-            to: {name: 'UserGroups'},
-            parent: '',
-            text: i18n.global.t('usergroups.title'),
-            permission: 'read_group'},
-        {
-            icon: 'mdi-account',
-            to: {name: 'Users'},
-            parent: '',
-            text: i18n.global.t('users.title'),
-            permission: 'read_user'},
-        {
-            icon: 'mdi-puzzle-outline',
-            to: {name: 'Extensions'},
-            parent: '',
-            text: 'Extensions',
-            permission: 'any'
-        },
-        {
-            icon: 'mdi-email-outline',
-            to: {name: 'Emails'},
-            parent: '',
-            text: i18n.global.t('emails.title'),
-            permission: 'read_emails'
-        },
-        {
-            icon: 'mdi-calendar-check-outline',
-            parent: '',
-            text: 'Tasks',
-            permission: 'any'},
-        ...pre_settings,
-        {
-            icon: 'mdi-cog-outline',
-            to: {name: 'Settings'},
-            parent: '',
-            text: i18n.global.t('system.settings'),
-            permission: 'any'
-        },
+        }
     ]
 });

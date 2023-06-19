@@ -21,3 +21,37 @@
 .v-leave-to {
   opacity: 0;
 }
+
+/* nested-sort is the custom class name */
+.nested-sort {
+  padding: 0;
+}
+
+.nested-sort--enabled li {
+  cursor: move;
+}
+
+.nested-sort li {
+  list-style: none;
+  margin: 0 0 5px;
+  padding: 10px;
+  padding-right: 0;
+}
+
+.nested-sort li ol {
+  padding: 0;
+  margin-top: 10px;
+  margin-bottom: -10px;
+}
+
+.nested-sort li ol li {
+  padding-left: 25px;
+}
+
+/* ns-dragged is the class name of the item which is being dragged */
+.nested-sort .ns-dragged {
+}
+
+/* ns-targeted is the class name of the item on which the dragged item is hovering */
+.nested-sort .ns-targeted {
+}

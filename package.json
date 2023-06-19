@@ -14,8 +14,10 @@
     "@mdi/font": "7.2.96",
     "@types/lodash": "^4.14.195",
     "date-fns": "^2.30.0",
+    "dragula": "^3.7.3",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
+    "jquery-ui": "^1.13.2",
     "js-sha256": "^0.9.0",
     "lodash": "^4.17.21",
     "lodash-inflection": "^1.5.0",
@@ -28,6 +30,7 @@
     "vue": "^3.2.47",
     "vue-advanced-cropper": "^2.8.8",
     "vue-router": "^4.1.6",
+    "vuedraggable": "^4.1.0",
     "vuetify": "^3.2.1",
     "webfontloader": "^1.6.28"
   },
