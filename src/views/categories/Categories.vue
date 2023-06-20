@@ -1,81 +1,99 @@
 <template>
     <div v-if="!isLoading">
-        <section
-            class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between"
-        >
-            <v-container class="tw-m-0" fluid>
+        <section class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between">
+            <v-container class="tw-m-0" :fluid="true">
                 <v-row>
                     <v-col cols="12" xs="12" md="3">
                         <div class="tw-flex tw-flex-col tw-gap-4">
-                            <v-text-field
-                                color="primary"
-                                :label="$t('categories.form.name')"
-                                variant="outlined"
-                                :hide-details="true"
-                                type="text"
-                                clearable
-                                density="comfortable"
-                                v-model="categoryNameInput[getLocale()]"
-                                @click:clear="clearSearch"
-                            >
-                                <template v-slot:append-inner>
-                                    <div class="tw-opacity-[0.20]">
-                                        <v-icon icon="mdi-keyboard-return" />
-                                    </div>
-                                </template>
-                            </v-text-field>
-
-                            <v-btn
-                                v-if="action === 'add'"
-                                @click="
-                                    handleAddCategory(
-                                        categoryNameInput,
-                                        '',
-                                        siteId
-                                    )
-                                "
-                                color="primary"
-                                prepend-icon="mdi-account-plus"
-                                :disabled="!categoryNameInput"
-                            >
-                                {{ $t("categories.form.add_category") }}
-                            </v-btn>
-
-                            <div
-                                v-else
-                                class="tw-flex tw-gap-2 tw-justify-between tw-flex-wrap"
-                            >
-                                <v-btn
-                                    @click="handleCancel"
+                            <h3 class="tw-font-medium tw-text-xl">
+                                {{
+                                    !selectedCategory
+                                        ? $t("categories.form.title_add")
+                                        : $t("categories.form.title_edit")
+                                }}
+                            </h3>
+                            <v-form ref="categoryForm" @submit.prevent v-model="isFormValid" class="tw-flex tw-flex-col tw-gap-4">
+                                <v-text-field
+                                    v-for="locale in siteLocales"
+                                    :key="locale"
                                     color="primary"
-                                    class="tw-flex-grow"
-                                >
-                                    {{ $t("categories.form.cancel") }}
-                                </v-btn>
-                                <v-btn
-                                    v-if="selectedCategory"
-                                    @click="
-                                        handleEditCategory(selectedCategory)
+                                    :label="
+                                        $t(`categories.form.name.${locale}`)
                                     "
-                                    color="primary"
-                                    :disabled="!categoryNameInput"
-                                    class="tw-flex-grow"
+                                    variant="outlined"
+                                    type="text"
+                                    :clearable="true"
+                                    density="comfortable"
+                                    required
+                                    :hide-details="true"
+                                    :rules="categoryNameRules"
+                                    v-model="categoryNameInput[locale]"
+                                    @click:clear="handleCancel"
                                 >
-                                    {{ $t("categories.form.edit_category") }}
-                                </v-btn>
-                            </div>
+                                </v-text-field>
+
+                                <v-select
+                                    :clearable="true"
+                                    :label="$t('categories.form.select_parent')"
+                                    variant="outlined"
+                                    density="comfortable"
+                                    :items="formattedCategories"
+                                    v-model="selectedParentId"
+                                    item-title="name"
+                                    :hide-details="true"
+                                    item-value="id"
+                                />
+
+                                <div class="tw-mt-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-gap-6 tw-w-full tw-max-w-full">
+                                    <v-btn
+                                        v-if="!selectedCategory"
+                                        @click="
+                                            handleAddCategory(
+                                                categoryNameInput,
+                                                selectedParentId || '',
+                                                siteId
+                                            )
+                                        "
+                                        type="submit"
+                                        color="primary"
+                                        density="default"
+                                        class="tw-w-full lg:tw-w-6/12"
+                                    >
+                                        {{ $t("categories.form.add_category_btn") }}
+                                    </v-btn>
+                                    <v-btn
+                                        v-else
+                                        @click="
+                                            handleEditCategory(
+                                                selectedCategory!
+                                            )
+                                        "
+                                        type="submit"
+                                        density="default"
+                                        color="primary"
+                                        class="tw-w-full lg:tw-w-5/12"
+                                    >
+                                        {{ $t("categories.form.edit_category_btn") }}
+                                    </v-btn>
+                                    <v-btn
+                                        @click="handleCancel"
+                                        color="primary"
+                                        density="default"
+                                        class="tw-w-full lg:tw-w-6/12"
+                                    >
+                                        {{ $t("categories.form.cancel") }}
+                                    </v-btn>
+                                </div>
+                            </v-form>
                         </div>
                     </v-col>
 
                     <v-col cols="12" xs="12" md="9">
                         <div class="tw-flex tw-flex-col tw-gap-4">
-                            <v-card
-                                class="tw-p-4 tw-h-[calc(100vh-300px)] tw-overflow-auto"
-                            >
-                                <NestedList
-                                    :categories="categoriesList"
-                                    :key="categoriesListKey"
-                                />
+                            <v-card class="tw-p-4 tw-h-[80vh] tw-overflow-auto">
+                                <div class="">
+                                    <NestedDraggable :categories="categoriesList"/>
+                                </div>
                             </v-card>
                         </div>
                     </v-col>
@@ -88,32 +106,66 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, onMounted } from "vue";
+// Vue
+import { ref, inject, onMounted, watch, computed } from "vue";
 import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
-import Loader from "@/components/globals/Loader.vue";
-import NestedList from "@/components/globals/categories/NestedList.vue";
+// Helpers & Libs
 import type { Category } from "@/libs/graphql/types/categories";
 import type { LocaleObject } from "@/libs/graphql/types/general";
 import { Categories } from "@/libs/graphql";
 import { SailCMS } from "@/libs/graphql";
+// Components
+import Loader from "@/components/globals/Loader.vue";
+import NestedDraggable from "@/components/globals/categories/Nested.vue";
 
 const store = useAppStore();
 const i18n = useI18n();
 const isLoading = ref<boolean>(true);
-const siteId = ref(SailCMS.getSiteId());
+const siteId = ref<string>(SailCMS.getSiteId());
+const siteLocales = ref<string[]>(SailCMS.getLocales());
 
 // Return the locale as string
 const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
 
 const categoriesList = ref<Category[]>([]);
 const categoriesListKey = ref<number>(0);
-const selectedCategory = ref<Category>();
+const selectedCategory = ref<Category | null>(null);
+const formattedCategories = ref<
+    {
+        id: string;
+        name: string;
+    }[]
+>([]);
+const selectedParentId = ref<string | null>(null);
+const categoryForm = ref();
 
-// Search & Actions
-const action = ref<string>("add");
+// Search & Validations
+const isFormValid = ref<boolean>(false);
 const categoryNameInput = ref<LocaleObject>({ en: "", fr: "" });
-const currentSearch = ref<string>("");
+const categoryNameRules = [
+    (value: string) => {
+        if (value) return true;
+        return "Name is requred.";
+    },
+];
+// Reset form
+const reset = () => {
+    categoryForm.value.reset();
+};
+
+// Emits
+const emitter: any = inject("emitter");
+emitter.on("delete-item", (item: Category) => handleDeleteCategory(item));
+emitter.on("edit-item", (item: Category) => {
+    selectedCategory.value = item;
+    selectedParentId.value = item.parent_id;
+    categoryNameInput.value = item.name;
+    formattedCategories.value = formattedCategories.value.filter(
+        (el) => el.id !== selectedCategory?.value?._id
+    );
+});
+emitter.on("update-list", () => categoryFullTree("", siteId.value));
 
 // Get categories
 const categoryFullTree = async (parent_id: string, site_id: string) => {
@@ -123,20 +175,31 @@ const categoryFullTree = async (parent_id: string, site_id: string) => {
     );
     if (responseCategoryFullTree) {
         categoriesList.value = responseCategoryFullTree;
+        formattedCategories.value = [];
+        formatCategoriesList(categoriesList.value);
         categoriesListKey.value++;
         isLoading.value = false;
     }
 };
 
-// Emits
-const emitter: any = inject("emitter");
-emitter.on("delete-item", (item: Category) => handleDeleteCategory(item));
-emitter.on("edit-item", (item: Category) => {
-    action.value = "edit";
-    selectedCategory.value = item;
-    categoryNameInput.value = item.name;
-});
-emitter.on("update-list", () => categoryFullTree("", siteId.value));
+// Format the categories to display within the parent id dropdown
+const formatCategoriesList = (categoriesList: Category[]) => {
+    const formattedList = categoriesList.map((cat) => {
+        if (cat.children && cat.children.length) {
+            formatCategoriesList(cat.children);
+        }
+
+        return {
+            id: cat._id,
+            name: cat.name[getLocale()],
+        };
+    });
+
+    formattedCategories.value = [
+        ...formattedCategories.value,
+        ...formattedList,
+    ].sort((a, b) => a.name.localeCompare(b.name));
+};
 
 // Add a category
 const handleAddCategory = async (
@@ -144,35 +207,41 @@ const handleAddCategory = async (
     parent_id: string,
     site_id: string
 ) => {
-    const responseAddCategory = await Categories.createCategory(
-        name,
-        parent_id,
-        site_id
-    );
-    if (responseAddCategory) {
-        categoryFullTree("", siteId.value);
-        categoryNameInput.value = { en: "", fr: "" };
+    if (isFormValid.value) {
+        const responseAddCategory = await Categories.createCategory(
+            name,
+            parent_id,
+            site_id
+        );
+        if (responseAddCategory) {
+            categoryFullTree("", siteId.value);
+            handleCancel();
+        }
     }
 };
 
 // Edit a category
 const handleEditCategory = async (item: Category) => {
-    const responseEditCategory = await Categories.updateCategory(
-        item._id,
-        categoryNameInput.value,
-        ""
-    );
-    if (responseEditCategory) {
-        categoryFullTree("", siteId.value);
-        categoryNameInput.value = { en: "", fr: "" };
-        action.value = "add";
+    if (isFormValid.value) {
+        const responseEditCategory = await Categories.updateCategory(
+            item._id,
+            categoryNameInput.value,
+            selectedParentId.value || ""
+        );
+        if (responseEditCategory) {
+            categoryFullTree("", siteId.value);
+            handleCancel();
+        }
     }
 };
 
-// Cancel edit
+// Cancel
 const handleCancel = () => {
     categoryNameInput.value = { en: "", fr: "" };
-    action.value = "add";
+    selectedCategory.value = null;
+    selectedParentId.value = null;
+    isFormValid.value = false;
+    reset();
 };
 
 // Delete a category
@@ -181,11 +250,6 @@ const handleDeleteCategory = async (item: Category) => {
     if (responseDeleteCategory) {
         categoryFullTree("", siteId.value);
     }
-};
-
-// Clear Search Button Handler
-const clearSearch = async () => {
-    currentSearch.value = "";
 };
 
 // Setup page data
@@ -203,6 +267,12 @@ const setupPage = () => {
     store.setPageTitle(i18n.t("categories.title"));
     document.title = i18n.t("categories.title") + " — SailCMS";
 };
+
+watch(i18n.locale, () => {
+    categoriesListKey.value++;
+    formattedCategories.value = [];
+    formatCategoriesList(categoriesList.value);
+});
 
 onMounted(() => {
     categoryFullTree("", siteId.value);

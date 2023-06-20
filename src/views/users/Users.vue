@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!isLoading">
+    <div v-if="isReady">
         <Teleport to="#actions">
             <v-btn @click="$router.push({name: 'SingleUser', params: {id: 'add'}})" color="primary" v-if="hasPermission('readwrite_user')">
                 {{ $t('users.add') }}
@@ -176,7 +176,7 @@ const store = useAppStore();
 const page = usePage();
 const users = ref([]);
 const pagination = ref({total: 0, current: 0, totalPages: 0});
-const isLoading = ref(true);
+const isReady = ref(false);
 const applyingAction = ref(false);
 
 // Search
@@ -242,7 +242,7 @@ const loadUsers = async () =>
 
     users.value = result.list;
     pagination.value = result.pagination;
-    isLoading.value = false;
+    isReady.value = true;
 }
 
 // Handle the "Check All" checkbox

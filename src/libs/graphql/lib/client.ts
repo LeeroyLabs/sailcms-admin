@@ -28,6 +28,11 @@ export class Client
         Client.client = new ApolloClient({link, cache});
     }
 
+    public version(): string
+    {
+        return '1.0.0-next.51';
+    }
+
     /**
      *
      * Update the GraphQL client with the new headers and access token

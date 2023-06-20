@@ -15,7 +15,7 @@
 
                     <v-btn
                         variant="text"
-                        @click.prevent="$i18n.locale=($i18n.locale === 'fr') ? 'en' : 'fr'"
+                        @click.prevent="changeLocale"
                         v-html="($i18n.locale === 'en') ? 'FR' : 'EN'"
                     >
                     </v-btn>
@@ -42,14 +42,14 @@
                     </v-btn>
                 </v-app-bar>
 
-                <v-main scrollable id="mainSection" :class="{'tw-bg-gray-200': $vuetify.theme.name === 'light', 'tw-bg-[#111111]': $vuetify.theme.name === 'dark'}">
+                <v-main :scrollable="true" id="mainSection" class="tw-flex tw-flex-col tw-h-full" :class="{'tw-bg-gray-200': $vuetify.theme.name === 'light', 'tw-bg-[#111111]': $vuetify.theme.name === 'dark'}">
                     <div class="tw-flex tw-flex-row tw-items-center tw-pr-4 tw-pt-4" :class="{'tw-bg-gray-200': $vuetify.theme.name === 'light', 'tw-bg-[#111111]': $vuetify.theme.name === 'dark'}">
                         <div class="tw-flex-grow"></div>
                         <div id="actions">
                             <!-- Use Teleport -->
                         </div>
                     </div>
-                    <div class="tw-m-6">
+                    <div class="tw-m-6 tw-mb-0">
                         <slot/>
                     </div>
                 </v-main>
@@ -108,6 +108,12 @@ const setTheme = (theme: string) =>
     appStore.setCurrentTheme(theme);
     VuetifyTheme.global.name.value = appStore.theme;
     localStorage.setItem('sailcms_theme', appStore.theme);
+}
+
+const changeLocale = () =>
+{
+    i18n.locale.value = (i18n.locale.value === 'fr') ? 'en' : 'fr'
+    localStorage.setItem('sailcms_locale', i18n.locale.value);
 }
 
 if (display.mobile) {

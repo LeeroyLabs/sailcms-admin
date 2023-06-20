@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia';
 import { User } from "@/libs/graphql/types/users";
 import { AssetConfig, Folder } from "@/libs/graphql/types/assets";
-import { data } from "autoprefixer";
+import { RouteLocationNormalizedLoaded } from "vue-router";
 
 const toastLength = 3_500;
 
@@ -19,6 +19,8 @@ export const useAppStore = defineStore('app', {
         isLoggedIn: false,
         configuration: {
             dataTypes: [] as any[],
+            dynamicNavigationElements: {post_entries: [], pre_users: [], pre_settings: []},
+            dynamicSettingsElements: {entries: [], emails: [], others: []},
             customLocales: {fr: [], en: []}
         },
         toast: {
@@ -65,6 +67,49 @@ export const useAppStore = defineStore('app', {
         showGraphQLError()
         {
             this.showGQLError = true;
+        },
+        setNavigationElements(elements: object)
+        {
+            // @ts-ignore
+            for (let element of elements.post_entries) {
+                // @ts-ignore
+                const keys = Object.keys(element.label);
+
+                for (let locale of keys) {
+                    // @ts-ignore
+                    this.configuration.customLocales[locale][element.slug] = element.label[locale];
+                }
+            }
+
+            // @ts-ignore
+            for (let element of elements.pre_users) {
+                // @ts-ignore
+                const keys = Object.keys(element.label);
+
+                for (let locale of keys) {
+                    // @ts-ignore
+                    this.configuration.customLocales[locale][element.slug] = element.label[locale];
+                }
+            }
+
+            // @ts-ignore
+            for (let element of elements.pre_settings) {
+                // @ts-ignore
+                const keys = Object.keys(element.label);
+
+                for (let locale of keys) {
+                    // @ts-ignore
+                    this.configuration.customLocales[locale][element.slug] = element.label[locale];
+                }
+            }
+
+            // @ts-ignore
+            this.configuration.dynamicNavigationElements = elements;
+        },
+        setSettingsElements(elements: object)
+        {
+            // @ts-ignore
+            this.configuration.dynamicSettingsElements = elements;
         },
         setCurrentUser(user: User|null)
         {
@@ -140,6 +185,44 @@ export const useAppStore = defineStore('app', {
         {
             // @ts-ignore
             this.configuration.customLocales = locales;
+        },
+        getCurrentThirdPartyUI(route: RouteLocationNormalizedLoaded): object|null
+        {
+            let param = route.params.param;
+
+            // @ts-ignore
+            let found = this.configuration.dynamicNavigationElements.post_entries.find(n => n.url === param);
+
+            if (!found) {
+                // @ts-ignore
+                found = this.configuration.dynamicNavigationElements.pre_users.find(n => n.url === param);
+
+                if (!found) {
+                    // @ts-ignore
+                    found = this.configuration.dynamicNavigationElements.pre_settings.find(n => n.url === param);
+                }
+            }
+
+            return found || null;
+        },
+        getCurrentThirdPartySettingsUI(route: RouteLocationNormalizedLoaded): object|null
+        {
+            let param = route.params.param;
+
+            // @ts-ignore
+            let found = this.configuration.dynamicSettingsElements.entries.find(n => n.url === param);
+
+            if (!found) {
+                // @ts-ignore
+                found = this.configuration.dynamicSettingsElements.emails.find(n => n.url === param);
+
+                if (!found) {
+                    // @ts-ignore
+                    found = this.configuration.dynamicSettingsElements.others.find(n => n.url === param);
+                }
+            }
+
+            return found || null;
         }
     }
 });

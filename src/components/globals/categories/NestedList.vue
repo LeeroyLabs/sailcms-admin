@@ -1,17 +1,23 @@
 <template>
-    <div id="nested-sort-wrap"></div>
+    <div id="nested-sort-wrap" :class="{'dark': $vuetify.theme.name === 'dark'}"></div>
+
+    <div class="tw-hidden" id="navElement">
+        <div class="!tw-px-4 !tw-py-3 tw-border tw-flex tw-flex-row tw-items-center tw-justify-between !tw-rounded-md" :class="{'hover:!tw-bg-slate-700': $vuetify.theme.name === 'light', 'hover:!tw-bg-zinc-800 tw-border-zinc-600': $vuetify.theme.name === 'dark'}">
+            <p>{t}</p>
+            <div class="action">
+                <v-btn density="comfortable" icon="mdi-pencil" height="40" width="40" variant="flat" rounded data-id="${item.id}"></v-btn>
+                <span class="tw-text-red-600"><v-btn density="comfortable" color="red" variant="tonal" rounded icon="mdi-trash-can-outline" data-id="${item.id}"></v-btn></span>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { ref, inject, onMounted, onUpdated } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTheme } from "vuetify";
-
 import NestedSort from "nested-sort";
-import type {
-    Category,
-    CategorySortItem,
-} from "@/libs/graphql/types/categories";
+import type { Category, CategorySortItem } from "@/libs/graphql/types/categories";
 import { Categories } from "@/libs/graphql";
 import { SailCMS } from "@/libs/graphql";
 
@@ -32,7 +38,7 @@ const theme = useTheme();
 
 const categoriesList = ref<Category[]>(props.categories!);
 const formattedCategories = ref<List[]>([]);
-const selectedCategory = ref<Category[]>([]);
+const selectedCategory = ref<Category | null>(null);
 
 // Return the locale as a string
 const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
@@ -94,11 +100,11 @@ const hasChildren = (categories: Category[]) => {
 
 // Return the category corresponding to the id
 const findCategory = (categories: Category[], id: string) => {
-    const category = categories.filter((cat) => {
+    if (selectedCategory.value) return;
+    categories.forEach((cat) => {
         if (cat.children && cat.children.length) findCategory(cat.children, id);
-        return cat._id === id;
+        if (cat._id === id) selectedCategory.value = cat;
     });
-    selectedCategory.value = [...selectedCategory.value, ...category];
 };
 
 // Toggle open list
@@ -123,20 +129,12 @@ onMounted(() => {
                 updateCategoryOrders(data);
             },
         },
+        nestingLevels: 4,
         el: "#nested-sort-wrap",
         listClassNames: ["nested-sort"],
         listItemClassNames: "list-group-item",
         renderListItem: (el: HTMLElement, item: List) => {
-            el.innerHTML = `
-            <div class='list-group-item--content'>
-                <p><span class='mdi mdi-drag'></span>${el.innerText}</p>
-                <div class='action'>
-                    <span class='action-edit mdi mdi-square-edit-outline'></span>
-                    <span class='action-delete mdi mdi-trash-can-outline'></span>
-                </div>
-            </div>
-        `;
-
+            el.innerHTML = document.getElementById('navElement').innerHTML.replace('{t}', el.innerText);
             return el;
         },
     });
@@ -145,24 +143,27 @@ onMounted(() => {
     toggleOpenList();
 
     // Actions
-    const lists = document.querySelectorAll(".list-group-item");
-    lists.forEach((list: any) => {
-        const categoryId: string = list.dataset.id;
-        const editIcon: Element = list.querySelector(".action-edit");
-        const deleteIcon: Element = list.querySelector(".action-delete");
-
-        // Edit
-        editIcon.addEventListener("click", () => {
-            findCategory(categoriesList.value!, categoryId);
-            emitter.emit("edit-item", selectedCategory.value[0]);
-        });
-
-        // Delete
-        deleteIcon.addEventListener("click", () => {
-            findCategory(categoriesList.value!, categoryId);
-            emitter.emit("delete-item", selectedCategory.value[0]);
-        });
-    });
+    // const lists = document.querySelectorAll(".list-group-item");
+    // lists.forEach((list: any) => {
+    //     const editIcon: Element = list.querySelector(".action-edit");
+    //     const deleteIcon: Element = list.querySelector(".action-delete");
+    //
+    //     // Edit
+    //     editIcon.addEventListener("click", (event: any) => {
+    //         const categoryId: string = event.target.dataset.id;
+    //         findCategory(categoriesList.value!, categoryId);
+    //         emitter.emit("edit-item", selectedCategory.value);
+    //         selectedCategory.value = null;
+    //     });
+    //
+    //     // Delete
+    //     deleteIcon.addEventListener("click", (event: any) => {
+    //         const categoryId: string = event.target.dataset.id;
+    //         findCategory(categoriesList.value!, categoryId);
+    //         emitter.emit("delete-item", selectedCategory.value);
+    //         selectedCategory.value = null;
+    //     });
+    // });
 
     // Class
     const listContent = document.querySelectorAll(".list-group-item--content");
@@ -179,82 +180,71 @@ onUpdated(() => {
 </script>
 
 <style lang="scss" scoped>
-:deep(.nested-sort--enabled li) {
-    @apply tw-relative tw-cursor-move;
 
-    .list-group-item--content {
-        @apply tw-relative tw-rounded tw-p-2;
-
-        p {
-            @apply tw-flex tw-items-center tw-gap-2;
-
-            span {
-                font: normal normal normal 24px/1 "Material Design Icons";
-            }
-        }
-
-        &:hover {
-            .action-edit,
-            .action-delete {
-                @apply tw-block;
-            }
-        }
-    }
-
-    .action {
-        @apply tw-flex tw-items-center tw-gap-2;
-        @apply tw-absolute tw-top-2/4 tw-right-4 tw--translate-y-2/4;
-
-        &-edit {
-            @apply tw-cursor-pointer tw-hidden;
-            font: normal normal normal 24px/1 "Material Design Icons";
-        }
-
-        &-delete {
-            @apply tw-cursor-pointer tw-hidden;
-            font: normal normal normal 24px/1 "Material Design Icons";
-        }
-    }
-
-    &.sublist {
-        > .list-group-item--content > p {
-            @apply tw-w-max tw-relative;
-
-            &:before {
-                @apply tw-content-['\F0140'] tw-absolute tw--right-8 tw-cursor-pointer;
-                font: normal normal normal 24px/1 "Material Design Icons";
-            }
-        }
-
-        &.opened {
-            > ol {
-                @apply tw-hidden;
-            }
-
-            > .list-group-item--content > p {
-                @apply tw-w-max tw-relative;
-
-                &:before {
-                    @apply tw-rotate-180;
-                }
-            }
-        }
-    }
-}
-
-:deep(.nested-sort li) {
-    @apply tw-list-none tw-p-3 tw-mb-1;
-}
-
-:deep(.nested-sort li ol) {
-    @apply tw-p-0 tw-px-2 tw-mt-3 tw--mb-5;
-}
-
-:deep(.nested-sort .ns-dragged) {
-    @apply tw-border tw-border-solid tw-border-[#ddd];
-}
-
-:deep(.nested-sort .ns-targeted) {
-    @apply tw-border tw-border-solid tw-border-[#000000];
-}
+//:deep(.nested-sort--enabled li) {
+//    @apply tw-relative tw-cursor-grab;
+//
+//    .list-group-item--content {
+//        @apply tw-relative tw-rounded tw-p-2;
+//
+//        &:hover {
+//            .action-edit,
+//            .action-delete {
+//                @apply tw-block;
+//            }
+//        }
+//    }
+//
+//    .action {
+//        @apply tw-flex tw-items-center tw-gap-2;
+//        @apply tw-absolute tw-top-2/4 tw-right-2 tw--translate-y-2/4;
+//
+//        &-edit {
+//            @apply tw-cursor-pointer tw-hidden;
+//            font: normal normal normal 24px/1 "Material Design Icons";
+//        }
+//
+//        &-delete {
+//            @apply tw-cursor-pointer tw-hidden;
+//            font: normal normal normal 24px/1 "Material Design Icons";
+//        }
+//    }
+//
+//    &.sublist {
+//        > .list-group-item--content > p {
+//            @apply tw-w-max tw-relative;
+//
+//            &:before {
+//                @apply tw-content-['\F0140'] tw-absolute tw--right-8 tw-cursor-pointer;
+//                font: normal normal normal 24px/1 "Material Design Icons";
+//            }
+//        }
+//
+//        &.opened {
+//            > ol {
+//                @apply tw-hidden;
+//            }
+//
+//            > .list-group-item--content > p {
+//                @apply tw-w-max tw-relative;
+//
+//                &:before {
+//                    @apply tw-rotate-180;
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//:deep(.nested-sort li) {
+//    @apply tw-list-none tw-pl-3 tw-py-1;
+//}
+//
+//:deep(.nested-sort li ol) {
+//    @apply tw-p-0 tw-pl-2 tw-mt-3 tw-mb-1;
+//}
+//
+//:deep(.nested-sort .ns-targeted) {
+//    @apply tw-border tw-border-dashed tw-border-gray-300;
+//}
 </style>

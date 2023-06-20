@@ -249,6 +249,46 @@ layout:
     wait: Wait!
     explain: The layouts cannot be managed using a phone. Please use a tablet or bigger. We recommend using a laptop or desktop.
 
+emails:
+  title: Emails
+  test: Send Test
+  test_title: Send Email Test
+  test_explain: After you set your email address, this will send you an email testing your email configurations. If you receive nothing, please make sure your settings are valid.
+  email_address: Email Address
+  add: Add Email
+  no_emails: No emails at the moment.
+  confirm_msg: Are you sure you want to delete this(these) email(s)?
+  columns:
+    name: Name
+    created_at: Created at
+    last_mod: Last modification
+    template: Template
+
+email:
+  add: Adding new email
+  edit: "{name}"
+  name: Name
+  subject: Subject ({locale})
+  title: Title ({locale})
+  content: Content ({locale})
+  content_note: "You can use [[ varname ]] for variable replacement at send time. You must provide replacements."
+  cta: Button URL ({locale})
+  cta_title: Button Text ({locale})
+  template: HTML Template
+  preview: Preview
+  previewer:
+    desktop: Desktop
+    mobile: Mobile
+  messages:
+    error:  Could not save {name}, please try again.
+    success: Email {name} was saved successfully.
+  titles:
+    subject: Subject
+    intro: Intro / Title
+    content: Content
+    button: Button Label
+    url : Button URL
+
 system:
   settings: Settings
   entry_types: Types
@@ -259,6 +299,8 @@ system:
   cancel: Cancel
   add: Add
   save: Save
+  delete: Delete
+  other: Other
   toast:
     error: Error
     success: Success
@@ -276,8 +318,27 @@ categories:
   title: Categories
   search: Search for categories
   form:
-    name: Name of the category
-    slug: Slug of the category
-    add_category: Add category
-    edit_category: Edit category
+    title_add: Add Category
+    title_edit: Edit Category
+    name:
+      en: Name in english
+      fr: Name in french
+    select_parent: Select a parent
+    add_category_btn: Add
+    edit_category_btn: Save
     cancel: Cancel
+
+navigations:
+  title: Navigations
+  form:
+    title_add: Add Navigation
+    title_edit: Edit Navigation
+    name: Enter name
+    label: Enter label
+    url: Enter url
+    select_type: Select a type of item
+    select_entry: Select an entry
+    select_category: Select a category
+    select_parent: Select a parent
+    add_navigation_btn: Add
+    edit_navigation_btn: Save
