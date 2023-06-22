@@ -168,15 +168,12 @@
                     <v-col cols="12" xs="12" md="9">
                         <div class="tw-flex tw-flex-col tw-gap-4">
                             <v-card class="tw-p-4 tw-h-[80vh] tw-overflow-auto">
-                                <NavNestedList
+                                <NestedDraggable
                                     v-if="
-                                        formattedNavItemsList &&
-                                        formattedNavItemsList.length
+                                        navigationsList &&
+                                        navigationsList.structure.length
                                     "
-                                    :items="formattedNavItemsList"
-                                    :key="navigationsKey"
-                                    @edit-item="editActionSelected"
-                                    @delete-item="deleteActionSelected"
+                                    v-model:items="navigationsList.structure"
                                 />
                             </v-card>
                         </div>
@@ -207,7 +204,7 @@ import { Categories } from "@/libs/graphql";
 import { v4 as uuidv4 } from "uuid";
 // Components
 import Loader from "@/components/globals/Loader.vue";
-import NavNestedList from "@/components/globals/navigations/NavNestedList.vue";
+import NestedDraggable from "@/components/globals/nestedDraggable/NestedDraggable.vue";
 
 const store = useAppStore();
 const i18n = useI18n();
@@ -520,6 +517,10 @@ watch(navItemTypeEntry, (newValue) => {
         navItemStructure.value.entry_id = navItemTypeEntry.value._id;
         navItemStructure.value.url = navItemTypeEntry.value.slug;
     }
+});
+
+watch(navigationsList.value?.structure!, (newValue) => {
+    console.log("VALUE", newValue);
 });
 
 // Categories
