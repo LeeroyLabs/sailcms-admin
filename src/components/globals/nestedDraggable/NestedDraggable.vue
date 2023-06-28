@@ -1,49 +1,86 @@
 <template>
-    <div v-if="items && items.length">
-        <ul :id="uuidv4()" class="tw-p-4" @drop="drop" @dragover="allowDrop">
-            <li
-                v-for="(item, index) in itemsRef"
-                :key="item"
-                :id="uuidv4()"
-                class="tw-px-4 tw-py-1 tw-mb-2 tw-border tw-rounded-md tw-mt-2 tw-cursor-grab"
-                :class="{
-                    'hover:tw-bg-gray-100': $vuetify.theme.name === 'light',
-                    'hover:tw-bg-zinc-800 tw-border-zinc-600':
-                        $vuetify.theme.name === 'dark',
-                }"
-                @dragstart="dragStart"
-                @dragover="allowDrop"
-                @dragenter="dragEnter"
-                @dragleave="dragLeave"
-                @dragend="dragEnd"
-                @drop="drop"
-            >
-                <v-icon
-                    icon="mdi-drag-horizontal-variant"
-                    class="handle"
-                    @mousedown="mouseDown"
-                    @mouseup="mouseUp"
+    <div
+        :id="isParent ? 'nested' : ''"
+        class="nested-sortable"
+        @drop="drop"
+        @dragover="allowDrop"
+    >
+        <div
+            v-for="item in itemsRef"
+            :key="item"
+            :id="item.id"
+            class="tw-relative tw-px-4 tw-pt-4 tw-my-2 tw-border tw-rounded-md tw-cursor-grab"
+            :class="{
+                'hover:tw-bg-gray-100': $vuetify.theme.name === 'light',
+                'hover:tw-bg-zinc-800 tw-border-zinc-600':
+                    $vuetify.theme.name === 'dark',
+            }"
+            @dragstart="dragStart"
+            @dragover="allowDrop"
+            @dragenter="dragEnter"
+            @dragleave="dragLeave"
+            @dragend="dragEnd"
+            @drop="drop"
+        >
+            <v-icon
+                icon="mdi-drag-horizontal-variant"
+                class="handle"
+                @mousedown="mouseDown"
+                @mouseup="mouseUp"
+            />
+            {{ displayedOption(item) }}
+            <div class="action group-hover:tw-visible">
+                <v-btn
+                    @click.prevent="updateItem(item)"
+                    density="comfortable"
+                    icon="mdi-pencil"
+                    height="40"
+                    width="40"
+                    variant="flat"
+                    rounded
                 />
-                {{ item.label }}
-
-                <NestedDraggable :items="item.children" />
-            </li>
-        </ul>
+                <span class="tw-text-red-600">
+                    <v-btn
+                        @click.prevent="deleteItem(item)"
+                        density="comfortable"
+                        color="red"
+                        variant="tonal"
+                        rounded
+                        icon="mdi-trash-can-outline"
+                    />
+                </span>
+            </div>
+            <NestedDraggable
+                :items="item.children"
+                :displayedOption="(item) => item.label"
+            />
+        </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onUpdated } from "vue";
-import { v4 as uuidv4 } from "uuid";
+import { ref, inject, onMounted } from "vue";
 
 const props = defineProps({
-    items: Array,
-    required: true,
+    items: { type: Array, required: true },
+    displayedOption: {
+        type: Function,
+        default: (item) => item,
+        required: true,
+    },
+    isParent: {
+        type: Boolean,
+        default: false,
+        required: false,
+    },
 });
-const emits = defineEmits(["update:items"]);
+const emits = defineEmits(["update-list"]);
+const emitter = inject("emitter");
 
 const itemsRef = ref(props.items);
+let nestedList;
 
+// Events
 const allowDrop = (event) => {
     event.preventDefault();
 };
@@ -62,7 +99,9 @@ const dragStart = (event) => {
 };
 
 const dragEnter = (event) => {
-    event.target.classList.add("dragover");
+    if (event.target.classList.contains("nested-sortable")) {
+        event.target.classList.add("dragover");
+    }
 };
 
 const dragLeave = (event) => {
@@ -76,36 +115,78 @@ const dragEnd = (event) => {
 const drop = (event) => {
     event.preventDefault();
     const data = event.dataTransfer.getData("text/plain");
-    event.target.appendChild(document.getElementById(data));
-    event.dataTransfer.dropEffect = "move";
-    event.target.classList.remove("dragover");
+    //console.log("EVENT", data);
+
+    if (event.target.classList.contains("nested-sortable")) {
+        event.target.appendChild(document.getElementById(data));
+        event.dataTransfer.dropEffect = "move";
+        event.target.classList.remove("dragover");
+        const structure = getNodesForParent(nestedList);
+        emits("update-list", structure);
+        //event.stopPropagation();
+    }
 };
 
-onUpdated(() => {
-    console.log("UPDATED", props.items);
-    emits("update:items", props.items);
-});
+const getNodesForParent = (parent) => {
+    let elements = parent.childNodes;
+    let tree = [];
+    let order = 0;
+
+    for (let el of elements) {
+        if (el.id !== undefined && el.id !== "" && el instanceof HTMLElement) {
+            order++;
+
+            let obj = {
+                order: order,
+                id: el.id,
+                children: [],
+            };
+
+            for (let subel of el.childNodes) {
+                if (
+                    subel.classList &&
+                    subel.classList.contains("nested-sortable")
+                ) {
+                    obj.children = getNodesForParent(subel);
+                }
+            }
+
+            tree.push(obj);
+        }
+    }
+
+    return tree;
+};
+
+// Actions
+const updateItem = (item) => {
+    emitter.emit("update-item", item);
+};
+
+const deleteItem = (item) => {
+    const element = document.getElementById(`${item.id}`);
+    element.remove();
+    const structure = getNodesForParent(nestedList);
+    emitter.emit("delete-item", structure);
+};
+
+onMounted(() => (nestedList = document.getElementById("nested")));
 </script>
 
 <style lang="scss" scoped>
-#draggable {
-    text-align: center;
-    background: white;
-}
-
-.dropzone {
-    width: 200px;
-    height: 20px;
-    background: blueviolet;
-    margin: 10px;
-    padding: 10px;
+.nested-sortable {
+    @apply tw-p-2;
 }
 
 .dragover {
-    border: 2px dotted #666;
+    @apply tw-border tw-border-dashed tw-border-[#666];
 }
 
 .dragging {
-    opacity: 0.5;
+    @apply tw-opacity-50;
+}
+
+.action {
+    @apply tw-absolute tw-top-6 tw--translate-y-2/4 tw-right-4;
 }
 </style>
