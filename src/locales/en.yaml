@@ -200,6 +200,7 @@ layout:
   no_fields: There are no fields in this layout at the moment.
   field_key: The key is used in your code to get the value of this field.
   untitled: Untitled
+  name: Name
   inputs:
     text: Text Inputs
     select: Select Inputs
@@ -313,6 +314,7 @@ system:
     graphql: "SailCMS cannot find the URL to work with."
     graphql2: "Make sure the"
     graphql3: "file is on your server."
+    length: Must be at least 3 characters long.
 
 categories:
   title: Categories

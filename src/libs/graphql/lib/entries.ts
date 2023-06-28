@@ -185,12 +185,15 @@ export class Entries
      *
      * Get all available fields for the UI
      *
+     * @param locales
+     *
      */
-    public static async fields(): Promise<FieldInfo[]>
+    public static async fields(locales: string[] = ['fr', 'en']): Promise<FieldInfo[]>
     {
         const client = new Client();
         let query = EntryQueries.fields;
 
+        query = query.replace(/#locale#/g, Entries.parseLocales(locales));
         let result = await client.query(gql`${query}`, {});
 
         if (result.data) {
@@ -222,6 +225,53 @@ export class Entries
     public static async homepage(locale: string, siteId: string): Promise<Entry|null>
     {
         return Entries.homepageEntry(locale, siteId);
+    }
+
+    /**
+     *
+     * Create an entry layout
+     *
+     * @param titles
+     * @param schema
+     * @param slug
+     *
+     */
+    public static async createEntryLayout(titles: LocaleObject, schema: any, slug: string): Promise<boolean>
+    {
+        const client = new Client();
+        let query = EntryQueries.createEntryLayout;
+
+        let result = await client.mutation(gql`${query}`, {
+            titles: titles,
+            schema: schema,
+            slug: slug
+        });
+
+        if (result.data && result.data.createEntryLayout !== null) return true;
+        return false;
+    }
+
+    /**
+     *
+     * Get entry layout with id
+     *
+     * @param id
+     * @param locales
+     *
+     */
+    public static async entryLayout(id: string, locales: string[] = ['fr', 'en']): Promise<EntryLayout|null>
+    {
+        const client = new Client();
+        let query = EntryQueries.entryLayout;
+
+        query = query.replace(/#locale#/g, Entries.parseLocales(locales));
+        let result = await client.query(gql`${query}`, {id: id});
+
+        if (result.data) {
+            return result.data.entryLayout;
+        }
+
+        return null;
     }
 
     private static parseLocales(locales: string[]): string

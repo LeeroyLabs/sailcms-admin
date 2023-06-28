@@ -200,6 +200,7 @@ layout:
   no_fields: Il n'y aucun champ dans cette disposition pour le moment.
   field_key: La clée utilisée dans le code pour retrouver ce champ.
   untitled: Sans titre
+  name: Nom
   inputs:
     text: Champs Texte
     select: Champs Sélection
@@ -313,6 +314,7 @@ system:
     graphql: "SailCMS ne peut trouver l'url avec laquelle travailler."
     graphql2: "Assurez-vous que le fichier"
     graphql3: "soit sur le serveur."
+    length: Doit avoir 3 caractères minimum.
 
 categories:
   title: Catégories

@@ -49,6 +49,7 @@ const dragOptions = {
 
 watch(props.categories, (list) =>
 {
+    console.log(list);
     // TODO: EMIT CHANGE (define emitter)
 });
 

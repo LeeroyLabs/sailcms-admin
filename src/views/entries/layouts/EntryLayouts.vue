@@ -70,7 +70,7 @@
                     <router-link
                         class="hover:tw-text-primary hover:tw-underline"
                         :class="{'hover:tw-text-white': ($vuetify.theme.name !== 'light')}"
-                        :to="{name: 'SingleUser', params: {id: layout._id}}"
+                        :to="{name: 'SingleLayout', params: {id: layout._id}}"
                     >
                         {{ layout.titles[$i18n.locale] }}
                     </router-link>
@@ -114,7 +114,7 @@ const availableActions = ref([
 
 const loadLayouts = async () =>
 {
-    layoutListing.value = await Entries.entryLayouts(SailCMS.locales);
+    layoutListing.value = await Entries.entryLayouts(SailCMS.getLocales());
     isReady.value = true;
 }
 

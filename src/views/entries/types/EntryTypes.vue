@@ -67,7 +67,7 @@ page.setPageTitle('entry_types.title');
 
 const loadTypes = async () =>
 {
-    types.value = await Entries.entryTypes(SailCMS.locales);
+    types.value = await Entries.entryTypes(SailCMS.getLocales());
     isReady.value = true;
 }
 

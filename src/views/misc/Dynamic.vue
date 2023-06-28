@@ -79,12 +79,12 @@ const UIBridge = new Extensions(async (message, data) =>
             break;
 
         case 'runGraphQLQuery':
-            result = await Misc.runExtensionQuery(data.name, data.query, data.variables, SailCMS.locales);
+            result = await Misc.runExtensionQuery(data.name, data.query, data.variables, SailCMS.getLocales());
             UIBridge.respond('queryResult', {query: data.id, result: result});
             break;
 
         case 'runGraphQLMutation':
-            result = await Misc.runExtensionMutation(data.name, data.query, data.variables, SailCMS.locales);
+            result = await Misc.runExtensionMutation(data.name, data.query, data.variables, SailCMS.getLocales());
             UIBridge.respond('mutationResult', {query: data.id, result: result});
             break;
 

@@ -27,7 +27,7 @@
                     />
 
                     <v-text-field
-                        v-for="(locale, key) in SailCMS.locales"
+                        v-for="(locale, key) in SailCMS.getLocales()"
                         :key="key"
                         color="primary"
                         :label="$t('entry_types.prefix', {locale: locale})"
@@ -90,7 +90,7 @@ const rules = {required: value => !!value || i18n.t('user.errors.required')}
 
 const loadType = async () =>
 {
-    let result = await Entries.entryType(route.params.id, SailCMS.locales);
+    let result = await Entries.entryType(route.params.id, SailCMS.getLocales());
 
     // Process result
     if (result) {
@@ -166,7 +166,7 @@ const formatValue = (e) =>
     return true;
 }
 
-for (let locale of SailCMS.locales) {
+for (let locale of SailCMS.getLocales()) {
     currentType.value.url_prefix.push({locale: locale, data: ''});
 }
 

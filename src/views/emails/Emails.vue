@@ -135,7 +135,7 @@ const handleCheckAll = (e) =>
 
 const loadEmails = async () =>
 {
-    emailList.value = await Emails.emails(SailCMS.locales);
+    emailList.value = await Emails.emails(SailCMS.getLocales());
     isReady.value = true;
 }
 

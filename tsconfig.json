@@ -17,7 +17,7 @@
     "types": ["@intlify/unplugin-vue-i18n/messages"],
     "paths": {
       "@/*": [
-       "src/*"
+       "src/*",
       ]
      }
   },

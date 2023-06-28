@@ -1,102 +1,83 @@
 <template>
     <template v-if="isReady">
-        <template v-if="!$vuetify.display.xs">
-            <div class="tw-mb-6">
-                TITLE FIELD HERE
-            </div>
-            <div class="tw-flex tw-flex-row tw-w-full tw-gap-4">
-                <div class="tw-w-4/12 lg:tw-w-3/12">
-                    <v-card class="tw-p-4 tw-flex tw-flex-col tw-gap-y-4">
-                        <v-expansion-panels v-model="panel" :multiple="true">
-                            <template v-for="items in [{label: 'layout.inputs.text', data: inputFields}, {label: 'layout.inputs.datetime', data: dtFields}, {label: 'layout.inputs.select', data: selectFields}, {label: 'layout.inputs.special', data: specialFields}]">
-                                <v-expansion-panel>
-                                    <v-expansion-panel-title>{{ $t(items.label) }}</v-expansion-panel-title>
-                                    <v-expansion-panel-text>
-                                        <div @click="addField(field)" class="fieldbox" v-for="field in items.data">
-                                            <h2 class="tw-font-medium">{{ $t('layout.names.' + cleanName(field.name)) }}</h2>
-                                            <div class="tw-text-xs">{{ field.description[$i18n.locale]}}</div>
-                                        </div>
-                                    </v-expansion-panel-text>
-                                </v-expansion-panel>
-                            </template>
-                        </v-expansion-panels>
-                    </v-card>
-                </div>
-                <div class="tw-w-8/12 lg:tw-w-9/12 tw-flex-grow">
-                    <v-card class="tw-p-6">
-                        <div v-if="layoutFields.length === 0" class="tw-border tw-border-gray-400 tw-border-dashed tw-w-full tw-py-6 tw-text-center">
-                            {{ $t('layout.no_fields') }}
-                        </div>
+        <Teleport to="#actions">
+            <v-btn @click.prevent="$router.push({name: 'SingleLayout', params: {id: 'add'}})" color="primary" v-if="hasPermission('readwrite_entry_layout')">
+                {{ $t('system.save') }}
+            </v-btn>
+        </Teleport>
+        <div id="controls" class="tw-w-full tw-border tw-p-8 tw-mb-4">
 
-                        <ul id="nested-sort-wrap" class="tw-flex tw-flex-col tw-gap-y-4">
-                            <template v-for="field in layoutFields">
-                                <FieldItem :ref="'field_' + field.id" :id="field.id" :config="field.conf" @remove="removeField" />
-                            </template>
-                        </ul>
-                    </v-card>
-                </div>
+        </div>
+        <div id="workspace" class="tw-w-full tw-overflow-y-auto tw-border tw-rounded-md" :class="{'dark': $vuetify.theme.name === 'dark', 'light tw-border-zinc-400': $vuetify.theme.name === 'light'}">
+            <div id="workspace-ui" class="tw-w-full bg-grid tw-py-20 tw-px-6">
+                <Sortable
+                    :list="[1, 2, 3]"
+                    item-key="id"
+                    tag="div"
+                    :options="{handle: '.drag-handle', ghostClass: 'ghost', animation: 300, swapTreshold: 0.05, dragoverBubble: false}"
+                    class="tw-flex tw-flex-row tw-gap-x-6 tw-flex-wrap tw-gap-y-16"
+                >
+                    <template #item="{element, index}">
+                        <Tab data-id="tt" :title="'Tab Name ' + index"/>
+                    </template>
+                </Sortable>
             </div>
-        </template>
-        <template v-else>
-            <h1 class="tw-text-4xl tw-font-medium tw-text-center tw-mb-6">{{ $t('layout.mobile.wait') }}</h1>
-            <p>{{ $t('layout.mobile.explain') }}</p>
-        </template>
+        </div>
     </template>
     <Loader v-else/>
 </template>
 
 <script setup>
-import { usePage } from '@/libs/page';
-import { computed, nextTick, ref } from 'vue';
-import { v4 } from 'uuid';
-import Loader from '@/components/globals/Loader.vue';
-import { Entries } from '@/libs/graphql/lib/entries';
-import Sortable from 'sortablejs';
-import FieldItem from '@/components/entries/fields/FieldItem.vue';
-
-const page = usePage();
-page.setPageTitle('layout.add');
+import { hasPermission } from '@/libs/tools';
+import { Sortable } from "sortablejs-vue3";
 
 const isReady = ref(false);
-const fields = ref([]);
-const panel = ref([0]);
 
-const layoutFields = ref([]);
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import Loader from '@/components/globals/Loader.vue';
+import Tab from '@/components/globals/layout/tab.vue';
 
-const loadFields = async () =>
+onMounted(() =>
 {
-    fields.value = await Entries.fields();
     isReady.value = true;
 
-    await nextTick(() =>
+    nextTick(() =>
     {
-        let sortable = Sortable.create(document.querySelector('#nested-sort-wrap'), {
-            handle: '.dnd-handle',
-            animation: 150
-        });
+        window.addEventListener('resize', () => resizeWorkspace());
+        resizeWorkspace();
     });
+});
+
+onBeforeUnmount(() => window.removeEventListener('resize', () => resizeWorkspace()));
+
+const resizeWorkspace = () =>
+{
+    let controlsSize = document.getElementById('controls').clientHeight;
+    let headerSize = document.querySelector('header.v-toolbar').clientHeight;
+    let pageControlSize = document.getElementById('pagecontrols').clientHeight;
+    const offset = (controlsSize * 2) + headerSize + pageControlSize;
+    document.getElementById('workspace').style.height = window.innerHeight - offset + 'px';
 }
-
-// TODO: GET TREE (run getInfo on all)
-
-const removeField = (id) => layoutFields.value = layoutFields.value.filter(f => f.id !== id);
-const addField = (field) => layoutFields.value.push({id: v4(), conf: field});
-const inputFields = computed(() => fields.value.filter(f => f.category === 'text'));
-const selectFields = computed(() => fields.value.filter(f => f.category === 'select'));
-const specialFields = computed(() => fields.value.filter(f => f.category === 'special'));
-const dtFields = computed(() => fields.value.filter(f => f.category === 'datetime'));
-const cleanName = (name) => name.replace('Field', '');
-
-loadFields();
 </script>
 
-<style lang="postcss">
-.fieldbox {
-    @apply tw-p-2 hover:tw-bg-primary hover:tw-text-white tw-transition-all tw-duration-300;
-    @apply tw-rounded-md tw-flex tw-flex-col tw-cursor-pointer;
+<style>
+div.light {
+    background-size: 20px 20px;
+    background-repeat: repeat;
+    background-image:
+        linear-gradient(to right, rgba(0, 0, 0, 0.15) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.15) 1px, transparent 1px);
 }
 
-.v-expansion-panel-text__wrapper {
-    @apply !tw-px-4;
+div.dark {
+    background-size: 20px 20px;
+    background-repeat: repeat;
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+}
+
+.ghost {
+    opacity: 0.65;
 }
 </style>

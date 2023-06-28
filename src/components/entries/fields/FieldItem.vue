@@ -23,6 +23,7 @@
                         density="comfortable"
                         :label="$t('layout.configs.title_fr')"
                         v-model="fieldSetup.title.fr"
+                        :rules="[rules.required]"
                     />
 
                     <v-text-field
@@ -32,6 +33,7 @@
                         density="comfortable"
                         :label="$t('layout.configs.title_en')"
                         v-model="fieldSetup.title.en"
+                        :rules="[rules.required]"
                     />
                 </div>
 
@@ -42,6 +44,7 @@
                         density="comfortable"
                         :label="$t('layout.configs.key')"
                         v-model="fieldSetup.key"
+                        :rules="[rules.required, rules.minLength]"
                     >
                         <template v-slot:details>{{ $t('layout.field_key') }}</template>
                     </v-text-field>
@@ -98,7 +101,7 @@
                         </template>
                     </div>
 
-                    <div class="tw-grid md:tw-grid-cols-5 lg:tw-grid-cols-6 tw-gap-4">
+                    <div class="tw-grid md:tw-grid-cols-4 2xl:tw-grid-cols-6 tw-gap-4">
                         <template v-for="input in config.inputs">
                             <template v-for="config in input.availableSettings">
                                 <v-checkbox
@@ -120,6 +123,14 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const i18n = useI18n();
+
+const rules = {
+    required: value => !!value || i18n.t('user.errors.required'),
+    minLength: value => value.length >= 3 || i18n.t('system.length_error')
+}
 
 const props = defineProps({
     config: {
@@ -176,7 +187,7 @@ const toggleStatus = () =>
 
 const getInfo = () =>
 {
-    return {config: props.config, id: props.id, data: fieldSetup};
+    return {config: props.config, id: props.id, data: fieldSetup.value};
 };
 
 const setupItemArray = (options) =>

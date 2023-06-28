@@ -178,12 +178,12 @@ export default {
                 fullname
                 handle
                 description {
-                    fr
-                    en
+                    #locale#
                 }
                 category
                 storingType
                 searchable
+                repeatable
                 inputs {
                     name
                     fullname
@@ -200,6 +200,75 @@ export default {
                         type
                     }
                 }
+            }
+        }
+    `,
+    createEntryLayout: `
+        mutation createEntryLayout($titles: LocaleFieldInput!, $schema: [FieldConfigsInput!]!, $slug: String) {
+            createEntryLayout(titles: $titles, schema: $schema, slug: $slug) {
+                _id
+            }
+        }
+    `,
+    entryLayout: `
+        query entryLayout($id: ID!) {
+            entryLayout(id: $id) {
+                _id
+                slug
+                titles {
+                    #locale#
+                }
+                schema {
+                    key
+                    repeater
+                    fieldConfigs {
+                        labels {
+                            #locale#
+                        }
+                        handle
+                        inputSettings {
+                            inputKey
+                            settings {
+                                name
+                                value
+                                options {
+                                    value
+                                    label
+                                }
+                                explain
+                                type
+                            }
+                        }
+                    }
+                }
+                authors {
+                    created_by {
+                        _id
+                        name {
+                            full
+                        }
+                    }
+                    updated_by {
+                        _id
+                        name {
+                            full
+                        }
+                    }
+                    deleted_by {
+                        _id
+                        name {
+                            full
+                        }
+                    }
+                }
+                dates {
+                    created
+                    updated
+                    deleted
+                }
+                is_trashed
+                used_by
+                record_count
             }
         }
     `

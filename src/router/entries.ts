@@ -49,7 +49,7 @@ export const entryRoutes = [
         component: () => import(/* webpackChunkName: "entries" */ '@/views/entries/layouts/Layout.vue'),
         meta: {
             guarded: true,
-            permission: 'read_entry_layout',
+            permission: 'readwrite_entry_layout',
             layout: 'private',
             parent: 'Settings'
         }
