@@ -6,7 +6,7 @@ export interface NavigationItem {
     entry_id: string;
     external: boolean;
     children: NavigationItem[];
-    id?: string;
+    _id?: string;
     parent_id?: string;
     order?: number;
 }

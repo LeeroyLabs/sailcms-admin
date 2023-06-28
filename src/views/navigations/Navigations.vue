@@ -107,13 +107,22 @@
                                     @click:clear="handleCancel"
                                 />
 
-                                <div class="tw-flex tw-flex-col tw-gap-8">
+                                <div
+                                    class="tw-flex tw-items-center tw-justify-between tw-gap-8 tw-flex-wrap"
+                                >
+                                    <v-btn
+                                        @click="handleCancel"
+                                        color="primary"
+                                        class="tw-min-w-[100px] tw-flex-grow"
+                                    >
+                                        {{ $t("categories.form.cancel") }}
+                                    </v-btn>
                                     <v-btn
                                         v-if="selectedAction === CREATE_ACTION"
                                         type="submit"
                                         block
                                         color="primary"
-                                        class="tw-w-full"
+                                        class="tw-min-w-[100px] tw-flex-grow"
                                         @click="handleCreateNavigationItem"
                                     >
                                         {{
@@ -129,20 +138,13 @@
                                         block
                                         :disabled="!isFormValid"
                                         color="primary"
-                                        class="tw-w-full"
+                                        class="tw-min-w-[100px] tw-flex-grow"
                                     >
                                         {{
                                             $t(
                                                 "navigations.form.edit_navigation_btn"
                                             )
                                         }}
-                                    </v-btn>
-                                    <v-btn
-                                        @click="handleCancel"
-                                        color="primary"
-                                        class="tw-w-full"
-                                    >
-                                        {{ $t("categories.form.cancel") }}
                                     </v-btn>
                                 </div>
                             </v-form>
@@ -205,7 +207,7 @@ const navigationsKey = ref<number>(0);
 
 const formattedNavItems = ref<NavigationItem[]>([]);
 const flattenFormattedNavItems = ref<NavigationItem[]>([]);
-const sortedFormattedNavItems = ref([]);
+const sortedNavItems = ref(null);
 const navStructure = ref<NavigationItem[]>([]);
 
 // Template Refs
@@ -259,12 +261,12 @@ const emitter: any = inject("emitter");
 emitter.on("update-item", (navItem: NavigationItem) =>
     updateActionSelected(navItem)
 );
-emitter.on("delete-item", (list) => {
-    sortedFormattedNavItems.value = list;
+emitter.on("delete-item", (data) => {
+    sortedNavItems.value = data.structure;
     handleUpdateNavigation();
 });
-const handleUpdateList = (list) => {
-    sortedFormattedNavItems.value = list;
+const handleUpdateList = (structure) => {
+    sortedNavItems.value = structure;
     handleUpdateNavigation();
 };
 
@@ -296,7 +298,7 @@ const formatNavItems = (
         let childrenList: NavigationItem[] = [];
         if (item.children && item.children.length)
             childrenList = formatNavItems(item.children);
-        return { ...item, id: uuidv4(), children: [...childrenList] };
+        return { ...item, _id: uuidv4(), children: [...childrenList] };
     });
     return list;
 };
@@ -326,8 +328,8 @@ const setNavItemsStructure = (dataList): NavigationItem[] => {
 
         return flattenFormattedNavItems.value
             .map((item) => {
-                if (el.id === item.id) {
-                    const { id, ...itemObject } = item;
+                if (el._id === item._id) {
+                    const { _id, ...itemObject } = item;
                     return {
                         ...itemObject,
                         children: [...childrenList],
@@ -361,7 +363,7 @@ const handleCreateNavigationItem = async () => {
     if (isFormValid.value) {
         const newItem = {
             ...navItemStructure.value,
-            id: uuidv4(),
+            _id: uuidv4(),
         };
 
         formattedNavItems.value = [newItem, ...formattedNavItems.value];
@@ -377,16 +379,16 @@ const handleUpdateNavigation = async () => {
     if (selectedAction.value === UPDATE_ACTION) {
         flattenFormattedNavItems.value = flattenFormattedNavItems.value.map(
             (item) => {
-                if (item.id === selectedNavItem.value?.id)
-                    return { ...navItemStructure.value, id: item.id };
+                if (item._id === selectedNavItem.value?._id)
+                    return { ...navItemStructure.value, _id: item._id };
                 return item;
             }
         );
     }
 
-    navStructure.value = sortedFormattedNavItems.value.length
-        ? setNavItemsStructure(sortedFormattedNavItems.value)
-        : setNavItemsStructure(formattedNavItems.value);
+    navStructure.value = setNavItemsStructure(
+        sortedNavItems.value ?? formattedNavItems.value
+    );
 
     const responseUpdateCategory = await Navigations.updateNavigation({
         id: navigationsList.value?._id!,
@@ -423,7 +425,7 @@ const handleCancel = () => {
     selectedNavItem.value = null;
     navItemTypeEntry.value = null;
     selectedAction.value = CREATE_ACTION;
-    sortedFormattedNavItems.value = [];
+    sortedNavItems.value = null;
     if (navFormRef.value) reset(navFormRef.value);
     navName.value = selectedNavigation.value;
 };

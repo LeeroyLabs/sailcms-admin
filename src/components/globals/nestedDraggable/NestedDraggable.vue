@@ -1,22 +1,22 @@
 <template>
     <div
         :id="isParent ? 'nested' : ''"
-        class="nested-sortable"
+        class="nested-sortable tw-flex tw-flex-col tw-gap-4"
         @drop="drop"
-        @dragover="allowDrop"
+        @dragover="dragOver"
     >
         <div
-            v-for="item in itemsRef"
+            v-for="item in items"
             :key="item"
-            :id="item.id"
-            class="tw-relative tw-px-4 tw-pt-4 tw-my-2 tw-border tw-rounded-md tw-cursor-grab"
+            :id="item._id"
+            class="tw-relative tw-px-4 tw-pt-4 tw-border tw-rounded-md tw-cursor-grab"
             :class="{
                 'hover:tw-bg-gray-100': $vuetify.theme.name === 'light',
                 'hover:tw-bg-zinc-800 tw-border-zinc-600':
                     $vuetify.theme.name === 'dark',
             }"
             @dragstart="dragStart"
-            @dragover="allowDrop"
+            @dragover="dragOver"
             @dragenter="dragEnter"
             @dragleave="dragLeave"
             @dragend="dragEnd"
@@ -52,14 +52,14 @@
             </div>
             <NestedDraggable
                 :items="item.children"
-                :displayedOption="(item) => item.label"
+                :displayedOption="displayedOption"
             />
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, inject, onMounted } from "vue";
+import { inject, onMounted } from "vue";
 
 const props = defineProps({
     items: { type: Array, required: true },
@@ -77,14 +77,9 @@ const props = defineProps({
 const emits = defineEmits(["update-list"]);
 const emitter = inject("emitter");
 
-const itemsRef = ref(props.items);
 let nestedList;
 
 // Events
-const allowDrop = (event) => {
-    event.preventDefault();
-};
-
 const mouseDown = (event) => {
     event.target.parentNode.setAttribute("draggable", "true");
 };
@@ -99,6 +94,7 @@ const dragStart = (event) => {
 };
 
 const dragEnter = (event) => {
+    event.preventDefault();
     if (event.target.classList.contains("nested-sortable")) {
         event.target.classList.add("dragover");
     }
@@ -108,6 +104,11 @@ const dragLeave = (event) => {
     event.target.classList.remove("dragover");
 };
 
+const dragOver = (event) => {
+    event.preventDefault();
+    return false;
+};
+
 const dragEnd = (event) => {
     event.target.classList.remove("dragging");
 };
@@ -115,15 +116,12 @@ const dragEnd = (event) => {
 const drop = (event) => {
     event.preventDefault();
     const data = event.dataTransfer.getData("text/plain");
-    //console.log("EVENT", data);
-
     if (event.target.classList.contains("nested-sortable")) {
         event.target.appendChild(document.getElementById(data));
         event.dataTransfer.dropEffect = "move";
         event.target.classList.remove("dragover");
         const structure = getNodesForParent(nestedList);
         emits("update-list", structure);
-        //event.stopPropagation();
     }
 };
 
@@ -138,7 +136,7 @@ const getNodesForParent = (parent) => {
 
             let obj = {
                 order: order,
-                id: el.id,
+                _id: el.id,
                 children: [],
             };
 
@@ -154,7 +152,6 @@ const getNodesForParent = (parent) => {
             tree.push(obj);
         }
     }
-
     return tree;
 };
 
@@ -164,10 +161,10 @@ const updateItem = (item) => {
 };
 
 const deleteItem = (item) => {
-    const element = document.getElementById(`${item.id}`);
+    const element = document.getElementById(`${item._id}`);
     element.remove();
     const structure = getNodesForParent(nestedList);
-    emitter.emit("delete-item", structure);
+    emitter.emit("delete-item", { structure, item });
 };
 
 onMounted(() => (nestedList = document.getElementById("nested")));
@@ -175,7 +172,7 @@ onMounted(() => (nestedList = document.getElementById("nested")));
 
 <style lang="scss" scoped>
 .nested-sortable {
-    @apply tw-p-2;
+    @apply tw-py-2;
 }
 
 .dragover {
