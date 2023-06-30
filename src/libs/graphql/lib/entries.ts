@@ -197,7 +197,7 @@ export class Entries
         let result = await client.query(gql`${query}`, {});
 
         if (result.data) {
-            return result.data.fields;
+            return result.data.entryFields;
         }
 
         return [];

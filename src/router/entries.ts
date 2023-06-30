@@ -33,6 +33,28 @@ export const entryRoutes = [
         }
     },
     {
+        path: '/settings/entry-fields',
+        name: 'EntryFields',
+        component: () => import(/* webpackChunkName: "entries" */ '@/views/entries/fields/Fields.vue'),
+        meta: {
+            guarded: true,
+            permission: 'read_entryfields',
+            layout: 'private',
+            parent: 'Settings'
+        }
+    },
+    {
+        path: '/settings/entry-fields/:key',
+        name: 'SingleEntryField',
+        component: () => import(/* webpackChunkName: "entries" */ '@/views/entries/fields/Field.vue'),
+        meta: {
+            guarded: true,
+            permission: 'readwrite_entryfields',
+            layout: 'private',
+            parent: 'Settings'
+        }
+    },
+    {
         path: '/settings/entry-layouts',
         name: 'EntryLayouts',
         component: () => import(/* webpackChunkName: "entries" */ '@/views/entries/layouts/EntryLayouts.vue'),

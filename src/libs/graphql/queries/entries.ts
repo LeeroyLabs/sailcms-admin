@@ -173,33 +173,25 @@ export default {
     `,
     fields: `
         query fields {
-            fields {
+            entryFields {
+                _id
+                key
                 name
-                fullname
-                handle
-                description {
+                label {
                     #locale#
                 }
-                category
-                storingType
-                searchable
-                repeatable
-                inputs {
-                    name
-                    fullname
-                    type
-                    inputKey
-                    availableSettings {
-                        name
-                        value
-                        explain
-                        options {
-                            value
-                            label
-                        }
-                        type
-                    }
+                placeholder {
+                    #locale#
                 }
+                explain {
+                    #locale#
+                }
+                repeatable
+                validate
+                validation
+                required
+                type
+                config
             }
         }
     `,

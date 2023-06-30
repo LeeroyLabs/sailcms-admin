@@ -12,6 +12,12 @@
                 <div class="tw-text-center tw-mt-2">{{ $t('system.entry_types') }}</div>
             </div>
             <div class="tw-flex tw-flex-col tw-items-center">
+                <v-btn @click.prevent="$router.push({name: 'EntryFields'})" icon size="x-large" variant="flat">
+                    <v-icon icon="mdi-form-textbox" size="42"/>
+                </v-btn>
+                <div class="tw-text-center tw-mt-2">{{ $t('system.entry_fields') }}</div>
+            </div>
+            <div class="tw-flex tw-flex-col tw-items-center">
                 <v-btn @click.prevent="$router.push({name: 'EntryLayouts'})" icon size="x-large" variant="flat">
                     <v-icon icon="mdi-order-alphabetical-ascending" size="42"/>
                 </v-btn>

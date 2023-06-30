@@ -70,7 +70,6 @@ export default {
         query navigationElements {
             navigationElements {
                 post_entries {
-                    name
                     icon
                     url
                     slug
@@ -81,7 +80,6 @@ export default {
                     permission
                 }
                 pre_users {
-                    name
                     icon
                     url
                     slug
@@ -92,7 +90,6 @@ export default {
                     permission
                 }
                 pre_settings {
-                    name
                     icon
                     url
                     slug

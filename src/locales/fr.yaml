@@ -294,6 +294,7 @@ system:
   settings: Réglages
   entry_types: Types
   entry_layouts: Mises en page
+  entry_fields: Champs
   yes: Oui
   no: Non
   search: Recherche
@@ -344,3 +345,46 @@ navigations:
     select_parent: Sélectioner un parent
     add_navigation_btn: Ajouter
     edit_navigation_btn: Sauvegarder
+
+fields:
+  add: Ajouter un champ
+  title: Champs
+  columns:
+    name: Nom
+    key: Clée
+    repeatable: Répétable
+    type: Type
+  types:
+    text: Text
+    textarea: Text multi-lignes
+    html: HTML
+    numeric: Numérique
+    integer: Nombre entier
+    float: Nombre décimal
+    password: Mot de passe
+    email: Courriel
+    phone: Téléphone
+    creditcard: Carte de crédit
+    asset_file: Fichier
+    asset_image: Image
+    url: URL
+    domain: Domaine
+    directory: Chemin dossier
+    file: Chemin fichier
+    ip: IP
+    select: Menu déroulant
+    entry: Entrée
+    entry_list: Liste entrées
+    category: Catégorie
+    categories: Catégories
+    switch: Commutateur
+    hex: Couleur HTML
+    postal: Code postal
+    country: Pays
+    date: Date
+    datetime: Date & Heure
+    time: Heure
+    checkbox: Cases à cochées
+    radio: Radios
+    id: ID
+    matrice: Matrice

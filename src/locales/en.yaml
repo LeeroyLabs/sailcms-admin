@@ -294,6 +294,7 @@ system:
   settings: Settings
   entry_types: Types
   entry_layouts: Layouts
+  entry_fields: Fields
   yes: Yes
   no: No
   search: Search
@@ -344,3 +345,46 @@ navigations:
     select_parent: Select a parent
     add_navigation_btn: Add
     edit_navigation_btn: Save
+
+fields:
+  add: Add Field
+  title: Fields
+  columns:
+    name: Name
+    key: Handle
+    repeatable: Repeatable
+    type: Type
+  types:
+    text: Text
+    textarea: Text Area
+    html: HTML
+    numeric: Numeric
+    integer: Integer
+    float: Float
+    password: Password
+    email: Email
+    phone: Phone
+    creditcard: Credit Card
+    asset_file: File Asset
+    asset_image: Image Asset
+    url: URL
+    domain: Domain
+    directory: Directory Path
+    file: File Path
+    ip: IP
+    select: Dropdown
+    entry: Single Entry
+    entry_list: Entry List
+    category: Category
+    categories: Categories
+    switch: Switch
+    hex: HTML Color
+    postal: Postal Code
+    country: Country
+    date: Date
+    datetime: DateTime
+    time: Time
+    checkbox: Checkboxes
+    radio: Radios
+    id: ID
+    matrix: Matrix

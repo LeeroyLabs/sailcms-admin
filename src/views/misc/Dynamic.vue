@@ -29,7 +29,7 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
 import { useAppStore } from '@/store/app';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 import Loader from '@/components/globals/Loader.vue';
 import { hasPermission } from '@/libs/tools';
 import { Misc, SailCMS } from '@/libs/graphql';
