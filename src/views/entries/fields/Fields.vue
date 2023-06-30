@@ -1,7 +1,7 @@
 <template>
     <div v-if="isReady">
         <Teleport to="#actions">
-            <v-btn @click="$router.push({name: 'SingleField', params: {id: 'add'}})" color="primary" v-if="hasPermission('readwrite_entryfields')">
+            <v-btn @click="$router.push({name: 'SingleEntryField', params: {key: 'new'}})" color="primary" v-if="hasPermission('readwrite_entryfields')">
                 {{ $t('fields.add') }}
             </v-btn>
         </Teleport>
@@ -18,7 +18,7 @@
                     placeholder="Actions"
                     :persistent-hint="false"
                     :hide-details="true"
-                ></v-select>
+                />
 
                 <v-btn
                     v-if="hasPermission('readwrite_entryfields')"

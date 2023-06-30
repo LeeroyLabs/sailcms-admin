@@ -349,6 +349,7 @@ navigations:
 fields:
   add: Add Field
   title: Fields
+  new: New Field
   columns:
     name: Name
     key: Handle
@@ -388,3 +389,37 @@ fields:
     radio: Radios
     id: ID
     matrix: Matrix
+  descriptions:
+    text: Plain text field.
+    textarea: Multi line plain text field.
+    html: Rich HTML text field.
+    numeric: Accepts integer and floating decimal numbers only.
+    integer: Integer number only.
+    float: Floating decimal point only.
+    password: Hides the user input.
+    email: Accepts email only.
+    phone: Accepts phone numbers only.
+    creditcard: Format and validate credit card number.
+    asset_file: File asset(s) selector.
+    asset_image: Image asset(s) selector.
+    url: Accepts properly formatted URLs only.
+    domain: Accepts properly formatted domains only.
+    directory: "Accepts properly formatted path only (ex: /your/path/here)."
+    file: "Accepts properly formatted file path only (ex: /your/path/file.txt)."
+    ip: Accepts properly formatted IP only.
+    select: Dropdown menu that offers a list of predefined choices.
+    entry: Dropdown to select a single entry of set type.
+    entry_list: 2 Lists that consists of 1 with a list of entries of set type and one for selected entries.
+    category: Dropdown to select a single category from predefined list.
+    categories: List of categories in checkbox form to select 1 or more categories.
+    switch: A toggle for yes/no or on/off value.
+    hex: Color picker for html valid color selection.
+    postal: Accepts only postal or zip code that is valid for set country or countries.
+    country: "Accepts only a valid ISO-3166 Alpha-2 country code (ex: US)."
+    date: Calendar to select a date in the requested format.
+    datetime: Calendar to select date and time in the requested formats.
+    time: "Time field that only accepts time values (ex: 11:30)."
+    checkbox: List of checkboxes to make 1 or more selection from a provided list.
+    radio: List of radio buttons to make a selection from a provided list.
+    id: Allows only a valid SailCMS ID (mongodb) of 24 characters in length.
+    matrix: Group fields together to form a super field. This matrix can be repeated.

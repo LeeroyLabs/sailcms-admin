@@ -349,14 +349,15 @@ navigations:
 fields:
   add: Ajouter un champ
   title: Champs
+  new: Nouveau champ
   columns:
     name: Nom
     key: Clée
     repeatable: Répétable
     type: Type
   types:
-    text: Text
-    textarea: Text multi-lignes
+    text: Texte
+    textarea: Texte multi-lignes
     html: HTML
     numeric: Numérique
     integer: Nombre entier
@@ -387,4 +388,38 @@ fields:
     checkbox: Cases à cochées
     radio: Radios
     id: ID
-    matrice: Matrice
+    matrix: Matrice
+  descriptions:
+    text: Champ texte régulier.
+    textarea: Champ texte multi-lignes.
+    html: Champ riche HTML.
+    numeric: Accepte un chiffre entier ou décimal seulement.
+    integer: Accepte un chiffre entier seulement.
+    float: Accepte un chiffre décimal seulement.
+    password: Champ qui cache la saisie de l'utilisateur.
+    email: Accepte un courriel seulement.
+    phone: Accepte un numéro de téléphone seulement.
+    creditcard: Formate et valide un numéro de carte de crédit.
+    asset_file: Sélecteur de fichier(s).
+    asset_image: Sélecteur d'image(s).
+    url: Accepte une chaîne au format URL seulement.
+    domain: Accepte un domaine valide seulement.
+    directory: "Accepte un chemin vers un dossier (ex: /votre/chemin/ici)."
+    file: "Accepte un chemin vers un fichier (ex: /votre/chemin/ici.txt)."
+    ip: Accepte une chaîne au format IP seulement.
+    select: Menu déroulant qui offre une liste de choix prédefinis.
+    entry: Menu déroulant qui permet de choisir une entrée de type sélectionné.
+    entry_list: 2 Listes qui consistent d'une list qui offre des entrées d'un type selectionné et une des entrées sélectionnées.
+    category: Menu déroulant qui permet le choix d'une catégorie d'une liste prédéfinie.
+    categories: Liste de catégories présentée sous forme de cases à cochées pour un ou plusieurs choix.
+    switch: Interrupteur à bascule pour une valeur oui/non ou actif/inactif.
+    hex: Sélecteur de couleur pour une couleur html.
+    postal: Accepte un code postal ou zip du pays sélectionné ou liste de pays supportés.
+    country: "Accepte un pays sous format ISO-3166 Alpha-2 (ex: CA)."
+    date: Calendrier avec une date au format requis.
+    datetime: Calendrier avec date et heure aux formats requis.
+    time: "Accepte heure seulement (ex: 11:30)."
+    checkbox: Liste de case à cochées qui permet un ou plusieurs choix d'une liste prédéfinie.
+    radio: Liste de bouton radio qui permet une sélection d'une liste prédéfinie.
+    id: Permet seulement un ID SailCMS (mongodb) qui est d'une longueur de 24 charactères.
+    matrix: Groupe de champs qui forme un super champ. Cette matrice peut être répétée.
