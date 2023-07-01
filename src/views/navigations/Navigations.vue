@@ -7,7 +7,7 @@
                 <v-row>
                     <v-col cols="12" xs="12" md="3">
                         <div class="tw-flex tw-flex-col tw-gap-4">
-                            <h3>
+                            <h3 class="tw-font-medium tw-text-xl">
                                 {{
                                     !selectedNavItem
                                         ? $t("navigations.form.title_add")
