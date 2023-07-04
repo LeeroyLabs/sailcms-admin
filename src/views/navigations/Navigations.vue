@@ -160,7 +160,7 @@
                                         formattedNavItems.length
                                     "
                                     :items="formattedNavItems"
-                                    :displayedOption="(item: NavigationItem) => item.label"
+                                    :displayedOption="(item) => item.label"
                                     :isParent="true"
                                     :key="navigationsKey"
                                     @update-list="handleUpdateList"
@@ -176,17 +176,12 @@
     <Loader v-else />
 </template>
 
-<script setup lang="ts">
+<script setup>
 // Vue
 import { ref, inject, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/store/app";
 // Helpers & Libs
-import type {
-    NavigationItem,
-    NavigationDetails,
-} from "@/libs/graphql/types/navigations";
-import type { Category } from "@/libs/graphql/types/categories";
 import { Navigations } from "@/libs/graphql/lib/navigations";
 import { SailCMS } from "@/libs/graphql";
 import { Categories } from "@/libs/graphql";
@@ -197,18 +192,18 @@ import NestedDraggable from "@/components/globals/nestedDraggable/NestedDraggabl
 
 const store = useAppStore();
 const i18n = useI18n();
-const isLoading = ref<boolean>(true);
-const siteId = ref<string>(SailCMS.getSiteId());
+const isLoading = ref(true);
+const siteId = ref(SailCMS.getSiteId());
 
-const navigationsList = ref<NavigationDetails>();
-const selectedNavigation = ref<string>("Header");
-const selectedNavItem = ref<NavigationItem | null>(null);
-const navigationsKey = ref<number>(0);
+const navigationsList = ref();
+const selectedNavigation = ref("Header");
+const selectedNavItem = ref(null);
+const navigationsKey = ref(0);
 
-const formattedNavItems = ref<NavigationItem[]>([]);
-const flattenFormattedNavItems = ref<NavigationItem[]>([]);
+const formattedNavItems = ref([]);
+const flattenFormattedNavItems = ref([]);
 const sortedNavItems = ref(null);
-const navStructure = ref<NavigationItem[]>([]);
+const navStructure = ref([]);
 
 // Template Refs
 const navFormRef = ref();
@@ -221,13 +216,11 @@ const CREATE_ACTION = "create";
 const UPDATE_ACTION = "update";
 
 // Search & Validations
-const isFormValid = ref<boolean>(false);
-const selectedAction = ref<string>(CREATE_ACTION);
-const navName = ref<string>("Header");
-const navNameSlug = ref<string>(
-    navName.value.toLowerCase().replaceAll(" ", "-")
-);
-const navItemStructure = ref<NavigationItem>({
+const isFormValid = ref(false);
+const selectedAction = ref(CREATE_ACTION);
+const navName = ref("Header");
+const navNameSlug = ref(navName.value.toLowerCase().replaceAll(" ", "-"));
+const navItemStructure = ref({
     label: "",
     url: "",
     is_entry: false,
@@ -236,31 +229,20 @@ const navItemStructure = ref<NavigationItem>({
     external: false,
     children: [],
 });
-const navItemType = ref<string | null>(null);
-
-// TODO: Change for real Entry type once entries are created
-interface Entry {
-    id: string;
-}
-type NavItemType =
-    | (Category & { nameToDisplay: string })
-    | (Entry & { nameToDisplay: string });
-
-const navItemTypeEntry = ref<NavItemType | null>(null);
+const navItemType = ref(null);
+const navItemTypeEntry = ref(null);
 const navFormValidations = {
-    required: (value: string) => !!value || "Required",
+    required: (value) => !!value || "Required",
 };
 
 // Reset
-const reset = (input: any) => {
+const reset = (input) => {
     input.reset();
 };
 
 // Emits
-const emitter: any = inject("emitter");
-emitter.on("update-item", (navItem: NavigationItem) =>
-    updateActionSelected(navItem)
-);
+const emitter = inject("emitter");
+emitter.on("update-item", (navItem) => updateActionSelected(navItem));
 emitter.on("delete-item", (data) => {
     sortedNavItems.value = data.structure;
     handleUpdateNavigation();
@@ -270,18 +252,15 @@ const handleUpdateList = (structure) => {
     handleUpdateNavigation();
 };
 
-// Return the locale as string
-const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
-
 // Get the navigations list
-const getNavigationDetails = async (name: string) => {
+const getNavigationDetails = async (name) => {
     const responseNavigationDetails = await Navigations.navigationDetails(name);
     if (responseNavigationDetails) {
         navigationsList.value = responseNavigationDetails;
         navStructure.value = navigationsList.value.structure;
 
         formattedNavItems.value = formatNavItems(
-            navigationsList.value!.structure
+            navigationsList.value.structure
         );
         flattenFormattedNavItems.value = [];
         flatFormattedNavItems(formattedNavItems.value);
@@ -291,11 +270,9 @@ const getNavigationDetails = async (name: string) => {
 };
 
 // Add an id to every items
-const formatNavItems = (
-    navigationsList: NavigationItem[]
-): NavigationItem[] => {
+const formatNavItems = (navigationsList) => {
     const list = navigationsList.map((item) => {
-        let childrenList: NavigationItem[] = [];
+        let childrenList = [];
         if (item.children && item.children.length)
             childrenList = formatNavItems(item.children);
         return { ...item, _id: uuidv4(), children: [...childrenList] };
@@ -318,9 +295,9 @@ const flatFormattedNavItems = (navigationsList) => {
 };
 
 // Build the nav structure to pass to the mutation
-const setNavItemsStructure = (dataList): NavigationItem[] => {
+const setNavItemsStructure = (dataList) => {
     const list = dataList.flatMap((el) => {
-        let childrenList: NavigationItem[] = [];
+        let childrenList = [];
 
         if (el.children && el.children.length) {
             childrenList = setNavItemsStructure(el.children);
@@ -391,7 +368,7 @@ const handleUpdateNavigation = async () => {
     );
 
     const responseUpdateCategory = await Navigations.updateNavigation({
-        id: navigationsList.value?._id!,
+        id: navigationsList.value?._id,
         name: navName.value,
         structure: navStructure.value,
         locale: i18n.locale.value,
@@ -403,7 +380,7 @@ const handleUpdateNavigation = async () => {
 };
 
 // Update action selected before updating the navigation
-const updateActionSelected = (item: NavigationItem) => {
+const updateActionSelected = (item) => {
     selectedAction.value = UPDATE_ACTION;
     selectedNavItem.value = item;
 
@@ -416,7 +393,7 @@ const updateActionSelected = (item: NavigationItem) => {
     navItemTypeEntry.value =
         formattedCategories.value.find((cat) => cat._id === item.entry_id) ||
         null;
-    navItemStructure.value.entry_id = navItemTypeEntry.value?._id! || "";
+    navItemStructure.value.entry_id = navItemTypeEntry.value?._id || "";
 };
 
 // Cancel
@@ -461,19 +438,18 @@ watch(navItemTypeEntry, (newValue) => {
     if (navItemTypeEntry.value) {
         navItemStructure.value.entry_id = navItemTypeEntry.value._id;
         navItemStructure.value.url = navItemTypeEntry.value.slug;
+    } else {
+        navItemStructure.value.entry_id = "";
+        navItemStructure.value.url = "";
     }
 });
 
 // Categories
-const categoriesList = ref<Category[]>([]);
-
-interface FormattedCategories extends Category {
-    nameToDisplay: string;
-}
-const formattedCategories = ref<FormattedCategories[]>([]);
+const categoriesList = ref([]);
+const formattedCategories = ref([]);
 
 // Get categories
-const categoryFullTree = async (parent_id: string, site_id: string) => {
+const categoryFullTree = async (parent_id, site_id) => {
     const responseCategoryFullTree = await Categories.categoryFullTree(
         parent_id,
         site_id
@@ -487,7 +463,7 @@ const categoryFullTree = async (parent_id: string, site_id: string) => {
 };
 
 // Format the categories to display within the dropdown
-const formatCategoriesList = (categoriesList: Category[]) => {
+const formatCategoriesList = (categoriesList) => {
     const formattedList = categoriesList.map((cat) => {
         if (cat.children && cat.children.length) {
             formatCategoriesList(cat.children);
@@ -495,7 +471,7 @@ const formatCategoriesList = (categoriesList: Category[]) => {
 
         return {
             ...cat,
-            nameToDisplay: cat.name[getLocale()],
+            nameToDisplay: cat.name[i18n.locale.value],
         };
     });
 

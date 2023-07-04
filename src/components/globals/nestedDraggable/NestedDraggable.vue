@@ -2,22 +2,39 @@
     <div
         :id="isParent ? 'nested' : ''"
         class="nested-sortable tw-flex tw-flex-col tw-gap-4"
+        :class="{ open: isOpened }"
         @end="handleSorting"
     >
         <div
             v-for="item in items"
             :key="item"
             :id="item._id"
-            class="tw-relative tw-px-4 tw-pt-4 tw-border tw-rounded-md tw-cursor-grab"
+            class="item tw-relative tw-px-4 tw-pt-4 tw-border tw-rounded-md"
             :class="{
                 'hover:tw-bg-gray-100': $vuetify.theme.name === 'light',
                 'hover:tw-bg-zinc-800 tw-border-zinc-600':
                     $vuetify.theme.name === 'dark',
+                'tw-pb-4': !isListOpened.includes(item),
             }"
         >
-            <v-icon icon="mdi-drag-horizontal-variant" class="handle" />
+            <v-icon
+                icon="mdi-drag-horizontal-variant"
+                class="handle tw-cursor-grab"
+            />
+
             {{ displayedOption(item) }}
-            <div class="action group-hover:tw-visible">
+            <v-icon
+                v-if="item.children.length"
+                :icon="
+                    isListOpened.includes(item)
+                        ? 'mdi-chevron-down'
+                        : 'mdi-chevron-up'
+                "
+                class="tw-cursor-pointer"
+                @click="toggleOpenList(item)"
+            />
+
+            <div class="action">
                 <v-btn
                     @click.prevent="updateItem(item)"
                     density="comfortable"
@@ -38,16 +55,18 @@
                     />
                 </span>
             </div>
+
             <NestedDraggable
                 :items="item.children"
                 :displayedOption="displayedOption"
+                :class="isListOpened.includes(item) ? 'tw-block' : 'tw-hidden'"
             />
         </div>
     </div>
 </template>
 
 <script setup>
-import { inject, onMounted } from "vue";
+import { ref, inject, onMounted } from "vue";
 import Sortable from "sortablejs";
 
 const props = defineProps({
@@ -63,11 +82,38 @@ const props = defineProps({
         required: false,
     },
 });
+
 const emits = defineEmits(["update-list"]);
 const emitter = inject("emitter");
-
+const isOpened = ref(true);
 let nestedList;
 
+// Open lists having children by default
+const openList = (array) => {
+    const list = array.filter((el) => {
+        if (el.children && el.children.length) {
+            openList(el.children);
+        }
+        return el;
+    });
+    return list;
+};
+
+const isListOpened = ref(openList(props.items));
+
+// Toggle Open/Close a list having children
+const toggleOpenList = (item) => {
+    const itemsList = isListOpened.value.find((el) => el._id === item._id);
+    if (itemsList) {
+        isListOpened.value = isListOpened.value.filter(
+            (el) => el._id !== item._id
+        );
+    } else {
+        isListOpened.value.push(item);
+    }
+};
+
+// Build structure. Returns an array of items with their children
 const getNodesForParent = (parent) => {
     let elements = parent.childNodes;
     let tree = [];
@@ -116,6 +162,7 @@ const deleteItem = (item) => {
     emitter.emit("delete-item", { structure, item });
 };
 
+// Lifecycle hooks
 onMounted(() => {
     nestedList = document.getElementById("nested");
     const elements = document.getElementsByClassName("nested-sortable");

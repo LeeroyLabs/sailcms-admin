@@ -84,7 +84,7 @@
                                         v-else
                                         @click="
                                             handleUpdateCategory(
-                                                selectedCategory!
+                                                selectedCategory
                                             )
                                         "
                                         type="submit"
@@ -132,14 +132,12 @@
     <Loader v-else />
 </template>
 
-<script setup lang="ts">
+<script setup>
 // Vue
 import { ref, inject, onMounted, watch } from "vue";
 import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
 // Helpers & Libs
-import type { Category } from "@/libs/graphql/types/categories";
-import type { LocaleObject } from "@/libs/graphql/types/general";
 import { Categories } from "@/libs/graphql";
 import { SailCMS } from "@/libs/graphql";
 // Components
@@ -148,31 +146,25 @@ import NestedDraggable from "@/components/globals/nestedDraggable/NestedDraggabl
 
 const store = useAppStore();
 const i18n = useI18n();
-const isLoading = ref<boolean>(true);
-const siteId = ref<string>(SailCMS.getSiteId());
-const siteLocales = ref<string[]>(SailCMS.getLocales());
+const isLoading = ref(true);
+const siteId = ref(SailCMS.getSiteId());
+const siteLocales = ref(SailCMS.getLocales());
 
-// Return the locale as string
-const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
-
-const categoriesList = ref<Category[]>([]);
-const categoriesListKey = ref<number>(0);
-const selectedCategory = ref<Category | null>(null);
-const flattendCategoriesList = ref<
-    {
-        id: string;
-        name: string;
-    }[]
->([]);
+const categoriesList = ref([]);
+const categoriesListKey = ref(0);
+const selectedCategory = ref(null);
+const flattendCategoriesList = ref([]);
 const sortedCategories = ref([]);
-const selectedParentId = ref<string | null>(null);
+const selectedParentId = ref(null);
+
+// Template refs
 const categoryForm = ref();
 
 // Search & Validations
-const isFormValid = ref<boolean>(false);
-const categoryNameInput = ref<LocaleObject>({ en: "", fr: "" });
+const isFormValid = ref(false);
+const categoryNameInput = ref({ en: "", fr: "" });
 const categoryNameRules = [
-    (value: string) => {
+    (value) => {
         if (value) return true;
         return "Name is requred.";
     },
@@ -183,9 +175,9 @@ const reset = () => {
 };
 
 // Emits
-const emitter: any = inject("emitter");
+const emitter = inject("emitter");
 emitter.on("delete-item", (data) => handleDeleteCategory(data.item));
-emitter.on("update-item", (item: Category) => {
+emitter.on("update-item", (item) => {
     selectedCategory.value = item;
     selectedParentId.value = item.parent_id;
     categoryNameInput.value = item.name;
@@ -200,7 +192,7 @@ const handleUpdateList = (list) => {
 };
 
 // Get categories
-const categoryFullTree = async (parent_id: string, site_id: string) => {
+const categoryFullTree = async (parent_id, site_id) => {
     const responseCategoryFullTree = await Categories.categoryFullTree(
         parent_id,
         site_id
@@ -215,7 +207,7 @@ const categoryFullTree = async (parent_id: string, site_id: string) => {
 };
 
 // Flat the categories array to display within the parent id dropdown
-const flatCategoriesList = (categoriesList: Category[]) => {
+const flatCategoriesList = (categoriesList) => {
     const formattedList = categoriesList.map((cat) => {
         if (cat.children && cat.children.length) {
             flatCategoriesList(cat.children);
@@ -223,7 +215,7 @@ const flatCategoriesList = (categoriesList: Category[]) => {
 
         return {
             id: cat._id,
-            name: cat.name[getLocale()],
+            name: cat.name[i18n.locale.value],
         };
     });
 
@@ -244,11 +236,7 @@ const formatSortedCategories = (categoriesList, parent) => {
 };
 
 // Add a category
-const handleAddCategory = async (
-    name: LocaleObject,
-    parent_id: string,
-    site_id: string
-) => {
+const handleAddCategory = async (name, parent_id, site_id) => {
     if (isFormValid.value) {
         const responseAddCategory = await Categories.createCategory(
             name,
@@ -263,7 +251,7 @@ const handleAddCategory = async (
 };
 
 // Update a category
-const handleUpdateCategory = async (item: Category) => {
+const handleUpdateCategory = async (item) => {
     if (isFormValid.value) {
         isLoading.value = true;
         const responseUpdateCategory = await Categories.updateCategory(
@@ -289,6 +277,14 @@ const updateCategoryOrders = async (sortedCategories) => {
     }
 };
 
+// Delete a category
+const handleDeleteCategory = async (item) => {
+    const responseDeleteCategory = await Categories.deleteCategory(item._id);
+    if (responseDeleteCategory) {
+        categoryFullTree("", siteId.value);
+    }
+};
+
 // Cancel
 const handleCancel = () => {
     categoryNameInput.value = { en: "", fr: "" };
@@ -296,14 +292,6 @@ const handleCancel = () => {
     selectedParentId.value = null;
     isFormValid.value = false;
     reset();
-};
-
-// Delete a category
-const handleDeleteCategory = async (item: Category) => {
-    const responseDeleteCategory = await Categories.deleteCategory(item._id);
-    if (responseDeleteCategory) {
-        categoryFullTree("", siteId.value);
-    }
 };
 
 // Setup page data
