@@ -1,6 +1,8 @@
 <template>
     <div v-if="!isLoading">
-        <section class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between">
+        <section
+            class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between"
+        >
             <v-container class="tw-m-0" :fluid="true">
                 <v-row>
                     <v-col cols="12" xs="12" md="3">
@@ -12,7 +14,12 @@
                                         : $t("categories.form.title_edit")
                                 }}
                             </h3>
-                            <v-form ref="categoryForm" @submit.prevent v-model="isFormValid" class="tw-flex tw-flex-col tw-gap-4">
+                            <v-form
+                                ref="categoryForm"
+                                @submit.prevent
+                                v-model="isFormValid"
+                                class="tw-flex tw-flex-col tw-gap-2"
+                            >
                                 <v-text-field
                                     v-for="locale in siteLocales"
                                     :key="locale"
@@ -25,7 +32,6 @@
                                     :clearable="true"
                                     density="comfortable"
                                     required
-                                    :hide-details="true"
                                     :rules="categoryNameRules"
                                     v-model="categoryNameInput[locale]"
                                     @click:clear="handleCancel"
@@ -37,14 +43,23 @@
                                     :label="$t('categories.form.select_parent')"
                                     variant="outlined"
                                     density="comfortable"
-                                    :items="formattedCategories"
+                                    :items="flattendCategoriesList"
                                     v-model="selectedParentId"
                                     item-title="name"
-                                    :hide-details="true"
                                     item-value="id"
                                 />
 
-                                <div class="tw-mt-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-gap-6 tw-w-full tw-max-w-full">
+                                <div
+                                    class="tw-flex tw-items-center tw-justify-between tw-gap-8 tw-flex-wrap"
+                                >
+                                    <v-btn
+                                        @click="handleCancel"
+                                        color="primary"
+                                        density="default"
+                                        class="tw-min-w-[100px] tw-flex-grow"
+                                    >
+                                        {{ $t("categories.form.cancel") }}
+                                    </v-btn>
                                     <v-btn
                                         v-if="!selectedCategory"
                                         @click="
@@ -57,31 +72,31 @@
                                         type="submit"
                                         color="primary"
                                         density="default"
-                                        class="tw-w-full lg:tw-w-6/12"
+                                        class="tw-min-w-[100px] tw-flex-grow"
                                     >
-                                        {{ $t("categories.form.add_category_btn") }}
+                                        {{
+                                            $t(
+                                                "categories.form.add_category_btn"
+                                            )
+                                        }}
                                     </v-btn>
                                     <v-btn
                                         v-else
                                         @click="
-                                            handleEditCategory(
-                                                selectedCategory!
+                                            handleUpdateCategory(
+                                                selectedCategory
                                             )
                                         "
                                         type="submit"
                                         density="default"
                                         color="primary"
-                                        class="tw-w-full lg:tw-w-5/12"
+                                        class="tw-min-w-[100px] tw-flex-grow"
                                     >
-                                        {{ $t("categories.form.edit_category_btn") }}
-                                    </v-btn>
-                                    <v-btn
-                                        @click="handleCancel"
-                                        color="primary"
-                                        density="default"
-                                        class="tw-w-full lg:tw-w-6/12"
-                                    >
-                                        {{ $t("categories.form.cancel") }}
+                                        {{
+                                            $t(
+                                                "categories.form.edit_category_btn"
+                                            )
+                                        }}
                                     </v-btn>
                                 </div>
                             </v-form>
@@ -92,7 +107,19 @@
                         <div class="tw-flex tw-flex-col tw-gap-4">
                             <v-card class="tw-p-4 tw-h-[80vh] tw-overflow-auto">
                                 <div class="">
-                                    <NestedDraggable :categories="categoriesList"/>
+                                    <NestedDraggable
+                                        v-if="
+                                            categoriesList &&
+                                            categoriesList.length
+                                        "
+                                        :items="categoriesList"
+                                        :displayedOption="
+                                            (item) => item.name[$i18n.locale]
+                                        "
+                                        :isParent="true"
+                                        :key="categoriesListKey"
+                                        @update-list="handleUpdateList"
+                                    />
                                 </div>
                             </v-card>
                         </div>
@@ -105,108 +132,111 @@
     <Loader v-else />
 </template>
 
-<script setup lang="ts">
+<script setup>
 // Vue
-import { ref, inject, onMounted, watch, computed } from "vue";
+import { ref, inject, onMounted, watch } from "vue";
 import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
 // Helpers & Libs
-import type { Category } from "@/libs/graphql/types/categories";
-import type { LocaleObject } from "@/libs/graphql/types/general";
 import { Categories } from "@/libs/graphql";
 import { SailCMS } from "@/libs/graphql";
 // Components
 import Loader from "@/components/globals/Loader.vue";
-import NestedDraggable from "@/components/globals/categories/Nested.vue";
+import NestedDraggable from "@/components/globals/nestedDraggable/NestedDraggable.vue";
 
 const store = useAppStore();
 const i18n = useI18n();
-const isLoading = ref<boolean>(true);
-const siteId = ref<string>(SailCMS.getSiteId());
-const siteLocales = ref<string[]>(SailCMS.getLocales());
+const isLoading = ref(true);
+const siteId = ref(SailCMS.getSiteId());
+const siteLocales = ref(SailCMS.getLocales());
 
-// Return the locale as string
-const getLocale = () => (i18n.locale.value === "en" ? "en" : "fr");
+const categoriesList = ref([]);
+const categoriesListKey = ref(0);
+const selectedCategory = ref(null);
+const flattendCategoriesList = ref([]);
+const sortedCategories = ref([]);
+const selectedParentId = ref(null);
 
-const categoriesList = ref<Category[]>([]);
-const categoriesListKey = ref<number>(0);
-const selectedCategory = ref<Category | null>(null);
-const formattedCategories = ref<
-    {
-        id: string;
-        name: string;
-    }[]
->([]);
-const selectedParentId = ref<string | null>(null);
+// Template refs
 const categoryForm = ref();
 
 // Search & Validations
-const isFormValid = ref<boolean>(false);
-const categoryNameInput = ref<LocaleObject>({ en: "", fr: "" });
+const isFormValid = ref(false);
+const categoryNameInput = ref({ en: "", fr: "" });
 const categoryNameRules = [
-    (value: string) => {
+    (value) => {
         if (value) return true;
         return "Name is requred.";
     },
 ];
 // Reset form
 const reset = () => {
-    categoryForm.value.reset();
+    if (categoryForm.value) categoryForm.value.reset();
 };
 
 // Emits
-const emitter: any = inject("emitter");
-emitter.on("delete-item", (item: Category) => handleDeleteCategory(item));
-emitter.on("edit-item", (item: Category) => {
+const emitter = inject("emitter");
+emitter.on("delete-item", (data) => handleDeleteCategory(data.item));
+emitter.on("update-item", (item) => {
     selectedCategory.value = item;
     selectedParentId.value = item.parent_id;
     categoryNameInput.value = item.name;
-    formattedCategories.value = formattedCategories.value.filter(
+    flattendCategoriesList.value = flattendCategoriesList.value.filter(
         (el) => el.id !== selectedCategory?.value?._id
     );
 });
-emitter.on("update-list", () => categoryFullTree("", siteId.value));
+const handleUpdateList = (list) => {
+    sortedCategories.value = [];
+    formatSortedCategories(list, "");
+    updateCategoryOrders(sortedCategories.value);
+};
 
 // Get categories
-const categoryFullTree = async (parent_id: string, site_id: string) => {
+const categoryFullTree = async (parent_id, site_id) => {
     const responseCategoryFullTree = await Categories.categoryFullTree(
         parent_id,
         site_id
     );
     if (responseCategoryFullTree) {
         categoriesList.value = responseCategoryFullTree;
-        formattedCategories.value = [];
-        formatCategoriesList(categoriesList.value);
-        categoriesListKey.value++;
+        flattendCategoriesList.value = [];
+        flatCategoriesList(categoriesList.value);
         isLoading.value = false;
+        categoriesListKey.value++;
     }
 };
 
-// Format the categories to display within the parent id dropdown
-const formatCategoriesList = (categoriesList: Category[]) => {
+// Flat the categories array to display within the parent id dropdown
+const flatCategoriesList = (categoriesList) => {
     const formattedList = categoriesList.map((cat) => {
         if (cat.children && cat.children.length) {
-            formatCategoriesList(cat.children);
+            flatCategoriesList(cat.children);
         }
 
         return {
             id: cat._id,
-            name: cat.name[getLocale()],
+            name: cat.name[i18n.locale.value],
         };
     });
 
-    formattedCategories.value = [
-        ...formattedCategories.value,
+    flattendCategoriesList.value = [
+        ...flattendCategoriesList.value,
         ...formattedList,
     ].sort((a, b) => a.name.localeCompare(b.name));
 };
 
+// Format the categories to pass to the updateCategoryOrders mutation
+const formatSortedCategories = (categoriesList, parent) => {
+    const list = categoriesList.map((el) => {
+        if (el.children && el.children.length)
+            formatSortedCategories(el.children, el._id);
+        return { id: el._id, parent: parent, order: el.order };
+    });
+    sortedCategories.value = [...sortedCategories.value, ...list];
+};
+
 // Add a category
-const handleAddCategory = async (
-    name: LocaleObject,
-    parent_id: string,
-    site_id: string
-) => {
+const handleAddCategory = async (name, parent_id, site_id) => {
     if (isFormValid.value) {
         const responseAddCategory = await Categories.createCategory(
             name,
@@ -220,18 +250,38 @@ const handleAddCategory = async (
     }
 };
 
-// Edit a category
-const handleEditCategory = async (item: Category) => {
+// Update a category
+const handleUpdateCategory = async (item) => {
     if (isFormValid.value) {
-        const responseEditCategory = await Categories.updateCategory(
+        isLoading.value = true;
+        const responseUpdateCategory = await Categories.updateCategory(
             item._id,
             categoryNameInput.value,
             selectedParentId.value || ""
         );
-        if (responseEditCategory) {
+        if (responseUpdateCategory) {
             categoryFullTree("", siteId.value);
             handleCancel();
+            isLoading.value = false;
         }
+    }
+};
+
+// Update category orders & parent id
+const updateCategoryOrders = async (sortedCategories) => {
+    const responseUpdateCategoryOrders = await Categories.updateCategoryOrders(
+        sortedCategories,
+        siteId.value
+    );
+    if (responseUpdateCategoryOrders) {
+    }
+};
+
+// Delete a category
+const handleDeleteCategory = async (item) => {
+    const responseDeleteCategory = await Categories.deleteCategory(item._id);
+    if (responseDeleteCategory) {
+        categoryFullTree("", siteId.value);
     }
 };
 
@@ -242,14 +292,6 @@ const handleCancel = () => {
     selectedParentId.value = null;
     isFormValid.value = false;
     reset();
-};
-
-// Delete a category
-const handleDeleteCategory = async (item: Category) => {
-    const responseDeleteCategory = await Categories.deleteCategory(item._id);
-    if (responseDeleteCategory) {
-        categoryFullTree("", siteId.value);
-    }
 };
 
 // Setup page data
@@ -270,8 +312,8 @@ const setupPage = () => {
 
 watch(i18n.locale, () => {
     categoriesListKey.value++;
-    formattedCategories.value = [];
-    formatCategoriesList(categoriesList.value);
+    flattendCategoriesList.value = [];
+    flatCategoriesList(categoriesList.value);
 });
 
 onMounted(() => {
