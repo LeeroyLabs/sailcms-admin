@@ -280,14 +280,14 @@ email:
     desktop: Desktop
     mobile: Mobile
   messages:
-    error:  Could not save {name}, please try again.
+    error: Could not save {name}, please try again.
     success: Email {name} was saved successfully.
   titles:
     subject: Subject
     intro: Intro / Title
     content: Content
     button: Button Label
-    url : Button URL
+    url: Button URL
 
 system:
   settings: Settings
@@ -339,6 +339,19 @@ navigations:
     select_type: Select a type of item
     select_entry: Select an entry
     select_category: Select a category
-    select_parent: Select a parent
     add_navigation_btn: Add
     edit_navigation_btn: Save
+
+tasks:
+  title: Tasks
+  add: Add Task
+  no_tasks: No tasks at the moment.
+  columns:
+    name: Name
+    status: Status
+    created: Created
+
+task:
+  confirm: Confirmation
+  confirm_msg_one: Are you sure you want to delete the task?
+  confirm_msg_other: Are you sure you want to delete the tasks?

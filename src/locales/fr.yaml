@@ -339,6 +339,19 @@ navigations:
     select_type: Sélectioner un type de menu
     select_entry: Sélectioner une entrée
     select_category: Sélectioner une catégorie
-    select_parent: Sélectioner un parent
     add_navigation_btn: Ajouter
     edit_navigation_btn: Sauvegarder
+
+tasks:
+  title: Tâches
+  add: Ajouter une tâche
+  no_tasks: Aucune tâche pour le moment.
+  columns:
+    name: Nom
+    status: Status
+    created: Créé
+
+task:
+  confirm: Confirmation
+  confirm_msg_one: Êtes-vous certain de vouloir supprimer la tâche ?
+  confirm_msg_other: Êtes-vous certain de vouloir supprimer les tâches ?

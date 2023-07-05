@@ -9,6 +9,7 @@ import { miscRoutes } from "@/router/misc";
 import { entryRoutes } from "@/router/entries";
 import { hasPermission } from "@/libs/tools";
 import { emailRoutes } from "@/router/emails";
+import { tasksRoutes } from "@/router/tasks";
 
 const routes = [
     ...publicRoutes,
@@ -17,7 +18,8 @@ const routes = [
     ...categoriesRoutes,
     ...navigationsRoutes,
     ...entryRoutes,
-    ...emailRoutes
+    ...emailRoutes,
+    ...tasksRoutes,
 ];
 
 function routerInit() {
