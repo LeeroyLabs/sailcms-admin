@@ -21,13 +21,19 @@ import { useTheme } from "vuetify";
 import Private from "@/layouts/Private.vue";
 import Public from "@/layouts/Public.vue";
 import { watch } from "vue";
+import { useI18n } from "vue-i18n";
 
 const appStore = useAppStore();
 const VuetifyTheme = useTheme();
+const i18n = useI18n();
 
 const currentTheme = localStorage.getItem('sailcms_theme') || 'light';
 appStore.setCurrentTheme(currentTheme);
 VuetifyTheme.global.name.value = appStore.theme;
+
+// Check for browser locale token, reuse it if exists
+let locale = localStorage.getItem(import.meta.env.VITE_SAILCMS_LOCALE_TOKEN) || 'en';
+i18n.locale.value = locale;
 
 const handleDarkMarker = () =>
 {
