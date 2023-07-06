@@ -348,10 +348,15 @@ tasks:
   title: Tasks
   add: Add Task
   no_tasks: No tasks at the moment.
+  search: Search for tasks
   columns:
     name: Name
     status: Status
     created: Created
+    priority: Priority
+  actions:
+    retry: Retry
+    delete: Delete
 
 task:
   confirm: Confirmation

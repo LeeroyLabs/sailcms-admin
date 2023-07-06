@@ -1,50 +1,49 @@
 <template>
     <div v-if="isReady">
-        <Teleport to="#actions">
-            <v-btn
-                v-if="hasPermission('readwrite_task')"
-                color="primary"
-                @click="
-                    $router.push({ name: 'SingleTask', params: { id: 'add' } })
-                "
-            >
-                {{ $t("tasks.add") }}
-            </v-btn>
-        </Teleport>
-
         <div class="tw-flex tw-flex-col tw-gap-8">
             <div class="tw-flex tw-justify-between">
                 <div>
                     <h3 class="tw-font-medium tw-text-xl">Task 1</h3>
                     <span>ID: </span>
                 </div>
+
                 <div>
-                    <v-btn
-                        @click.prevent="handleReloadTask"
-                        density="comfortable"
-                        rounded
-                        variant="text"
-                        icon="mdi-reload"
-                    />
-                    <v-btn
-                        @click.prevent="handleDeleteTask"
-                        density="comfortable"
-                        color="red"
-                        variant="tonal"
-                        rounded
-                        icon="mdi-trash-can-outline"
-                        class="tw-text-red-600"
-                    />
+                    <div class="tw-flex tw-justify-end">
+                        <v-btn
+                            @click.prevent="handleReloadTask"
+                            density="comfortable"
+                            rounded
+                            variant="text"
+                            icon="mdi-reload"
+                        />
+                        <v-btn
+                            @click.prevent="handleDeleteTask"
+                            density="comfortable"
+                            color="red"
+                            variant="tonal"
+                            rounded
+                            icon="mdi-trash-can-outline"
+                            class="tw-text-red-600"
+                        />
+                    </div>
+                    <p>Schedule started at:</p>
+                    <p>Priority:</p>
                 </div>
             </div>
 
-            <div
-                class="task-config tw-h-[200px] tw-bg-[rgb(33,33,33)] tw-overflow-y-auto"
-            ></div>
+            <div>
+                <h4 class="tw-font-medium tw-text-sm">Config</h4>
+                <div
+                    class="task-config tw-h-[200px] tw-bg-[rgb(33,33,33)] tw-overflow-y-auto"
+                ></div>
+            </div>
 
-            <div
-                class="task-log tw-h-[200px] tw-bg-[rgb(33,33,33)] tw-overflow-y-auto"
-            ></div>
+            <div>
+                <h4 class="tw-font-medium tw-text-sm">Logs</h4>
+                <div
+                    class="task-config tw-h-[200px] tw-bg-[rgb(33,33,33)] tw-overflow-y-auto"
+                ></div>
+            </div>
         </div>
 
         <Transition>

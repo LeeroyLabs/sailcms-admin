@@ -70,7 +70,7 @@
                 />
                 <v-text-field
                     color="primary"
-                    :label="$t('users.search')"
+                    :label="$t('tasks.search')"
                     variant="outlined"
                     :hide-details="true"
                     type="text"
@@ -139,6 +139,19 @@
                             currentSortingDir === 'ASC'
                         "
                     />
+                    <SmartTH
+                        :text="$t('tasks.columns.priority')"
+                        :sortable="true"
+                        @sort="setSorting('name.full')"
+                        :showLoaderOnSort="true"
+                        :condition="
+                            currentSorting !== 'name.full' || !isLoadingSort
+                        "
+                        :ascending="
+                            currentSorting === 'name.full' &&
+                            currentSortingDir === 'ASC'
+                        "
+                    />
                 </tr>
             </thead>
 
@@ -169,6 +182,7 @@
                     </td>
                     <td>{{ task.status }}</td>
                     <td>{{ task.created }}</td>
+                    <td>{{ task.priority }}</td>
                 </tr>
 
                 <tr v-if="!taskListing.length">
@@ -190,9 +204,9 @@
                 v-if="showDeleteConfirm"
                 :show="true"
                 :overall="true"
-                :title="$t('users.confirm')"
+                :title="$t('tasks.confirm')"
                 :loading="applyingAction"
-                :message="$t('users.confirm_msg')"
+                :message="$t('tasks.confirm_msg')"
                 @cancel="showDeleteConfirm = false"
                 @accept="confirmDelete"
             />
@@ -217,12 +231,31 @@ import DeleteConfirmation from "@/components/globals/DeleteConfirmation.vue";
 const store = useAppStore();
 const i18n = useI18n();
 const isReady = ref(true);
-const tasks = ref([]);
 
+const tasks = ref([]);
+const selectedTask = ref(null);
 const taskListing = ref([
-    { _id: "1", name: "Task 1", status: "Running", created: "05/06/2022" },
-    { _id: "2", name: "Task 2", status: "Failed", created: "05/06/2022" },
-    { _id: "3", name: "Task 3", status: "Running", created: "05/06/2022" },
+    {
+        _id: "1",
+        name: "Task 1",
+        status: "Running",
+        created: "05/06/2022",
+        priority: 1,
+    },
+    {
+        _id: "2",
+        name: "Task 2",
+        status: "Failed",
+        created: "05/06/2022",
+        priority: 3,
+    },
+    {
+        _id: "3",
+        name: "Task 3",
+        status: "Running",
+        created: "05/06/2022",
+        priority: 1,
+    },
 ]);
 
 // Actions
@@ -230,16 +263,13 @@ const selectedAction = ref(null);
 const applyingAction = ref(false);
 const availableActions = computed(() => {
     return [
-        { value: "disable", title: i18n.t("users.actions.disable") },
-        { value: "enable", title: i18n.t("users.actions.enable") },
-        { value: "delete", title: i18n.t("users.actions.delete") },
+        { value: "retry", title: i18n.t("tasks.actions.retry") },
+        { value: "delete", title: i18n.t("tasks.actions.delete") },
     ];
 });
 
 // Search
 const currentSearch = ref("");
-
-// Search loader
 const isLoadingSearch = ref(false);
 
 const runSearch = () => {
@@ -273,13 +303,22 @@ const handleReloadTask = (task) => {
 
 // Delete a task
 const handleDeleteTask = (task) => {
+    selectedTask.value = task;
     console.log("DELETE", task);
+};
+
+// Confirm delete
+const confirmDelete = () => {
+    console.log("CONFIRM DELETE");
 };
 
 // Delete a task
 const performAction = () => {
     console.log("PERFORM ACTION");
 };
+
+// Modal
+const showDeleteConfirm = ref(false);
 
 // Setup page data
 const setupPage = () => {
