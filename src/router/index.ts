@@ -31,8 +31,7 @@ function routerInit() {
         const appStore = useAppStore();
         appStore.setBreadcrumbs([]);
 
-        const token =
-            localStorage.getItem(import.meta.env.VITE_SAILCMS_TOKEN) || "";
+        const token = localStorage.getItem(import.meta.env.VITE_SAILCMS_TOKEN) || '';
 
         if (!appStore.isLoggedIn && token !== "") {
             // Check if we have a valid session

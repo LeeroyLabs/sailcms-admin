@@ -1,96 +1,167 @@
 <template>
-    label
-    placeholder
-    explain
-    repeatable
-    required
-    type (defaults to text)
+    <v-form ref="form" autocomplete="off">
+        <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-y-4 tw-gap-x-6">
+            <v-text-field
+                variant="outlined"
+                color="primary"
+                density="comfortable"
+                :label="$t('fields.field_name') + ' *'"
+                :rules="[rules.required]"
+            />
 
-    <v-autocomplete
-        :model-value="selectedType"
-        :items="availableTypes"
-        label="Type"
-        color="primary"
-        variant="outlined"
-        density="comfortable"
-        single-line
-        placeholder="Type"
-        :persistent-hint="false"
-        :hide-details="true"
-    >
-        <template v-slot:item="{ props, item }">
-            <div
-                class="tw-py-3 tw-px-4 tw-mx-2 tw-rounded-md"
-                :class="{'hover:tw-bg-neutral-600': $vuetify.theme.name === 'dark', 'hover:tw-bg-neutral-200': $vuetify.theme.name === 'light'}"
+            <v-text-field
+                variant="outlined"
+                color="primary"
+                density="comfortable"
+                :label="$t('fields.field_key') + ' *'"
+                :rules="[rules.required]"
             >
-                {{ item?.raw?.title }}
-                <small class="tw-block">
-                    {{ item?.raw?.description }}
-                </small>
+                <template v-slot:details>
+                    <span class="tw-mr-[-12px]" :class="{'tw-text-white/40': $vuetify.theme.name === 'dark', 'tw-text-black/60': $vuetify.theme.name === 'light'}">
+                        {{ $t('fields.key_explain') }}
+                    </span>
+                </template>
+            </v-text-field>
+
+            <v-text-field
+                v-for="(locale, idx) in SailCMS.getLocales()"
+                variant="outlined"
+                color="primary"
+                density="comfortable"
+                :label="$t('fields.label') + ' (' + locale + ') *'"
+                v-model="field.label[locale]"
+                :rules="[rules.required]"
+                :class="{'tw-col-span-2': (SailCMS.getLocales().length % 2 !== 0 && idx+1 === SailCMS.getLocales().length)}"
+            />
+
+            <v-text-field
+                v-for="(locale, idx) in SailCMS.getLocales()"
+                variant="outlined"
+                color="primary"
+                density="comfortable"
+                :label="$t('fields.placeholder') + ' (' + locale + ')'"
+                v-model="field.placeholder[locale]"
+                :class="{'tw-col-span-2': (SailCMS.getLocales().length % 2 !== 0 && idx+1 === SailCMS.getLocales().length)}"
+            />
+
+            <v-text-field
+                v-for="(locale, idx) in SailCMS.getLocales()"
+                variant="outlined"
+                color="primary"
+                density="comfortable"
+                :label="$t('fields.explain') + ' (' + locale + ')'"
+                v-model="field.explain[locale]"
+                :class="{'tw-col-span-2': (SailCMS.getLocales().length % 2 !== 0 && idx+1 === SailCMS.getLocales().length)}"
+            />
+
+            <v-autocomplete
+                :model-value="field.type"
+                :items="availableTypes"
+                id="type-selector"
+                label="Type"
+                color="primary"
+                variant="outlined"
+                density="comfortable"
+                placeholder="Type"
+                :hide-details="true"
+                :persistent-hint="false"
+                class="tw-col-span-2"
+            >
+                <template v-slot:item="{ props, item }">
+                    <div
+                        @click="updateSelection(item)"
+                        class="tw-py-3 tw-px-4 tw-mx-2 tw-rounded-md tw-cursor-pointer"
+                        :class="{'hover:tw-bg-neutral-600': $vuetify.theme.name === 'dark', 'hover:tw-bg-neutral-200': $vuetify.theme.name === 'light'}"
+                    >
+                        {{ item?.raw?.title }}
+                        <small class="tw-block">
+                            {{ item?.raw?.description }}
+                        </small>
+                    </div>
+                </template>
+            </v-autocomplete>
+
+            <div class="tw-col-span-2">
+                <template v-if="selectedComponent">
+                    <component :is="selectedComponent.component" :field="field" :type="selectedComponent" @change="(e) => field.config = e"/>
+                </template>
             </div>
-        </template>
-    </v-autocomplete>
+
+            <div class="tw-col-span-2 tw-mt-[-10px]">
+                <div class="tw-flex tw-flex-row tw-gap-x-6">
+                    <div v-if="!selectedComponent || (selectedComponent && !selectedComponent.hideRepeat)">
+                        <v-switch
+                            v-model="field.repeatable"
+                            :label="$t('fields.repeatable')"
+                            color="primary"
+                            value="1"
+                            hide-details
+                            class="tw-flex-grow"
+                        />
+                    </div>
+                    <div v-if="!selectedComponent || (selectedComponent && !selectedComponent.hideRequired)">
+                        <v-switch
+                            v-model="field.required"
+                            :label="$t('fields.required')"
+                            color="primary"
+                            value="1"
+                            hide-details
+                            class="tw-flex-grow"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </v-form>
 </template>
 
 <script setup>
 import { usePage } from '@/libs/page';
 import { useRoute } from 'vue-router';
-import { ref, watch, computed } from 'vue';
+import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { sortBy } from 'lodash';
+import { availableTypes } from '@/libs/fieldTypes';
+import { SailCMS } from '@/libs/graphql';
+
+const rules = {
+    required: value => !!value || i18n.t('user.errors.required')
+};
 
 const page = usePage();
 const route = useRoute();
 const i18n = useI18n();
 
-const availableTypes = computed(() =>
-{
-    return sortBy([
-        { value: 'text', title: i18n.t('fields.types.text'), description: i18n.t('fields.descriptions.text') },
-        { value: 'textarea', title: i18n.t('fields.types.textarea'), description: i18n.t('fields.descriptions.textarea') },
-        { value: 'html', title: i18n.t('fields.types.html'), description: i18n.t('fields.descriptions.html') },
-        { value: 'numeric', title: i18n.t('fields.types.numeric'), description: i18n.t('fields.descriptions.numeric') },
-        { value: 'integer', title: i18n.t('fields.types.integer'), description: i18n.t('fields.descriptions.integer') },
-        { value: 'float', title: i18n.t('fields.types.float'), description: i18n.t('fields.descriptions.float') },
-        { value: 'password', title: i18n.t('fields.types.password'), description: i18n.t('fields.descriptions.password') },
-        { value: 'email', title: i18n.t('fields.types.email'), description: i18n.t('fields.descriptions.email') },
-        { value: 'phone', title: i18n.t('fields.types.phone'), description: i18n.t('fields.descriptions.phone') },
-        { value: 'creditcard', title: i18n.t('fields.types.creditcard'), description: i18n.t('fields.descriptions.creditcard') },
-        { value: 'asset_file', title: i18n.t('fields.types.asset_file'), description: i18n.t('fields.descriptions.asset_file') },
-        { value: 'asset_image', title: i18n.t('fields.types.asset_image'), description: i18n.t('fields.descriptions.asset_image') },
-        { value: 'url', title: i18n.t('fields.types.url'), description: i18n.t('fields.descriptions.url') },
-        { value: 'domain', title: i18n.t('fields.types.domain'), description: i18n.t('fields.descriptions.domain') },
-        { value: 'directory', title: i18n.t('fields.types.directory'), description: i18n.t('fields.descriptions.directory') },
-        { value: 'file', title: i18n.t('fields.types.file'), description: i18n.t('fields.descriptions.file') },
-        { value: 'ip', title: i18n.t('fields.types.ip'), description: i18n.t('fields.descriptions.ip') },
-        { value: 'select', title: i18n.t('fields.types.select'), description: i18n.t('fields.descriptions.select') },
-        { value: 'entry', title: i18n.t('fields.types.entry'), description: i18n.t('fields.descriptions.entry') },
-        { value: 'entry_list', title: i18n.t('fields.types.entry_list'), description: i18n.t('fields.descriptions.entry_list') },
-        { value: 'category', title: i18n.t('fields.types.category'), description: i18n.t('fields.descriptions.category') },
-        { value: 'categories', title: i18n.t('fields.types.categories'), description: i18n.t('fields.descriptions.categories') },
-        { value: 'switch', title: i18n.t('fields.types.switch'), description: i18n.t('fields.descriptions.switch') },
-        { value: 'hex', title: i18n.t('fields.types.hex'), description: i18n.t('fields.descriptions.hex') },
-        { value: 'postal', title: i18n.t('fields.types.postal'), description: i18n.t('fields.descriptions.postal') },
-        { value: 'country', title: i18n.t('fields.types.country'), description: i18n.t('fields.descriptions.country') },
-        { value: 'date', title: i18n.t('fields.types.date'), description: i18n.t('fields.descriptions.date') },
-        { value: 'datetime', title: i18n.t('fields.types.datetime'), description: i18n.t('fields.descriptions.datetime') },
-        { value: 'time', title: i18n.t('fields.types.time'), description: i18n.t('fields.descriptions.time') },
-        { value: 'checkbox', title: i18n.t('fields.types.checkbox'), description: i18n.t('fields.descriptions.checkbox') },
-        { value: 'radio', title: i18n.t('fields.types.radio'), description: i18n.t('fields.descriptions.radio') },
-        { value: 'id', title: i18n.t('fields.types.id'), description: i18n.t('fields.descriptions.id') },
-        { value: 'matrix', title: i18n.t('fields.types.matrix'), description: i18n.t('fields.descriptions.matrix') }
-    ], ['value']);
+const form = ref(null);
+const field = ref({
+    name: '',
+    key: '',
+    label: { fr: '', en: '' },
+    placeholder: { fr: '', en: '' },
+    explain: { fr: '', en: '' },
+    repeatable: false,
+    validation: '',
+    required: false,
+    type: null,
+    config: {}
 });
 
-const selectedType = ref(i18n.t('fields.types.text'));
+const selectedComponent = ref(null);
 
-watch(selectedType, (v) =>
+const updateSelection = (v) =>
 {
-    const item = availableTypeKeys.value.find(type => type.title === selectedType.value.title);
-    currentType.value = item.value
+    field.value.type = v.value;
+    selectedComponent.value = availableTypes.value.find(t => t.value===v.value);
+
+    console.log(field.value.type);
+    document.querySelector('#type-selector').blur();
+};
+
+watch(field.value, (v) =>
+{
+    console.log(v);
 });
 
-if (route.params.key === 'new') {
+if (route.params.key==='new') {
     page.setPageTitle('fields.new');
 }
 </script>

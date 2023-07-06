@@ -6,8 +6,8 @@
             color="primary"
             density="comfortable"
             :rules="[rules.required]"
-            :label="(type.value === 'text' || type.value === 'password') ? $t('fields.options.min_length') + ' *' : $t('fields.options.min_num') + ' *'"
-            v-model="internalValue.min"
+            :label="$t('fields.options.rows') + ' *'"
+            v-model="internalValue.rows"
         />
 
         <v-text-field
@@ -16,9 +16,11 @@
             color="primary"
             density="comfortable"
             :rules="[rules.required]"
-            :label="(type.value === 'text' || type.value === 'password') ? $t('fields.options.max_length') + ' *' : $t('fields.options.max_num') + ' *'"
+            :label="$t('fields.options.max_chars') + ' *'"
             v-model="internalValue.max"
-        />
+        >
+            <template v-slot:details><span class="tw-mr-[-12px]" :class="{'tw-text-white/40': $vuetify.theme.name === 'dark', 'tw-text-black/60': $vuetify.theme.name === 'light'}">{{ $t('fields.options.max_chars_explain') }}</span></template>
+        </v-text-field>
     </div>
 </template>
 
@@ -45,14 +47,14 @@ const props = defineProps({
 });
 
 const emitter = defineEmits(['change']);
-const internalValue = ref({min: props.field.config.min || 1, max: props.field.config.max || 255});
+
+const internalValue = ref({rows: props.field.config.rows || 8, max: props.field.config.max_chars || -1});
 
 watch(internalValue.value, (v) =>
 {
     const config = cloneDeep(props.field.config);
-    config.min = parseInt(v.min);
-    if (parseInt(v.min) > parseInt(v.max)) v.max = v.min;
-    config.max = parseInt(v.max);
+    config.rows = parseInt(v.rows);
+    config.max_chars = parseInt(v.max_chars);
     emitter('change', config);
 });
 </script>

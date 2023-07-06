@@ -1,24 +1,22 @@
 <template>
     <div class="tw-w-full tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-y-4 tw-gap-x-6 tw-mt-4">
         <v-text-field
-            type="number"
             variant="outlined"
             color="primary"
             density="comfortable"
             :rules="[rules.required]"
-            :label="(type.value === 'text' || type.value === 'password') ? $t('fields.options.min_length') + ' *' : $t('fields.options.min_num') + ' *'"
-            v-model="internalValue.min"
+            :label="$t('fields.options.allowed_types') + ' *'"
+            v-model="internalValue.allowed_types"
+            class="tw-col-span-2"
         />
 
-        <v-text-field
-            type="number"
-            variant="outlined"
-            color="primary"
-            density="comfortable"
-            :rules="[rules.required]"
-            :label="(type.value === 'text' || type.value === 'password') ? $t('fields.options.max_length') + ' *' : $t('fields.options.max_num') + ' *'"
-            v-model="internalValue.max"
-        />
+        <div>
+            <h2>{{ $t('fields.options.select_many') }}</h2>
+            <v-radio-group v-model="internalValue.multi" hide-details :inline="true" class="tw-flex tw-flex-row tw-col-span-2">
+                <v-radio :label="$t('system.no')" :value="false" class="tw-mr-4"></v-radio>
+                <v-radio :label="$t('system.yes')" :value="true" class="tw-mr-4"></v-radio>
+            </v-radio-group>
+        </div>
     </div>
 </template>
 
@@ -45,14 +43,17 @@ const props = defineProps({
 });
 
 const emitter = defineEmits(['change']);
-const internalValue = ref({min: props.field.config.min || 1, max: props.field.config.max || 255});
+
+const internalValue = ref({
+    allowed_types: props.field.config.allowed_types || '.docx,.doc,.xlsx,.xls,.pdf,.pptx,.ppt',
+    multi: false,
+});
 
 watch(internalValue.value, (v) =>
 {
     const config = cloneDeep(props.field.config);
-    config.min = parseInt(v.min);
-    if (parseInt(v.min) > parseInt(v.max)) v.max = v.min;
-    config.max = parseInt(v.max);
+    config.allowed_types = v.allowed_types.replace(/\s/g, '');
+    config.multi = v.multi;
     emitter('change', config);
 });
 </script>
