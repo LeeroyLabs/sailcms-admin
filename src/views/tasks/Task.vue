@@ -5,10 +5,18 @@
                 <div>
                     <h3 class="tw-font-medium tw-text-xl">Task 1</h3>
                     <span>ID: </span>
+                    <p>Priority:</p>
                 </div>
 
                 <div>
                     <div class="tw-flex tw-justify-end">
+                        <v-btn
+                            @click.prevent="router.push({ name: 'Tasks' })"
+                            density="comfortable"
+                            rounded
+                            variant="text"
+                            icon="mdi-arrow-left"
+                        />
                         <v-btn
                             @click.prevent="handleReloadTask"
                             density="comfortable"
@@ -26,20 +34,19 @@
                             class="tw-text-red-600"
                         />
                     </div>
-                    <p>Schedule started at:</p>
-                    <p>Priority:</p>
+                    <p>Started at:</p>
                 </div>
             </div>
 
             <div>
-                <h4 class="tw-font-medium tw-text-sm">Config</h4>
+                <h4 class="tw-font-medium tw-text-sm tw-mb-2">Config</h4>
                 <div
                     class="task-config tw-h-[200px] tw-bg-[rgb(33,33,33)] tw-overflow-y-auto"
                 ></div>
             </div>
 
             <div>
-                <h4 class="tw-font-medium tw-text-sm">Logs</h4>
+                <h4 class="tw-font-medium tw-text-sm tw-mb-2">Logs</h4>
                 <div
                     class="task-config tw-h-[200px] tw-bg-[rgb(33,33,33)] tw-overflow-y-auto"
                 ></div>
@@ -53,7 +60,7 @@
                 :overall="true"
                 :title="$t('task.confirm')"
                 :loading="applyingAction"
-                :message="$i18next.t('task.confirm_msg', { count: 1 })"
+                :message="$t('task.confirm_msg')"
                 @cancel="showDeleteConfirm = false"
                 @accept="confirmDelete"
             />
@@ -79,8 +86,6 @@ const page = usePage();
 const route = useRoute();
 const router = useRouter();
 const i18n = useI18n();
-const { t } = i18n;
-console.log("I18N", t("task.confirm_msg", { count: 1 }));
 
 const showDeleteConfirm = ref(false);
 const applyingAction = ref(false);

@@ -360,5 +360,5 @@ tasks:
 
 task:
   confirm: Confirmation
-  confirm_msg_one: Are you sure you want to delete the task?
-  confirm_msg_other: Are you sure you want to delete the tasks?
+  confirm_msg: Are you sure you want to delete the task?
+  back: Back

@@ -360,5 +360,5 @@ tasks:
 
 task:
   confirm: Confirmation
-  confirm_msg_one: Êtes-vous certain de vouloir supprimer la tâche ?
-  confirm_msg_other: Êtes-vous certain de vouloir supprimer les tâches ?
+  confirm_msg: Êtes-vous certain de vouloir supprimer la tâche ?
+  back: Retour
