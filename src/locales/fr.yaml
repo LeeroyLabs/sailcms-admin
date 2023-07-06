@@ -317,6 +317,7 @@ system:
 categories:
   title: Catégories
   search: Recherche de catégories
+  confirm_msg: Êtes-vous certain de vouloir supprimer la catégorie ?
   form:
     title_add: Ajouter une catégorie
     title_edit: Mettre à jour la catégorie
@@ -330,6 +331,7 @@ categories:
 
 navigations:
   title: Navigations
+  confirm_msg: Êtes-vous certain de vouloir supprimer la navigation ?
   form:
     title_add: Ajouter une navigation
     title_edit: Mettre à jour la Navigation

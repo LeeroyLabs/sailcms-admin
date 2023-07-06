@@ -317,6 +317,7 @@ system:
 categories:
   title: Categories
   search: Search for categories
+  confirm_msg: Are you sure you want to delete the category?
   form:
     title_add: Add Category
     title_edit: Edit Category
@@ -330,6 +331,7 @@ categories:
 
 navigations:
   title: Navigations
+  confirm_msg: Are you sure you want to delete the navigation?
   form:
     title_add: Add Navigation
     title_edit: Edit Navigation

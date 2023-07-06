@@ -1,6 +1,6 @@
 <template>
     <div v-if="isReady">
-        <Teleport to="#actions">
+        <!--         <Teleport to="#actions">
             <v-btn
                 v-if="hasPermission('readwrite_task')"
                 color="primary"
@@ -9,8 +9,85 @@
                 "
             >
                 {{ $t("tasks.add") }}
-            </v-btn>
-        </Teleport>
+            </v-btn> 
+        </Teleport> -->
+
+        <section
+            class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between"
+        >
+            <div
+                class="tw-flex tw-flex-row tw-w-full lg:tw-w-3/12 tw-items-center"
+                v-if="hasPermission('readwrite_task')"
+            >
+                <v-select
+                    v-model="selectedAction"
+                    label="Actions"
+                    color="primary"
+                    :items="availableActions"
+                    variant="outlined"
+                    density="comfortable"
+                    single-line
+                    placeholder="Actions"
+                    :persistent-hint="false"
+                    :hide-details="true"
+                />
+
+                <v-btn
+                    v-if="hasPermission('readwrite_task')"
+                    :class="{
+                        'tw-invisible tw-opacity-0': selectedAction === null,
+                        'tw-opacity-100': selectedAction !== null,
+                    }"
+                    class="tw-hidden md:tw-block tw-ml-2 tw-transition-opacity tw-duration-300"
+                    color="primary"
+                    size="small"
+                    icon
+                    @click.prevent="performAction"
+                >
+                    <v-icon icon="mdi-chevron-right" />
+                </v-btn>
+
+                <v-progress-circular
+                    indeterminate
+                    size="x-small"
+                    width="2"
+                    class="tw-ml-2"
+                    :class="{ 'tw-invisible': !applyingAction }"
+                />
+            </div>
+
+            <div
+                class="tw-w-full tw-mb-4 md:tw-mb-0 lg:tw-w-4/12 tw-flex tw-flex-row tw-gap-x-4 tw-items-center"
+            >
+                <v-progress-circular
+                    :class="{
+                        'tw-invisible': !isLoadingSearch,
+                        'tw-hidden': $vuetify.display.mobile,
+                    }"
+                    indeterminate
+                    size="small"
+                    width="3"
+                />
+                <v-text-field
+                    color="primary"
+                    :label="$t('users.search')"
+                    variant="outlined"
+                    :hide-details="true"
+                    type="text"
+                    clearable
+                    density="comfortable"
+                    v-model="currentSearch"
+                    @keydown.enter="runSearch"
+                    @click:clear="clearSearch"
+                >
+                    <template v-slot:append-inner>
+                        <div class="tw-opacity-[0.20]">
+                            <v-icon icon="mdi-keyboard-return" />
+                        </div>
+                    </template>
+                </v-text-field>
+            </div>
+        </section>
 
         <v-table class="utable">
             <thead>
@@ -62,7 +139,6 @@
                             currentSortingDir === 'ASC'
                         "
                     />
-                    <th></th>
                 </tr>
             </thead>
 
@@ -93,31 +169,6 @@
                     </td>
                     <td>{{ task.status }}</td>
                     <td>{{ task.created }}</td>
-                    <td>
-                        <v-btn
-                            @click.prevent="handleViewTask(task)"
-                            density="comfortable"
-                            rounded
-                            variant="text"
-                            icon="mdi-eye-outline"
-                        />
-                        <v-btn
-                            @click.prevent="handleReloadTask(task)"
-                            density="comfortable"
-                            rounded
-                            variant="text"
-                            icon="mdi-reload"
-                        />
-                        <v-btn
-                            @click.prevent="handleDeleteTask(task)"
-                            density="comfortable"
-                            color="red"
-                            variant="tonal"
-                            rounded
-                            icon="mdi-trash-can-outline"
-                            class="tw-text-red-600"
-                        />
-                    </td>
                 </tr>
 
                 <tr v-if="!taskListing.length">
@@ -152,7 +203,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
 
@@ -173,6 +224,31 @@ const taskListing = ref([
     { _id: "2", name: "Task 2", status: "Failed", created: "05/06/2022" },
     { _id: "3", name: "Task 3", status: "Running", created: "05/06/2022" },
 ]);
+
+// Actions
+const selectedAction = ref(null);
+const applyingAction = ref(false);
+const availableActions = computed(() => {
+    return [
+        { value: "disable", title: i18n.t("users.actions.disable") },
+        { value: "enable", title: i18n.t("users.actions.enable") },
+        { value: "delete", title: i18n.t("users.actions.delete") },
+    ];
+});
+
+// Search
+const currentSearch = ref("");
+
+// Search loader
+const isLoadingSearch = ref(false);
+
+const runSearch = () => {
+    console.log("RUN SEARCH");
+};
+
+const clearSearch = () => {
+    console.log("CLEAR SEARCH");
+};
 
 // Pagination handling
 const currentPage = ref(1);
@@ -198,6 +274,11 @@ const handleReloadTask = (task) => {
 // Delete a task
 const handleDeleteTask = (task) => {
     console.log("DELETE", task);
+};
+
+// Delete a task
+const performAction = () => {
+    console.log("PERFORM ACTION");
 };
 
 // Setup page data
