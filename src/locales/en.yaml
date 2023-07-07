@@ -349,6 +349,8 @@ tasks:
   add: Add Task
   no_tasks: No tasks at the moment.
   search: Search for tasks
+  confirm: Confirmation
+  confirm_msg: Are you sure you want to delete the task(s)?
   columns:
     name: Name
     status: Status
@@ -362,3 +364,7 @@ task:
   confirm: Confirmation
   confirm_msg: Are you sure you want to delete the task?
   back: Back
+  name: Name
+  save: Save
+  cancel: Cancel
+  create_task: Create a task

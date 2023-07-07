@@ -76,7 +76,6 @@ import { ref } from "vue";
 import { usePage } from "@/libs/page";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
-import { hasPermission } from "@/libs/tools";
 
 import Loader from "@/components/globals/Loader.vue";
 import DeleteConfirmation from "@/components/globals/DeleteConfirmation.vue";
@@ -108,11 +107,13 @@ const confirmDelete = async () => {
 // Setup page data
 const setupPage = (name = "") => {
     if (route.params.id === "add") {
-        page.setPageTitle("users.title");
+        page.setPageTitle("tasks.title");
     } else {
         page.setPageTitle(name);
     }
 };
+
+setupPage();
 </script>
 
 <style lang="scss" scoped></style>

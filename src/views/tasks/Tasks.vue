@@ -1,16 +1,14 @@
 <template>
     <div v-if="isReady">
-        <!--         <Teleport to="#actions">
+        <Teleport to="#actions">
             <v-btn
                 v-if="hasPermission('readwrite_task')"
                 color="primary"
-                @click="
-                    $router.push({ name: 'SingleTask', params: { id: 'add' } })
-                "
+                @click="$router.push({ name: 'CreateTask' })"
             >
                 {{ $t("tasks.add") }}
-            </v-btn> 
-        </Teleport> -->
+            </v-btn>
+        </Teleport>
 
         <section
             class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between"

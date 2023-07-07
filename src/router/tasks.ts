@@ -22,4 +22,18 @@ export const tasksRoutes = [
             parent: "Tasks",
         },
     },
+    {
+        path: "/tasks/add",
+        name: "CreateTask",
+        component: () =>
+            import(
+                /* webpackChunkName: "tasks" */ "@/views/tasks/CreateTask.vue"
+            ),
+        meta: {
+            guarded: true,
+            permission: "readwrite_task",
+            layout: "private",
+            parent: "Tasks",
+        },
+    },
 ];

@@ -349,6 +349,8 @@ tasks:
   add: Ajouter une tâche
   no_tasks: Aucune tâche pour le moment.
   search: Recherche de tâches
+  confirm: Confirmation
+  confirm_msg: Êtes-vous certain de vouloir supprimer la/les tâche(s) ?
   columns:
     name: Nom
     status: Status
@@ -362,3 +364,7 @@ task:
   confirm: Confirmation
   confirm_msg: Êtes-vous certain de vouloir supprimer la tâche ?
   back: Retour
+  name: Nom
+  save: Enregistrer
+  cancel: Annuler
+  create_task: Créer une tâche
