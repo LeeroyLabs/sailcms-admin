@@ -9,7 +9,7 @@
 
         <div class="tw-flex tw-flex-col md:tw-flex-row tw-justify-start tw-gap-y-6 md:tw-gap-y-0">
             <div id="workspace" class="tw-w-full tw-overflow-y-auto tw-border tw-rounded-md" :class="{'dark': $vuetify.theme.name === 'dark', 'light tw-border-zinc-400': $vuetify.theme.name === 'light'}">
-                <div class="tw-mb-12 tw-p-5">
+                <div class="tw-mb-8 tw-p-5">
                     <v-form autocomplete="off">
                         <v-text-field
                             variant="outlined"
@@ -212,6 +212,8 @@ const saveLayout = async () =>
 }
 
 // TODO: LOAD LAYOUT ON EDIT PAGE
+// TODO: DELETE LAYOUT
+// TODO: ASSIGN LAYOUT TO TYPE
 
 loadFields();
 </script>
