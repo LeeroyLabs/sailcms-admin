@@ -298,12 +298,12 @@ categories:
 navigations:
   title: Navigations
   form:
-    title_add: Ajouter une navigation
-    title_edit: Mettre à jour la Navigation
-    name: Entrer un nom
-    label: Entrer un label
-    url: Entrer l'url
-    select_type: Sélectioner un type de menu
+    title_add: Ajouter un élement
+    title_edit: Mettre à jour l'élément
+    name: Nom de l'élément
+    label: Libellé
+    url: URL
+    select_type: Sélectioner un type d'item
     select_entry: Sélectioner une entrée
     select_category: Sélectioner une catégorie
     select_parent: Sélectioner un parent
