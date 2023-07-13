@@ -14,19 +14,12 @@
                                         : $t("categories.form.title_edit")
                                 }}
                             </h3>
-                            <v-form
-                                ref="categoryForm"
-                                @submit.prevent
-                                v-model="isFormValid"
-                                class="tw-flex tw-flex-col tw-gap-2"
-                            >
+                            <v-form ref="categoryForm" @submit.prevent v-model="isFormValid" class="tw-flex tw-flex-col tw-gap-2">
                                 <v-text-field
                                     v-for="locale in siteLocales"
                                     :key="locale"
                                     color="primary"
-                                    :label="
-                                        $t(`categories.form.name.${locale}`)
-                                    "
+                                    :label="$t(`categories.form.name.${locale}`)"
                                     variant="outlined"
                                     type="text"
                                     :clearable="true"
@@ -49,17 +42,7 @@
                                     item-value="id"
                                 />
 
-                                <div
-                                    class="tw-flex tw-items-center tw-justify-between tw-gap-8 tw-flex-wrap"
-                                >
-                                    <v-btn
-                                        @click="handleCancel"
-                                        color="primary"
-                                        density="default"
-                                        class="tw-min-w-[100px] tw-flex-grow"
-                                    >
-                                        {{ $t("categories.form.cancel") }}
-                                    </v-btn>
+                                <div class="tw-flex tw-items-center tw-gap-x-2 tw-flex-wrap">
                                     <v-btn
                                         v-if="!selectedCategory"
                                         @click="
@@ -72,31 +55,26 @@
                                         type="submit"
                                         color="primary"
                                         density="default"
-                                        class="tw-min-w-[100px] tw-flex-grow"
                                     >
-                                        {{
-                                            $t(
-                                                "categories.form.add_category_btn"
-                                            )
-                                        }}
+                                        {{ $t("categories.form.add_category_btn") }}
                                     </v-btn>
+
                                     <v-btn
-                                        v-else
-                                        @click="
-                                            handleUpdateCategory(
-                                                selectedCategory
-                                            )
-                                        "
+                                        v-if="selectedCategory"
+                                        @click="handleUpdateCategory(selectedCategory)"
                                         type="submit"
                                         density="default"
                                         color="primary"
-                                        class="tw-min-w-[100px] tw-flex-grow"
                                     >
-                                        {{
-                                            $t(
-                                                "categories.form.edit_category_btn"
-                                            )
-                                        }}
+                                        {{ $t("categories.form.edit_category_btn") }}
+                                    </v-btn>
+
+                                    <v-btn
+                                        @click="handleCancel"
+                                        variant="text"
+                                        density="default"
+                                    >
+                                        {{ $t("categories.form.cancel") }}
                                     </v-btn>
                                 </div>
                             </v-form>
