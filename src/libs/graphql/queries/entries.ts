@@ -134,24 +134,25 @@ export default {
                     #locale#
                 }
                 schema {
-                    key
-                    fieldConfigs {
-                        labels {
+                    label
+                    fields {
+                        _id
+                        key
+                        name
+                        label {
                             #locale#
                         }
-                        handle
-                        inputSettings {
-                            inputKey
-                            settings {
-                                name
-                                value
-                                options {
-                                    value
-                                    label
-                                }
-                                type
-                            }
+                        placeholder {
+                            #locale#
                         }
+                        explain {
+                            #locale#
+                        }
+                        validation
+                        required
+                        repeatable
+                        type
+                        config
                     }
                 }
                 authors {
@@ -187,7 +188,6 @@ export default {
                     #locale#
                 }
                 repeatable
-                validate
                 validation
                 required
                 type
@@ -196,7 +196,7 @@ export default {
         }
     `,
     createEntryLayout: `
-        mutation createEntryLayout($titles: LocaleFieldInput!, $schema: [FieldConfigsInput!]!, $slug: String) {
+        mutation createEntryLayout($titles: LocaleFieldInput!, $schema: [EntryLayoutTabInput!]!, $slug: String) {
             createEntryLayout(titles: $titles, schema: $schema, slug: $slug) {
                 _id
             }
@@ -262,6 +262,51 @@ export default {
                 used_by
                 record_count
             }
+        }
+    `,
+    entryField: `
+        query entryField($key: String!) {
+            entryField(key: $key) {
+                _id
+                key
+                name
+                label {
+                    #locale#
+                }
+                placeholder {
+                    #locale#
+                }
+                explain {
+                    #locale#
+                }
+                validation
+                required
+                repeatable
+                type
+                config
+            }
+        }
+    `,
+    createEntryField: `
+        mutation createEntryField($key: String!, $name: String!, $label: LocaleFieldInput!, $placeholder: LocaleFieldInput, $explain: LocaleFieldInput, $type: String!, $validation: String, $repeatable: Boolean, $required: Boolean!, $config: Json) {
+            createEntryField(key: $key, name: $name, label: $label, placeholder: $placeholder, explain: $explain, type: $type, validation: $validation, repeatable: $repeatable, required: $required, config: $config) {
+                _id
+            }
+        }
+    `,
+    updateEntryField: `
+        mutation updateEntryField($_id: ID!, $name: String, $label: LocaleFieldInput, $placeholder: LocaleFieldInput, $explain: LocaleFieldInput, $type: String, $validation: String, $repeatable: Boolean, $required: Boolean, $config: Json) {
+            updateEntryField(id: $_id, name: $name, label: $label, placeholder: $placeholder, explain: $explain, type: $type, validation: $validation, repeatable: $repeatable, required: $required, config: $config)
+        }
+    `,
+    entryFieldValidateKey: `
+        query entryFieldValidateKey($key: String!) {
+            entryFieldValidateKey(key: $key)
+        }
+    `,
+    deleteEntryFields: `
+        mutation deleteEntryFields($ids: [ID!]!) {
+            deleteEntryFields(ids: $ids)
         }
     `
 }

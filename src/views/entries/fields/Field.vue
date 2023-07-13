@@ -1,9 +1,12 @@
 <template>
-    <v-form ref="form" autocomplete="off">
+    <v-form v-if="isReady" ref="form" autocomplete="off">
+        <BackButton :url="{name: 'EntryFields'}"/>
+
         <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-y-4 tw-gap-x-6">
             <v-text-field
                 variant="outlined"
                 color="primary"
+                v-model="field.name"
                 density="comfortable"
                 :label="$t('fields.field_name') + ' *'"
                 :rules="[rules.required]"
@@ -11,10 +14,13 @@
 
             <v-text-field
                 variant="outlined"
+                :disabled="$route.params.key !== 'new'"
                 color="primary"
                 density="comfortable"
+                v-model="field.key"
                 :label="$t('fields.field_key') + ' *'"
-                :rules="[rules.required]"
+                :rules="($route.params.key === 'new') ? [rules.required, rules.allowed] : []"
+                :append-inner-icon="(keyAllowed === null || $route.params.key !== '') ? '' : (keyAllowed) ? 'mdi-check' : 'mdi-close'"
             >
                 <template v-slot:details>
                     <span class="tw-mr-[-12px]" :class="{'tw-text-white/40': $vuetify.theme.name === 'dark', 'tw-text-black/60': $vuetify.theme.name === 'light'}">
@@ -63,8 +69,8 @@
                 variant="outlined"
                 density="comfortable"
                 placeholder="Type"
-                :hide-details="true"
                 :persistent-hint="false"
+                :rules="[rules.required]"
                 class="tw-col-span-2"
             >
                 <template v-slot:item="{ props, item }">
@@ -81,20 +87,20 @@
                 </template>
             </v-autocomplete>
 
-            <div class="tw-col-span-2">
+            <div class="tw-col-span-2 tw-mt-[-18px]">
                 <template v-if="selectedComponent">
-                    <component :is="selectedComponent.component" :field="field" :type="selectedComponent" @change="(e) => field.config = e"/>
+                    <component :key="'comp_' + selectedComponent.value" :is="selectedComponent.component" :field="field" :type="selectedComponent" @change="(e) => field.config = e"/>
                 </template>
             </div>
 
-            <div class="tw-col-span-2 tw-mt-[-10px]">
+            <div class="tw-col-span-2" :class="{'tw-mt-[-25px]': !selectedComponent}">
                 <div class="tw-flex tw-flex-row tw-gap-x-6">
                     <div v-if="!selectedComponent || (selectedComponent && !selectedComponent.hideRepeat)">
                         <v-switch
                             v-model="field.repeatable"
                             :label="$t('fields.repeatable')"
                             color="primary"
-                            value="1"
+                            :value="true"
                             hide-details
                             class="tw-flex-grow"
                         />
@@ -104,7 +110,7 @@
                             v-model="field.required"
                             :label="$t('fields.required')"
                             color="primary"
-                            value="1"
+                            :value="true"
                             hide-details
                             class="tw-flex-grow"
                         />
@@ -112,27 +118,63 @@
                 </div>
             </div>
         </div>
+
+        <div class="tw-mt-6 tw-flex tw-gap-x-2">
+            <v-btn @click.prevent="saveField" variant="flat" :loading="isSaving" color="primary">{{ $t('system.save') }}</v-btn>
+            <v-btn @click.prevent="$router.push({name: 'EntryFields'})" variant="text" color="blue">{{ $t('system.cancel') }}</v-btn>
+        </div>
     </v-form>
+    <Loader v-else/>
 </template>
 
 <script setup>
 import { usePage } from '@/libs/page';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { availableTypes } from '@/libs/fieldTypes';
 import { SailCMS } from '@/libs/graphql';
+import { Entries } from '@/libs/graphql/lib/entries';
+import { useAppStore } from '@/store/app';
+import Loader from '@/components/globals/Loader.vue';
+import BackButton from '@/components/globals/BackButton.vue';
 
 const rules = {
-    required: value => !!value || i18n.t('user.errors.required')
+    required: value => !!value || i18n.t('user.errors.required'),
+    allowed: async (value) =>
+    {
+        if (value.trim() === 'new') {
+            keyAllowed.value = false;
+            return i18n.t('fields.errors.key_used');
+        }
+
+        if (value.trim() === '') {
+            keyAllowed.value = false;
+            return i18n.t('fields.errors.key_not_empty');
+        }
+
+        let allowed = await Entries.entryFieldValidateKey(value);
+
+        if (allowed) {
+            keyAllowed.value = true;
+            return true;
+        }
+
+        keyAllowed.value = false;
+        return i18n.t('fields.errors.key_used');
+    }
 };
 
 const page = usePage();
 const route = useRoute();
+const router = useRouter();
 const i18n = useI18n();
+const store = useAppStore();
 
+const isReady = ref(false);
 const form = ref(null);
 const field = ref({
+    _id: '',
     name: '',
     key: '',
     label: { fr: '', en: '' },
@@ -146,22 +188,59 @@ const field = ref({
 });
 
 const selectedComponent = ref(null);
+const isSaving = ref(false);
+const keyAllowed = ref(null);
 
 const updateSelection = (v) =>
 {
     field.value.type = v.value;
-    selectedComponent.value = availableTypes.value.find(t => t.value===v.value);
-
-    console.log(field.value.type);
+    field.value.config = {};
+    selectedComponent.value = availableTypes.value.find(t => t.value === v.value);
     document.querySelector('#type-selector').blur();
 };
 
-watch(field.value, (v) =>
+const saveField = async () =>
 {
-    console.log(v);
-});
+    if (isSaving.value) return;
+    const status = await form.value.validate();
+    if (!status.valid) return;
 
-if (route.params.key==='new') {
+    isSaving.value = true;
+    field.value.validation = field.value.type;
+    let result;
+
+    if (route.params.key === 'new') {
+        result = await Entries.createEntryField(field.value);
+    } else {
+        // update
+        result = await Entries.updateEntryField(field.value);
+    }
+
+    isSaving.value = false;
+
+    if (result) {
+        store.displayToast('success', i18n.t('fields.toast.success'));
+        await router.push({name: 'EntryFields'});
+    } else {
+        store.displayToast('error', i18n.t('fields.toast.error'));
+    }
+}
+
+const loadField = async () =>
+{
+    field.value = await Entries.entryField(route.params.key);
+
+    let activeType = availableTypes.value.find(type => type.value === field.value.type);
+    if (activeType) selectedComponent.value = activeType;
+
+    page.setPageTitle('fields.editing', `'${route.params.key}'`)
+    isReady.value = true;
+}
+
+if (route.params.key === 'new') {
     page.setPageTitle('fields.new');
+    isReady.value = true;
+} else {
+    loadField();
 }
 </script>

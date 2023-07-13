@@ -7,6 +7,9 @@ import Phone from "@/components/entries/fields/types/Phone.vue";
 import AssetFile from "@/components/entries/fields/types/AssetFile.vue";
 import Asset from "@/components/entries/fields/types/Asset.vue";
 import Select from "@/components/entries/fields/types/Select.vue";
+import Entry from "@/components/entries/fields/types/Entry.vue";
+import Date from "@/components/entries/fields/types/Date.vue";
+import Matrix from "@/components/entries/fields/types/Matrix.vue";
 import { i18n } from "@/plugins/i18n";
 
 // @ts-ignore
@@ -136,21 +139,10 @@ export const availableTypes = computed(() =>
         },
         {
             value: 'entry',
-            hideRepeat: false,
+            component: Entry,
+            hideRepeat: true,
             title: t('fields.types.entry'),
             description: t('fields.descriptions.entry')
-        },
-        {
-            value: 'category',
-            hideRepeat: false,
-            title: t('fields.types.category'),
-            description: t('fields.descriptions.category')
-        },
-        {
-            value: 'categories',
-            hideRepeat: false,
-            title: t('fields.types.categories'),
-            description: t('fields.descriptions.categories')
         },
         {
             value: 'switch',
@@ -169,6 +161,7 @@ export const availableTypes = computed(() =>
         },
         {
             value: 'postal',
+            component: Phone,
             hideRepeat: false,
             title: t('fields.types.postal'),
             description: t('fields.descriptions.postal')
@@ -182,30 +175,42 @@ export const availableTypes = computed(() =>
         },
         {
             value: 'date',
+            component: Date,
             hideRepeat: false,
             title: t('fields.types.date'),
             description: t('fields.descriptions.date')
         },
         {
             value: 'datetime',
+            component: Date,
             hideRepeat: false,
             title: t('fields.types.datetime'),
             description: t('fields.descriptions.datetime')
         },
         {
             value: 'time',
+            component: Date,
             hideRepeat: false,
             title: t('fields.types.time'),
             description: t('fields.descriptions.time')
         },
         {
+            value: 'year',
+            component: Empty,
+            hideRepeat: false,
+            title: t('fields.types.year'),
+            description: t('fields.descriptions.year')
+        },
+        {
             value: 'checkbox',
+            component: Select,
             hideRepeat: false,
             title: t('fields.types.checkbox'),
             description: t('fields.descriptions.checkbox')
         },
         {
             value: 'radio',
+            component: Select,
             hideRepeat: false,
             title: t('fields.types.radio'),
             description: t('fields.descriptions.radio')
@@ -219,6 +224,7 @@ export const availableTypes = computed(() =>
         },
         {
             value: 'matrix',
+            component: Matrix,
             hideRepeat: false,
             title: t('fields.types.matrix'),
             description: t('fields.descriptions.matrix')

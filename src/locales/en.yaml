@@ -166,9 +166,11 @@ entries:
 entry_types:
   title: Entry Types
   add: Add Type
+  single_add: Add New Type
   type_title: Title
   handle: Handle
   prefix: URL prefix ({locale})
+  use_categories: Enable categorization
   save_success: Entry type {name} saved successfully.
   leave_blank: Leave blank for none
   no_types: No entry types at the moment.
@@ -201,51 +203,13 @@ layout:
   field_key: The key is used in your code to get the value of this field.
   untitled: Untitled
   name: Name
-  inputs:
-    text: Text Inputs
-    select: Select Inputs
-    datetime: Date & Time Inputs
-    special: Special Inputs
-  names:
-    AssetImage: Image Asset
-    AssetFile: File Asset
-    Entry: Entry
-    Email: Email Address
-    HTML: HTML Content
-    Text: Text Content
-    Textarea: Multiline Text Content
-    Number: Numeric Value
-    Url: URL
-    Date: Date
-    DateTime: Date & Time
-    Time: Time
-    MultipleSelect: Multiple Selections
-    Select: Dropdown Selection
-  configs:
-    required: Required
-    multiline: Multiline
-    maxLength: Maximum Length
-    minLength: Minimum Length
-    min: Minimum value
-    max: Maximum value
-    step: Step
-    format: Format
-    pattern: Match Pattern
-    title_fr: French Title
-    title_en: English Title
-    key: Field Key
-    cropName: Cropping Key
-    ratio: Ratio
-    minWidth: Minimum Width
-    minHeight: Minimum Height
-    maxWidth: Maximum Width
-    maxHeight: Maximum Height
-    lockedType: Locked Cropping Shape
-    multiple: Multiple
-    allowedFormats: Allowed File Extensions
-  explain:
-    cropName: The key is used in your code to get the url of the crop.
-    lockedType: Lock either a square, round or user's choice.
+  add_tab: Add tab
+  add_field: Add Field
+  tabname: Tab name
+  select_tabname: Select a name for this tab
+  layout_name: Layout name
+  save_success: Layout saved successfully!
+  save_error: Could not save layout. Please try again.
   mobile:
     wait: Wait!
     explain: The layouts cannot be managed using a phone. Please use a tablet or bigger. We recommend using a laptop or desktop.
@@ -295,6 +259,7 @@ system:
   entry_types: Types
   entry_layouts: Layouts
   entry_fields: Fields
+  back: Back
   yes: Yes
   no: No
   search: Search
@@ -303,6 +268,7 @@ system:
   save: Save
   delete: Delete
   other: Other
+  set: Set
   toast:
     error: Error
     success: Success
@@ -350,9 +316,10 @@ fields:
   add: Add Field
   title: Fields
   new: New Field
+  editing: Editing
   field_name: Name
   field_key: Key
-  key_explain: This key is used to identify this field's value within an entry. Must be unique.
+  key_explain: This key is used to identify this field in an entry.
   crop_key_explain: This key is use to identify the crop within an entry. Uses field key if not set.
   ratio_explain: The ratio is values like 4:3 or 16:9 in a float format. Defaults to 16:9.
   placeholder: Placeholder
@@ -360,10 +327,19 @@ fields:
   repeatable: Repeatable
   required: Required
   label: Label
+  select_error: Value already in use.
+  matrix_error: Cannot add the same field twice within the same matrix.
+  confirm_delete: Are you sure you want to delete this field?
+  confirm_delete_many: Are you sure you want to delete these fields?
+  delete_success: Le champ a été supprimé avec succès!
+  delete_success_many: Les champs ont étés supprimés avec succès!
+  delete_error: Le champ n'a pu être supprimé. Assurez-vous qu'il n'est pas utilisé.
+  delete_error_many: Les champs n'ont pu être supprimés. Assurez-vous qu'ils ne sont pas utilisés.
   columns:
     name: Name
     key: Handle
     repeatable: Repeatable
+    required: Required
     type: Type
   types:
     text: Text
@@ -384,7 +360,7 @@ fields:
     file: File Path
     ip: IP
     select: Select / Multi-Select
-    entry: Single Entry
+    entry: Single Entry / Multi-Select
     entry_list: Entry List
     category: Category
     categories: Categories
@@ -399,6 +375,7 @@ fields:
     radio: Radios
     id: ID
     matrix: Matrix
+    year: Year selector
   descriptions:
     text: Plain text field.
     textarea: Multi line plain text field.
@@ -417,8 +394,8 @@ fields:
     directory: "Accepts properly formatted path only (ex: /your/path/here)."
     file: "Accepts properly formatted file path only (ex: /your/path/file.txt)."
     ip: Accepts properly formatted IP only.
-    select: Dropdown menu that offers a list of predefined choices.
-    entry: Dropdown to select a single entry of set type.
+    select: Dropdown menu that offers a list of predefined choices or 2 lists that enables multiple selections.
+    entry: Dropdown to select a single entry of set type or 2 lists that enables multiple selections.
     entry_list: 2 Lists that consists of 1 with a list of entries of set type and one for selected entries.
     category: Dropdown to select a single category from predefined list.
     categories: List of categories in checkbox form to select 1 or more categories.
@@ -426,9 +403,10 @@ fields:
     hex: Color picker for html valid color selection.
     postal: Accepts only postal or zip code that is valid for set country or countries.
     country: "Accepts only a valid ISO-3166 Alpha-2 country code (ex: US)."
-    date: Calendar to select a date in the requested format.
-    datetime: Calendar to select date and time in the requested formats.
-    time: "Time field that only accepts time values (ex: 11:30)."
+    date: Calendar to select a date or date range in the requested format.
+    datetime: Calendar to select date and time or date and time range in the requested formats.
+    year: Calendar to select a year.
+    time: "Time field or range that only accepts time values (ex: 11:30)."
     checkbox: List of checkboxes to make 1 or more selection from a provided list.
     radio: List of radio buttons to make a selection from a provided list.
     id: Allows only a valid SailCMS ID (mongodb) of 24 characters in length.
@@ -459,8 +437,22 @@ fields:
     value: Value
     select_label: Label
     multi: Allow multiple selections
+    add_choice: Add Choice
+    no_choices: No Choices yet.
+    entry_type: Entry type
+    date_format: "Date format (ex: d-m-Y)"
+    time_format: "Time format (ex: H:i:s)"
+    add_field: Add field
+    no_fields: No fields yet.
+    field: Field
+    range: Use Range
   errors:
     cannot_be_zero: Value cannot be zero or less.
+    key_used: Key already in use or is invalid.
+    key_not_empty: Key cannot be empty.
+  toast:
+    error: The field could not be saved. Please try again.
+    success: The field was saved successfully!
 
 countries:
   AF: Afghanistan

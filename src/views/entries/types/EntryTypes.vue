@@ -1,5 +1,6 @@
 <template>
     <div v-if="isReady">
+        <BackButton :url="{name: 'Settings'}"/>
         <Teleport to="#actions">
             <v-btn @click="$router.push({name: 'EntryType', params: {id: 'add'}})" color="primary" v-if="hasPermission('readwrite_entry_type')">
                 {{ $t('entry_types.add') }}
@@ -51,6 +52,7 @@ import { Entries } from '@/libs/graphql/lib/entries';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '@/store/app';
 import { useI18n } from 'vue-i18n';
+import BackButton from '@/components/globals/BackButton.vue';
 
 const isReady = ref(false);
 const showDeleteConfirm = ref(false);

@@ -1,5 +1,6 @@
 <template>
     <template v-if="isReady">
+        <BackButton :url="{name: 'Settings'}"/>
         <Teleport to="#actions">
             <v-btn @click.prevent="$router.push({name: 'SingleLayout', params: {id: 'add'}})" color="primary" v-if="hasPermission('readwrite_entry_layout')">
                 {{ $t('layouts.add') }}
@@ -98,6 +99,8 @@ import Loader from '@/components/globals/Loader.vue';
 import { Entries } from '@/libs/graphql/lib/entries';
 import { SailCMS } from '@/libs/graphql';
 import { hasPermission } from '@/libs/tools';
+import BackButton from '@/components/globals/BackButton.vue';
+import DeleteConfirmation from '@/components/globals/DeleteConfirmation.vue';
 
 const page = usePage();
 page.setPageTitle('layouts.title');
@@ -108,6 +111,8 @@ const selectedLayouts = ref([]);
 const selectedAction = ref(null);
 const applyingAction = ref(false);
 
+const showDeleteConfirm = ref(false);
+
 const availableActions = ref([
     {value: 'delete', title: 'Delete'}
 ]);
@@ -116,6 +121,13 @@ const loadLayouts = async () =>
 {
     layoutListing.value = await Entries.entryLayouts(SailCMS.getLocales());
     isReady.value = true;
+}
+
+const performAction = async () =>
+{
+    if (selectedAction.value === 'delete') {
+        showDeleteConfirm.value = true;
+    }
 }
 
 loadLayouts();

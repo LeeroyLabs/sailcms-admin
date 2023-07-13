@@ -27,6 +27,7 @@ export type EntryType = {
     handle: string;
     url_prefix: JsonObject;
     entry_layout_id: string;
+    use_categories: string;
 }
 
 export type Parent = {
@@ -149,4 +150,18 @@ export type SettingInfo = {
 export type Option = {
     value: string;
     label: string;
+};
+
+export type Field = {
+    _id?: string;
+    name: string;
+    key?: string,
+    label: LocaleObject,
+    placeholder: LocaleObject,
+    explain: LocaleObject,
+    repeatable: boolean,
+    validation: string,
+    required: boolean,
+    type: string,
+    config: object;
 };

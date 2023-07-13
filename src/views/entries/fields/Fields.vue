@@ -1,5 +1,6 @@
 <template>
     <div v-if="isReady">
+        <BackButton :url="{name: 'Settings'}"/>
         <Teleport to="#actions">
             <v-btn @click="$router.push({name: 'SingleEntryField', params: {key: 'new'}})" color="primary" v-if="hasPermission('readwrite_entryfields')">
                 {{ $t('fields.add') }}
@@ -21,7 +22,7 @@
                 />
 
                 <v-btn
-                    v-if="hasPermission('readwrite_entryfields')"
+                    v-if="selectedFields.length > 0 && hasPermission('readwrite_entryfields')"
                     :class="{
                         'tw-invisible tw-opacity-0': selectedAction === null,
                         'tw-opacity-100': selectedAction !== null
@@ -59,6 +60,9 @@
                 <th class="!tw-text-center">
                     {{ $t('fields.columns.repeatable') }}
                 </th>
+                <th class="!tw-text-center">
+                    {{ $t('fields.columns.required') }}
+                </th>
                 <th></th>
             </tr>
             </thead>
@@ -82,6 +86,10 @@
                     <v-icon color="green" v-if="field.repeatable" icon="mdi-check"/>
                     <v-icon color="red" v-else icon="mdi-close"/>
                 </td>
+                <td class="tw-text-center">
+                    <v-icon color="green" v-if="field.required" icon="mdi-check"/>
+                    <v-icon color="red" v-else icon="mdi-close"/>
+                </td>
                 <td class="tw-flex tw-flex-row tw-items-center tw-justify-end">
                     <v-btn variant="flat" color="primary">Duplicate</v-btn>
                 </td>
@@ -92,18 +100,18 @@
             </tbody>
         </v-table>
 
-<!--        <Transition>-->
-<!--            <DeleteConfirmation-->
-<!--                v-if="showDeleteConfirm"-->
-<!--                :show="true"-->
-<!--                :overall="true"-->
-<!--                :title="$t('users.confirm')"-->
-<!--                :loading="applyingAction"-->
-<!--                :message="$t('users.confirm_msg')"-->
-<!--                @cancel="showDeleteConfirm=false"-->
-<!--                @accept="confirmDelete"-->
-<!--            />-->
-<!--        </Transition>-->
+        <Transition>
+            <DeleteConfirmation
+                v-if="showDeleteConfirm"
+                :show="true"
+                :overall="true"
+                :title="$t('users.confirm')"
+                :loading="isDeleting"
+                :message="(selectedFields.length > 1) ? $t('fields.confirm_delete_many') : $t('fields.confirm_delete')"
+                @cancel="showDeleteConfirm=false"
+                @accept="confirmDelete"
+            />
+        </Transition>
     </div>
     <Loader v-else />
 </template>
@@ -118,21 +126,66 @@ import Pagination from '@/components/globals/Pagination.vue';
 import { ref } from 'vue';
 import { Entries } from '@/libs/graphql/lib/entries';
 import { usePage } from '@/libs/page';
+import { useI18n } from 'vue-i18n';
+import BackButton from '@/components/globals/BackButton.vue';
+import { useAppStore } from '@/store/app';
 
 const page = usePage();
+const i18n = useI18n();
+const store = useAppStore();
 
 const isReady = ref(false);
+const showDeleteConfirm = ref(false);
 const fieldListing = ref([]);
 const selectedFields = ref([]);
 const selectedAction = ref(null);
+const applyingAction = ref(false);
+const isDeleting = ref(false);
+
 const availableActions = ref([
-    {value: 'delete', title: 'Delete'}
+    {value: 'delete', title: i18n.t('system.delete')}
 ]);
+
+const handleCheckAll = (e) =>
+{
+    if (e.target.checked) selectedFields.value = fieldListing.value;
+    if (!e.target.checked) selectedFields.value = [];
+}
 
 const loadFields = async () =>
 {
     fieldListing.value = await Entries.fields();
     isReady.value = true;
+}
+
+const performAction = async () => showDeleteConfirm.value = true;
+
+const confirmDelete = async () =>
+{
+    let list = [];
+
+    for (let field of selectedFields.value) {
+        list.push(field._id);
+    }
+
+    isDeleting.value = true;
+    let result = await Entries.deleteEntryFields(list);
+    isDeleting.value = false;
+
+    if (result) {
+        store.displayToast(
+            'success',
+            (list.length > 1) ? i18n.t('fields.delete_success_many') : i18n.t('fields.delete_success')
+        );
+
+        await loadFields();
+        showDeleteConfirm.value = false;
+    } else {
+        store.displayToast(
+            'error',
+            (list.length > 1) ? i18n.t('fields.delete_error_many') : i18n.t('fields.delete_error')
+        );
+    }
 }
 
 page.setPageTitle('fields.title')

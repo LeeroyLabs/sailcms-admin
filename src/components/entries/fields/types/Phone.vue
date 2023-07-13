@@ -4,7 +4,7 @@
             :items="CountryList"
             :model-value="internalValue.country"
             id="type-selector"
-            label="Type"
+            :label="$t('fields.options.country')"
             color="primary"
             variant="outlined"
             density="comfortable"

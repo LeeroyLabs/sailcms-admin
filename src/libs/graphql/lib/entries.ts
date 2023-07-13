@@ -1,7 +1,7 @@
 import { Client } from "./client";
 import EntryQueries from "../queries/entries";
 import gql from "graphql-tag";
-import { Entry, EntryLayout, EntryType, FieldInfo } from "../types/entries";
+import { Entry, EntryLayout, EntryType, Field, FieldInfo } from "../types/entries";
 import { LocaleObject } from "@/libs/graphql/types/general";
 
 export class Entries
@@ -71,7 +71,8 @@ export class Entries
         let result = await client.mutation(gql`${query}`, {
             handle: type.handle,
             title: type.title,
-            url_prefix: prefixes
+            url_prefix: prefixes,
+            use_categories: type.use_categories
         });
 
         if (result.detailed) {
@@ -117,7 +118,8 @@ export class Entries
         let result = await client.mutation(gql`${query}`, {
             handle: type.handle,
             title: type.title,
-            url_prefix: prefixes
+            url_prefix: prefixes,
+            use_categories: type.use_categories
         });
 
         if (result.detailed) {
@@ -247,8 +249,8 @@ export class Entries
             slug: slug
         });
 
-        if (result.data && result.data.createEntryLayout !== null) return true;
-        return false;
+        return !!(result.data && result.data.createEntryLayout!==null);
+
     }
 
     /**
@@ -269,6 +271,102 @@ export class Entries
 
         if (result.data) {
             return result.data.entryLayout;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * Validate that key name is available for the field
+     *
+     * @param key
+     *
+     */
+    public static async entryFieldValidateKey(key: string): Promise<boolean>
+    {
+        const client = new Client();
+        let query = EntryQueries.entryFieldValidateKey;
+
+        let result = await client.query(gql`${query}`, {key: key});
+
+        if (result.data) {
+            return result.data.entryFieldValidateKey;
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     * Create a field
+     *
+     * @param field
+     */
+    public static async createEntryField(field: Field): Promise<boolean>
+    {
+        const client = new Client();
+        let query = EntryQueries.createEntryField;
+
+        delete field._id;
+
+        let result = await client.mutation(gql`${query}`, field);
+
+        return !!(result.data && result.data.createEntryField !== null);
+    }
+
+    /**
+     *
+     * Update a field
+     *
+     * @param field
+     *
+     */
+    public static async updateEntryField(field: Field): Promise<boolean>
+    {
+        const client = new Client();
+        let query = EntryQueries.updateEntryField;
+
+        delete field.key;
+        let result = await client.mutation(gql`${query}`, field);
+
+        return !!(result.data && result.data.updateEntryField !== null);
+    }
+
+    /**
+     *
+     * Delete selected entry fields
+     *
+     * @param ids
+     *
+     */
+    public static async deleteEntryFields(ids: string[]): Promise<boolean>
+    {
+        const client = new Client();
+        let query = EntryQueries.deleteEntryFields;
+
+        let result = await client.mutation(gql`${query}`, {ids});
+        return !!(result.data && result.data.deleteEntryFields !== null);
+    }
+
+    /**
+     *
+     * Get a field by its key
+     *
+     * @param key
+     * @param locales
+     *
+     */
+    public static async entryField(key: string, locales: string[] = ['fr', 'en']): Promise<Field|null>
+    {
+        const client = new Client();
+        let query = EntryQueries.entryField;
+
+        query = query.replace(/#locale#/g, Entries.parseLocales(locales));
+        let result = await client.query(gql`${query}`, {key: key});
+
+        if (result.data) {
+            return result.data.entryField;
         }
 
         return null;

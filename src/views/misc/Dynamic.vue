@@ -122,7 +122,7 @@ onMounted(async () =>
         if (route.meta.settings) {
             urlSrc.value = SailCMS.getURL().replace('graphql', 'extension/' + conf.name + '/settings')
         } else {
-            urlSrc.value = SailCMS.getURL().replace('graphql', 'extension/' + conf.name + '/ui')
+            urlSrc.value = SailCMS.getURL().replace('graphql', 'extension/' + conf.slug + '/ui')
         }
 
         iframe.value.onload = () =>

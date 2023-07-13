@@ -1,36 +1,37 @@
 <template>
     <div class="tw-w-full tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-y-4 tw-gap-x-6 tw-mt-4">
         <div class="tw-w-full tw-col-span-2">
-            <h2 class="tw-mb-3">Add choice</h2>
-            <div class="tw-flex tw-flex-col md:tw-flex-row tw-items-start tw-w-full md:tw-w-8/12 lg:tw-w-7/12 xl:tw-w-6/12 tw-gap-x-6">
-                <v-text-field
-                    variant="outlined"
-                    color="primary"
-                    hide-details
-                    density="comfortable"
-                    :label="$t('fields.options.value')"
-                    v-model="value"
-                    class="tw-w-4/12"
-                />
-                <v-text-field
-                    variant="outlined"
-                    color="primary"
-                    hide-details
-                    density="comfortable"
-                    :label="$t('fields.options.select_label')"
-                    v-model="label"
-                    class="tw-w-4/12"
-                />
-                <div class="tw-flex-grow tw-w-4/12">
-                    <v-btn @click.prevent="addChoice" variant="flat" color="primary" class="tw-mt-1.5">Add Choice</v-btn>
+            <v-form ref="form">
+                <div class="tw-flex tw-flex-col md:tw-flex-row tw-items-start tw-w-full md:tw-w-8/12 lg:tw-w-7/12 xl:tw-w-6/12 tw-gap-x-6">
+                    <v-text-field
+                        variant="outlined"
+                        color="primary"
+                        density="comfortable"
+                        :label="$t('fields.options.value')"
+                        v-model="value"
+                        :rules="[rules.notIn]"
+                        validate-on="blur"
+                        class="tw-w-4/12"
+                    />
+                    <v-text-field
+                        variant="outlined"
+                        color="primary"
+                        density="comfortable"
+                        :label="$t('fields.options.select_label')"
+                        v-model="label"
+                        class="tw-w-4/12"
+                    />
+                    <div class="tw-flex-grow tw-w-4/12">
+                        <v-btn @click.prevent="addChoice" variant="flat" color="primary" class="tw-mt-1.5">{{ $t('fields.options.add_choice') }}</v-btn>
+                    </div>
                 </div>
-            </div>
+            </v-form>
 
             <div
-                class="tw-border tw-p-4 tw-mt-6 tw-mb-2 tw-w-full md:tw-w-8/12 lg:tw-w-7/12 xl:tw-w-6/12 tw-rounded-md"
+                class="tw-border tw-p-4 tw-mt-4 tw-mb-2 tw-w-full md:tw-w-8/12 lg:tw-w-7/12 xl:tw-w-6/12 tw-rounded-md"
                 :class="{'tw-border-black/30': $vuetify.theme.name === 'light', 'tw-border-white/30': $vuetify.theme.name === 'dark'}"
             >
-                <h3 v-if="internalValue.choices.length === 0" class="tw-text-center tw-font-medium">No Choices yet.</h3>
+                <h3 v-if="internalValue.choices.length === 0" class="tw-text-center tw-font-medium">{{ $t('fields.options.no_choices') }}</h3>
 
                 <div v-else id="sortable-choices" class="tw-flex tw-flex-col tw-gap-y-2">
                     <div
@@ -43,7 +44,7 @@
                             <v-icon icon="mdi-menu" class="list-dnd-handle tw-mr-1 tw-cursor-grab"/>
                             {{ choice.value }} : {{ choice.title }}
                         </div>
-                        <a href="" class="hover:tw-text-red-500 tw-invisible group-hover:tw-visible">
+                        <a href="" @click.prevent="removeSelection(choice)" class="hover:tw-text-red-500 tw-invisible group-hover:tw-visible">
                             <v-icon icon="mdi-trash-can-outline" size="small"/>
                         </a>
                     </div>
@@ -51,7 +52,7 @@
             </div>
         </div>
 
-        <div class="tw-col-span-2 tw-mt-[-10px]">
+        <div v-if="type.value === 'select'" class="tw-col-span-2 tw-mt-[-10px]">
             <div class="tw-flex tw-flex-row tw-gap-x-6">
                 <v-switch
                     v-model="internalValue.multi"
@@ -73,9 +74,19 @@ import { useI18n } from 'vue-i18n';
 import Sortable from 'sortablejs';
 
 const i18n = useI18n();
+const form = ref(null);
 
 const rules = {
     required: value => !!value || i18n.t('user.errors.required'),
+    notIn: (value) => {
+        let item = internalValue.value.choices.find(c => c.value === value);
+
+        if (item === undefined) {
+            return true;
+        }
+
+        return i18n.t('fields.select_error');
+    }
 };
 
 const props = defineProps({
@@ -89,11 +100,19 @@ const props = defineProps({
     }
 });
 
-const addChoice = () =>
+const addChoice = async () =>
 {
+    const status = await form.value.validate();
+    if (!status.valid) return;
+
     internalValue.value.choices.push({value: value.value, title: label.value});
     value.value = '';
     label.value = '';
+
+    await nextTick(() =>
+    {
+        handleChange(null);
+    });
 }
 
 const handleChange = (e) =>
@@ -152,6 +171,12 @@ watch(internalValue.value, (v) =>
         }
     });
 });
+
+const removeSelection = (item) =>
+{
+    document.getElementById(item.value).remove();
+    handleChange(null);
+}
 
 onMounted(() =>
 {

@@ -1,32 +1,60 @@
 <template>
     <template v-if="isReady">
+        <BackButton :url="{name: 'EntryLayouts'}"/>
         <Teleport to="#actions">
-            <v-btn @click.prevent="$router.push({name: 'SingleLayout', params: {id: 'add'}})" color="primary" v-if="hasPermission('readwrite_entry_layout')">
+            <v-btn @click="saveLayout" :loading="isSaving" color="primary" v-if="hasPermission('readwrite_entry_layout')">
                 {{ $t('system.save') }}
             </v-btn>
         </Teleport>
-        <div id="controls" class="tw-w-full tw-border tw-p-8 tw-mb-4">
 
-        </div>
-        <div id="workspace" class="tw-w-full tw-overflow-y-auto tw-border tw-rounded-md" :class="{'dark': $vuetify.theme.name === 'dark', 'light tw-border-zinc-400': $vuetify.theme.name === 'light'}">
-            <div id="workspace-ui" class="tw-w-full bg-grid tw-py-20 tw-px-6">
-                <div id="tablist" class="tw-flex tw-flex-row tw-gap-x-6 tw-flex-wrap tw-gap-y-16">
-                    <template v-for="(element, index) in schema">
-                        <Tab :tab="element" :data-id="'tab-' + index" :title="element.label" @change="handleChanges"/>
-                    </template>
+        <div class="tw-flex tw-flex-col md:tw-flex-row tw-justify-start tw-gap-y-6 md:tw-gap-y-0">
+            <div id="workspace" class="tw-w-full tw-overflow-y-auto tw-border tw-rounded-md" :class="{'dark': $vuetify.theme.name === 'dark', 'light tw-border-zinc-400': $vuetify.theme.name === 'light'}">
+                <div class="tw-mb-12 tw-p-5">
+                    <v-form autocomplete="off">
+                        <v-text-field
+                            variant="outlined"
+                            color="primary"
+                            :hide-details="true"
+                            v-model="layoutName"
+                            :rules="[rules.required]"
+                            density="comfortable"
+                            :label="$t('layout.layout_name')"
+                            class="tw-mb-2"
+                            :class="{'tw-bg-white': $vuetify.theme.name === 'light', 'tw-bg-darkbg': $vuetify.theme.name === 'dark'}"
+                        />
+                    </v-form>
                 </div>
-<!--                <Sortable-->
-<!--                    :list="schema"-->
-<!--                    item-key="data-id"-->
-<!--                    tag="div"-->
-<!--                    :options="{handle: '.drag-handle', ghostClass: 'ghost', animation: 300, swapTreshold: 0.05, dragoverBubble: false}"-->
-<!--                    class="tw-flex tw-flex-row tw-gap-x-6 tw-flex-wrap tw-gap-y-16"-->
-<!--                    @end="handleTabChanges"-->
-<!--                >-->
-<!--                    -->
-<!--                </Sortable>-->
+                <div id="workspace-ui" class="tw-w-full bg-grid tw-px-6">
+                    <div id="tablist" class="tw-flex tw-flex-row tw-gap-x-6 tw-flex-wrap tw-gap-y-16">
+                        <template v-for="(element, index) in schema">
+                            <Tab
+                                :fields="fields"
+                                :tab="element"
+                                :id="element.id"
+                                :data-id="'tab-' + index"
+                                :title="element.label"
+                                @change="handleChanges"
+                                @added="handleAddition"
+                            />
+                        </template>
+                    </div>
+                </div>
+                <div class="tw-p-4 tw-px-6 tw-mt-2 tw-z-0">
+                    <v-btn @click.prevent="showAddTabDialog=true" color="primary" prepend-icon="mdi-plus">{{ $t('layout.add_tab') }}</v-btn>
+                </div>
             </div>
         </div>
+        <Transition>
+            <AddTab
+                v-if="showAddTabDialog"
+                :show="showAddTabDialog"
+                :loading="false"
+                :overall="true"
+                :title="$t('layout.select_tabname')"
+                @cancel="showAddTabDialog=false"
+                @assign="addTab"
+            />
+        </Transition>
     </template>
     <Loader v-else/>
 </template>
@@ -37,59 +65,30 @@ import Sortable from 'sortablejs';
 import { v4 } from "uuid";
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import Loader from '@/components/globals/Loader.vue';
-import Tab from '@/components/globals/layout/tab.vue';
-import { pullAt } from 'lodash';
+import Tab from '@/components/entries/layout/Tab.vue';
+import { Entries } from '@/libs/graphql/lib/entries';
+import { SailCMS } from '@/libs/graphql';
+import BackButton from '@/components/globals/BackButton.vue';
+import { useRoute, useRouter } from 'vue-router';
+import AddTab from '@/components/entries/layout/AddTab.vue';
+import { useI18n } from 'vue-i18n';
+import { deburr, kebabCase } from 'lodash';
+import { useAppStore } from '@/store/app';
 
 const isReady = ref(false);
+const fields = ref([]);
+const route = useRoute();
+const router = useRouter();
+const i18n = useI18n();
+const store = useAppStore();
+
+const rules = {
+    required: value => !!value || i18n.t('user.errors.required'),
+};
 
 let schemaStruct = [
     {
         label: 'Main',
-        id: v4(),
-        fields: [
-            {
-                "key": "fieldkey",
-                "label": {"fr": "Mon Champ", "en": "My Field"},
-                "placeholder": {"fr": "ecrire quelque chose", "en": "write something"},
-                "explain": {"fr": "", "en": ""},
-                "required": false,
-                "repeater": true,
-                "config": {
-                    "min": 13,
-                    "max": 255,
-                    "validation": "url"
-                }
-            },
-            {
-                "key": "fieldkey2",
-                "label": {"fr": "Mon Champ", "en": "My Field"},
-                "placeholder": {"fr": "ecrire quelque chose", "en": "write something"},
-                "explain": {"fr": "", "en": ""},
-                "required": false,
-                "repeater": true,
-                "config": {
-                    "min": 13,
-                    "max": 255,
-                    "validation": "url"
-                }
-            },
-            {
-                "key": "fieldkey3",
-                "label": {"fr": "Mon Champ", "en": "My Field"},
-                "placeholder": {"fr": "ecrire quelque chose", "en": "write something"},
-                "explain": {"fr": "", "en": ""},
-                "required": false,
-                "repeater": true,
-                "config": {
-                    "min": 13,
-                    "max": 255,
-                    "validation": "url"
-                }
-            },
-        ]
-    },
-    {
-        label: 'Options',
         id: v4(),
         fields: []
     }
@@ -97,65 +96,61 @@ let schemaStruct = [
 
 const schema = ref(schemaStruct);
 const virtualSchema = schemaStruct;
+const showAddTabDialog = ref(false);
+const layoutName = ref('');
+const isSaving = ref(false);
+
+let sortableObj;
 
 onBeforeUnmount(() => window.removeEventListener('resize', () => resizeWorkspace()));
 
 const resizeWorkspace = () =>
 {
-    let controlsSize = document.getElementById('controls').clientHeight;
     let headerSize = document.querySelector('header.v-toolbar').clientHeight;
     let pageControlSize = document.getElementById('pagecontrols').clientHeight;
-    const offset = (controlsSize * 2) + headerSize + pageControlSize;
+    const offset = headerSize + pageControlSize + 50;
     document.getElementById('workspace').style.height = window.innerHeight - offset + 'px';
+}
+
+const addTab = (name) =>
+{
+    let tabid = v4();
+    schema.value.push({label: name, id: tabid, fields: []});
+    showAddTabDialog.value = false;
+
+    nextTick(() =>
+    {
+        sortableObj.destroy();
+        sortableObj = new Sortable(document.querySelector('#tablist'), opts);
+    });
 }
 
 const handleChanges = (e) =>
 {
     const tab = virtualSchema.find(t => t.id === e.tab);
-
-    switch (e.event)
-    {
-        case 'add':
-            let element = null;
-
-            for (let i = 0; i < virtualSchema.length; i++) {
-                for (let f of virtualSchema[i].fields) {
-                    if (f.key === e.field) {
-                        element = f;
-                        break;
-                    }
-                }
-            }
-
-            if (element) {
-               tab.fields.splice(e.index, 0, element);
-            }
-            break;
-
-        case 'remove':
-            tab.fields = tab.fields.filter(f => f.key !== e.field);
-            break;
-
-        case 'end':
-            // Sort list only
-            // if (e.oldIndex === e.index) return;
-            //
-            // let item = tab.fields.find(f => f.key === e.field);
-            // let fields = pullAt(tab.fields, [e.oldIndex]);
-            // fields = fields.splice(e.index, 0, item);
-            //
-            // console.log('<---', fields);
-            //
-            // tab.fields = fields;
-            break;
-    }
-
-    console.log(virtualSchema);
+    tab.fields = e.used;
 }
 
-const handleTabChanges = (e) =>
+const handleAddition = (e) =>
 {
+    const tab = virtualSchema.find(t => t.id === e.tab);
+    tab.fields = e.used;
+}
 
+const handleTabChanges = async (e) =>
+{
+    const children = Array.from(document.getElementById('tablist').children).map(c => c.id);
+    let reformatted = [];
+
+    for (let child of children) {
+        for (let tab of schemaStruct) {
+            if (tab.id === child) {
+                reformatted.push(tab);
+            }
+        }
+    }
+
+    schema.value = reformatted;
 }
 
 const opts = {
@@ -169,8 +164,9 @@ const opts = {
     onEnd: handleTabChanges
 };
 
-onMounted(() =>
+const loadFields = async () =>
 {
+    fields.value = await Entries.fields(SailCMS.getLocales());
     isReady.value = true;
 
     nextTick(() =>
@@ -178,11 +174,46 @@ onMounted(() =>
         window.addEventListener('resize', () => resizeWorkspace());
         resizeWorkspace();
 
-        let el = document.querySelector('#tablist');
-        new Sortable(el, opts);
+        sortableObj = new Sortable(document.querySelector('#tablist'), opts);
     });
-});
+}
 
+const saveLayout = async () =>
+{
+    if (layoutName.value.trim() === '') return;
+    if (isSaving.value) return;
+
+    let saveStruct = [];
+
+    for (let tab of schema.value) {
+        let _fields = [];
+
+        for (let field of tab.fields) {
+            let _field = fields.value.find(f => f.key === field);
+            _fields.push(_field._id);
+        }
+
+        saveStruct.push({
+            label: tab.label,
+            fields: _fields
+        });
+    }
+
+    isSaving.value = true;
+    let result = await Entries.createEntryLayout({fr: layoutName.value, en: layoutName.value}, saveStruct, kebabCase(deburr(layoutName.value)));
+    isSaving.value = false;
+
+    if (result) {
+        store.displayToast('success', i18n.t('layout.save_success'));
+        await router.push({name: 'EntryLayouts'});
+    } else {
+        store.displayToast('error', i18n.t('layout.save_error'));
+    }
+}
+
+// TODO: LOAD LAYOUT ON EDIT PAGE
+
+loadFields();
 </script>
 
 <style>

@@ -1,4 +1,5 @@
 <template>
+    <BackButton :url="{name: 'Settings'}"/>
     <p class="tw-text-sm tw-w-full md:tw-w-8/12 lg:tw-w-5/12 tw-mb-6">
         {{ $t('emails.test_explain') }}
     </p>
@@ -28,6 +29,7 @@ import { ref } from 'vue';
 import { EmailRule } from '@/libs/validation';
 import { useI18n } from 'vue-i18n';
 import { Misc } from '@/libs/graphql';
+import BackButton from '@/components/globals/BackButton.vue';
 
 const page = usePage();
 page.setPageTitle('emails.test_title');

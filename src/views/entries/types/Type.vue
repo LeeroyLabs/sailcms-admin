@@ -1,5 +1,7 @@
 <template>
-    <div v-if="isReady" class="tw-p-6 tw-w-full md:tw-w-10/12 lg:tw-w-8/12 xl:tw-w-8/12 2xl:tw-w-7/12 tw-ml-0">
+    <div v-if="isReady" class="tw-p-6 tw-w-full tw-ml-0">
+        <BackButton :url="{name: 'EntryTypes'}"/>
+
         <v-form ref="form" class="tw-flex-grow">
             <div class="tw-mt-6 md:tw-mt-0">
                 <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-x-4 tw-mb-4 tw-gap-y-4 md:tw-gap-y-0">
@@ -39,6 +41,15 @@
                     >
                         <template v-slot:details>{{ $t('entry_types.leave_blank') }}</template>
                     </v-text-field>
+
+                    <v-switch
+                        v-model="currentType.use_categories"
+                        :label="$t('entry_types.use_categories')"
+                        color="primary"
+                        value="1"
+                        hide-details
+                        class="tw-flex-grow"
+                    />
                 </div>
                 <v-btn
                     :loading="isSaving"
@@ -66,6 +77,7 @@ import { SailCMS } from '@/libs/graphql';
 import { useRoute, useRouter } from 'vue-router';
 import { Entries } from '@/libs/graphql/lib/entries';
 import { hasPermission } from '@/libs/tools';
+import BackButton from '@/components/globals/BackButton.vue';
 
 const isReady = ref(false);
 const isAdding = ref(true);
@@ -83,7 +95,8 @@ const currentType = ref({
     title: '',
     handle: '',
     url_prefix: [],
-    entry_layout_id: ''
+    entry_layout_id: '',
+    use_categories: false
 });
 
 const rules = {required: value => !!value || i18n.t('user.errors.required')}

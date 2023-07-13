@@ -36,6 +36,7 @@
                 <div class="tw-text-center tw-mt-2">{{ $t('emails.test') }}</div>
             </div>
         </div>
+        <template v-if="extensions.others.length > 0">
         <div class="tw-flex tw-flex-row tw-items-center tw-mt-8 tw-mb-2">
             <h1 class="tw-mr-4 tw-text-xl">{{ $t('system.other') }}</h1>
             <v-divider class="border-opacity-75"></v-divider>
@@ -48,6 +49,7 @@
                 <div class="tw-text-center tw-mt-2">{{ item.label[$i18n.locale] }}</div>
             </div>
         </div>
+        </template>
     </v-card>
     <Loader v-else/>
 </template>

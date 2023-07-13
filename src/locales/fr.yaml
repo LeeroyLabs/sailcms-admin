@@ -145,8 +145,8 @@ assets:
     flip_horizontal: Retournement Horizontal
     save_close: Sauvegarder et fermer
   delete:
-    single_conf: Êtes-vous certains de vouloir supprimer ce fichier ?
-    multi_conf: Êtes-vous certains de vouloir supprimer ces fichiers ?
+    single_conf: Êtes-vous certain de vouloir supprimer ce fichier ?
+    multi_conf: Êtes-vous certain de vouloir supprimer ces fichiers ?
     single_title: Confirmation
     multi_title: Confirmation
   views:
@@ -166,13 +166,15 @@ entries:
 entry_types:
   title: Type d'entrées
   add: Ajouter un type
+  single_add: Ajouter un nouveau type
   type_title: Titre
   handle: Nom
   prefix: Préfixe URL ({locale})
+  use_categories: Activer la catégorisation
   save_success: Le type {name} a été sauvegardé avec succès.
   leave_blank: Laisser vide pour aucun
   no_types: Aucun type d'entrée pour le moment.
-  delete_confirm: Êtes-vous certains de vouloir supprimer le type '{name}' ?
+  delete_confirm: Êtes-vous certain de vouloir supprimer le type '{name}' ?
   delete_success: "{name} a êté supprimé avec succès!"
   delete_fail: "{name} n'a pu être supprimé, veuillez réessayer."
   errors:
@@ -195,60 +197,20 @@ layouts:
     num_records: Nombre d'entrées
 
 layout:
-  add: Nouvelle Disposition
-  edit: Dispositions
-  no_fields: Il n'y aucun champ dans cette disposition pour le moment.
-  field_key: La clée utilisée dans le code pour retrouver ce champ.
+  add: Nouvelle Mise en page
+  edit: Mises en page
   untitled: Sans titre
   name: Nom
-  inputs:
-    text: Champs Texte
-    select: Champs Sélection
-    datetime: Champs Date/Heure
-    special: Champs Spéciaux
-  names:
-    AssetImage: Image
-    AssetFile: Fichier
-    Entry: Entrée
-    Email: Adresse Courriel
-    HTML: Contenu HTML
-    Text: Contenu Texte
-    Textarea: Contenu Texte Multi-ligne
-    Number: Valeur Numérique
-    Url: URL
-    Date: Date
-    DateTime: Date & Heure
-    Time: Heure
-    MultipleSelect: Sélection Multiple
-    Select: Menu Déroulant
-  configs:
-    required: Requis
-    multiline: Multi-ligne
-    maxLength: Longueur maximum
-    minLength: Longueur minimum
-    min: Valeur minimum
-    max: Valeur maximum
-    step: Équart
-    format: Format
-    pattern: Suivre modèle
-    title_fr: Titre français
-    title_en: Title english
-    key: Clée de champ
-    cropName: Clé de recadrage
-    ratio: Ratio
-    minWidth: Largeur minimum
-    minHeight: Hauteur minimum
-    maxWidth: Largeur maximum
-    maxHeight: Hauteur maximum
-    lockedType: Forme de recadrage assigné
-    multiple: Multiple
-    allowedFormats: Type de fichiers acceptés
-  explain:
-    cropName: Le nom qui sera utilisé pour retrouver le recadrage.
-    lockedType: Assigner un recadrage carré, rond ou choix de l'utilisateur.
+  add_tab: Ajouter un onglet
+  add_field: Ajouter un champ
+  tabname: Nom du champ
+  select_tabname: Choisir un nom pour cet onglet
+  layout_name: Nom de la mise en page
+  save_success: La mise en page sauvegardée avec succès!
+  save_error: La mise en page n'a pu être sauvegardée. Veuillez réessayer.
   mobile:
     wait: Attendez!
-    explain: Les dipositions ne peuvent être administrer sur un téléphone. Veuillez utiliser une tablet ou plus grand. Nous recommandons un portable ou ordinateur de bureau.
+    explain: Les mises en page ne peuvent être administrer sur un téléphone. Veuillez utiliser une tablet ou plus grand. Nous recommandons un portable ou ordinateur de bureau.
 
 emails:
   title: Courriels
@@ -258,7 +220,7 @@ emails:
   email_address: Adresse courriel
   add: Ajouter un courriel
   no_emails: Aucun courriel pour le moment.
-  confirm_msg: Êtes-vous certains de vouloir supprimer ce(ces) courriel(s) ?
+  confirm_msg: Êtes-vous certain de vouloir supprimer ce(ces) courriel(s) ?
   columns:
     name: Nom
     created_at: Date de création
@@ -295,6 +257,7 @@ system:
   entry_types: Types
   entry_layouts: Mises en page
   entry_fields: Champs
+  back: Retour
   yes: Oui
   no: Non
   search: Recherche
@@ -303,6 +266,7 @@ system:
   save: Sauvegarder
   delete: Supprimer
   other: Autre
+  set: Assigner
   toast:
     error: Erreur
     success: Succès
@@ -350,9 +314,10 @@ fields:
   add: Ajouter un champ
   title: Champs
   new: Nouveau champ
+  editing: Modification de
   field_name: Nom
   field_key: Clée
-  key_explain: Cette clée est utilisée pour identifier ce champ dans une entrée. Doit être unique.
+  key_explain: Cette clée est utilisée pour identifier ce champ dans une entrée.
   crop_key_explain: Cette clée est utilisée pour identifier le recadrage dans une entrée. la clée du champ utilisée si laissé vide.
   ratio_explain: Le ratio est une valeur comme 4:3 ou 16:9 en décimal. 16:9 est la valeur par défaut.
   placeholder: Texte placeholder
@@ -360,10 +325,19 @@ fields:
   repeatable: Répétable
   required: Requis
   label: Libellé
+  select_error: Valeur déjà utlisée.
+  matrix_error: Impossible d'ajouter deux fois le même champ dans la même matrice.
+  confirm_delete: Êtes-vous certain de vouloir supprimer ce champ ?
+  confirm_delete_many: Êtes-vous certain de vouloir supprimer ces champs ?
+  delete_success: Field deleted successfully!
+  delete_success_many: Fields deleted successfully!
+  delete_error: Field could not be deleted. Make sure they are not in use.
+  delete_error_many: Fields could not be deleted. Make sure they are not in use.
   columns:
     name: Nom
     key: Clée
     repeatable: Répétable
+    required: Requis
     type: Type
   types:
     text: Texte
@@ -399,6 +373,7 @@ fields:
     radio: Radios
     id: ID
     matrix: Matrice
+    year: Sélecteur d'année
   descriptions:
     text: Champ texte régulier.
     textarea: Champ texte multi-lignes.
@@ -459,8 +434,20 @@ fields:
     value: Valeur
     select_label: Libellé
     multi: Autorisé le choix multiple
+    add_choice: Ajouter le choix
+    no_choices: Aucun choix pour le moment.
+    entry_type: Type d'entrée
+    add_field: Ajouter le champ
+    no_fields: Aucun champ pour le moment.
+    field: Champ
+    range: Utiliser une plage
   errors:
     cannot_be_zero: Valeur ne peut être zérou ou moins.
+    key_used: Clée déjà utlisée ou est invalide.
+    key_not_empty: La clée ne peut être vide.
+  toast:
+      error: Le champ n'a pu être sauvegardé. Veuillez réessayer.
+      success: Le champ a été sauvegardé avec succès!
 
 countries:
   AD: Andorre
