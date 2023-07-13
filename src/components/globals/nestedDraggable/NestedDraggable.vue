@@ -9,7 +9,7 @@
             v-for="item in items"
             :key="item"
             :id="item._id"
-            class="item tw-relative tw-px-4 tw-pt-4 tw-border tw-rounded-md tw-items"
+            class="item tw-relative tw-px-4 tw-pt-4 tw-border tw-rounded-md tw-items tw-group"
             :class="{
                 'hover:tw-bg-gray-100': $vuetify.theme.name === 'light',
                 'hover:tw-bg-zinc-800 tw-border-zinc-600':
@@ -17,7 +17,7 @@
                 'tw-pb-4': !isListOpened.includes(item),
             }"
         >
-            <div class="tw-flex tw-flex-row tw-group tw-justify-between tw-items-center tw-py-0.5">
+            <div class="tw-flex tw-flex-row tw-justify-between tw-items-center tw-py-0.5">
                 <div class="tw-flex tw-flex-row tw-items-center">
                     <v-icon
                         icon="mdi-menu"
