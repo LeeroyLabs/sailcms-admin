@@ -1,35 +1,25 @@
 import { Client } from "./client";
 import type {
-    NavigationItem,
-    NavigationDetails,
-    createNavigation,
-    updateNavigation,
+    NavigationItem, NavigationDetails, CreateNavigation, UpdateNavigation,
 } from "../types/navigations";
 import NavigationsQueries from "../queries/navigations";
 import gql from "graphql-tag";
 
-export class Navigations {
+export class Navigations
+{
     /**
      *
      * navigation
      *
      * @param name
      *
-     *
      */
-    public static async navigation(
-        name: string
-    ): Promise<NavigationItem[] | null> {
+    public static async navigation(name: string): Promise<NavigationItem[] | null>
+    {
         const client = new Client();
         const query = NavigationsQueries.navigation;
 
-        const result = await client.query(
-            gql`
-                ${query},
-            `,
-            { name: name },
-            false
-        );
+        const result = await client.query(gql`${query}`, { name: name }, false);
 
         if (result.data) {
             return result.data.navigation;
@@ -44,21 +34,13 @@ export class Navigations {
      *
      * @param name
      *
-     *
      */
-    public static async navigationDetails(
-        name: string
-    ): Promise<NavigationDetails | null> {
+    public static async navigationDetails(name: string): Promise<NavigationDetails | null>
+    {
         const client = new Client();
         const query = NavigationsQueries.navigationDetails;
 
-        const result = await client.query(
-            gql`
-                    ${query},
-                `,
-            { name: name },
-            false
-        );
+        const result = await client.query(gql`${query}`, { name: name }, false);
 
         if (result.data) {
             return result.data.navigationDetails;
@@ -71,24 +53,15 @@ export class Navigations {
      *
      * createNavigation
      *
-     * @param name
-     * @param structure
-     * @param locale
-     *
+     * @param navigationInput
      *
      */
-    public static async createNavigation(
-        navigationInput: createNavigation
-    ): Promise<NavigationDetails | null> {
+    public static async createNavigation(navigationInput: CreateNavigation): Promise<NavigationDetails | null>
+    {
         const client = new Client();
         const mutation = NavigationsQueries.createNavigation;
 
-        const result = await client.mutation(
-            gql`
-                    ${mutation},
-                `,
-            { ...navigationInput }
-        );
+        const result = await client.mutation(gql`${mutation}`, {...navigationInput});
 
         if (result.data) {
             return result.data.createNavigation;
@@ -101,25 +74,15 @@ export class Navigations {
      *
      * updateNavigation
      *
-     * @param id
-     * @param name
-     * @param structure
-     * @param locale
-     *
+     * @param navigationInput
      *
      */
-    public static async updateNavigation(
-        navigationInput: updateNavigation
-    ): Promise<NavigationDetails | null> {
+    public static async updateNavigation(navigationInput: UpdateNavigation): Promise<NavigationDetails | null>
+    {
         const client = new Client();
         const mutation = NavigationsQueries.updateNavigation;
 
-        const result = await client.mutation(
-            gql`
-                    ${mutation},
-                `,
-            { ...navigationInput }
-        );
+        const result = await client.mutation(gql`${mutation}`, {...navigationInput});
 
         if (result.data) {
             return result.data.updateNavigation;

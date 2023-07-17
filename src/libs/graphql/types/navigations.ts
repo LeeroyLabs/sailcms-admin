@@ -25,14 +25,14 @@ export interface NavigationDetails {
     locale: string;
 }
 
-export interface createNavigation {
+export interface CreateNavigation {
     name: string;
     structure: NavigationItem[];
     locale: string;
     site_id: string;
 }
 
-export interface updateNavigation {
+export interface UpdateNavigation {
     id: string;
     name: string;
     structure: NavigationItem[];

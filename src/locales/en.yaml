@@ -314,6 +314,7 @@ navigations:
 
 fields:
   add: Add Field
+  no_fields: No fields at the moment.
   title: Fields
   new: New Field
   editing: Editing

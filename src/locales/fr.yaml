@@ -312,6 +312,7 @@ navigations:
 
 fields:
   add: Ajouter un champ
+  no_fields: Aucun champ pour le moment.
   title: Champs
   new: Nouveau champ
   editing: Modification de
