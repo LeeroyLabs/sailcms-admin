@@ -48,7 +48,6 @@ export default {
                     name
                     action
                     priority
-                    settings
                     retriable
                     retry_count
                     scheduled_at

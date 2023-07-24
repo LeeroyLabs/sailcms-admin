@@ -171,9 +171,22 @@ const isReady = ref(false);
 
 const tasks = ref([]);
 
-// Search
-const currentSearch = ref("");
-const isLoadingSearch = ref(false);
+// Load tasks
+const loadTasks = async () => {
+    const responseLoadTasks = await Tasks.taskSearch(
+        currentPage.value,
+        currentLimit.value,
+        currentSearch.value,
+        currentSorting.value,
+        currentSortingDir.value
+    );
+
+    if (responseLoadTasks) {
+        tasks.value = responseLoadTasks;
+        pagination.value = responseLoadTasks.pagination;
+        isReady.value = true;
+    }
+};
 
 // Pagination handling
 const currentPage = ref(1);
@@ -184,6 +197,27 @@ const pagination = ref({ total: 0, current: 0, totalPages: 0 });
 const currentSorting = ref("name");
 const currentSortingDir = ref("ASC");
 const isLoadingSort = ref(false);
+
+// Sorting from the Table
+const setSorting = async (field) => {
+    if (isLoadingSort.value) return;
+
+    if (currentSorting.value !== field) {
+        currentSorting.value = field;
+        currentSortingDir.value = "ASC";
+    } else {
+        currentSortingDir.value =
+            currentSortingDir.value === "ASC" ? "DESC" : "ASC";
+    }
+
+    isLoadingSort.value = true;
+    await loadTasks();
+    isLoadingSort.value = false;
+};
+
+// Search
+const currentSearch = ref("");
+const isLoadingSearch = ref(false);
 
 const runSearch = async () => {
     isLoadingSearch.value = true;
@@ -202,23 +236,6 @@ const clearSearch = async () => {
     currentSortingDir.value = "ASC";
     await loadTasks();
     isLoadingSearch.value = false;
-};
-
-// Load tasks
-const loadTasks = async () => {
-    const responseLoadTasks = await Tasks.taskSearch(
-        currentPage.value,
-        currentLimit.value,
-        currentSearch.value,
-        currentSorting.value,
-        currentSortingDir.value
-    );
-
-    if (responseLoadTasks) {
-        tasks.value = responseLoadTasks;
-        pagination.value = responseLoadTasks.pagination;
-        isReady.value = true;
-    }
 };
 
 // Setup page data

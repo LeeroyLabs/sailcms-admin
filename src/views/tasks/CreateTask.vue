@@ -10,6 +10,7 @@
             <v-form
                 ref="form"
                 class="tw-flex tw-flex-col tw-gap-2"
+                @submit.prevent
                 v-model="isFormValid"
             >
                 <v-text-field
@@ -54,19 +55,16 @@
 
                 <div class="tw-gap-x-3 tw-flex">
                     <v-btn
+                        type="submit"
                         :loading="isLoading"
-                        @click.prevent="createTask"
+                        @click="createTask"
                         color="primary"
                     >
-                        {{ $t("task.form.save") }}
+                        {{ $t("task.save") }}
                     </v-btn>
 
-                    <v-btn
-                        flat
-                        @click.prevent="showDeleteConfirm = true"
-                        color="text"
-                    >
-                        {{ $t("task.form.cancel") }}
+                    <v-btn flat @click="showDeleteConfirm = true" color="text">
+                        {{ $t("task.cancel") }}
                     </v-btn>
                 </div>
             </v-form>
@@ -79,7 +77,7 @@
                 :overall="true"
                 :title="$t('tasks.confirm')"
                 :loading="applyingAction"
-                :message="$t('tasks.confirm_msg')"
+                :message="$t('task.leave_msg')"
                 @cancel="showDeleteConfirm = false"
                 @accept="$router.push({ name: 'Tasks' })"
             />
@@ -105,7 +103,7 @@ const isFormValid = ref(false);
 const rules = {
     required: (value) => {
         if (value) return true;
-        return i18n.t("user.errors.required");
+        return i18n.t("task.errors.required");
     },
 };
 

@@ -100,39 +100,11 @@
         </Transition>
 
         <Transition>
-            <div
-                id="calendar"
-                v-show="selectedAction === RESCHEDULE"
-                class="tw-fixed tw-bg-black/40 tw-inset-0 tw-flex tw-flex-row tw-items-center tw-justify-center tw-z-[9999]"
-            >
-                <v-card rounded class="tw-p-6">
-                    <v-card-title>Select a new date</v-card-title>
-                    <div
-                        ref="datePicker"
-                        :data-date="rescheduledDate"
-                        @changeDate="handleSelectDate"
-                    ></div>
-
-                    <v-card-actions class="tw-flex tw-flex-row tw-justify-end">
-                        <v-btn
-                            :disabled="loading"
-                            @click.prevent="selectedAction = ''"
-                            flat
-                        >
-                            {{ $t("system.no") }}
-                        </v-btn>
-                        <v-btn
-                            type="primary"
-                            variant="flat"
-                            color="red"
-                            @click.prevent="$emit('accept')"
-                            :loading="loading"
-                        >
-                            {{ $t("system.yes") }}
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
-            </div>
+            <DatePicker
+                :show="selectedAction === RESCHEDULE"
+                @cancel="selectedAction = ''"
+                @selected="handleChangeTaskSchedule($event)"
+            />
         </Transition>
     </div>
 
@@ -140,20 +112,20 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from "vue";
-import { useRoute } from "vue-router";
+import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import { usePage } from "@/libs/page";
 import { Tasks } from "@/libs/graphql/lib/tasks";
 import { hasPermission } from "@/libs/tools";
-import { Datepicker } from "vanillajs-datepicker";
-import "vanillajs-datepicker/css/datepicker.css";
 
 import Loader from "@/components/globals/Loader.vue";
 import DeleteConfirmation from "@/components/globals/DeleteConfirmation.vue";
+import DatePicker from "@/components/globals/task/DatePicker.vue";
 
 const page = usePage();
 const route = useRoute();
+const router = useRouter();
 
 const isReady = ref(false);
 const task = ref(null);
@@ -161,8 +133,6 @@ const selectedAction = ref("");
 const applyingAction = ref(false);
 const showModal = ref(false);
 const modalMessage = ref("");
-const datePicker = ref(null);
-const rescheduledDate = ref(Date.now());
 
 // Constants
 const RETRY = "retry";
@@ -197,16 +167,17 @@ const handleRetryTask = async () => {
     }
 };
 
-const handleChangeTaskSchedule = async () => {
+const handleChangeTaskSchedule = async (newDate) => {
     applyingAction.value = true;
     const responseChangeTaskSchedule = await Tasks.changeTaskSchedule(
         task.value._id,
-        rescheduledDate.value
+        newDate / 1000
     );
     if (responseChangeTaskSchedule) {
         showModal.value = false;
         selectedAction.value = "";
         modalMessage.value = "";
+        loadTask();
         applyingAction.value = false;
     }
 };
@@ -230,6 +201,7 @@ const handleCancelTask = async () => {
         selectedAction.value = "";
         modalMessage.value = "";
         applyingAction.value = false;
+        router.push({ name: "Tasks" });
     }
 };
 
@@ -238,9 +210,6 @@ const applyAction = async () => {
         case RETRY:
             await handleRetryTask();
             break;
-        case RESCHEDULE:
-            await handleChangeTaskSchedule();
-            break;
         case STOP:
             await handleStopTask();
             break;
@@ -248,16 +217,6 @@ const applyAction = async () => {
             await handleCancelTask();
             break;
     }
-};
-
-watch(isReady, (newValue) => {
-    if (newValue) {
-        nextTick(() => new Datepicker(datePicker.value, {}));
-    }
-});
-
-const handleSelectDate = (event) => {
-    rescheduledDate.value = event.detail.datepicker.dates[0];
 };
 
 // Setup page data
@@ -269,22 +228,4 @@ setupPage();
 loadTask();
 </script>
 
-<style lang="scss" scoped>
-#calendar {
-    :deep(.datepicker-picker) {
-        @apply tw-bg-transparent;
-    }
-
-    :deep(.datepicker-controls .button) {
-        @apply tw-bg-transparent;
-    }
-
-    .day {
-        @apply tw-text-black;
-    }
-    .prev,
-    .next {
-        @apply tw-text-gray-400;
-    }
-}
-</style>
+<style lang="scss" scoped></style>
