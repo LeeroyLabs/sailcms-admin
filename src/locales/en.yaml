@@ -366,6 +366,8 @@ task:
   confirm: Confirmation
   cancel_msg: Are you sure you want to cancel the task?
   retry_msg: Are you sure you want to retry the task?
+  reschedule_msg: Are you sure you want to reschedule the task?
+  stop_msg: Are you sure you want to stop the task?
   back: Back
   name: Name
   create_task: Create a task

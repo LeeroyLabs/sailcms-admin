@@ -10,62 +10,10 @@
             </v-btn>
         </Teleport>
 
-        <section
-            class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between"
-        >
+        <section class="tw-mt-6 tw-mb-4">
             <div
-                class="tw-flex tw-flex-row tw-w-full lg:tw-w-3/12 tw-items-center"
-                v-if="hasPermission('readwrite_task')"
+                class="tw-mb-4 md:tw-mb-0 lg:tw-w-4/12 tw-flex tw-flex-row tw-gap-x-4 tw-items-center"
             >
-                <v-select
-                    v-model="selectedAction"
-                    label="Actions"
-                    color="primary"
-                    :items="availableActions"
-                    variant="outlined"
-                    density="comfortable"
-                    single-line
-                    placeholder="Actions"
-                    :persistent-hint="false"
-                    :hide-details="true"
-                />
-
-                <v-btn
-                    v-if="hasPermission('readwrite_task')"
-                    :class="{
-                        'tw-invisible tw-opacity-0': selectedAction === null,
-                        'tw-opacity-100': selectedAction !== null,
-                    }"
-                    class="tw-hidden md:tw-block tw-ml-2 tw-transition-opacity tw-duration-300"
-                    color="primary"
-                    size="small"
-                    icon
-                    @click.prevent="performAction"
-                >
-                    <v-icon icon="mdi-chevron-right" />
-                </v-btn>
-
-                <v-progress-circular
-                    indeterminate
-                    size="x-small"
-                    width="2"
-                    class="tw-ml-2"
-                    :class="{ 'tw-invisible': !applyingAction }"
-                />
-            </div>
-
-            <div
-                class="tw-w-full tw-mb-4 md:tw-mb-0 lg:tw-w-4/12 tw-flex tw-flex-row tw-gap-x-4 tw-items-center"
-            >
-                <v-progress-circular
-                    :class="{
-                        'tw-invisible': !isLoadingSearch,
-                        'tw-hidden': $vuetify.display.mobile,
-                    }"
-                    indeterminate
-                    size="small"
-                    width="3"
-                />
                 <v-text-field
                     color="primary"
                     :label="$t('tasks.search')"
@@ -84,20 +32,22 @@
                         </div>
                     </template>
                 </v-text-field>
+
+                <v-progress-circular
+                    :class="{
+                        'tw-invisible': !isLoadingSearch,
+                        'tw-hidden': $vuetify.display.mobile,
+                    }"
+                    indeterminate
+                    size="small"
+                    width="3"
+                />
             </div>
         </section>
 
         <v-table class="utable">
             <thead>
                 <tr>
-                    <th class="tw-min-w-[4px] tw-max-w-[4px]">
-                        <v-checkbox
-                            @change="handleCheckAll"
-                            color="primary"
-                            value="checkall"
-                            hide-details
-                        />
-                    </th>
                     <SmartTH
                         :text="$t('tasks.columns.name')"
                         :sortable="true"
@@ -153,14 +103,6 @@
 
             <tbody>
                 <tr v-for="task in tasks.list" :key="task._id">
-                    <td class="tw-min-w-[4px] tw-max-w-[4px]">
-                        <v-checkbox
-                            v-model="selectedTasks"
-                            color="primary"
-                            :value="task"
-                            hide-details
-                        />
-                    </td>
                     <td>
                         <router-link
                             class="hover:tw-text-primary hover:tw-underline"
@@ -206,26 +148,13 @@
             :limit="currentLimit"
             :pagination="pagination"
         />
-
-        <Transition>
-            <DeleteConfirmation
-                v-if="showDeleteConfirm"
-                :show="true"
-                :overall="true"
-                :title="$t('tasks.confirm')"
-                :loading="applyingAction"
-                :message="$t('tasks.confirm_msg')"
-                @cancel="showDeleteConfirm = false"
-                @accept="confirmDelete"
-            />
-        </Transition>
     </div>
 
     <Loader v-else />
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
 
@@ -235,25 +164,12 @@ import { Tasks } from "@/libs/graphql/lib/tasks";
 import Pagination from "@/components/globals/Pagination.vue";
 import Loader from "@/components/globals/Loader.vue";
 import SmartTH from "@/components/globals/table/SmartTH.vue";
-import DeleteConfirmation from "@/components/globals/DeleteConfirmation.vue";
 
 const store = useAppStore();
 const i18n = useI18n();
 const isReady = ref(false);
 
 const tasks = ref([]);
-const selectedTask = ref(null);
-const selectedTasks = ref([]);
-
-// Actions
-const selectedAction = ref(null);
-const applyingAction = ref(false);
-const availableActions = computed(() => {
-    return [
-        { value: "retry", title: i18n.t("tasks.actions.retry") },
-        { value: "delete", title: i18n.t("tasks.actions.delete") },
-    ];
-});
 
 // Search
 const currentSearch = ref("");
@@ -288,12 +204,6 @@ const clearSearch = async () => {
     isLoadingSearch.value = false;
 };
 
-// Handle the "Check All" checkbox
-const handleCheckAll = (e) => {
-    if (e.target.checked) selectedTasks.value = tasks.value.list;
-    if (!e.target.checked) selectedTasks.value = [];
-};
-
 // Load tasks
 const loadTasks = async () => {
     const responseLoadTasks = await Tasks.taskSearch(
@@ -310,52 +220,6 @@ const loadTasks = async () => {
         isReady.value = true;
     }
 };
-
-// View a task
-const handleViewTask = (task) => {
-    console.log("VIEW", task);
-};
-
-// Reload a task
-const handleReloadTask = (task) => {
-    console.log("RELOAD", task);
-};
-
-// Delete a task
-const handleDeleteTask = (task) => {
-    selectedTask.value = task;
-    console.log("DELETE", task);
-};
-
-// Confirm delete
-const confirmDelete = () => {
-    console.log("CONFIRM DELETE");
-};
-
-// Delete a task
-const performAction = async () => {
-    if (selectedAction.value === i18n.t("tasks.actions.delete")) {
-        showDeleteConfirm.value = true;
-        return;
-    }
-
-    if (applyingAction.value) return;
-    applyingAction.value = true;
-
-    switch (selectedAction.value) {
-        default:
-        case i18n.t("tasks.actions.retry"):
-            //await Users.enableUsers(userIds);
-            break;
-        case i18n.t("tasks.actions.delete"):
-            await Tasks.cancelTask();
-            //await Users.disableUsers(userIds);
-            break;
-    }
-};
-
-// Modal
-const showDeleteConfirm = ref(false);
 
 // Setup page data
 const setupPage = () => {

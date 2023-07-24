@@ -366,6 +366,8 @@ task:
   confirm: Confirmation
   cancel_msg: Êtes-vous certain de vouloir anuler la tâche ?
   retry_msg: Êtes-vous certain de vouloir relancer la tâche ?
+  reschedule_msg: Êtes-vous certain de vouloir replanifier la tâche ?
+  stop_msg: Êtes-vous certain de vouloir arrêter la tâche ?
   back: Retour
   name: Nom
   create_task: Créer une tâche

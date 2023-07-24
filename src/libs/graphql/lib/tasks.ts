@@ -174,4 +174,55 @@ export class Tasks {
 
         return null;
     }
+
+    /**
+     *
+     * stopTask
+     *
+     * @param pid
+     *
+     */
+    public static async stopTask(pid: number) {
+        const client = new Client();
+        const mutation = TasksQueries.stopTask;
+
+        const result = await client.mutation(
+            gql`
+                ${mutation},
+            `,
+            { pid }
+        );
+
+        if (result.data) {
+            return result.data.stopTask;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * changeTaskSchedule
+     *
+     * @param id
+     * @param timestamp
+     *
+     */
+    public static async changeTaskSchedule(id: string, timestamp: number) {
+        const client = new Client();
+        const mutation = TasksQueries.changeTaskSchedule;
+
+        const result = await client.mutation(
+            gql`
+                ${mutation},
+            `,
+            { id, timestamp }
+        );
+
+        if (result.data) {
+            return result.data.changeTaskSchedule;
+        }
+
+        return null;
+    }
 }
