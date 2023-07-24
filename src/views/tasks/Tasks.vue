@@ -101,52 +101,50 @@
                     <SmartTH
                         :text="$t('tasks.columns.name')"
                         :sortable="true"
-                        @sort="setSorting('name.full')"
+                        @sort="setSorting('name')"
                         :showLoaderOnSort="true"
-                        :condition="
-                            currentSorting !== 'name.full' || !isLoadingSort
-                        "
+                        :condition="currentSorting !== 'name' || !isLoadingSort"
                         :ascending="
-                            currentSorting === 'name.full' &&
+                            currentSorting === 'name' &&
                             currentSortingDir === 'ASC'
                         "
                     />
                     <SmartTH
                         :text="$t('tasks.columns.status')"
                         :sortable="true"
-                        @sort="setSorting('email')"
+                        @sort="setSorting('executed')"
                         :showLoaderOnSort="true"
                         :condition="
-                            currentSorting !== 'email' || !isLoadingSort
+                            currentSorting !== 'executed' || !isLoadingSort
                         "
                         :ascending="
-                            currentSorting === 'email' &&
+                            currentSorting === 'executed' &&
                             currentSortingDir === 'ASC'
                         "
                     />
                     <SmartTH
-                        :text="$t('tasks.columns.created')"
+                        :text="$t('tasks.columns.scheduled')"
                         :sortable="true"
-                        @sort="setSorting('name.full')"
+                        @sort="setSorting('executed_at')"
                         :showLoaderOnSort="true"
                         :condition="
-                            currentSorting !== 'name.full' || !isLoadingSort
+                            currentSorting !== 'executed_at' || !isLoadingSort
                         "
                         :ascending="
-                            currentSorting === 'name.full' &&
+                            currentSorting === 'executed_at' &&
                             currentSortingDir === 'ASC'
                         "
                     />
                     <SmartTH
                         :text="$t('tasks.columns.priority')"
                         :sortable="true"
-                        @sort="setSorting('name.full')"
+                        @sort="setSorting('priority')"
                         :showLoaderOnSort="true"
                         :condition="
-                            currentSorting !== 'name.full' || !isLoadingSort
+                            currentSorting !== 'priority' || !isLoadingSort
                         "
                         :ascending="
-                            currentSorting === 'name.full' &&
+                            currentSorting === 'priority' &&
                             currentSortingDir === 'ASC'
                         "
                     />
@@ -154,7 +152,7 @@
             </thead>
 
             <tbody>
-                <tr v-for="task in taskListing" :key="task._id">
+                <tr v-for="task in tasks.list" :key="task._id">
                     <td class="tw-min-w-[4px] tw-max-w-[4px]">
                         <v-checkbox
                             v-model="selectedTasks"
@@ -178,12 +176,24 @@
                             {{ task.name }}
                         </router-link>
                     </td>
-                    <td>{{ task.status }}</td>
-                    <td>{{ task.created }}</td>
+                    <td>
+                        {{
+                            task.executed
+                                ? $t("tasks.columns.executed")
+                                : $t("tasks.columns.no_executed")
+                        }}
+                    </td>
+                    <td>
+                        {{
+                            new Date(
+                                task.scheduled_at * 1000
+                            ).toLocaleDateString("en-US")
+                        }}
+                    </td>
                     <td>{{ task.priority }}</td>
                 </tr>
 
-                <tr v-if="!taskListing.length">
+                <tr v-if="tasks.list && !tasks.list.length">
                     <td colspan="7" class="tw-text-center tw-font-medium">
                         {{ $t("tasks.no_tasks") }}
                     </td>
@@ -220,6 +230,7 @@ import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
 
 import { hasPermission } from "@/libs/tools";
+import { Tasks } from "@/libs/graphql/lib/tasks";
 
 import Pagination from "@/components/globals/Pagination.vue";
 import Loader from "@/components/globals/Loader.vue";
@@ -228,33 +239,11 @@ import DeleteConfirmation from "@/components/globals/DeleteConfirmation.vue";
 
 const store = useAppStore();
 const i18n = useI18n();
-const isReady = ref(true);
+const isReady = ref(false);
 
 const tasks = ref([]);
 const selectedTask = ref(null);
-const taskListing = ref([
-    {
-        _id: "1",
-        name: "Task 1",
-        status: "Running",
-        created: "05/06/2022",
-        priority: 1,
-    },
-    {
-        _id: "2",
-        name: "Task 2",
-        status: "Failed",
-        created: "05/06/2022",
-        priority: 3,
-    },
-    {
-        _id: "3",
-        name: "Task 3",
-        status: "Running",
-        created: "05/06/2022",
-        priority: 1,
-    },
-]);
+const selectedTasks = ref([]);
 
 // Actions
 const selectedAction = ref(null);
@@ -270,23 +259,56 @@ const availableActions = computed(() => {
 const currentSearch = ref("");
 const isLoadingSearch = ref(false);
 
-const runSearch = () => {
-    console.log("RUN SEARCH");
-};
-
-const clearSearch = () => {
-    console.log("CLEAR SEARCH");
-};
-
 // Pagination handling
 const currentPage = ref(1);
 const currentLimit = ref(25);
-const selectedTasks = ref([]);
+const pagination = ref({ total: 0, current: 0, totalPages: 0 });
+
+// Sorting
+const currentSorting = ref("name");
+const currentSortingDir = ref("ASC");
+const isLoadingSort = ref(false);
+
+const runSearch = async () => {
+    isLoadingSearch.value = true;
+    currentPage.value = 1;
+    currentSorting.value = "name";
+    currentSortingDir.value = "ASC";
+    await loadTasks();
+    isLoadingSearch.value = false;
+};
+
+const clearSearch = async () => {
+    isLoadingSearch.value = true;
+    currentSearch.value = "";
+    currentPage.value = 1;
+    currentSorting.value = "name";
+    currentSortingDir.value = "ASC";
+    await loadTasks();
+    isLoadingSearch.value = false;
+};
 
 // Handle the "Check All" checkbox
 const handleCheckAll = (e) => {
-    if (e.target.checked) selectedTasks.value = taskListing.value;
+    if (e.target.checked) selectedTasks.value = tasks.value.list;
     if (!e.target.checked) selectedTasks.value = [];
+};
+
+// Load tasks
+const loadTasks = async () => {
+    const responseLoadTasks = await Tasks.taskSearch(
+        currentPage.value,
+        currentLimit.value,
+        currentSearch.value,
+        currentSorting.value,
+        currentSortingDir.value
+    );
+
+    if (responseLoadTasks) {
+        tasks.value = responseLoadTasks;
+        pagination.value = responseLoadTasks.pagination;
+        isReady.value = true;
+    }
 };
 
 // View a task
@@ -311,8 +333,25 @@ const confirmDelete = () => {
 };
 
 // Delete a task
-const performAction = () => {
-    console.log("PERFORM ACTION");
+const performAction = async () => {
+    if (selectedAction.value === i18n.t("tasks.actions.delete")) {
+        showDeleteConfirm.value = true;
+        return;
+    }
+
+    if (applyingAction.value) return;
+    applyingAction.value = true;
+
+    switch (selectedAction.value) {
+        default:
+        case i18n.t("tasks.actions.retry"):
+            //await Users.enableUsers(userIds);
+            break;
+        case i18n.t("tasks.actions.delete"):
+            await Tasks.cancelTask();
+            //await Users.disableUsers(userIds);
+            break;
+    }
 };
 
 // Modal
@@ -336,6 +375,7 @@ const setupPage = () => {
 
 onMounted(() => {
     setupPage();
+    loadTasks();
 });
 </script>
 

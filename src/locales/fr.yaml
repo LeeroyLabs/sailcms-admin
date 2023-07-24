@@ -354,17 +354,24 @@ tasks:
   columns:
     name: Nom
     status: Status
-    created: Créé
+    scheduled: Prévu à
     priority: Priorité
+    executed: Terminé
+    no_executed: À venir
   actions:
     retry: Relancer
     delete: Supprimer
 
 task:
   confirm: Confirmation
-  confirm_msg: Êtes-vous certain de vouloir supprimer la tâche ?
+  cancel_msg: Êtes-vous certain de vouloir anuler la tâche ?
+  retry_msg: Êtes-vous certain de vouloir relancer la tâche ?
   back: Retour
   name: Nom
-  save: Enregistrer
-  cancel: Annuler
   create_task: Créer une tâche
+  form:
+    name: Entrer un nom
+    action: Sélectioner une action
+    priority: Sélectioner la priorité
+    save: Enregistrer
+    cancel: Annuler
