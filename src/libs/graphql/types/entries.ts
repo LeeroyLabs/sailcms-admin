@@ -115,11 +115,16 @@ export type SocialMetaContent = {
 export type EntryLayout = {
     _id: string;
     slug?: string;
-    titles: LocaleObject;
-    schema: LayoutField[];
+    title: string;
+    schema: EntryLayoutTab[];
     authors: Authors;
     dates: Dates;
     is_trashed: boolean;
+};
+
+export type EntryLayoutTab = {
+    label: string;
+    fields: Field[];
 };
 
 export type FieldInfo = {
@@ -165,3 +170,12 @@ export type Field = {
     type: string,
     config: object;
 };
+
+export type EntryListing = {
+    pagination: {
+        current: number;
+        totalPages: number;
+        total: number;
+    },
+    list: any[]
+}

@@ -95,7 +95,7 @@ let schemaStruct = [
 ];
 
 const schema = ref(schemaStruct);
-const virtualSchema = schemaStruct;
+let virtualSchema = schemaStruct;
 const showAddTabDialog = ref(false);
 const layoutName = ref('');
 const isSaving = ref(false);
@@ -167,6 +167,30 @@ const opts = {
 const loadFields = async () =>
 {
     fields.value = await Entries.fields(SailCMS.getLocales());
+
+    if (route.params.id !== 'add') {
+        const layout = await Entries.entryLayout(route.params.id);
+        layoutName.value = layout.title;
+        schemaStruct = [];
+
+        for (let tab of layout.schema) {
+            let fields = [];
+
+            for (let field of tab.fields) {
+                fields.push(field.key);
+            }
+
+            schemaStruct.push({
+                label: tab.label,
+                id: v4(),
+                fields: fields
+            });
+        }
+
+        schema.value = schemaStruct;
+        virtualSchema = schemaStruct;
+    }
+
     isReady.value = true;
 
     nextTick(() =>
@@ -200,7 +224,14 @@ const saveLayout = async () =>
     }
 
     isSaving.value = true;
-    let result = await Entries.createEntryLayout({fr: layoutName.value, en: layoutName.value}, saveStruct, kebabCase(deburr(layoutName.value)));
+    let result;
+
+    if (route.params.id === 'add') {
+        result = await Entries.createEntryLayout(layoutName.value, saveStruct, kebabCase(deburr(layoutName.value)));
+    } else {
+        result = await Entries.updateEntryLayout(route.params.id, layoutName.value, saveStruct, kebabCase(deburr(layoutName.value)));
+    }
+
     isSaving.value = false;
 
     if (result) {
@@ -211,7 +242,6 @@ const saveLayout = async () =>
     }
 }
 
-// TODO: LOAD LAYOUT ON EDIT PAGE
 // TODO: DELETE LAYOUT
 // TODO: ASSIGN LAYOUT TO TYPE
 

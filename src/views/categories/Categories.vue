@@ -14,7 +14,7 @@
                                         : $t("categories.form.title_edit")
                                 }}
                             </h3>
-                            <v-form ref="categoryForm" @submit.prevent v-model="isFormValid" class="tw-flex tw-flex-col tw-gap-2">
+                            <v-form ref="categoryForm" @submit.prevent v-model="isFormValid" class="tw-flex tw-flex-col tw-gap-4">
                                 <v-text-field
                                     v-for="locale in siteLocales"
                                     :key="locale"
@@ -26,6 +26,7 @@
                                     density="comfortable"
                                     required
                                     :rules="categoryNameRules"
+                                    :hide-details="true"
                                     v-model="categoryNameInput[locale]"
                                     @click:clear="handleCancel"
                                 >
@@ -40,6 +41,7 @@
                                     v-model="selectedParentId"
                                     item-title="name"
                                     item-value="id"
+                                    :hide-details="true"
                                 />
 
                                 <div class="tw-flex tw-items-center tw-gap-x-2 tw-flex-wrap">

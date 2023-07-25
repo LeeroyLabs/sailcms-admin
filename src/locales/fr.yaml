@@ -160,9 +160,6 @@ assets:
     toobig: Fichier trop volumineux
     notallowed: Type de fichier refusé
 
-entries:
-  title: Entrées
-
 entry_types:
   title: Type d'entrées
   add: Ajouter un type
@@ -184,11 +181,19 @@ entry_types:
     cannot_change_default: Impossible de mettre à jour le type par défaut.
 
 layouts:
-  title: Dispositions
+  title: Mises en page
   no_layout: Aucune disposition pour le moment.
   active: Actives
   trashed: Supprimées
-  add: Ajouter une dispositions
+  add: Ajouter une Mise en page
+  confirm_delete: Êtes-vous certain de vouloir supprimer cette mise en page ?
+  confirm_delete_many: Êtes-vous certain de vouloir supprimer ces mises en page ?
+  delete_success: Mise en page supprimée avec succès !
+  delete_success_many: Mises en page supprimées avec succès !
+  delete_error: La mise en page n'a pu être supprimée. Assurez-vous qu'elle ne soit pas utilisé.
+  delete_error_many: La mise en page n'a pu être supprimée. Assurez-vous qu'elle ne soit pas utilisé.
+  confirm_softdelete: Êtes-vous certain de vouloir déplacer cette mise en page vers la corbeille ?
+  confirm_softdelete_many: Êtes-vous certain de vouloir déplacer ces mises en page vers la corbeille ?
   columns:
     title: Nom
     created_by: Créé par
@@ -267,6 +272,18 @@ system:
   delete: Supprimer
   other: Autre
   set: Assigner
+  trash: Corbeille
+  active: Actif
+  restore: Restaurer
+  system: Système
+  content: Contenu
+  utilities: Utilitaires
+  email_templates: Gabarits Courriels
+  logs: Journaux
+  info: Information
+  tasks: Tâches
+  no_items_now: Aucun item pour le moment.
+  add_item: Ajouter un item
   toast:
     error: Erreur
     success: Succès
@@ -330,10 +347,12 @@ fields:
   matrix_error: Impossible d'ajouter deux fois le même champ dans la même matrice.
   confirm_delete: Êtes-vous certain de vouloir supprimer ce champ ?
   confirm_delete_many: Êtes-vous certain de vouloir supprimer ces champs ?
-  delete_success: Field deleted successfully!
-  delete_success_many: Fields deleted successfully!
-  delete_error: Field could not be deleted. Make sure they are not in use.
-  delete_error_many: Fields could not be deleted. Make sure they are not in use.
+  delete_success: Le champ a été supprimé avec succès!
+  delete_success_many: Les champs ont étés supprimés avec succès!
+  delete_error: Le champ n'a pu être supprimé. Assurez-vous qu'il n'est pas utilisé.
+  delete_error_many: Les champs n'ont pu être supprimés. Assurez-vous qu'ils ne sont pas utilisés.
+  layout: Mise en page
+  repeatable_title: Titre du groupe
   columns:
     name: Nom
     key: Clée
@@ -702,3 +721,27 @@ countries:
   ZA: Afrique Du Sud
   ZM: Zambie
   ZW: Zimbabwe
+
+entries:
+  title: Entrées
+  draft: Brouillon
+  published: Publiées
+  add: Ajouter
+  view_in: Voir en
+  entries: Entrées
+  message:
+    no_items: Aucun(e) {entry} pour le moment.
+
+entry:
+  publication: Publication
+  revisions: Révisions
+  translations: Traductions
+  categories: Catégories
+  title: Titre
+  general: Général
+  info: Information
+  na: N/D
+  validation:
+    phone: Numéro de téléphone invalide.
+    email: Adresse courriel invalide.
+    id: ID invalide.

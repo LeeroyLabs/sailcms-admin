@@ -2,7 +2,7 @@
     <div class="tw-w-full tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-y-4 tw-gap-x-6 tw-mt-4">
         <v-select
             :items="CountryList"
-            :model-value="internalValue.country"
+            v-model="internalValue.country"
             id="type-selector"
             :label="$t('fields.options.country')"
             color="primary"
@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { watch, ref, computed } from 'vue';
+import { watch, ref, computed, onMounted } from 'vue';
 import { cloneDeep } from 'lodash';
 import { useI18n } from 'vue-i18n';
 import { Countries } from '@/libs/countries';
@@ -51,12 +51,18 @@ const CountryList = computed(() =>
 });
 
 const emitter = defineEmits(['change']);
-const internalValue = ref({country: 'CA'});
+const internalValue = ref({country: props.field.config.country || 'CA'});
 
-watch(internalValue.value, (v) =>
+const updateValue = (v) =>
 {
-    const config = cloneDeep(props.field.config);
-    config.country = v.country;
-    emitter('change', config);
-});
+    if (v) {
+        const config = cloneDeep(props.field.config);
+        config.country = v.country;
+    }
+
+    emitter('change', internalValue);
+}
+
+watch(internalValue.value, (v) => updateValue(v));
+onMounted(() => updateValue());
 </script>

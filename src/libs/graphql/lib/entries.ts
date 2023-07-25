@@ -1,7 +1,7 @@
 import { Client } from "./client";
 import EntryQueries from "../queries/entries";
 import gql from "graphql-tag";
-import { Entry, EntryLayout, EntryType, Field, FieldInfo } from "../types/entries";
+import { Entry, EntryLayout, EntryListing, EntryType, Field, FieldInfo } from "../types/entries";
 import { LocaleObject } from "@/libs/graphql/types/general";
 
 export class Entries
@@ -72,6 +72,7 @@ export class Entries
             handle: type.handle,
             title: type.title,
             url_prefix: prefixes,
+            entry_layout_id: type.entry_layout_id,
             use_categories: type.use_categories
         });
 
@@ -119,6 +120,7 @@ export class Entries
             handle: type.handle,
             title: type.title,
             url_prefix: prefixes,
+            entry_layout_id: type.entry_layout_id,
             use_categories: type.use_categories
         });
 
@@ -166,15 +168,16 @@ export class Entries
      * Get all entry layouts
      *
      * @param locales
+     * @param hideTrashed
      *
      */
-    public static async entryLayouts(locales: string[] = ['fr', 'en']): Promise<EntryLayout[]>
+    public static async entryLayouts(locales: string[] = ['fr', 'en'], hideTrashed: boolean): Promise<EntryLayout[]>
     {
         const client = new Client();
         let query = EntryQueries.entryLayouts;
 
         query = query.replace(/#locale#/g, Entries.parseLocales(locales));
-        let result = await client.query(gql`${query}`, {});
+        let result = await client.query(gql`${query}`, {ignoreTrashed: hideTrashed});
 
         if (result.data) {
             return result.data.entryLayouts;
@@ -233,24 +236,48 @@ export class Entries
      *
      * Create an entry layout
      *
-     * @param titles
+     * @param title
      * @param schema
      * @param slug
      *
      */
-    public static async createEntryLayout(titles: LocaleObject, schema: any, slug: string): Promise<boolean>
+    public static async createEntryLayout(title: string, schema: any, slug: string): Promise<boolean>
     {
         const client = new Client();
         let query = EntryQueries.createEntryLayout;
 
         let result = await client.mutation(gql`${query}`, {
-            titles: titles,
+            title: title,
             schema: schema,
             slug: slug
         });
 
-        return !!(result.data && result.data.createEntryLayout!==null);
+        return !!(result.data && result.data.createEntryLayout !== null);
+    }
 
+    /**
+     *
+     * Update an entry layout
+     *
+     * @param id
+     * @param title
+     * @param schema
+     * @param slug
+     *
+     */
+    public static async updateEntryLayout(id: string, title: string, schema: any, slug: string): Promise<boolean>
+    {
+        const client = new Client();
+        let query = EntryQueries.updateEntryLayout;
+
+        let result = await client.mutation(gql`${query}`, {
+            id: id,
+            title: title,
+            schema: schema,
+            slug: slug
+        });
+
+        return !!(result.data && result.data.updateEntryLayout !== null)
     }
 
     /**
@@ -270,7 +297,7 @@ export class Entries
         let result = await client.query(gql`${query}`, {id: id});
 
         if (result.data) {
-            return result.data.entryLayout;
+            return result.data.entryLayoutById;
         }
 
         return null;
@@ -328,6 +355,7 @@ export class Entries
         let query = EntryQueries.updateEntryField;
 
         delete field.key;
+
         let result = await client.mutation(gql`${query}`, field);
 
         return !!(result.data && result.data.updateEntryField !== null);
@@ -370,6 +398,82 @@ export class Entries
         }
 
         return null;
+    }
+
+    /**
+     *
+     * Delete given entry layouts
+     *
+     * @param ids
+     * @param soft
+     *
+     */
+    public static async deleteEntryLayouts(ids: string[], soft: boolean): Promise<boolean>
+    {
+        const client = new Client();
+        let query = EntryQueries.deleteEntryLayouts;
+
+        let result = await client.mutation(gql`${query}`, {ids, soft});
+        return !!(result.data && result.data.deleteEntryLayouts !== null);
+    }
+
+    /**
+     *
+     * Restore layouts from the trash
+     *
+     * @param ids
+     *
+     */
+    public static async restoreEntryLayouts(ids: string[]): Promise<boolean>
+    {
+        const client = new Client();
+        let query = EntryQueries.restoreEntryLayouts;
+
+        let result = await client.mutation(gql`${query}`, {ids});
+        return !!(result.data && result.data.restoreEntryLayouts !== null);
+    }
+
+    /**
+     *
+     * Entries
+     *
+     * @param type
+     * @param page
+     * @param search
+     * @param direction
+     * @param locales
+     * @param ignoreTrash
+     *
+     */
+    public static async entries(type: string, page: number, search: string = '', direction: number = 1, locales: string[] = ['fr', 'en'], trash: boolean, locale: string): Promise<EntryListing>
+    {
+        const client = new Client();
+        let query = EntryQueries.entries;
+
+        query = query.replace(/#locale#/g, Entries.parseLocales(locales));
+        let result = await client.query(gql`${query}`, {
+            entry_type_handle: type,
+            page: page,
+            limit: 30,
+            search: search,
+            sort: 'title',
+            direction: direction,
+            only_trash: trash,
+            locale: locale
+        });
+
+        if (result.data) {
+            return result.data.entries;
+        }
+
+        return {
+            pagination: {
+                current: 1,
+                totalPages: 1,
+                total: 0
+            },
+            list: []
+        };
     }
 
     private static parseLocales(locales: string[]): string

@@ -70,6 +70,7 @@
                 density="comfortable"
                 placeholder="Type"
                 :persistent-hint="false"
+                :hide-details="true"
                 :rules="[rules.required]"
                 class="tw-col-span-2"
             >
@@ -87,13 +88,11 @@
                 </template>
             </v-autocomplete>
 
-            <div class="tw-col-span-2 tw-mt-[-18px]">
-                <template v-if="selectedComponent">
-                    <component :key="'comp_' + selectedComponent.value" :is="selectedComponent.component" :field="field" :type="selectedComponent" @change="(e) => field.config = e"/>
-                </template>
+            <div v-if="selectedComponent" class="tw-col-span-2">
+                <component :key="'comp_' + selectedComponent.value" :is="selectedComponent.component" :field="field" :type="selectedComponent" @change="(e) => field.config = e"/>
             </div>
 
-            <div class="tw-col-span-2" :class="{'tw-mt-[-25px]': !selectedComponent}">
+            <div class="tw-col-span-2">
                 <div class="tw-flex tw-flex-row tw-gap-x-6">
                     <div v-if="!selectedComponent || (selectedComponent && !selectedComponent.hideRepeat)">
                         <v-switch
@@ -117,6 +116,18 @@
                     </div>
                 </div>
             </div>
+
+            <div v-if="field.repeatable" class="tw-col-span-2 tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-y-4 tw-gap-x-6">
+                <v-text-field
+                    v-for="(locale, idx) in SailCMS.getLocales()"
+                    variant="outlined"
+                    color="primary"
+                    density="comfortable"
+                    :label="$t('fields.repeatable_title') + ' (' + locale + ')'"
+                    v-model="field.config.repeatable_title[locale]"
+                    :class="{'tw-col-span-2': (SailCMS.getLocales().length % 2 !== 0 && idx+1 === SailCMS.getLocales().length)}"
+                />
+            </div>
         </div>
 
         <div class="tw-mt-6 tw-flex tw-gap-x-2">
@@ -130,7 +141,7 @@
 <script setup>
 import { usePage } from '@/libs/page';
 import { useRoute, useRouter } from 'vue-router';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { availableTypes } from '@/libs/fieldTypes';
 import { SailCMS } from '@/libs/graphql';
@@ -184,7 +195,9 @@ const field = ref({
     validation: '',
     required: false,
     type: null,
-    config: {}
+    config: {
+        repeatable_title: { fr: '', en: '' }
+    }
 });
 
 const selectedComponent = ref(null);
@@ -205,7 +218,7 @@ const saveField = async () =>
     const status = await form.value.validate();
     if (!status.valid) return;
 
-    isSaving.value = true;
+   // isSaving.value = true;
     field.value.validation = field.value.type;
     let result;
 
@@ -233,14 +246,27 @@ const loadField = async () =>
     let activeType = availableTypes.value.find(type => type.value === field.value.type);
     if (activeType) selectedComponent.value = activeType;
 
+    if (!field.value.config.repeatable_title) {
+        let opts = {};
+        for (let locale of SailCMS.getLocales()) {
+            opts[locale] = '';
+        }
+
+        field.value.config.repeatable_title = opts;
+    }
+
     page.setPageTitle('fields.editing', `'${route.params.key}'`)
     isReady.value = true;
 }
 
 if (route.params.key === 'new') {
     page.setPageTitle('fields.new');
-    isReady.value = true;
 } else {
     loadField();
 }
+
+onMounted(() =>
+{
+    if (route.params.key === 'new') isReady.value = true;
+});
 </script>

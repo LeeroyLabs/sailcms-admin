@@ -9,6 +9,8 @@ import { loadFonts } from "./webfontloader";
 import vuetify from "./vuetify";
 import pinia from "../store";
 import routerInit from "../router";
+import Vue3ColorPicker from "vue3-colorpicker";
+import "vue3-colorpicker/style.css";
 
 // Types
 import type { App } from "vue";
@@ -45,6 +47,7 @@ export async function registerPlugins(app: App)
                 .use(vuetify)
                 .use(router)
                 .use(pinia)
+                .use(Vue3ColorPicker)
                 .use(i18n);
 
             const store = useAppStore();

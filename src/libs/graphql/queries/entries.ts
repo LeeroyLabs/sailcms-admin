@@ -130,9 +130,7 @@ export default {
             entryLayouts {
                 _id
                 slug
-                titles {
-                    #locale#
-                }
+                title
                 schema {
                     label
                     fields {
@@ -203,34 +201,31 @@ export default {
         }
     `,
     entryLayout: `
-        query entryLayout($id: ID!) {
-            entryLayout(id: $id) {
+        query entryLayoutById($id: ID!) {
+            entryLayoutById(id: $id) {
                 _id
                 slug
-                titles {
-                    #locale#
-                }
+                title
                 schema {
-                    key
-                    repeater
-                    fieldConfigs {
-                        labels {
+                    label
+                    fields {
+                        _id
+                        key
+                        name
+                        label {
                             #locale#
                         }
-                        handle
-                        inputSettings {
-                            inputKey
-                            settings {
-                                name
-                                value
-                                options {
-                                    value
-                                    label
-                                }
-                                explain
-                                type
-                            }
+                        placeholder {
+                            #locale#
                         }
+                        explain {
+                            #locale#
+                        }
+                        validation
+                        required
+                        repeatable
+                        type
+                        config
                     }
                 }
                 authors {
@@ -307,6 +302,197 @@ export default {
     deleteEntryFields: `
         mutation deleteEntryFields($ids: [ID!]!) {
             deleteEntryFields(ids: $ids)
+        }
+    `,
+    updateEntryLayout: `
+        mutation updateEntryLayout($id: ID!, $title: String!, $schema: [EntryLayoutTabInput!]!, $slug: String!) {
+            updateEntryLayout(id: $id, title: $title, schema: $schema, slug: $slug)
+        }
+    `,
+    deleteEntryLayouts: `
+        mutation deleteEntryLayouts($ids: [ID!]!) {
+            deleteEntryLayouts(ids: $ids)
+        }
+    `,
+    restoreEntryLayouts: `
+        mutation restoreEntryLayouts($ids: [ID!]!) {
+            restoreEntryLayouts(ids: $ids)
+        }
+    `,
+    entries: `
+        query entries($entry_type_handle: String!, $page: Int, $limit: Int, $search: String, $sort: String, $direction: Int, $only_trash: Boolean, $locale: String) {
+            entries(entry_type_handle: $entry_type_handle, page: $page, limit: $limit, search: $search, sort: $sort, direction: $direction, only_trash: $only_trash, locale: $locale) {
+                pagination {
+                    current
+                    totalPages
+                    total
+                }
+                list {
+                    _id
+                    site_id
+                    locale
+                    alternates {
+                        locale
+                        url
+                        entry_id
+                    }
+                    is_homepage
+                    publication {
+                        _id
+                        entry_id
+                        dates {
+                            published
+                            expired
+                        }
+                        site_id
+                        user_full_name
+                        user_email
+                    }
+                    trashed
+                    title
+                    slug
+                    authors {
+                        created_by {
+                            name {
+                                full
+                            }
+                        }
+                        updated_by {
+                            name {
+                                full
+                            }
+                        }
+                        deleted_by {
+                            name {
+                                full
+                            }
+                        }
+                    }
+                    dates {
+                        created
+                        updated
+                        deleted
+                    }
+                }
+            }
+        }
+    `,
+    entry: `
+        query entry($id: ID!, entry_type_handle: String!) {
+            entry(id: $id, entry_type_handle: $entry_type_handle) {
+                _id
+                entry_type {
+                    _id
+                    handle
+                    title
+                    url_prefix {
+                        #locale#
+                    }
+                    entry_layout_id
+                    use_categories
+                }
+                parent {
+                    _id
+                    title
+                    locale
+                    url
+                    slug
+                }
+                site_id
+                locale
+                alternates {
+                    locale
+                    url
+                    entry_id
+                }
+                is_homepage
+                publication {
+                    _id
+                    entry_id
+                    version {
+                        _id
+                        created_at
+                        user_full_name
+                        entry_id
+                        entry {
+                            _id
+                            title
+                        }
+                    }
+                    dates {
+                        published
+                        expired
+                    }
+                    site_id
+                    entry_url
+                    user_full_name
+                    user_email
+                }
+                trashed
+                title
+                template
+                slug
+                url
+                authors {
+                    created_by {
+                        name {
+                            full
+                        }
+                    }
+                    updated_by {
+                        name {
+                            full
+                        }
+                    }
+                    deleted_by {
+                        name {
+                            full
+                        }
+                    }
+                }
+                dates {
+                    created
+                    updated
+                    deleted
+                }
+                categories {
+                    _id
+                    name {
+                        #locale#
+                    }
+                    slug
+                    order
+                    parent_id
+                    children
+                }
+                content {
+                    key
+                    content
+                }
+                seo {
+                    _id
+                    title
+                    alternates {
+                        locale
+                        url
+                        entry_id
+                    }
+                    url
+                    locale
+                    description
+                    keywords
+                    robots
+                    sitemap
+                    default_image
+                    social_metas {
+                        handle
+                        content {
+                            name
+                            content
+                        }
+                    }
+                }
+            }
         }
     `
 }

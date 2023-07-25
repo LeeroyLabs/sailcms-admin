@@ -3,19 +3,28 @@
 import { computed } from "vue";
 import { i18n } from "@/plugins/i18n";
 import { useAppStore } from "@/store/app";
+import inflector from "inflector-js";
+import plural from "pluralize-fr";
 
 export const navigationItems = computed(() => {
     const store = useAppStore();
     let dynamics = [];
 
     for (let type of store.configuration.dataTypes) {
+        let name = '';
+
+        if (i18n.global.locale.value === 'fr') {
+            name = plural(type.title);
+        } else {
+            name = inflector.pluralize(type.title);
+        }
+
         dynamics.push({
             icon: "mdi-file-document-outline",
             to: { name: "EntryList", params: { name: type.handle } },
             parent: "",
-            text:
-                store.configuration.customLocales[i18n.global.locale.value]
-                    .types[type.handle] || type.title,
+            text: name,
+            isEntries: true,
             permission: "read_" + type.handle,
         });
     }
@@ -27,16 +36,6 @@ export const navigationItems = computed(() => {
 
     for (let item of store.configuration.dynamicNavigationElements.post_entries) {
         post_entries.push({
-            icon: item.icon,
-            text: store.configuration.customLocales[i18n.global.locale.value][item.slug],
-            to: {name: 'DynamicContent', params: {param: item.url}},
-            parent: item.parent,
-            permission: item.permission
-        });
-    }
-
-    for (let item of store.configuration.dynamicNavigationElements.pre_users) {
-        pre_users.push({
             icon: item.icon,
             text: store.configuration.customLocales[i18n.global.locale.value][item.slug],
             to: {name: 'DynamicContent', params: {param: item.url}},
@@ -115,6 +114,7 @@ export const navigationItems = computed(() => {
         },
         {
             icon: "mdi-email-outline",
+            to: { name: "Emails" },
             parent: "",
             text: "Emails",
             permission: "any",

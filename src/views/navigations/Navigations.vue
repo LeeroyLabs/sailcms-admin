@@ -19,7 +19,7 @@
                                 ref="navFormRef"
                                 @submit.prevent
                                 v-model="isFormValid"
-                                class="tw-flex tw-flex-col tw-gap-2"
+                                class="tw-flex tw-flex-col tw-gap-4"
                             >
                                 <v-text-field
                                     color="primary"
@@ -27,6 +27,7 @@
                                     variant="outlined"
                                     type="text"
                                     clearable
+                                    :hide-details="true"
                                     density="comfortable"
                                     :rules="[navFormValidations.required]"
                                     v-model="navName"
@@ -40,6 +41,7 @@
                                     type="text"
                                     clearable
                                     density="comfortable"
+                                    :hide-details="true"
                                     :rules="[navFormValidations.required]"
                                     v-model="navItemStructure.label"
                                     @click:clear="handleCancel"
@@ -49,6 +51,7 @@
                                     :label="$t('navigations.form.select_type')"
                                     variant="outlined"
                                     density="comfortable"
+                                    :hide-details="true"
                                     :items="[
                                         IS_EXTERNAL_URL,
                                         IS_ENTRY,
@@ -83,6 +86,7 @@
                                     "
                                     v-model="navItemTypeEntry"
                                     clearable
+                                    :hide-details="true"
                                     item-title="nameToDisplay"
                                     return-object
                                     variant="outlined"
@@ -96,6 +100,7 @@
                                     variant="outlined"
                                     type="text"
                                     clearable
+                                    :hide-details="true"
                                     density="comfortable"
                                     :rules="
                                         navItemType

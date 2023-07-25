@@ -7,7 +7,20 @@ export const entryRoutes = [
             guarded: true,
             permission: 'read_entry',
             layout: 'private',
-            parent: ''
+            parent: '',
+            isEntries: true
+        }
+    },
+    {
+        path: '/entries/:name/:id',
+        name: 'EntrySingle',
+        component: () => import(/* webpackChunkName: "entries" */ '@/views/entries/Entry.vue'),
+        meta: {
+            guarded: true,
+            permission: 'read_entry',
+            layout: 'private',
+            parent: '',
+            isEntries: true
         }
     },
     {

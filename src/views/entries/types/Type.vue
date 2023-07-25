@@ -42,6 +42,19 @@
                         <template v-slot:details>{{ $t('entry_types.leave_blank') }}</template>
                     </v-text-field>
 
+                    <div class="tw-col-span-2 tw-mt-2">
+                        <v-select
+                            :label="$t('fields.layout')"
+                            variant="outlined"
+                            density="comfortable"
+                            :items="layouts"
+                            v-model="currentType.entry_layout_id"
+                            item-title="title"
+                            item-value="_id"
+                            :hide-details="true"
+                        />
+                    </div>
+
                     <v-switch
                         v-model="currentType.use_categories"
                         :label="$t('entry_types.use_categories')"
@@ -95,11 +108,13 @@ const currentType = ref({
     title: '',
     handle: '',
     url_prefix: [],
-    entry_layout_id: '',
+    entry_layout_id: null,
     use_categories: false
 });
 
 const rules = {required: value => !!value || i18n.t('user.errors.required')}
+
+const layouts = ref([]);
 
 const loadType = async () =>
 {
@@ -179,6 +194,20 @@ const formatValue = (e) =>
     return true;
 }
 
+const loadLayouts = async () =>
+{
+    layouts.value = await Entries.entryLayouts(SailCMS.getLocales(), true);
+
+    if (route.params.id === 'add') {
+        isAdding.value = true;
+        isReady.value = true;
+        page.setPageTitle('entry_types.single_add');
+    } else {
+        isAdding.value = false;
+        loadType();
+    }
+}
+
 for (let locale of SailCMS.getLocales()) {
     currentType.value.url_prefix.push({locale: locale, data: ''});
 }
@@ -187,12 +216,5 @@ if (!hasPermission('readwrite_entry_type')) {
     router.push({name: 'EntryTypes'});
 }
 
-if (route.params.id === 'add') {
-    isAdding.value = true;
-    isReady.value = true;
-    page.setPageTitle('entry_types.single_add');
-} else {
-    isAdding.value = false;
-    loadType();
-}
+loadLayouts();
 </script>
