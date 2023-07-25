@@ -162,6 +162,7 @@
                                     :items="formattedNavItems"
                                     :displayedOption="(item) => item.label"
                                     :isParent="true"
+                                    :modalMsg="$t('navigations.confirm_msg')"
                                     :key="navigationsKey"
                                     @update-list="handleUpdateList"
                                 />

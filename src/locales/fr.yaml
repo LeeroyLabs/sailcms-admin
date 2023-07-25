@@ -317,6 +317,7 @@ system:
 categories:
   title: Catégories
   search: Recherche de catégories
+  confirm_msg: Êtes-vous certain de vouloir supprimer la catégorie ?
   form:
     title_add: Ajouter une catégorie
     title_edit: Mettre à jour la catégorie
@@ -330,6 +331,7 @@ categories:
 
 navigations:
   title: Navigations
+  confirm_msg: Êtes-vous certain de vouloir supprimer la navigation ?
   form:
     title_add: Ajouter une navigation
     title_edit: Mettre à jour la Navigation
@@ -339,6 +341,43 @@ navigations:
     select_type: Sélectioner un type de menu
     select_entry: Sélectioner une entrée
     select_category: Sélectioner une catégorie
-    select_parent: Sélectioner un parent
     add_navigation_btn: Ajouter
     edit_navigation_btn: Sauvegarder
+
+tasks:
+  title: Tâches
+  add: Ajouter une tâche
+  no_tasks: Aucune tâche pour le moment.
+  search: Recherche de tâches
+  confirm: Confirmation
+  confirm_msg: Êtes-vous certain de vouloir supprimer la/les tâche(s) ?
+  columns:
+    name: Nom
+    status: Status
+    scheduled: Prévu à
+    priority: Priorité
+    executed: Terminé
+    no_executed: À venir
+  actions:
+    retry: Relancer
+    delete: Supprimer
+
+task:
+  confirm: Confirmation
+  cancel_msg: Êtes-vous certain de vouloir anuler la tâche ?
+  retry_msg: Êtes-vous certain de vouloir relancer la tâche ?
+  stop_msg: Êtes-vous certain de vouloir arrêter la tâche ?
+  select_date: Sélectionnez une nouvelle date
+  reschedule_msg: Veuillez svp sélectionner une nouvelle date afin de reprogrammer la tâche.
+  leave_msg: Êtes-vous certain de vouloir quitter ?
+  back: Retour
+  name: Nom
+  save: Enregistrer
+  cancel: Annuler
+  create_task: Créer une tâche
+  form:
+    name: Entrer un nom
+    action: Sélectioner une action
+    priority: Sélectioner la priorité
+  errors:
+    required: Champs requis

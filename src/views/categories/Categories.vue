@@ -117,6 +117,7 @@
                                             (item) => item.name[$i18n.locale]
                                         "
                                         :isParent="true"
+                                        :modalMsg="$t('categories.confirm_msg')"
                                         :key="categoriesListKey"
                                         @update-list="handleUpdateList"
                                     />

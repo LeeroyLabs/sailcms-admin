@@ -25,33 +25,41 @@ export const navigationItems = computed(() => {
     let pre_users = [];
     let pre_settings = [];
 
-    for (let item of store.configuration.dynamicNavigationElements.post_entries) {
+    for (let item of store.configuration.dynamicNavigationElements
+        .post_entries) {
         post_entries.push({
             icon: item.icon,
-            text: store.configuration.customLocales[i18n.global.locale.value][item.slug],
-            to: {name: 'DynamicContent', params: {param: item.url}},
+            text: store.configuration.customLocales[i18n.global.locale.value][
+                item.slug
+            ],
+            to: { name: "DynamicContent", params: { param: item.url } },
             parent: item.parent,
-            permission: item.permission
+            permission: item.permission,
         });
     }
 
     for (let item of store.configuration.dynamicNavigationElements.pre_users) {
         pre_users.push({
             icon: item.icon,
-            text: store.configuration.customLocales[i18n.global.locale.value][item.slug],
-            to: {name: 'DynamicContent', params: {param: item.url}},
+            text: store.configuration.customLocales[i18n.global.locale.value][
+                item.slug
+            ],
+            to: { name: "DynamicContent", params: { param: item.url } },
             parent: item.parent,
-            permission: item.permission
+            permission: item.permission,
         });
     }
 
-    for (let item of store.configuration.dynamicNavigationElements.pre_settings) {
+    for (let item of store.configuration.dynamicNavigationElements
+        .pre_settings) {
         pre_settings.push({
             icon: item.icon,
-            text: store.configuration.customLocales[i18n.global.locale.value][item.slug],
-            to: {name: 'DynamicContent', params: {param: item.url}},
+            text: store.configuration.customLocales[i18n.global.locale.value][
+                item.slug
+            ],
+            to: { name: "DynamicContent", params: { param: item.url } },
             parent: item.parent,
-            permission: item.permission
+            permission: item.permission,
         });
     }
 
@@ -121,7 +129,7 @@ export const navigationItems = computed(() => {
         },
         {
             icon: "mdi-calendar-check-outline",
-            parent: "",
+            to: { name: "Tasks" },
             text: "Tasks",
             permission: "any",
         },
@@ -132,6 +140,6 @@ export const navigationItems = computed(() => {
             parent: "",
             text: i18n.global.t("system.settings"),
             permission: "any",
-        }
-    ]
+        },
+    ];
 });

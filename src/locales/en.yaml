@@ -280,14 +280,14 @@ email:
     desktop: Desktop
     mobile: Mobile
   messages:
-    error:  Could not save {name}, please try again.
+    error: Could not save {name}, please try again.
     success: Email {name} was saved successfully.
   titles:
     subject: Subject
     intro: Intro / Title
     content: Content
     button: Button Label
-    url : Button URL
+    url: Button URL
 
 system:
   settings: Settings
@@ -317,6 +317,7 @@ system:
 categories:
   title: Categories
   search: Search for categories
+  confirm_msg: Are you sure you want to delete the category?
   form:
     title_add: Add Category
     title_edit: Edit Category
@@ -330,6 +331,7 @@ categories:
 
 navigations:
   title: Navigations
+  confirm_msg: Are you sure you want to delete the navigation?
   form:
     title_add: Add Navigation
     title_edit: Edit Navigation
@@ -339,6 +341,43 @@ navigations:
     select_type: Select a type of item
     select_entry: Select an entry
     select_category: Select a category
-    select_parent: Select a parent
     add_navigation_btn: Add
     edit_navigation_btn: Save
+
+tasks:
+  title: Tasks
+  add: Add Task
+  no_tasks: No tasks at the moment.
+  search: Search for tasks
+  confirm: Confirmation
+  confirm_msg: Are you sure you want to delete the task(s)?
+  columns:
+    name: Name
+    status: Status
+    scheduled: Scheduled at
+    priority: Priority
+    executed: Fulfilled
+    no_executed: Coming
+  actions:
+    retry: Retry
+    delete: Delete
+
+task:
+  confirm: Confirmation
+  cancel_msg: Are you sure you want to cancel the task?
+  retry_msg: Are you sure you want to retry the task?
+  stop_msg: Are you sure you want to stop the task?
+  select_date: Select a new date
+  reschedule_msg: Please select a new date in order to reschedule the task.
+  leave_msg: Are you sure you want to leave?
+  back: Back
+  name: Name
+  create_task: Create a task
+  save: Save
+  cancel: Cancel
+  form:
+    name: Enter name
+    action: Select action
+    priority: Select priority
+  errors:
+    required: Required
