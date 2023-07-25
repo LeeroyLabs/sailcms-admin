@@ -47,15 +47,30 @@
             <NestedDraggable
                 :items="item.children"
                 :displayedOption="displayedOption"
+                :modalMsg="modalMsg"
                 :class="isListOpened.includes(item) ? 'tw-block' : 'tw-hidden'"
             />
         </div>
+
+        <Transition>
+            <DeleteConfirmation
+                v-if="showDeleteConfirm"
+                :show="true"
+                :overall="true"
+                :title="$t('users.confirm')"
+                :loading="applyingAction"
+                :message="modalMsg"
+                @cancel="showDeleteConfirm = false"
+                @accept="confirmDelete"
+            />
+        </Transition>
     </div>
 </template>
 
 <script setup>
 import { ref, inject, onMounted } from "vue";
 import Sortable from "sortablejs";
+import DeleteConfirmation from "@/components/globals/DeleteConfirmation.vue";
 
 const props = defineProps({
     items: { type: Array, required: true },
@@ -69,12 +84,20 @@ const props = defineProps({
         default: false,
         required: false,
     },
+    modalMsg: {
+        type: String,
+        required: false,
+    },
 });
 
 const emits = defineEmits(["update-list"]);
 const emitter = inject("emitter");
+
 const isOpened = ref(true);
+const showDeleteConfirm = ref(false);
+const applyingAction = ref(false);
 let nestedList;
+const selectedItem = ref(null);
 
 // Open lists having children by default
 const openList = (array) => {
@@ -144,10 +167,16 @@ const updateItem = (item) => {
 };
 
 const deleteItem = (item) => {
-    const element = document.getElementById(`${item._id}`);
+    selectedItem.value = item;
+    showDeleteConfirm.value = true;
+};
+
+const confirmDelete = () => {
+    const element = document.getElementById(`${selectedItem.value._id}`);
     element.remove();
     const structure = getNodesForParent(nestedList);
-    emitter.emit("delete-item", { structure, item });
+    emitter.emit("delete-item", { structure, item: selectedItem.value });
+    showDeleteConfirm.value = false;
 };
 
 // Lifecycle hooks
