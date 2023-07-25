@@ -87,6 +87,10 @@ onMounted(
         @apply tw-text-black;
     }
 
+    :deep(.datepicker-cell.focused:not(.selected)) {
+        @apply tw-text-black;
+    }
+
     :deep(.datepicker-cell.disabled) {
         @apply tw-opacity-10;
     }
