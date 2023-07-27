@@ -89,7 +89,7 @@
             </v-autocomplete>
 
             <div v-if="selectedComponent" class="tw-col-span-2">
-                <component :key="'comp_' + selectedComponent.value" :is="selectedComponent.component" :field="field" :type="selectedComponent" @change="(e) => field.config = e"/>
+                <component :key="'comp_' + selectedComponent.value" :is="selectedComponent.component" :field="field" :type="selectedComponent" @change="(e) => field.config = JSON.parse(JSON.stringify(e))"/>
             </div>
 
             <div class="tw-col-span-2">
@@ -132,7 +132,7 @@
 
         <div class="tw-mt-6 tw-flex tw-gap-x-2">
             <v-btn @click.prevent="saveField" variant="flat" :loading="isSaving" color="primary">{{ $t('system.save') }}</v-btn>
-            <v-btn @click.prevent="$router.push({name: 'EntryFields'})" variant="text" color="blue">{{ $t('system.cancel') }}</v-btn>
+            <v-btn @click.prevent="$router.push({name: 'EntryFields'})" variant="text">{{ $t('system.cancel') }}</v-btn>
         </div>
     </v-form>
     <Loader v-else/>
@@ -208,6 +208,8 @@ const updateSelection = (v) =>
 {
     field.value.type = v.value;
     field.value.config = {};
+    setupField();
+
     selectedComponent.value = availableTypes.value.find(t => t.value === v.value);
     document.querySelector('#type-selector').blur();
 };
@@ -218,7 +220,7 @@ const saveField = async () =>
     const status = await form.value.validate();
     if (!status.valid) return;
 
-   // isSaving.value = true;
+    isSaving.value = true;
     field.value.validation = field.value.type;
     let result;
 
@@ -246,6 +248,14 @@ const loadField = async () =>
     let activeType = availableTypes.value.find(type => type.value === field.value.type);
     if (activeType) selectedComponent.value = activeType;
 
+    setupField();
+
+    page.setPageTitle('fields.editing', `'${route.params.key}'`)
+    isReady.value = true;
+}
+
+const setupField = () =>
+{
     if (!field.value.config.repeatable_title) {
         let opts = {};
         for (let locale of SailCMS.getLocales()) {
@@ -255,12 +265,12 @@ const loadField = async () =>
         field.value.config.repeatable_title = opts;
     }
 
-    page.setPageTitle('fields.editing', `'${route.params.key}'`)
-    isReady.value = true;
+    console.log(field.value);
 }
 
 if (route.params.key === 'new') {
     page.setPageTitle('fields.new');
+    setupField();
 } else {
     loadField();
 }

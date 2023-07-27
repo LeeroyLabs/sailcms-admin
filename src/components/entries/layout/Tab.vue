@@ -4,9 +4,9 @@
             class="drag-handle tw-cursor-grab tw-absolute tw-border tw-border-b-0 tw-top-[-28px] tw-flex tw-flex-row tw-items-center tw-justify-between tw-left-0 tw-text-black tw-py-1 tw-px-3 tw-rounded-t-lg tw-text-sm"
             :class="{'tw-bg-white tw-border-zinc-400': $vuetify.theme.name === 'light', 'tw-bg-neutral-900 tw-text-white tw-border-neutral-500': $vuetify.theme.name === 'dark'}"
         >
-            {{ title }}
+            {{ tab.label }}
 
-            <button class="tw-ml-4">
+            <button @click.prevent="showTabSettings=true" class="tw-ml-4">
                 <v-icon icon="mdi-cog" size="small" class="hover:tw-text-primary"/>
             </button>
         </div>
@@ -30,8 +30,8 @@
                     />
                     <div class="tw-truncate tw-mr-1">{{ fields.find(f => f.key === element)?.name }}</div>
                     <div class="tw-flex-grow tw-flex tw-flex-row tw-justify-end tw-gap-x-2">
-                        <button><v-icon icon="mdi-trash-can-outline" size="small" class="hover:tw-text-red-500"/>
-                            <v-tooltip activator="parent" location="bottom" :open-delay="750">Delete Field</v-tooltip>
+                        <button @click.prevent="removeField(index, tab.id)"><v-icon icon="mdi-trash-can-outline" size="small" class="hover:tw-text-red-500"/>
+                            <v-tooltip activator="parent" location="bottom" :open-delay="750">{{ $t('layout.delete_field') }}</v-tooltip>
                         </button>
                     </div>
                 </div>
@@ -44,11 +44,11 @@
                     <!-- Big + button -->
                     <template v-if="tab.fields.length === 0">
                         <div
-                            @click.prevent="() => { offsetBox = true; showAddBox = true; }"
                             class="tw-h-full tw-min-h-[75px] tw-w-full tw-flex tw-flex-row tw-items-center tw-justify-center tw-rounded-md"
                             :class="{'tw-bg-gray-100': $vuetify.theme.name === 'light', 'tw-bg-darkbg': $vuetify.theme.name === 'dark'}"
                         >
                             <div
+                                @click.prevent="() => { offsetBox = true; showAddBox = true; }"
                                 class="tw-rounded-full tw-w-[40px] tw-h-[40px] tw-cursor-pointer hover:tw-bg-primary tw-flex tw-flex-row tw-items-center tw-justify-between tw-text-white tw-transition tw-duration-250"
                                 :class="{'tw-bg-gray-400': $vuetify.theme.name === 'light', 'tw-bg-neutral-700': $vuetify.theme.name === 'dark'}"
                             >
@@ -80,7 +80,7 @@
                                         <div
                                             @click.prevent="addToTab(element, tab.id)"
                                             class="tw-p-2 tw-border tw-border-neutral-300 tw-rounded-md tw-cursor-pointer"
-                                            :class="{'tw-pointer-events-none tw-opacity-50 tw-select-none': (usedFields.includes(element.key)), 'hover:tw-bg-zinc-800 ': $vuetify.theme.name === 'dark', 'hover:tw-bg-gray-200': $vuetify.theme.name === 'light'}"
+                                            :class="{'tw-pointer-events-none tw-opacity-50 tw-select-none': isUsed(element.key), 'hover:tw-bg-zinc-800 ': $vuetify.theme.name === 'dark', 'hover:tw-bg-gray-200': $vuetify.theme.name === 'light'}"
                                         >
                                             {{ element.name }}
                                         </div>
@@ -95,7 +95,13 @@
     </div>
 
     <Transition>
-
+        <TabSettings
+            v-if="showTabSettings"
+            :tab="tab"
+            @close="showTabSettings=false"
+            @delete="() => $emit('tabDeleted', tab)"
+            @update="(e) => $emit('tabNameChange', {tab: tab, label: e})"
+        />
     </Transition>
 </template>
 
@@ -105,9 +111,9 @@ import { onMounted, ref } from 'vue';
 import { deburr } from 'lodash';
 import ArrowUpBox from '@/components/globals/ArrowUpBox.vue';
 import { onClickOutside } from '@vueuse/core';
-import { EmailRule } from '@/libs/validation';
+import TabSettings from '@/components/entries/layout/TabSettings.vue';
 
-const emitter = defineEmits(['change', 'added']);
+const emitter = defineEmits(['change', 'added', 'tabDeleted', 'tabNameChange']);
 
 const props = defineProps({
     tab: {
@@ -121,6 +127,10 @@ const props = defineProps({
     title: {
        type: String,
        default: 'Unamed'
+    },
+    used: {
+        type: Array,
+        default: []
     }
 });
 
@@ -129,8 +139,8 @@ const searchFilter = ref('');
 const showAddBox = ref(false);
 const addbox = ref(null);
 const offsetBox = ref(false);
-
 const usedFields = ref([]);
+const showTabSettings = ref(false);
 
 const handleChange = (e) =>
 {
@@ -160,7 +170,21 @@ const addToTab = (element, tab) =>
 {
     offsetBox.value = false;
     usedFields.value.push(element.key);
-    emitter('added', {element: element, tab: tab, used: usedFields.value});
+    emitter('added', {element: element, key: element.key, tab: tab, used: usedFields.value});
+}
+
+const removeField = (index, tab) =>
+{
+    const field = usedFields.value[index];
+    usedFields.value.splice(index, 1);
+    emitter('removed', {tab: tab, key: field, used: usedFields.value});
+}
+
+const isUsed = (key) =>
+{
+    let field = props.fields.find(f => f.key === key);
+    if (field) return field.used;
+    return false;
 }
 
 onMounted(() =>

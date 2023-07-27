@@ -26,7 +26,7 @@
                 </div>
                 <div id="workspace-ui" class="tw-w-full bg-grid tw-px-6">
                     <div id="tablist" class="tw-flex tw-flex-row tw-gap-x-6 tw-flex-wrap tw-gap-y-16">
-                        <template v-for="(element, index) in schema">
+                        <template v-for="(element, index) in schema" :key="element.key">
                             <Tab
                                 :fields="fields"
                                 :tab="element"
@@ -35,6 +35,9 @@
                                 :title="element.label"
                                 @change="handleChanges"
                                 @added="handleAddition"
+                                @removed="handleRemoved"
+                                @tab-deleted="handleTabDelete"
+                                @tab-name-change="handleTabNameChange"
                             />
                         </template>
                     </div>
@@ -63,7 +66,7 @@
 import { hasPermission } from '@/libs/tools';
 import Sortable from 'sortablejs';
 import { v4 } from "uuid";
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { nextTick, onBeforeUnmount, ref } from 'vue';
 import Loader from '@/components/globals/Loader.vue';
 import Tab from '@/components/entries/layout/Tab.vue';
 import { Entries } from '@/libs/graphql/lib/entries';
@@ -90,6 +93,7 @@ let schemaStruct = [
     {
         label: 'Main',
         id: v4(),
+        key: v4(),
         fields: []
     }
 ];
@@ -134,10 +138,25 @@ const handleChanges = (e) =>
 const handleAddition = (e) =>
 {
     const tab = virtualSchema.find(t => t.id === e.tab);
+
+    for (let key of e.used) {
+        let field = fields.value.find(f => f.key === key);
+        field.used = true;
+    }
+
     tab.fields = e.used;
 }
 
-const handleTabChanges = async (e) =>
+const handleRemoved = (e) =>
+{
+    const tab = virtualSchema.find(t => t.id === e.tab);
+    const field = fields.value.find(f => f.key === e.key);
+
+    field.used = false;
+    tab.fields = e.used;
+}
+
+const handleTabChanges = (e) =>
 {
     const children = Array.from(document.getElementById('tablist').children).map(c => c.id);
     let reformatted = [];
@@ -151,6 +170,35 @@ const handleTabChanges = async (e) =>
     }
 
     schema.value = reformatted;
+}
+
+const handleTabNameChange = (e) =>
+{
+    let tab = virtualSchema.find(t => t.id === e.tab.id);
+    tab.label = e.label;
+
+    tab = schema.value.find(t => t.id === e.tab.id);
+    tab.label = e.label;
+
+    // Force rerender
+    tab.key = v4();
+}
+
+const handleTabDelete = (e) =>
+{
+    const clearList = [];
+
+    for (let field of e.fields) {
+        clearList.push(field);
+    }
+
+    virtualSchema = virtualSchema.filter(t => t.id !== e.id);
+    schema.value = schema.value.filter(t => t.id !== e.id);
+
+    for (let key of clearList) {
+        let field = fields.value.find(f => f.key === key);
+        field.used = false;
+    }
 }
 
 const opts = {
@@ -168,22 +216,33 @@ const loadFields = async () =>
 {
     fields.value = await Entries.fields(SailCMS.getLocales());
 
+    fields.value = fields.value.map(f => {
+        return {
+            ...f,
+            used: false
+        }
+    });
+
     if (route.params.id !== 'add') {
         const layout = await Entries.entryLayout(route.params.id);
         layoutName.value = layout.title;
         schemaStruct = [];
 
         for (let tab of layout.schema) {
-            let fields = [];
+            let _fields = [];
 
-            for (let field of tab.fields) {
-                fields.push(field.key);
+            for (let _field of tab.fields) {
+                _fields.push(_field.key);
+
+                let field = fields.value.find(f => f.key === _field.key);
+                field.used = true;
             }
 
             schemaStruct.push({
                 label: tab.label,
                 id: v4(),
-                fields: fields
+                key: v4(),
+                fields: _fields
             });
         }
 
@@ -241,9 +300,6 @@ const saveLayout = async () =>
         store.displayToast('error', i18n.t('layout.save_error'));
     }
 }
-
-// TODO: DELETE LAYOUT
-// TODO: ASSIGN LAYOUT TO TYPE
 
 loadFields();
 </script>

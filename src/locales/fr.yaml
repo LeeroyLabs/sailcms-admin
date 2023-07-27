@@ -28,7 +28,7 @@ usergroups:
   confirm: Confirmation
   confirm_delete: Êtes-vous certain de vouloir supprimer le groupe "{group}" ?
   group_name: Nom du groupe
-  add_a_grouo: Ajouter un groupe
+  add_a_group: Ajouter un groupe
   edit_group: Modification d'un groupe
   add_success: Groupe ajouté avec succès.
   update_success: Groupe modifié avec succès.
@@ -106,7 +106,7 @@ pagination:
 extensions:
   containers: Conteneurs
   select_ext: Veuillez choisir une extension pour voir les information
-  mobile_messages: S.v.p. utiliser un navigateur pc, trop d'information sur cette page.
+  mobile_message: S.v.p. utiliser un navigateur pc, trop d'information sur cette page.
   official: Officiel
   no_gql: Cette extension ne fournit aucune query, mutation ou resolver GraphQL.
   no_routes: Cette extension ne fournit aucune route.
@@ -147,8 +147,6 @@ assets:
   delete:
     single_conf: Êtes-vous certain de vouloir supprimer ce fichier ?
     multi_conf: Êtes-vous certain de vouloir supprimer ces fichiers ?
-    single_conf: Êtes-vous certains de vouloir supprimer ce fichier ?
-    multi_conf: Êtes-vous certains de vouloir supprimer ces fichiers ?
     single_title: Confirmation
     multi_title: Confirmation
   views:
@@ -210,11 +208,14 @@ layout:
   name: Nom
   add_tab: Ajouter un onglet
   add_field: Ajouter un champ
+  delete_field: Supprimer ce champ
   tabname: Nom du champ
   select_tabname: Choisir un nom pour cet onglet
   layout_name: Nom de la mise en page
   save_success: La mise en page sauvegardée avec succès!
   save_error: La mise en page n'a pu être sauvegardée. Veuillez réessayer.
+  tab_settings: Réglages de l'onglet
+  tab_name: Nom de l'onglet
   mobile:
     wait: Attendez!
     explain: Les mises en page ne peuvent être administrer sur un téléphone. Veuillez utiliser une tablet ou plus grand. Nous recommandons un portable ou ordinateur de bureau.
@@ -303,7 +304,6 @@ system:
 categories:
   title: Catégories
   search: Recherche de catégories
-  confirm_msg: Êtes-vous certain de vouloir supprimer la catégorie ?
   form:
     title_add: Ajouter une catégorie
     title_edit: Mettre à jour la catégorie
@@ -317,7 +317,6 @@ categories:
 
 navigations:
   title: Navigations
-  confirm_msg: Êtes-vous certain de vouloir supprimer la navigation ?
   form:
     title_add: Ajouter un élement
     title_edit: Mettre à jour l'élément
@@ -327,8 +326,435 @@ navigations:
     select_type: Sélectioner un type d'item
     select_entry: Sélectioner une entrée
     select_category: Sélectioner une catégorie
+    select_parent: Sélectioner un parent
     add_navigation_btn: Ajouter
     edit_navigation_btn: Sauvegarder
+
+fields:
+  add: Ajouter un champ
+  no_fields: Aucun champ pour le moment.
+  title: Champs
+  new: Nouveau champ
+  editing: Modification de
+  field_name: Nom
+  field_key: Clée
+  key_explain: Cette clée est utilisée pour identifier ce champ dans une entrée.
+  crop_key_explain: Cette clée est utilisée pour identifier le recadrage dans une entrée. la clée du champ utilisée si laissé vide.
+  ratio_explain: Le ratio est une valeur comme 4:3 ou 16:9 en décimal. 16:9 est la valeur par défaut.
+  placeholder: Texte placeholder
+  explain: Texte d'explication du champ
+  repeatable: Répétable
+  required: Requis
+  label: Libellé
+  select_error: Valeur déjà utlisée.
+  matrix_error: Impossible d'ajouter deux fois le même champ dans la même matrice.
+  confirm_delete: Êtes-vous certain de vouloir supprimer ce champ ?
+  confirm_delete_many: Êtes-vous certain de vouloir supprimer ces champs ?
+  delete_success: Le champ a été supprimé avec succès!
+  delete_success_many: Les champs ont étés supprimés avec succès!
+  delete_error: Le champ n'a pu être supprimé. Assurez-vous qu'il n'est pas utilisé.
+  delete_error_many: Les champs n'ont pu être supprimés. Assurez-vous qu'ils ne sont pas utilisés.
+  layout: Mise en page
+  repeatable_title: Titre du groupe
+  columns:
+    name: Nom
+    key: Clée
+    repeatable: Répétable
+    required: Requis
+    type: Type
+  types:
+    text: Texte
+    textarea: Texte multi-lignes
+    html: HTML
+    numeric: Numérique
+    integer: Nombre entier
+    float: Nombre décimal
+    password: Mot de passe
+    email: Courriel
+    phone: Téléphone
+    creditcard: Carte de crédit
+    asset_file: Fichier
+    asset_image: Image
+    url: URL
+    domain: Domaine
+    directory: Chemin dossier
+    file: Chemin fichier
+    ip: IP
+    select: Menu déroulant
+    entry: Entrée
+    entry_list: Liste entrées
+    category: Catégorie
+    categories: Catégories
+    switch: Commutateur
+    hex: Couleur HTML
+    postal: Code postal
+    country: Pays
+    date: Date
+    datetime: Date & Heure
+    time: Heure
+    checkbox: Cases à cochées
+    radio: Radios
+    id: ID
+    matrix: Matrice
+    year: Sélecteur d'année
+  descriptions:
+    text: Champ texte régulier.
+    textarea: Champ texte multi-lignes.
+    html: Champ riche HTML.
+    numeric: Accepte un chiffre entier ou décimal seulement.
+    integer: Accepte un chiffre entier seulement.
+    float: Accepte un chiffre décimal seulement.
+    password: Champ qui cache la saisie de l'utilisateur.
+    email: Accepte un courriel seulement.
+    phone: Accepte un numéro de téléphone seulement.
+    creditcard: Formate et valide un numéro de carte de crédit.
+    asset_file: Sélecteur de fichier(s).
+    asset_image: Sélecteur d'image(s).
+    url: Accepte une chaîne au format URL seulement.
+    domain: Accepte un domaine valide seulement.
+    directory: "Accepte un chemin vers un dossier (ex: /votre/chemin/ici)."
+    file: "Accepte un chemin vers un fichier (ex: /votre/chemin/ici.txt)."
+    ip: Accepte une chaîne au format IP seulement.
+    select: Menu déroulant qui offre une liste de choix prédefinis.
+    entry: Menu déroulant qui permet de choisir une entrée de type sélectionné.
+    entry_list: 2 Listes qui consistent d'une list qui offre des entrées d'un type selectionné et une des entrées sélectionnées.
+    category: Menu déroulant qui permet le choix d'une catégorie d'une liste prédéfinie.
+    categories: Liste de catégories présentée sous forme de cases à cochées pour un ou plusieurs choix.
+    switch: Interrupteur à bascule pour une valeur oui/non ou actif/inactif.
+    hex: Sélecteur de couleur pour une couleur html.
+    postal: Accepte un code postal ou zip du pays sélectionné ou liste de pays supportés.
+    country: "Accepte un pays sous format ISO-3166 Alpha-2 (ex: CA)."
+    date: Calendrier avec une date au format requis.
+    datetime: Calendrier avec date et heure aux formats requis.
+    time: "Accepte heure seulement (ex: 11:30)."
+    checkbox: Liste de case à cochées qui permet un ou plusieurs choix d'une liste prédéfinie.
+    radio: Liste de bouton radio qui permet une sélection d'une liste prédéfinie.
+    id: Permet seulement un ID SailCMS (mongodb) qui est d'une longueur de 24 charactères.
+    matrix: Groupe de champs qui forme un super champ. Cette matrice peut être répétée.
+  options:
+    min_num: Valeur minimum
+    max_num: Valeur maximum
+    min_length: Longueur minimum
+    max_length: Longueur maximum
+    rows: Nombre de lignes
+    max_chars: Nombre maximum de caractères
+    max_chars_explain: entrer -1 pour aucune limite
+    min_width: Largeur minimum
+    max_width: Largeur maximum
+    min_height: Hauteur minimum
+    max_height: Hauteur maximum
+    crop_name: Clée recadrage
+    ratio: Ratio de l'image
+    user_choice: Choix utilisateur
+    square: Carré
+    round: Rond
+    crop_format: Format recadrage
+    select_many: Sélection multiple
+    allowed_types: Types de fichier autorisés
+    label: Libellé du champ
+    country: Pays
+    all_countries: Tous
+    value: Valeur
+    select_label: Libellé
+    multi: Autorisé le choix multiple
+    add_choice: Ajouter le choix
+    no_choices: Aucun choix pour le moment.
+    entry_type: Type d'entrée
+    add_field: Ajouter le champ
+    no_fields: Aucun champ pour le moment.
+    field: Champ
+    range: Utiliser une plage
+  errors:
+    cannot_be_zero: Valeur ne peut être zérou ou moins.
+    key_used: Clée déjà utlisée ou est invalide.
+    key_not_empty: La clée ne peut être vide.
+  toast:
+    error: Le champ n'a pu être sauvegardé. Veuillez réessayer.
+    success: Le champ a été sauvegardé avec succès!
+
+countries:
+  AD: Andorre
+  AE: Émirats Arabes Unis
+  AF: Afghanistan
+  AG: Antigua-Et-Barbuda
+  AI: Anguilla
+  AL: Albanie
+  AM: Arménie
+  AO: Angola
+  AP: Région Asie/Pacifique
+  AQ: Antarctique
+  AR: Argentine
+  AS: Samoa Américaines
+  AT: Autriche
+  AU: Australie
+  AW: Aruba
+  AX: Îles Åland
+  AZ: Azerbaïdjan
+  BA: Bosnie-Herzégovine
+  BB: Barbad
+  BD: Bangladesh
+  BE: Belgique
+  BF: Burkina Faso
+  BG: Bulgarie
+  BH: Bahreïn
+  BI: Burundi
+  BJ: Bénin
+  BL: Saint-Barthélemy
+  BM: Bermudes
+  BN: Brunei Darussalam
+  BO: État Plurinational De Bolivie
+  BQ: Bonaire, Saint-Eustache Et Saba
+  BR: Brésil
+  BS: Bahamas
+  BT: Bhoutan
+  BV: Île Bouvet
+  BW: Botswana
+  BY: Biélorussie
+  BZ: Belize
+  CA: Canada
+  CC: Îles Cocos
+  CD: République Démocratique Du Congo
+  CF: République Centrafricaine
+  CG: Congo
+  CH: Suisse
+  CI: Côte D'Ivoire
+  CK: Îles Cook
+  CL: Chili
+  CM: Cameroun
+  CN: Chine
+  CO: Colombie
+  CR: Costa Rica
+  CU: Cuba
+  CV: Cap-Vert
+  CW: Curaçao
+  CX: Île Christmas
+  CY: Chypre
+  CZ: République Tchèque
+  DE: Allemagne
+  DJ: Djibouti
+  DK: Denmark
+  DM: Dominique
+  DO: République Dominicaine
+  DZ: Algérie
+  EC: Équateur
+  EE: Estonie
+  EG: Égypte
+  EH: Sahara Occidental
+  ER: Érythrée
+  ES: Espagne
+  ET: Éthiopie
+  EU: Europe
+  FI: Finlande
+  FJ: Fidji
+  FK: Îles Malouines
+  FM: États Fédérés De Micronésie
+  FO: Îles Féroé
+  FR: France
+  GA: Gabon
+  GB: Royaume-Uni
+  GD: Grenade
+  GE: Géorgie
+  GF: Guyane
+  GG: Guernesey
+  GH: Ghana
+  GI: Gibraltar
+  GL: Groenland
+  GM: Gambie
+  GN: Guinée
+  GP: Guadeloupe
+  GQ: Guinée Équatoriale
+  GR: Grèce
+  GS: Géorgie Du Sud-Et-Les Îles Sandwich Du Sud
+  GT: Guatemala
+  GU: Guam
+  GW: Guinée-Bissau
+  GY: Guyana
+  HK: Hong Kong
+  HM: Îles Heard-Et-MacDonald
+  HN: Honduras
+  HR: Croatie
+  HT: Haïti
+  HU: Hongrie
+  ID: Indonésie
+  IE: Irlande
+  IL: Israël
+  IM: Île De Man
+  IN: Inde
+  IO: Territoire Britannique De L'océan Indien
+  IQ: Irak
+  IR: République Islamique D'Iran
+  IS: Islande
+  IT: Italie
+  JE: Jersey
+  JM: Jamaïque
+  JO: Jordanie
+  JP: Japon
+  KE: Kenya
+  KG: Kirghizistan
+  KH: Cambodge
+  KI: Kiribati
+  KM: Comores
+  KN: Saint-Christophe-et-Niévès
+  KP: République Populaire Démocratique De Corée
+  KR: République De Corée
+  KW: Koweït
+  KY: Îles Caïmans
+  KZ: Kazakhstan
+  LA: République Démocratique Populaire Lao
+  LB: Liban
+  LC: Sainte-Lucie
+  LI: Liechtenstein
+  LK: Sri Lanka
+  LR: Liberia
+  LS: Lesotho
+  LT: Lituanie
+  LU: Luxembourg
+  LV: Lettonie
+  LY: Libye
+  MA: Maroc
+  MC: Monaco
+  MD: République De Moldavie
+  ME: Monténégro
+  MF: Saint-Martin (Partie Française)
+  MG: Madagascar
+  MH: Îles Marshall
+  MK: Macédoine
+  ML: Mali
+  MM: Birmanie
+  MN: Mongolie
+  MO: Macao
+  MP: Îles Mariannes Du Nord
+  MQ: Martinique
+  MR: Mauritanie
+  MS: Montserrat
+  MT: Malte
+  MU: Maurice
+  MV: Maldives
+  MW: Malawi
+  MX: Mexique
+  MY: Malaisie
+  MZ: Mozambique
+  NA: Namibie
+  NC: Nouvelle-Calédonie
+  NE: Niger
+  NF: Île Norfolk
+  NG: Nigéria
+  NI: Nicaragua
+  NL: Pays-Bas
+  NO: Norvège
+  NP: Népal
+  NR: Nauru
+  NU: Niue
+  NZ: Nouvelle-Zélande
+  OM: Oman
+  PA: Panama
+  PE: Pérou
+  PF: Polynésie Française
+  PG: Papouasie-Nouvelle-Guinée
+  PH: Philippines
+  PK: Pakistan
+  PL: Pologne
+  PM: Saint-Pierre-Et-Miquelon
+  PN: Pitcairn
+  PR: Porto Rico
+  PS: Territoires Palestiniens Occupés
+  PT: Portugal
+  PW: Palaos
+  PY: Paraguay
+  QA: Qatar
+  RE: Réunion
+  RO: Roumanie
+  RS: Serbie
+  RU: Fédération De Russie
+  RW: Rwanda
+  SA: Arabie Saoudite
+  SB: Îles Salomon
+  SC: Seychelles
+  SD: Soudan
+  SE: Suède
+  SG: Singapour
+  SH: Sainte-Hélène
+  SI: Slovénie
+  SJ: Svalbard Et Jan Mayen
+  SK: Slovaquie
+  SL: Sierra Leone
+  SM: Saint-Marin
+  SN: Sénégal
+  SO: Somalie
+  SR: Suriname
+  SS: Soudan Du Sud
+  ST: Sao Tomé-Et-Principe
+  SV: République Du Salvador
+  SX: Saint-Martin (Partie Néerlandaise)
+  SY: République Arabe Syrienne
+  SZ: Swaziland
+  TC: Îles Turks-Et-Caïcos
+  TD: Tchad
+  TF: Terres Australes Françaises
+  TG: Togo
+  TH: Thaïlande
+  TJ: Tadjikistan
+  TK: Tokelau
+  TL: Timor-Leste
+  TM: Turkménistan
+  TN: Tunisie
+  TO: Tonga
+  TR: Turquie
+  TT: Trinité-Et-Tobago
+  TV: Tuvalu
+  TW: Taïwan
+  TZ: République-Unie De Tanzanie
+  UA: Ukraine
+  UG: Ouganda
+  UM: Îles Mineures Éloignées Des États-Unis
+  US: États-Unis
+  UY: Uruguay
+  UZ: Ouzbékistan
+  VA: Saint-Siège (État De La Cité Du Vatican)
+  VC: Saint-Vincent-Et-Les Grenadines
+  VE: Venezuela
+  VG: Îles Vierges Britanniques
+  VI: Îles Vierges Des États-Unis
+  VN: Viet Nam
+  VU: Vanuatu
+  WF: Wallis Et Futuna
+  WS: Samoa
+  YE: Yémen
+  YT: Mayotte
+  ZA: Afrique Du Sud
+  ZM: Zambie
+  ZW: Zimbabwe
+
+entries:
+  title: Entrées
+  draft: Brouillon
+  published: Publiées
+  add: Ajouter
+  view_in: Voir en
+  entries: Entrées
+  message:
+    no_items: Aucun(e) {entry} pour le moment.
+
+entry:
+  publication: Publication
+  revisions: Révisions
+  translations: Traductions
+  categories: Catégories
+  title: Titre
+  general: Général
+  info: Information
+  na: N/D
+  validation:
+    phone: Numéro de téléphone invalide.
+    email: Adresse courriel invalide.
+    id: ID invalide.
+    url: URL invalide.
+    domain: Domaine invalide.
+    hex: Couleur HTML invalide.
+    min: Nombre trop bas ({min} min.)
+    max: Nombre trop élevé ({max} max.)
+    num_type: Mauvais type de valeur (numérique seulement)
+    float: Nombre n'est pas décimal
 
 tasks:
   title: Tâches

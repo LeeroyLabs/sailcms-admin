@@ -26,6 +26,7 @@
 import { watch, ref } from 'vue';
 import { cloneDeep } from 'lodash';
 import { useI18n } from 'vue-i18n';
+import { devuetify } from '@/libs/tools';
 
 const i18n = useI18n();
 
@@ -49,10 +50,20 @@ const internalValue = ref({min: props.field.config.min || 1, max: props.field.co
 
 watch(internalValue.value, (v) =>
 {
-    const config = cloneDeep(props.field.config);
-    config.min = parseInt(v.min);
-    if (parseInt(v.min) > parseInt(v.max)) v.max = v.min;
-    config.max = parseInt(v.max);
-    emitter('change', config);
+    runBasic(v);
 });
+
+const runBasic = (v) =>
+{
+    const config = cloneDeep(props.field.config);
+    const val = (v) ? v : internalValue.value;
+    config.min = parseInt(val.min);
+
+    if (parseInt(val.min) > parseInt(val.max)) val.max = val.min;
+    config.max = parseInt(val.max);
+
+    emitter('change', config);
+}
+
+runBasic(null);
 </script>

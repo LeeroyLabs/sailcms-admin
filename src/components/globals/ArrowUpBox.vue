@@ -1,5 +1,5 @@
 <template>
-    <div class="box" :class="{'tw-bg-white': $vuetify.theme.name === 'light', 'tw-bg-darkbg': $vuetify.theme.name === 'dark', 'tw-top-[80px]': offset, 'tw-top-[50px]': !offset}">
+    <div class="box" :class="{'tw-bg-white': $vuetify.theme.name === 'light', 'tw-bg-darkbg': $vuetify.theme.name === 'dark', 'tw-top-[265px]': offset, 'tw-top-[50px]': !offset}">
         <!-- Arrow -->
         <div class="arrow after:tw-border-t after:tw-border-l" :class="{ 'after:tw-border-neutral-400 after:tw-bg-white': $vuetify.theme.name === 'light', 'after:tw-border-gray-300 after:tw-bg-darkbg': $vuetify.theme.name === 'dark'}"></div>
         <div><slot name="extra"/></div>

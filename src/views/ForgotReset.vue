@@ -58,7 +58,6 @@
 <script lang="ts" setup>
 
 import { useI18n } from "vue-i18n";
-import { EmailRule } from "@/libs/validation";
 import { ref } from "vue";
 import { Users } from "@/libs/graphql";
 import { useRoute, useRouter } from "vue-router";

@@ -1,16 +1,20 @@
 {
-    "sailcms_url": "https://sailcms.leeroy.codes/graphql",
+    "sailcms_url": "https://saildev.com:8890/graphql",
     "base_url": "/admin",
     "site_id": "default",
     "locales": ["en", "fr"],
     "strings": {
         "fr": {
+            "fr": "Français",
+            "en": "Anglais",
             "types": {
                 "page": "Pages",
                 "product": "Produits"
             }
         },
         "en": {
+            "fr": "French",
+            "en": "English",
             "types": {
                 "page": "Pages",
                 "product": "Products"

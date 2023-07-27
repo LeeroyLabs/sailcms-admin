@@ -26,6 +26,34 @@ export const AvailableFields = {
         component: Text,
         type: 'domain'
     },
+    numeric: {
+        component: Text,
+        type: 'numeric'
+    },
+    integer: {
+        component: Text,
+        type: 'integer'
+    },
+    float: {
+        component: Text,
+        type: 'float'
+    },
+    password: {
+        component: Text,
+        type: 'password'
+    },
+    directory: {
+        component: Text,
+        type: 'directory'
+    },
+    file: {
+        component: Text,
+        type: 'file'
+    },
+    ip: {
+        component: Text,
+        type: 'numeric'
+    },
     hex: {
         component: Color,
     }

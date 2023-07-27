@@ -63,7 +63,6 @@
                 <th class="!tw-text-center">
                     {{ $t('fields.columns.required') }}
                 </th>
-                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -89,9 +88,6 @@
                 <td class="tw-text-center">
                     <v-icon color="green" v-if="field.required" icon="mdi-check"/>
                     <v-icon color="red" v-else icon="mdi-close"/>
-                </td>
-                <td class="tw-flex tw-flex-row tw-items-center tw-justify-end">
-                    <v-btn variant="flat" color="primary">Duplicate</v-btn>
                 </td>
             </tr>
             <tr v-if="fieldListing.length === 0">

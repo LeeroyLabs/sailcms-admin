@@ -26,7 +26,9 @@ export const entry = ref({
         deleted: 0,
     },
     categories: [],
-    content: [],
+    content: {
+        float: 22.45
+    },
     seo: {
         title: '',
         alternates: [],

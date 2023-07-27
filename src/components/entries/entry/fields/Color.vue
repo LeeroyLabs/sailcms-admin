@@ -36,6 +36,7 @@
                                 density="comfortable"
                                 :readonly="true"
                                 :hide-details="true"
+                                validate-on="blur"
                                 :rules="validationRules"
                             >
                                 <ColorPicker
@@ -59,8 +60,8 @@
     </template>
     <template v-else>
         <v-text-field
-            v-model="arrayValue[idx]"
-            :id="index + '_' + idx"
+            v-model="pureColor"
+            :id="index + '_0'"
             variant="outlined"
             color="primary"
             density="comfortable"
@@ -70,15 +71,13 @@
             :rules="validationRules"
         >
             <ColorPicker
-                v-model="arrayValue[idx]"
-                :bind="item"
-                :key="index + '_' + idx"
+                v-model:pure-color="pureColor"
+                :key="index + '_0'"
                 format="hex8"
                 shape="square"
                 picker-type="fk"
                 round-history
                 lang="En"
-                @pureColorChange="(e) => arrayValue[idx] = e"
             />
         </v-text-field>
     </template>
@@ -114,6 +113,9 @@ const pureColor = ref(props.modelValue);
 const arrayValue = ref([]);
 
 const handleChange = (e) => emitter('update:modelValue', e);
+
+watch(arrayValue.value, (v) => emitter('update:modelValue', arrayValue.value));
+watch(pureColor, (v) => emitter('update:modelValue', pureColor.value));
 watch(props.modelValue, (v) => pureColor.value = v);
 
 const rules = {
@@ -122,15 +124,11 @@ const rules = {
 
 const validationRules = computed(() =>
 {
-    console.log(props.config);
     if (props.config.required) return [rules.required];
     return [];
 });
 
 // Add element to array
-const addElement = () =>
-{
-    arrayValue.value.push('');
-}
+const addElement = () => arrayValue.value.push('');
 
 </script>

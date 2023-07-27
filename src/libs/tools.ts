@@ -64,6 +64,19 @@ export function fileExtension(file: string): string
     return file.split('.').pop();
 }
 
+/**
+ *
+ * Remove the crap that vue causes with objects/arrays
+ *
+ * @param value
+ *
+ */
+export function devuetify(value: any): any
+{
+    if (typeof value === 'object' || Array.isArray(value)) return JSON.parse(JSON.stringify(value));
+    return value;
+}
+
 // ================================= Export utilities to global scope of the window ================================= //
 
 declare global {

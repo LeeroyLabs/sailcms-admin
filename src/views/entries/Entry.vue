@@ -1,8 +1,8 @@
 <template>
     <template v-if="isReady">
         <BackButton :url="backURL"/>
-        <v-form ref="form">
-        <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-8 tw-w-full">
+        <v-form ref="form" autocomplete="off">
+            <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-8 tw-w-full">
                 <div class="tw-flex-grow">
                     <TabBar :tabs="tabNames" :active="tab" :stretch="false" @change="(e) => tab=e"/>
                     <template v-for="(name, idx) in tabNames">
@@ -19,7 +19,7 @@
                             </template>
 
                             <template v-for="(field, _idx) in entryLayout.schema[idx].fields" :key="'field_' + idx + '_' + _idx">
-                                <component :is="AvailableFields[field.type].component" :type="AvailableFields[field.type].type" v-model="entry.content[_idx].content" :config="field" :index="_idx"/>
+                                <component :is="AvailableFields[field.type].component" :type="AvailableFields[field.type].type" v-model="entry.content[field.key]" :config="field" :index="_idx"/>
                             </template>
                         </div>
                         <div
@@ -96,26 +96,40 @@ const loadBase = async () =>
 
         if (entryLayout.value) {
             tabNames.value = entryLayout.value.schema.map(t => t.label);
-
             tabNames.value.push('SEO');
         }
     }
-
-    entry.value.content = [];
 
     if (route.params.id === 'add') {
         // Prepare all fields for use in entry
         for (let tab of entryLayout.value.schema) {
             for (let field of tab.fields) {
-                if (field.repeatable) {
-                    entry.value.content.push({ key: field.key, content: ref([]) });
+                if (entry.value.content[field.key] === undefined) {
+                    if (field.repeatable) {
+                        entry.value.content[field.key] = ref([]);
+                    } else {
+                        entry.value.content[field.key] = ref('');
+                    }
                 } else {
-                    entry.value.content.push({ key: field.key, content: ref('') });
+                    entry.value.content[field.key] = ref(entry.value.content[field.key]);
                 }
             }
         }
     } else {
-        // Prepare missing fields only
+        // Load all fields and make them reactive (create missing fields)
+        for (let tab of entryLayout.value.schema) {
+            for (let field of tab.fields) {
+                if (entry.value.content[field.key] === undefined) {
+                    if (field.repeatable) {
+                        entry.value.content[field.key] = ref([]);
+                    } else {
+                        entry.value.content[field.key] = ref('');
+                    }
+                } else {
+                    entry.value.content[field.key] = ref(entry.value.content[field.key]);
+                }
+            }
+        }
     }
 
     isReady.value = true;
@@ -131,6 +145,7 @@ watch(entry.value, (v) =>
         entry.value.slug = kebabCase(deburr(v.title.trim()));
     }
 
+    console.log(entry.value.content);
     saveableEntryState = JSON.parse(JSON.stringify(entry.value));
 });
 

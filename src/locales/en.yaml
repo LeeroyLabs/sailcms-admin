@@ -210,11 +210,14 @@ layout:
   name: Name
   add_tab: Add tab
   add_field: Add Field
+  delete_field: Delete Field
   tabname: Tab name
   select_tabname: Select a name for this tab
   layout_name: Layout name
   save_success: Layout saved successfully!
   save_error: Could not save layout. Please try again.
+  tab_settings: Tab Settings
+  tab_name: Tab name
   mobile:
     wait: Wait!
     explain: The layouts cannot be managed using a phone. Please use a tablet or bigger. We recommend using a laptop or desktop.
@@ -640,7 +643,7 @@ countries:
   NU: Niue
   NF: Norfolk Island
   MP: Northern Mariana Islands (the)
-  'NO': Norway
+  NO: Norway
   OM: Oman
   PK: Pakistan
   PW: Palau
@@ -752,6 +755,10 @@ entry:
     url: Invalid URL.
     domain: Invalid Domain.
     hex: Invalid Color Hex
+    min: Number if too low ({min} min)
+    max: Number is too high ({max} max)
+    num_type: Wrong type of value (numeric only)
+    float: Number is not a float
 
 tasks:
   title: Tasks
