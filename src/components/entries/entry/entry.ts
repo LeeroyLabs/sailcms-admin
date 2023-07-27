@@ -27,7 +27,7 @@ export const entry = ref({
     },
     categories: [],
     content: {
-        float: 22.45
+        html: '<p>This is the html code of the page!</p>'
     },
     seo: {
         title: '',

@@ -31,6 +31,7 @@
                             :value="item"
                             :id="'text_' + index + '_' + idx"
                             :config="config"
+                            :multi="true"
                             :type="type"
                             :index="index"
                             @change="(e) => arrayValue[idx] = e"
@@ -49,6 +50,7 @@
             :index="index"
             :key="'text_' + type + '_' + index"
             @change="(e) => $emit('update:modelValue', e)"
+            :class="{'tw-mb-4': config.explain[$i18n.locale] !== ''}"
         />
     </template>
 </template>

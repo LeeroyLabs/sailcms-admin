@@ -110,20 +110,6 @@ export const availableTypes = computed(() =>
             description: t('fields.descriptions.domain')
         },
         {
-            value: 'directory',
-            component: Empty,
-            hideRepeat: false,
-            title: t('fields.types.directory'),
-            description: t('fields.descriptions.directory')
-        },
-        {
-            value: 'file',
-            component: Empty,
-            hideRepeat: false,
-            title: t('fields.types.file'),
-            description: t('fields.descriptions.file')
-        },
-        {
             value: 'ip',
             component: Empty,
             hideRepeat: false,

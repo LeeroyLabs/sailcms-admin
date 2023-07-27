@@ -2,7 +2,7 @@
     <v-form v-if="isReady" ref="form" autocomplete="off">
         <BackButton :url="{name: 'EntryFields'}"/>
 
-        <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-y-4 tw-gap-x-6">
+        <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-y-2 tw-gap-x-6">
             <v-text-field
                 variant="outlined"
                 color="primary"
@@ -149,6 +149,7 @@ import { Entries } from '@/libs/graphql/lib/entries';
 import { useAppStore } from '@/store/app';
 import Loader from '@/components/globals/Loader.vue';
 import BackButton from '@/components/globals/BackButton.vue';
+import { devuetify } from '@/libs/tools';
 
 const rules = {
     required: value => !!value || i18n.t('user.errors.required'),
@@ -225,10 +226,10 @@ const saveField = async () =>
     let result;
 
     if (route.params.key === 'new') {
-        result = await Entries.createEntryField(field.value);
+        result = await Entries.createEntryField(devuetify(field.value));
     } else {
         // update
-        result = await Entries.updateEntryField(field.value);
+        result = await Entries.updateEntryField(devuetify(field.value));
     }
 
     isSaving.value = false;
@@ -256,6 +257,10 @@ const loadField = async () =>
 
 const setupField = () =>
 {
+    if (field.value.config instanceof String) {
+        field.value.config = {};
+    }
+
     if (!field.value.config.repeatable_title) {
         let opts = {};
         for (let locale of SailCMS.getLocales()) {
@@ -264,8 +269,6 @@ const setupField = () =>
 
         field.value.config.repeatable_title = opts;
     }
-
-    console.log(field.value);
 }
 
 if (route.params.key === 'new') {

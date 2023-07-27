@@ -2,7 +2,10 @@
     <template v-if="isReady">
         <BackButton :url="{name: 'EntryLayouts'}"/>
         <Teleport to="#actions">
-            <v-btn @click="saveLayout" :loading="isSaving" color="primary" v-if="hasPermission('readwrite_entry_layout')">
+            <v-btn @click="() => saveLayout(true)" :loading="isSaving" color="secondary" class="tw-mr-2" v-if="hasPermission('readwrite_entry_layout')">
+                {{ $t('system.save_exit') }}
+            </v-btn>
+            <v-btn @click="() => saveLayout(false)" :loading="isSaving" color="primary" v-if="hasPermission('readwrite_entry_layout')">
                 {{ $t('system.save') }}
             </v-btn>
         </Teleport>
@@ -261,7 +264,7 @@ const loadFields = async () =>
     });
 }
 
-const saveLayout = async () =>
+const saveLayout = async (exit = false) =>
 {
     if (layoutName.value.trim() === '') return;
     if (isSaving.value) return;
@@ -295,7 +298,8 @@ const saveLayout = async () =>
 
     if (result) {
         store.displayToast('success', i18n.t('layout.save_success'));
-        await router.push({name: 'EntryLayouts'});
+
+        if (exit) await router.push({name: 'EntryLayouts'});
     } else {
         store.displayToast('error', i18n.t('layout.save_error'));
     }

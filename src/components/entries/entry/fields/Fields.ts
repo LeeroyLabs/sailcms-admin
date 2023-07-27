@@ -1,6 +1,7 @@
 import Text from "./Text.vue";
 import Date from "./Date.vue";
 import Color from "./Color.vue";
+import HTML from "./HTML.vue";
 
 export const AvailableFields = {
     phone: {
@@ -54,7 +55,18 @@ export const AvailableFields = {
         component: Text,
         type: 'numeric'
     },
+    text: {
+        component: Text,
+        type: 'text'
+    },
+    postal: {
+        component: Text,
+        type: 'postal'
+    },
     hex: {
-        component: Color,
+        component: Color
+    },
+    html: {
+        component: HTML
     }
 }

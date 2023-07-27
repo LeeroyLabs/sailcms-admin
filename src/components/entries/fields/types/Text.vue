@@ -18,7 +18,11 @@
             :rules="[rules.required]"
             :label="(type.value === 'text' || type.value === 'password') ? $t('fields.options.max_length') + ' *' : $t('fields.options.max_num') + ' *'"
             v-model="internalValue.max"
-        />
+        >
+            <div class="tw-absolute tw-bottom-[-26px] tw-right-0 tw-text-sm" :class="{'tw-text-white/40': $vuetify.theme.name === 'dark', 'tw-text-black/60': $vuetify.theme.name === 'light'}">
+                {{ $t('fields.minus_one_for_max_limit') }}
+            </div>
+        </v-text-field>
     </div>
 </template>
 
@@ -59,7 +63,7 @@ const runBasic = (v) =>
     const val = (v) ? v : internalValue.value;
     config.min = parseInt(val.min);
 
-    if (parseInt(val.min) > parseInt(val.max)) val.max = val.min;
+    // if (parseInt(val.min) > parseInt(val.max)) val.max = val.min;
     config.max = parseInt(val.max);
 
     emitter('change', config);

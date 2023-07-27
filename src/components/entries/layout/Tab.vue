@@ -1,5 +1,5 @@
 <template>
-    <div class="tw-relative">
+    <div :id="tab.id" class="tw-relative">
         <div
             class="drag-handle tw-cursor-grab tw-absolute tw-border tw-border-b-0 tw-top-[-28px] tw-flex tw-flex-row tw-items-center tw-justify-between tw-left-0 tw-text-black tw-py-1 tw-px-3 tw-rounded-t-lg tw-text-sm"
             :class="{'tw-bg-white tw-border-zinc-400': $vuetify.theme.name === 'light', 'tw-bg-neutral-900 tw-text-white tw-border-neutral-500': $vuetify.theme.name === 'dark'}"
@@ -35,10 +35,10 @@
                         </button>
                     </div>
                 </div>
-                <div class="tw-relative tw-h-full">
+                <div class="tw-h-full">
                     <!-- Small + button -->
                     <template v-if="tab.fields.length > 0">
-                        <v-btn @click.prevent="showAddBox=true" variant="flat" color="primary" class="tw-w-full">{{ $t('layout.add_field') }}</v-btn>
+                        <v-btn :id="'add_btn_' + tab.id" @click.prevent="() => { offsetBox = false; showAddBox = true; }" variant="flat" color="primary" class="tw-w-full">{{ $t('layout.add_field') }}</v-btn>
                     </template>
 
                     <!-- Big + button -->
@@ -48,6 +48,7 @@
                             :class="{'tw-bg-gray-100': $vuetify.theme.name === 'light', 'tw-bg-darkbg': $vuetify.theme.name === 'dark'}"
                         >
                             <div
+                                :id="'add_btn_' + tab.id"
                                 @click.prevent="() => { offsetBox = true; showAddBox = true; }"
                                 class="tw-rounded-full tw-w-[40px] tw-h-[40px] tw-cursor-pointer hover:tw-bg-primary tw-flex tw-flex-row tw-items-center tw-justify-between tw-text-white tw-transition tw-duration-250"
                                 :class="{'tw-bg-gray-400': $vuetify.theme.name === 'light', 'tw-bg-neutral-700': $vuetify.theme.name === 'dark'}"
@@ -59,7 +60,7 @@
 
                     <!-- Field selector -->
                     <Transition>
-                        <ArrowUpBox v-if="showAddBox" ref="addbox" :offset="offsetBox">
+                        <ArrowUpBox v-if="showAddBox" ref="addbox" :emptyAddButton="'add_btn_' + tab.id" :offset="offsetBox">
                             <template v-slot:extra>
                                 <v-text-field
                                     variant="outlined"
@@ -76,7 +77,7 @@
                             </template>
                             <template v-slot:default>
                                 <div class="tw-flex tw-flex-col tw-gap-y-2">
-                                    <template v-for="(element, index) in fields.filter(f => deburr(f.name.toLowerCase()).includes(deburr(searchFilter.toLowerCase())))">
+                                    <template v-for="(element, index) in fields.filter(f => deburr(lowerCase(f.name || '')).includes(deburr(lowerCase(searchFilter || ''))))">
                                         <div
                                             @click.prevent="addToTab(element, tab.id)"
                                             class="tw-p-2 tw-border tw-border-neutral-300 tw-rounded-md tw-cursor-pointer"
@@ -107,11 +108,12 @@
 
 <script setup>
 import Sortable from 'sortablejs';
-import { onMounted, ref } from 'vue';
-import { deburr } from 'lodash';
+import { nextTick, onMounted, ref } from 'vue';
+import { deburr, lowerCase } from 'lodash';
 import ArrowUpBox from '@/components/globals/ArrowUpBox.vue';
 import { onClickOutside } from '@vueuse/core';
 import TabSettings from '@/components/entries/layout/TabSettings.vue';
+import { v4 } from 'uuid';
 
 const emitter = defineEmits(['change', 'added', 'tabDeleted', 'tabNameChange']);
 
@@ -171,6 +173,11 @@ const addToTab = (element, tab) =>
     offsetBox.value = false;
     usedFields.value.push(element.key);
     emitter('added', {element: element, key: element.key, tab: tab, used: usedFields.value});
+
+    nextTick(() =>
+    {
+        addbox.value.reposition();
+    })
 }
 
 const removeField = (index, tab) =>

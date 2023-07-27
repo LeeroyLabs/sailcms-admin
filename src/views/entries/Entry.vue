@@ -64,11 +64,13 @@ import PubRev from '@/components/entries/entry/PubRev.vue';
 import Title from '@/components/entries/entry/fields/Title.vue';
 import { deburr, kebabCase } from 'lodash';
 import { AvailableFields } from '@/components/entries/entry/fields/Fields';
+import { usePage } from '@/libs/page';
 
 // Use
 const i18n = useI18n();
 const store = useAppStore();
 const route = useRoute();
+const page = usePage();
 
 // Variables
 const isReady = ref(false);
@@ -101,6 +103,8 @@ const loadBase = async () =>
     }
 
     if (route.params.id === 'add') {
+        page.setPageTitle('entry.new_entry', entryType.value.title);
+
         // Prepare all fields for use in entry
         for (let tab of entryLayout.value.schema) {
             for (let field of tab.fields) {
