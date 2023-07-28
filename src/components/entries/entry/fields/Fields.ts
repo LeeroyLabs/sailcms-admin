@@ -2,6 +2,7 @@ import Text from "./Text.vue";
 import Date from "./Date.vue";
 import Color from "./Color.vue";
 import HTML from "./HTML.vue";
+import Textarea from "./Textarea.vue";
 
 export const AvailableFields = {
     phone: {
@@ -68,5 +69,8 @@ export const AvailableFields = {
     },
     html: {
         component: HTML
+    },
+    textarea: {
+        component: Textarea
     }
 }

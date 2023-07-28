@@ -27,22 +27,26 @@
             <template v-else>
                 <div class="tw-flex tw-flex-col tw-gap-y-4">
                     <template v-for="(item, idx) in arrayValue" :key="'text_' + type + '_' + idx">
-                        <div class="tw-relative">
-                            <Editor
-                                :content="item"
+                        <div class="tw-relative tw-mb-4">
+                            <Textarea
+                                :value="item"
+                                :id="'text_' + index + '_' + idx"
                                 :config="config"
                                 :multi="true"
+                                :type="type"
+                                :index="index"
                                 @change="(e) => arrayValue[idx] = e"
+                                class="tw-flex-grow"
                             />
-
-                            <v-btn
-                                @click.prevent="(e) => arrayValue.splice(idx, 1)"
-                                class="tw-absolute tw-top-2 tw-right-2 tw-z-[999]"
-                                size="x-small"
-                                variant="tonal"
-                                color="red"
-                                icon="mdi-trash-can-outline"
-                            />
+                            <div class="tw-absolute tw-right-0 tw-bottom-[-20px]">
+                                <v-btn
+                                    @click.prevent="(e) => arrayValue.splice(idx, 1)"
+                                    variant="tonal"
+                                    color="red"
+                                >
+                                    <v-icon icon="mdi-trash-can-outline" />
+                                </v-btn>
+                            </div>
                         </div>
                     </template>
                 </div>
@@ -51,11 +55,14 @@
         </div>
     </template>
     <template v-else>
-        <Editor
-            :content="modelValue"
+        <Textarea
+            :value="modelValue"
             :config="config"
-            :key="'html_' + type + '_' + index"
+            :type="type"
+            :index="index"
+            :key="'text_' + type + '_' + index"
             @change="(e) => $emit('update:modelValue', e)"
+            :class="{'tw-mb-4': config.explain[$i18n.locale] !== ''}"
         />
     </template>
 </template>
@@ -63,8 +70,7 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { nextTick, ref, watch } from 'vue';
-import Text from "./singles/Text.vue";
-import Editor from '@/components/globals/Editor.vue';
+import Textarea from "./singles/Textarea.vue";
 
 const i18n = useI18n();
 
@@ -91,7 +97,16 @@ const props = defineProps({
 const emitter = defineEmits(['update:modelValue']);
 
 // Add element to array
-const addElement = () => arrayValue.value.push('');
+const addElement = () =>
+{
+    arrayValue.value.push('');
+
+    nextTick(() =>
+    {
+        let id = 'text_' + props.index + '_' + (arrayValue.value.length - 1);
+        document.getElementById(id).focus();
+    });
+}
 
 // Report back any changes to the array
 watch(arrayValue, (v) => emitter('update:modelValue', arrayValue), {deep: true});

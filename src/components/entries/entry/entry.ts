@@ -27,7 +27,7 @@ export const entry = ref({
     },
     categories: [],
     content: {
-        html: '<p>This is the html code of the page!</p>'
+        textarea: 'This is the textarea é' // 22
     },
     seo: {
         title: '',

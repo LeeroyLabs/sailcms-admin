@@ -27,15 +27,18 @@
             <template v-else>
                 <div class="tw-flex tw-flex-col tw-gap-y-4">
                     <template v-for="(item, idx) in arrayValue" :key="'text_' + type + '_' + idx">
-                        <Text
-                            :value="item"
-                            :id="'text_' + index + '_' + idx"
-                            :config="config"
-                            :multi="true"
-                            :type="type"
-                            :index="index"
-                            @change="(e) => arrayValue[idx] = e"
-                        />
+                        <div class="tw-flex tw-flex-row tw-gap-x-4">
+                            <Text
+                                :value="item"
+                                :id="'text_' + index + '_' + idx"
+                                :config="config"
+                                :multi="true"
+                                :type="type"
+                                :index="index"
+                                @change="(e) => arrayValue[idx] = e"
+                            />
+                            <v-btn @click.prevent="(e) => arrayValue.splice(idx, 1)" class="!tw-h-[48px]" variant="tonal" color="red"><v-icon icon="mdi-trash-can-outline" /></v-btn>
+                        </div>
                     </template>
                 </div>
                 <v-btn @click.prevent="addElement" variant="flat" color="primary" class="tw-mt-4">{{ $t('system.add') }}</v-btn>

@@ -18,7 +18,7 @@
             </div>
         </template>
         <template v-if="config.explain[$i18n.locale] !== '' && !multi">
-            <div class="tw-absolute tw-right-0 tw-text-sm tw-top-[48px]">
+            <div class="tw-absolute tw-right-0 tw-text-sm tw-top-[48px] tw-text-gray-400">
                 {{ config.explain[$i18n.locale] }}
             </div>
         </template>
