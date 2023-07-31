@@ -38,20 +38,14 @@ export default {
             }
         }
     `,
-    navigationDetails: `
-        query navigationDetails($name: String!) {
-            navigationDetails(name: $name) {
+    navigationDetailsList: `
+        query navigationDetailsList($sort: String!, $direction: SortingOrder!, $locale: String, $site_id: String) {
+            navigationDetailsList(sort: $sort, direction: $direction, locale: $locale, site_id: $site_id) {
                 _id
                 title
                 name
+                locale
                 structure {
-                  label
-                  url
-                  is_entry
-                  is_category
-                  entry_id
-                  external
-                  children {
                     label
                     url
                     is_entry
@@ -79,10 +73,66 @@ export default {
                                 is_category
                                 entry_id
                                 external
+                                children {
+                                    label
+                                    url
+                                    is_entry
+                                    is_category
+                                    entry_id
+                                    external
+                                }
                             }
                         }
                     }
-                  }
+                }
+            }
+        }
+    `,
+    navigationDetails: `
+        query navigationDetails($name: String!) {
+            navigationDetails(name: $name) {
+                _id
+                title
+                name
+                structure {
+                    label
+                    url
+                    is_entry
+                    is_category
+                    entry_id
+                    external
+                    children {
+                        label
+                        url
+                        is_entry
+                        is_category
+                        entry_id
+                        external
+                        children {
+                            label
+                            url
+                            is_entry
+                            is_category
+                            entry_id
+                            external
+                            children {
+                                label
+                                url
+                                is_entry
+                                is_category
+                                entry_id
+                                external
+                                children {
+                                    label
+                                    url
+                                    is_entry
+                                    is_category
+                                    entry_id
+                                    external
+                                 }
+                             }
+                         }
+                     }
                 }
                 locale
             }
@@ -94,8 +144,13 @@ export default {
         }
     `,
     updateNavigation: `
-        mutation updateNavigation($id: ID!, $name: String!, $structure: [NavigationItemInput!]!, $locale: String!) {
-            updateNavigation(id: $id, name: $name, structure: $structure, locale: $locale)
+        mutation updateNavigation($id: ID!, $title: String!, $name: String!, $structure: [NavigationItemInput!]!, $locale: String!) {
+            updateNavigation(id: $id, title: $title, name: $name, structure: $structure, locale: $locale)
+        }
+    `,
+    deleteNavigation: `
+        mutation deleteNavigation($id: ID!) {
+            deleteNavigation(id: $id)
         }
     `,
 };

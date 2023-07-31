@@ -34,6 +34,7 @@ export interface CreateNavigation {
 
 export interface UpdateNavigation {
     id: string;
+    title: string;
     name: string;
     structure: NavigationItem[];
     locale: string;

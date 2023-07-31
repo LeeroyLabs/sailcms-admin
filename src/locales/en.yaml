@@ -320,7 +320,24 @@ categories:
 
 navigations:
   title: Navigations
+  add: Add
+  cancel: Cancel
+  save: Save
+  add_navigation: Add a navigation
+  add_navigation_msg: Please enter the name of a new navigation that you want to create
+  update_navigation: Update a navigation
+  update_navigation_msg: Please update the name of the navigation
+  new_navigation: Enter navigation name
+  no_navigations: No navigations at the moment.
+  confirm: Confirmation
   confirm_msg: Are you sure you want to delete the navigation?
+  columns:
+    name: Name
+    title: Title
+
+navigation:
+  back: Back
+  confirm_msg: Are you sure you want to delete the item?
   form:
     title_add: Add Navigation Element
     title_edit: Edit Navigation Element

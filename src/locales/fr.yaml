@@ -317,6 +317,24 @@ categories:
 
 navigations:
   title: Navigations
+  add: Ajouter
+  cancel: Annuler
+  save: Enregistrer
+  add_navigation: Ajouter une navigation
+  add_navigation_msg: Veuillez entrer le nom de la nouvelle navigation que vous désirez créer.
+  update_navigation: Mettre à jour une navigation
+  update_navigation_msg: Veuillez mettre à jour le nom de la navigation.
+  new_navigation: Entrer un nom de navigation
+  no_navigations: Aucune navigation pour le moment.
+  confirm: Confirmation
+  confirm_msg: Êtes-vous certain de vouloir supprimer la navigation ?
+  columns:
+    name: Name
+    title: Title
+
+navigation:
+  back: Retour
+  confirm_msg: Êtes-vous certain de vouloir supprimer l'élément' ?
   form:
     title_add: Ajouter un élement
     title_edit: Mettre à jour l'élément
