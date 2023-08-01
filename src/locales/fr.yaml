@@ -329,7 +329,7 @@ navigations:
   confirm: Confirmation
   confirm_msg: Êtes-vous certain de vouloir supprimer la navigation ?
   columns:
-    name: Name
+    slug: Identifiannt unique
     title: Title
 
 navigation:
@@ -338,7 +338,7 @@ navigation:
   form:
     title_add: Ajouter un élement
     title_edit: Mettre à jour l'élément
-    name: Nom de l'élément
+    title: Titre de l'élément
     label: Libellé
     url: URL
     select_type: Sélectioner un type d'item

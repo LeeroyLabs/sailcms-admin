@@ -10,18 +10,20 @@
             <thead>
                 <tr>
                     <SmartTH
-                        :text="$t('navigations.columns.name')"
+                        :text="$t('navigations.columns.title')"
                         :sortable="true"
-                        @sort="setSorting('name')"
+                        @sort="setSorting('title')"
                         :showLoaderOnSort="true"
-                        :condition="currentSorting !== 'name' || !isLoadingSort"
+                        :condition="
+                            currentSorting !== 'title' || !isLoadingSort
+                        "
                         :ascending="
-                            currentSorting === 'name' &&
+                            currentSorting === 'title' &&
                             currentSortingDir === 'ASC'
                         "
                     />
                     <th class="tw-text-center">
-                        {{ $t("navigations.columns.title") }}
+                        {{ $t("navigations.columns.slug") }}
                     </th>
                     <th class="tw-text-center"></th>
                 </tr>
@@ -38,13 +40,13 @@
                             }"
                             :to="{
                                 name: 'Navigation',
-                                params: { name: nav.name },
+                                params: { slug: nav.slug },
                             }"
                         >
-                            {{ nav.name }}
+                            {{ nav.title }}
                         </router-link>
                     </td>
-                    <td>{{ nav.title }}</td>
+                    <td>{{ nav.slug }}</td>
                     <td class="tw-relative">
                         <div
                             class="tw-flex tw-gap-2 tw-absolute tw-top-2/4 tw--translate-y-2/4 tw-right-4"
@@ -119,11 +121,11 @@
                         density="comfortable"
                         :hide-details="true"
                         :rules="[rules.required]"
-                        v-model="navigationName"
+                        v-model="navigationTitle"
                         validate-on="blur"
                     />
 
-                    <v-card-actions class="tw-justify-end">
+                    <v-card-actions class="tw-p-0 tw-justify-end">
                         <v-btn :disabled="applyingAction" @click="handleReset">
                             {{ $t("navigations.cancel") }}
                         </v-btn>
@@ -144,13 +146,14 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from "vue";
+// Vue
+import { ref, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
-
+// Helpers & Libs
 import { Navigations } from "@/libs/graphql/lib/navigations";
 import { SailCMS } from "@/libs/graphql";
-
+// Components
 import Loader from "@/components/globals/Loader.vue";
 import SmartTH from "@/components/globals/table/SmartTH.vue";
 import DeleteConfirmation from "@/components/globals/DeleteConfirmation.vue";
@@ -163,11 +166,11 @@ const isReady = ref(false);
 
 const navigationsList = ref([]);
 const selectedNavigation = ref(null);
+const navigationTitle = ref(null);
 const selectedAction = ref("");
 
 // Form
 const isFormValid = ref(false);
-const navigationName = ref(null);
 const rules = {
     required: (value) => !!value || "Required",
 };
@@ -206,7 +209,8 @@ const handleCreateNavigation = async () => {
     if (isFormValid.value) {
         applyingAction.value = true;
         const responseCreateNavigation = await Navigations.createNavigation({
-            name: navigationName.value,
+            title: navigationTitle.value,
+            slug: navigationTitle.value.toLowerCase(),
             structure: [],
             locale: i18n.locale.value,
             site_id: siteId.value,
@@ -214,7 +218,7 @@ const handleCreateNavigation = async () => {
         if (responseCreateNavigation) {
             router.push({
                 name: "Navigation",
-                params: { name: navigationName.value },
+                params: { slug: navigationTitle.value },
             });
             handleReset();
             applyingAction.value = false;
@@ -229,7 +233,7 @@ const handleUpdateNavigation = async () => {
         const responseUpdateNavigation = await Navigations.updateNavigation({
             id: selectedNavigation.value._id,
             title: selectedNavigation.value.title,
-            name: navigationName.value,
+            slug: navigationTitle.value,
             structure: selectedNavigation.value.structure,
             locale: i18n.locale.value,
         });
@@ -255,7 +259,7 @@ const handleDeleteNavigation = async () => {
 const handleReset = () => {
     selectedNavigation.value = null;
     selectedAction.value = CREATE;
-    navigationName.value = null;
+    navigationTitle.value = null;
     showModal.value = false;
     showDeleteConfirm.value = false;
 };
@@ -263,10 +267,12 @@ const handleReset = () => {
 const selectAction = (nav, action) => {
     selectedNavigation.value = nav;
     selectedAction.value = action;
-    navigationName.value = nav.name;
+    navigationTitle.value = nav.title;
     selectedAction.value === UPDATE
         ? (showModal.value = true)
         : (showDeleteConfirm.value = true);
+    // Validate form
+    nextTick(() => navFormRef.value.validate());
 };
 
 const applyAction = () => {
@@ -281,7 +287,7 @@ const applyAction = () => {
 };
 
 // Sorting
-const currentSorting = ref("name");
+const currentSorting = ref("slug");
 const currentSortingDir = ref("ASC");
 const isLoadingSort = ref(false);
 
@@ -301,13 +307,6 @@ const setSorting = async (field) => {
     await navigationDetailsList();
     isLoadingSort.value = false;
 };
-
-// Validate form when modal opens
-watch(navigationName, () => {
-    nextTick(() => {
-        navFormRef.value.validate();
-    });
-});
 
 navigationDetailsList();
 </script>

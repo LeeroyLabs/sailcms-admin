@@ -332,7 +332,7 @@ navigations:
   confirm: Confirmation
   confirm_msg: Are you sure you want to delete the navigation?
   columns:
-    name: Name
+    slug: Slug
     title: Title
 
 navigation:
@@ -341,7 +341,7 @@ navigation:
   form:
     title_add: Add Navigation Element
     title_edit: Edit Navigation Element
-    name: Name
+    title: Title
     label: Label
     url: URL
     select_type: Select item type

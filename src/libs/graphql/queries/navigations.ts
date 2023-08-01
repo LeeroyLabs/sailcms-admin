@@ -1,7 +1,7 @@
 export default {
     navigation: `
-        query navigation($name: String!) {
-            navigation(name: $name) {
+        query navigation($slug: String!) {
+            navigation(slug: $slug) {
                 label
                 url
                 is_entry
@@ -43,7 +43,7 @@ export default {
             navigationDetailsList(sort: $sort, direction: $direction, locale: $locale, site_id: $site_id) {
                 _id
                 title
-                name
+                slug
                 locale
                 structure {
                     label
@@ -89,11 +89,11 @@ export default {
         }
     `,
     navigationDetails: `
-        query navigationDetails($name: String!) {
-            navigationDetails(name: $name) {
+        query navigationDetails($slug: String!) {
+            navigationDetails(slug: $slug) {
                 _id
                 title
-                name
+                slug
                 structure {
                     label
                     url
@@ -139,13 +139,13 @@ export default {
         }
     `,
     createNavigation: `
-        mutation createNavigation($name: String!, $structure: [NavigationItemInput!]!, $locale: String!, $site_id: String!) {
-            createNavigation(name: $name, structure: $structure, locale: $locale, site_id: $site_id)
+        mutation createNavigation($title: String!, $slug: String!, $structure: [NavigationItemInput!]!, $locale: String!, $site_id: String!) {
+            createNavigation(title: $title, slug: $slug, structure: $structure, locale: $locale, site_id: $site_id)
         }
     `,
     updateNavigation: `
-        mutation updateNavigation($id: ID!, $title: String!, $name: String!, $structure: [NavigationItemInput!]!, $locale: String!) {
-            updateNavigation(id: $id, title: $title, name: $name, structure: $structure, locale: $locale)
+        mutation updateNavigation($id: ID!, $title: String!, $slug: String!, $structure: [NavigationItemInput!]!, $locale: String!) {
+            updateNavigation(id: $id, title: $title, slug: $slug, structure: $structure, locale: $locale)
         }
     `,
     deleteNavigation: `

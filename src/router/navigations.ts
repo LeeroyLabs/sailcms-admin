@@ -13,7 +13,7 @@ export const navigationsRoutes = [
         },
     },
     {
-        path: "/navigations/:name?",
+        path: "/navigations/:slug?",
         name: "Navigation",
         component: () =>
             import(

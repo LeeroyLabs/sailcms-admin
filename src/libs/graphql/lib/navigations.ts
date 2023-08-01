@@ -13,11 +13,11 @@ export class Navigations {
      *
      * navigation
      *
-     * @param name
+     * @param slug
      *
      */
     public static async navigation(
-        name: string
+        slug: string
     ): Promise<NavigationItem[] | null> {
         const client = new Client();
         const query = NavigationsQueries.navigation;
@@ -26,7 +26,7 @@ export class Navigations {
             gql`
                 ${query}
             `,
-            { name: name },
+            { slug },
             false
         );
 
@@ -75,11 +75,11 @@ export class Navigations {
      *
      * navigationDetails
      *
-     * @param name
+     * @param slug
      *
      */
     public static async navigationDetails(
-        name: string
+        slug: string
     ): Promise<NavigationDetails | null> {
         const client = new Client();
         const query = NavigationsQueries.navigationDetails;
@@ -88,7 +88,7 @@ export class Navigations {
             gql`
                 ${query}
             `,
-            { name: name },
+            { slug },
             false
         );
 

@@ -22,24 +22,25 @@
                                 v-model="isFormValid"
                                 class="tw-flex tw-flex-col tw-gap-4"
                             >
-                                <v-text-field
-                                    color="primary"
-                                    :label="$t(`navigation.form.name`)"
-                                    variant="outlined"
-                                    type="text"
-                                    clearable
-                                    :hide-details="true"
-                                    density="comfortable"
-                                    disabled
-                                    v-model="navName"
-                                />
-                                <h3 class="tw-font-medium tw-text-xl tw-mt-4">
-                                    {{
-                                        !selectedNavItem
-                                            ? $t("navigation.form.title_add")
-                                            : $t("navigation.form.title_edit")
-                                    }}
-                                </h3>
+                                <div>
+                                    <h3
+                                        class="tw-font-medium tw-text-xl tw-mb-2"
+                                    >
+                                        {{ navigation?.title }}
+                                    </h3>
+
+                                    <p>
+                                        {{
+                                            !selectedNavItem
+                                                ? $t(
+                                                      "navigation.form.title_add"
+                                                  )
+                                                : $t(
+                                                      "navigation.form.title_edit"
+                                                  )
+                                        }}
+                                    </p>
+                                </div>
 
                                 <v-text-field
                                     color="primary"
@@ -81,7 +82,7 @@
                                               )
                                     "
                                     :items="
-                                        navItemType === 'Entry'
+                                        navItemType === IS_ENTRY
                                             ? [
                                                   { nameToDisplay: 'Entry 1' },
                                                   { nameToDisplay: 'Entry 2' },
@@ -186,7 +187,7 @@
 
 <script setup>
 // Vue
-import { ref, inject, onMounted, watch, nextTick } from "vue";
+import { ref, inject, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/store/app";
 import { useRoute } from "vue-router";
@@ -206,6 +207,7 @@ const isLoading = ref(true);
 const siteId = ref(SailCMS.getSiteId());
 
 const navigation = ref();
+const navigationSlug = ref(route.params.slug);
 const selectedNavItem = ref(null);
 const navigationsKey = ref(0);
 
@@ -224,7 +226,6 @@ const UPDATE_ACTION = "update";
 // Search & Validations
 const isFormValid = ref(false);
 const selectedAction = ref(CREATE_ACTION);
-const navName = ref(route.params.name);
 const navItemStructure = ref({
     label: "",
     url: "",
@@ -241,14 +242,7 @@ const navFormValidations = {
 };
 
 // Template Refs
-const navFormRef = ref();
-
-// Validate form when navItemStructure changes
-watch(navItemStructure, () => {
-    nextTick(() => {
-        navFormRef.value.validate();
-    });
-});
+const navFormRef = ref(null);
 
 // Reset
 const reset = (input) => {
@@ -257,9 +251,14 @@ const reset = (input) => {
 
 // Emits
 const emitter = inject("emitter");
-emitter.on("update-item", (navItem) => updateActionSelected(navItem));
+emitter.on("update-item", (navItem) => {
+    // Validate form
+    if (navFormRef.value) navFormRef.value.validate();
+    updateActionSelected(navItem);
+});
 emitter.on("delete-item", (data) => {
     sortedNavItems.value = data.structure;
+    isFormValid.value = true;
     handleUpdateNavigation();
 });
 const handleUpdateList = (structure) => {
@@ -269,8 +268,9 @@ const handleUpdateList = (structure) => {
 };
 
 // Get the navigations list
-const getNavigationDetails = async (name) => {
-    const responseNavigationDetails = await Navigations.navigationDetails(name);
+const getNavigationDetails = async (slug) => {
+    isLoading.value = true;
+    const responseNavigationDetails = await Navigations.navigationDetails(slug);
     if (responseNavigationDetails) {
         navigation.value = responseNavigationDetails;
         navStructure.value = navigation.value.structure;
@@ -369,12 +369,12 @@ const handleUpdateNavigation = async () => {
         const responseUpdateCategory = await Navigations.updateNavigation({
             id: navigation.value?._id,
             title: navigation.value.title,
-            name: navName.value,
+            slug: navigation.value.slug,
             structure: navStructure.value,
             locale: i18n.locale.value,
         });
         if (responseUpdateCategory) {
-            getNavigationDetails(navName.value);
+            getNavigationDetails(navigation.value.slug);
             handleCancel();
         }
     }
@@ -405,7 +405,7 @@ const handleCancel = () => {
     selectedAction.value = CREATE_ACTION;
     sortedNavItems.value = null;
     if (navFormRef.value) reset(navFormRef.value);
-    navName.value = route.params.name;
+    navigationSlug.value = route.params.slug;
 };
 
 // Watch the type of item (external, entry or category)
@@ -499,7 +499,7 @@ const setupPage = () => {
 };
 
 onMounted(() => {
-    getNavigationDetails(navName.value);
+    getNavigationDetails(navigationSlug.value);
     setupPage();
     categoryFullTree("", siteId.value);
 });

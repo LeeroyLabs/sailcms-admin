@@ -17,29 +17,39 @@
                 'tw-pb-4': !isListOpened.includes(item),
             }"
         >
-            <div class="tw-flex tw-flex-row tw-justify-between tw-items-center tw-py-0.5">
+            <div
+                class="tw-flex tw-flex-row tw-justify-between tw-items-center tw-py-0.5"
+            >
                 <div class="tw-flex tw-flex-row tw-items-center">
                     <v-icon
                         icon="mdi-menu"
                         class="handle tw-cursor-grab tw-mr-1"
                     />
 
-                    <a href="#" class="tw-mr-1 hover:tw-text-primary tw-text-left" @click.prevent="updateItem(item)">{{ displayedOption(item) }}</a>
+                    <a
+                        href="#"
+                        class="tw-mr-1 hover:tw-text-primary tw-text-left"
+                        @click.prevent="updateItem(item)"
+                        >{{ displayedOption(item) }}</a
+                    >
                     <v-icon
                         v-if="item.children.length"
                         :icon="
-                        isListOpened.includes(item)
-                            ? 'mdi-chevron-down'
-                            : 'mdi-chevron-up'
-                    "
+                            isListOpened.includes(item)
+                                ? 'mdi-chevron-down'
+                                : 'mdi-chevron-up'
+                        "
                         class="tw-cursor-pointer"
                         @click="toggleOpenList(item)"
                     />
                 </div>
 
                 <div class="tw-mr-2">
-                    <div class="tw-hidden group-hover:tw-block hover:tw-text-red-500 tw-cursor-pointer" @click.prevent="deleteItem(item)">
-                        <v-icon icon="mdi-trash-can-outline" size="22"/>
+                    <div
+                        class="tw-hidden group-hover:tw-block hover:tw-text-red-500 tw-cursor-pointer"
+                        @click.prevent="deleteItem(item)"
+                    >
+                        <v-icon icon="mdi-trash-can-outline" size="22" />
                     </div>
                 </div>
             </div>
