@@ -3,6 +3,8 @@ import Date from "./Date.vue";
 import Color from "./Color.vue";
 import HTML from "./HTML.vue";
 import Textarea from "./Textarea.vue";
+import Asset from "./Asset.vue";
+import AssetManager from "@/components/globals/AssetManager.vue";
 
 export const AvailableFields = {
     phone: {
@@ -72,5 +74,9 @@ export const AvailableFields = {
     },
     textarea: {
         component: Textarea
+    },
+    asset_image: {
+        component: Asset,
+        type: 'image'
     }
 }

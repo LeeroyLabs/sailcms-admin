@@ -133,6 +133,7 @@ assets:
     filename: Nom
     filesize: Poids
     size: Taille
+    type: Type
     transform_count: Transformations
     uploaded_by: Téléverser par
     uploaded_on: Téléverser le

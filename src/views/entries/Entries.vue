@@ -2,7 +2,7 @@
     <template v-if="isReady">
         <BackButton :url="{name: 'Settings'}"/>
         <Teleport to="#actions">
-            <div class="tw-flex tw-flex-row tw-items-center tw-gap-x-4">
+            <div class="tw-flex tw-flex-row tw-items-center tw-gap-x-4 tw-mt-1">
                 <v-select
                     :hide-details="true"
                     v-model="selectedLocale"

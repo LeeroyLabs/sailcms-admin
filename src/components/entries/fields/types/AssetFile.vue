@@ -9,14 +9,6 @@
             v-model="internalValue.allowed_types"
             class="tw-col-span-2"
         />
-
-        <div>
-            <h2>{{ $t('fields.options.select_many') }}</h2>
-            <v-radio-group v-model="internalValue.multi" hide-details :inline="true" class="tw-flex tw-flex-row tw-col-span-2">
-                <v-radio :label="$t('system.no')" :value="false" class="tw-mr-4"></v-radio>
-                <v-radio :label="$t('system.yes')" :value="true" class="tw-mr-4"></v-radio>
-            </v-radio-group>
-        </div>
     </div>
 </template>
 

@@ -84,14 +84,14 @@ export const availableTypes = computed(() =>
         {
             value: 'asset_file',
             component: AssetFile,
-            hideRepeat: true,
+            hideRepeat: false,
             title: t('fields.types.asset_file'),
             description: t('fields.descriptions.asset_file')
         },
         {
             value: 'asset_image',
             component: Asset,
-            hideRepeat: true,
+            hideRepeat: false,
             title: t('fields.types.asset_image'),
             description: t('fields.descriptions.asset_image')
         },

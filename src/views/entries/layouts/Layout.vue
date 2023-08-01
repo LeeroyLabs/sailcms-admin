@@ -29,7 +29,7 @@
                 </div>
                 <div id="workspace-ui" class="tw-w-full bg-grid tw-px-6">
                     <div id="tablist" class="tw-flex tw-flex-row tw-gap-x-6 tw-flex-wrap tw-gap-y-16">
-                        <template v-for="(element, index) in schema" :key="element.key">
+                        <template v-if="forced" v-for="(element, index) in schema" :key="element.key">
                             <Tab
                                 :fields="fields"
                                 :tab="element"
@@ -69,7 +69,7 @@
 import { hasPermission } from '@/libs/tools';
 import Sortable from 'sortablejs';
 import { v4 } from "uuid";
-import { nextTick, onBeforeUnmount, ref } from 'vue';
+import { getCurrentInstance, nextTick, onBeforeUnmount, ref } from 'vue';
 import Loader from '@/components/globals/Loader.vue';
 import Tab from '@/components/entries/layout/Tab.vue';
 import { Entries } from '@/libs/graphql/lib/entries';
@@ -106,6 +106,8 @@ let virtualSchema = schemaStruct;
 const showAddTabDialog = ref(false);
 const layoutName = ref('');
 const isSaving = ref(false);
+
+const forced = ref(true);
 
 let sortableObj;
 
@@ -155,8 +157,16 @@ const handleRemoved = (e) =>
     const tab = virtualSchema.find(t => t.id === e.tab);
     const field = fields.value.find(f => f.key === e.key);
 
-    field.used = false;
+    if (field) field.used = false;
     tab.fields = e.used;
+    tab.key = v4();
+    tab.id = v4();
+
+    schema.value = virtualSchema;
+
+    // This is f***ing terrible, but Vue is being a really a**hole right now.
+    forced.value = false;
+    nextTick(() => forced.value = true);
 }
 
 const handleTabChanges = (e) =>
@@ -171,8 +181,6 @@ const handleTabChanges = (e) =>
             }
         }
     }
-
-    schema.value = reformatted;
 }
 
 const handleTabNameChange = (e) =>
@@ -185,6 +193,8 @@ const handleTabNameChange = (e) =>
 
     // Force rerender
     tab.key = v4();
+
+    schema.value = virtualSchema;
 }
 
 const handleTabDelete = (e) =>
@@ -238,7 +248,7 @@ const loadFields = async () =>
                 _fields.push(_field.key);
 
                 let field = fields.value.find(f => f.key === _field.key);
-                field.used = true;
+                if (field) field.used = true;
             }
 
             schemaStruct.push({
@@ -276,7 +286,10 @@ const saveLayout = async (exit = false) =>
 
         for (let field of tab.fields) {
             let _field = fields.value.find(f => f.key === field);
-            _fields.push(_field._id);
+
+            if (_field !== undefined) {
+                _fields.push(_field._id);
+            }
         }
 
         saveStruct.push({

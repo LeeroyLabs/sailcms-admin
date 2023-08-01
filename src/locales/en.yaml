@@ -133,6 +133,7 @@ assets:
     filename: Filename
     filesize: Filesize
     size: Size
+    type: File type
     transform_count: Transforms
     uploaded_by: Uploaded by
     uploaded_on: Uploaded on

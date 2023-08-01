@@ -1,6 +1,6 @@
 <template>
-    <v-overlay v-model="showing" content-class="tw-flex tw-flex-row tw-items-center tw-w-full tw-h-full" persistent scroll-strategy="block" location-strategy="static">
-        <v-card class="tw-mx-auto tw-h-[95%] tw-max-h-[95%] tw-rounded-lg tw-border tw-border-slate-700 tw-w-11/12 tw-flex tw-flex-col tw-shadow-xl">
+    <v-overlay v-model="showing" content-class="tw-bg-black/40 tw-flex tw-flex-row tw-items-center tw-w-full tw-h-full" persistent scroll-strategy="block" location-strategy="static">
+        <v-card class="tw-mx-auto tw-h-[92%] tw-max-h-[92%] tw-rounded-lg tw-border tw-border-neutral-700 tw-w-11/12 tw-flex tw-flex-col tw-shadow-xl">
             <div class="tw-w-full tw-bg-slate-700 tw-py-3 tw-pl-6 tw-pr-3 tw-text-white tw-items-center tw-text-xl tw-flex tw-flex-row tw-justify-between">
                 {{ $t('assets.title') }}
 
@@ -28,13 +28,13 @@
 
                     <div
                         class="tw-flex-grow tw-flex tw-flex-col tw-h-full"
-                        :class="{'tw-bg-gray-800': $vuetify.theme.name !== 'light', 'tw-bg-gray-100': $vuetify.theme.name === 'light'}"
+                        :class="{'tw-bg-[#111111]': $vuetify.theme.name !== 'light', 'tw-bg-gray-100': $vuetify.theme.name === 'light'}"
                     >
                         <div
-                            :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
+                            :class="{'tw-bg-darkbg tw-border-neutral-600': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
                             class="tw-p-2.5 tw-pr-3 tw-flex tw-flex-row tw-border-b tw-items-center tw-justify-between"
                         >
-                            <div>
+                            <div class="tw-w-[30%]">
                                 <v-btn @click.prevent="toggleSidebarPreference" flat icon>
                                     <v-icon icon="mdi-menu" />
                                 </v-btn>
@@ -43,13 +43,14 @@
                                     <v-icon icon="mdi-magnify" />
                                 </v-btn>
                             </div>
-                            <div v-if="!$vuetify.display.mobile">
+                            <div v-if="!$vuetify.display.mobile" class="tw-w-[40%]">
                                 <v-text-field
-                                    class="tw-w-[300px] lg:tw-w-[400px] tw-my-2"
+                                    class="tw-my-2"
+                                    :class="{'tw-bg-white': $vuetify.theme.name === 'light'}"
                                     density="compact"
                                     variant="outlined"
                                     color="primary"
-                                    :placeholder="$('system.search')"
+                                    :placeholder="$t('system.search')"
                                     rounded
                                     :hide-details="true"
                                     prepend-inner-icon="mdi-magnify"
@@ -59,17 +60,29 @@
                                     @click:clear="searchFiles"
                                 />
                             </div>
-                            <div v-if="!$vuetify.display.mobile || !showSidebar">
-                                <v-btn @click="showInfo" flat icon v-if="store.assets.selected.length === 1">
+                            <div class="tw-flex tw-flex-row tw-w-[30%] tw-items-center tw-justify-end" v-if="!$vuetify.display.mobile || !showSidebar">
+                                <v-btn
+                                    @click="showInfo" flat icon
+                                    :class="{'tw-invisible': store.assets.selected.length !== 1}"
+                                >
                                     <v-icon icon="mdi-information-outline"/>
                                 </v-btn>
-                                <v-btn @click="openCropper" flat icon v-if="store.assets.selected.length === 1">
+                                <v-btn
+                                    @click="openCropper" flat icon
+                                    :class="{'tw-invisible': store.assets.selected.length !== 1}"
+                                >
                                     <v-icon icon="mdi-crop"/>
                                 </v-btn>
-                                <v-btn @click="showMover=true" flat icon v-if="store.assets.selected.length >= 1">
+                                <v-btn
+                                    @click="showMover=true" flat icon
+                                    :class="{'tw-invisible': store.assets.selected.length === 0}"
+                                >
                                     <v-icon icon="mdi-folder-move-outline"/>
                                 </v-btn>
-                                <v-btn @click="confirmDelete" flat icon v-if="store.assets.selected.length >= 1">
+                                <v-btn
+                                    @click="confirmDelete" flat icon
+                                    :class="{'tw-invisible': store.assets.selected.length === 0}"
+                                >
                                     <v-icon icon="mdi-trash-can-outline" color="red-lighten-2"/>
                                 </v-btn>
 
@@ -106,13 +119,14 @@
                             :loading="store.assets.loadingPage"
                             :multi="multi"
                             :files="fileList"
+                            :mode="mode"
                             :display-mode="currentViewMode"
                             ref="listing"
                             @more="loadNextPage"
                         />
                     </div>
                     <div class="tw-absolute tw-bottom-8 tw-right-8">
-                        <v-btn @click.prevent="showUploader=true" density="comfortable" color="green-darken-2" size="x-large" icon="mdi-plus"></v-btn>
+                        <v-btn @click.prevent="showUploader=true" density="comfortable" color="primary" size="x-large" icon="mdi-plus"></v-btn>
                     </div>
                 </div>
             </div>
@@ -140,19 +154,18 @@
 </template>
 
 <script setup>
-import { computed, inject, nextTick, ref } from 'vue';
+import { computed, inject, nextTick, onUnmounted, ref } from 'vue';
 import { useDisplay } from "vuetify";
+import { Assets } from '@/libs/graphql';
+import { useAppStore } from '@/store/app';
+import { useI18n } from 'vue-i18n';
 import Navigation from "@/components/globals/assetmanager/Navigation.vue";
 import Listing from "@/components/globals/assetmanager/Listing.vue";
 import DisplayModeSelector from "@/components/globals/assetmanager/DisplayModeSelector.vue";
 import CroppingManager from "@/components/globals/assetmanager/CroppingManager.vue";
-import { Assets } from '@/libs/graphql';
-import { useAppStore } from '@/store/app';
 import FileMover from '@/components/globals/assetmanager/FileMover.vue';
 import DeleteConfirmation from '@/components/globals/DeleteConfirmation.vue';
-import { useI18n } from 'vue-i18n';
 import UploadPanel from '@/components/globals/assetmanager/UploadPanel.vue';
-import AssetInformationPanel from '@/components/globals/assetmanager/AssetInformationPanel.vue';
 
 defineEmits(['close', 'selected']);
 
@@ -209,6 +222,10 @@ const props = defineProps({
     multi: {
         type: Boolean,
         default: false
+    },
+    mode: {
+        type: String,
+        default: 'image'
     }
 });
 
@@ -310,8 +327,10 @@ const setActiveFolder = async (e) =>
 {
     activeFolder.value = e;
     currentSearch.value = '';
+    selectedFileObjects.value = [];
     store.setAssetPagination(1, 1);
     fileList.value = [];
+    store.clearSelectedAssets();
     await loadFiles(false);
 }
 
@@ -390,6 +409,13 @@ const handleCropping = async () =>
         fileList.value[fileIndex] = newCopy;
     }
 }
+
+onUnmounted(() =>
+{
+    store.clearSelectedAssets();
+    searchField.value = null;
+    activeFolder.value = 'root';
+});
 
 loadConfig();
 loadFolders();

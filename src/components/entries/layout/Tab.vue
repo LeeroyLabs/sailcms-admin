@@ -30,7 +30,7 @@
                     />
                     <div class="tw-truncate tw-mr-1">{{ fields.find(f => f.key === element)?.name }}</div>
                     <div class="tw-flex-grow tw-flex tw-flex-row tw-justify-end tw-gap-x-2">
-                        <button @click.prevent="removeField(index, tab.id)"><v-icon icon="mdi-trash-can-outline" size="small" class="hover:tw-text-red-500"/>
+                        <button @click.prevent="removeField(element, tab.id)"><v-icon icon="mdi-trash-can-outline" size="small" class="hover:tw-text-red-500"/>
                             <v-tooltip activator="parent" location="bottom" :open-delay="750">{{ $t('layout.delete_field') }}</v-tooltip>
                         </button>
                     </div>
@@ -108,7 +108,7 @@
 
 <script setup>
 import Sortable from 'sortablejs';
-import { nextTick, onMounted, ref } from 'vue';
+import { nextTick, onMounted, onUpdated, ref, watch } from 'vue';
 import { deburr, lowerCase } from 'lodash';
 import ArrowUpBox from '@/components/globals/ArrowUpBox.vue';
 import { onClickOutside } from '@vueuse/core';
@@ -174,17 +174,15 @@ const addToTab = (element, tab) =>
     usedFields.value.push(element.key);
     emitter('added', {element: element, key: element.key, tab: tab, used: usedFields.value});
 
-    nextTick(() =>
-    {
-        addbox.value.reposition();
-    })
+    nextTick(() => addbox.value.reposition());
 }
 
-const removeField = (index, tab) =>
+const removeField = (fieldName, tab) =>
 {
-    const field = usedFields.value[index];
-    usedFields.value.splice(index, 1);
-    emitter('removed', {tab: tab, key: field, used: usedFields.value});
+    let newFields = usedFields.value.filter(f => f !== fieldName);
+    usedFields.value = newFields;
+    emitter('removed', {tab: tab, key: fieldName, used: newFields});
+    //document.getElementById(fieldName).remove();
 }
 
 const isUsed = (key) =>

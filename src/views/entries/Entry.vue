@@ -149,8 +149,8 @@ watch(entry.value, (v) =>
         entry.value.slug = kebabCase(deburr(v.title.trim()));
     }
 
-    console.log(entry.value.content);
     saveableEntryState = JSON.parse(JSON.stringify(entry.value));
+    console.log(saveableEntryState);
 });
 
 // Setup back button url (remove the base url from it, remove the current id, bingo!)
