@@ -102,7 +102,7 @@ const openInfo = (e) =>
 
 const toggleSelection = (event, file) =>
 {
-    if (props.mode === 'image' && isImage.value || props.mode !== 'image' && !isImage.value) {
+    if (props.mode === 'image' && isImage.value || props.mode !== 'image') {
         let isMulti = props.multi;
         if (event.metaKey || event.ctrlKey) isMulti = true;
 

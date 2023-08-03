@@ -40,7 +40,7 @@
                                 :rules="validationRules"
                             >
                                 <ColorPicker
-                                    v-model="arrayValue[idx]"
+                                    v-model:pure-color="arrayValue[idx]"
                                     :bind="item"
                                     :key="index + '_' + idx"
                                     format="hex8"
@@ -115,11 +115,13 @@ const props = defineProps({
 
 const emitter = defineEmits(['update:modelValue']);
 const pureColor = ref(props.modelValue);
-const arrayValue = ref([]);
+const arrayValue = ref(props.modelValue || []);
 
-watch(arrayValue.value, (v) => emitter('update:modelValue', arrayValue.value));
-watch(pureColor, (v) => emitter('update:modelValue', pureColor.value));
-watch(props.modelValue, (v) => pureColor.value = v);
+watch(arrayValue, (v) => emitter('update:modelValue', v));
+watch(pureColor, (v) => emitter('update:modelValue', v));
+watch(props, (v) => {
+    pureColor.value = v.modelValue;
+});
 
 const rules = {
     required: value => !!value && value.trim() !== '' || i18n.t('user.errors.required')

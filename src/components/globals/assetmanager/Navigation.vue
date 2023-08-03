@@ -1,5 +1,5 @@
 <template>
-    <div :class="{'tw-w-[290px] lg:tw-w-[250px]': show, 'tw-w-[0px]': !show, 'tw-bg-slate-600': $vuetify.theme.name !== 'light', 'tw-bg-gray-200': $vuetify.theme.name === 'light'}" class="tw-transition-all tw-duration-300 tw-flex tw-flex-shrink-0 tw-flex-col tw-h-full tw-max-h-full">
+    <div :class="{'tw-w-[290px] lg:tw-w-[250px]': show, 'tw-w-[0px]': !show, 'tw-bg-darkbg': $vuetify.theme.name !== 'light', 'tw-bg-gray-200': $vuetify.theme.name === 'light'}" class="tw-transition-all tw-duration-300 tw-flex tw-flex-shrink-0 tw-flex-col tw-h-full tw-max-h-full">
         <Transition>
             <div
                 v-if="showContent"

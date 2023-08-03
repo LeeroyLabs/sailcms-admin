@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { watch, ref } from 'vue';
+import { watch, ref, onMounted } from 'vue';
 import { cloneDeep } from 'lodash';
 import { useI18n } from 'vue-i18n';
 
@@ -37,15 +37,21 @@ const props = defineProps({
 const emitter = defineEmits(['change']);
 
 const internalValue = ref({
-    allowed_types: props.field.config.allowed_types || '.docx,.doc,.xlsx,.xls,.pdf,.pptx,.ppt',
-    multi: false,
+    allowed_types: props.field.config.allowed_types || '.docx,.doc,.xlsx,.xls,.pdf,.pptx,.ppt'
 });
 
 watch(internalValue.value, (v) =>
 {
     const config = cloneDeep(props.field.config);
     config.allowed_types = v.allowed_types.replace(/\s/g, '');
-    config.multi = v.multi;
+    emitter('change', config);
+});
+
+// Trigger set value for the config
+onMounted(() =>
+{
+    const config = cloneDeep(props.field.config);
+    config.allowed_types = internalValue.value.allowed_types;
     emitter('change', config);
 });
 </script>

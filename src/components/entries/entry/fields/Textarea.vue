@@ -74,8 +74,6 @@ import Textarea from "./singles/Textarea.vue";
 
 const i18n = useI18n();
 
-const arrayValue = ref([]);
-
 const props = defineProps({
     modelValue: {
         default: null
@@ -93,6 +91,8 @@ const props = defineProps({
         default: 0
     }
 });
+
+const arrayValue = ref(props.modelValue || []);
 
 const emitter = defineEmits(['update:modelValue']);
 

@@ -19,7 +19,13 @@
                             </template>
 
                             <template v-for="(field, _idx) in entryLayout.schema[idx].fields" :key="'field_' + idx + '_' + _idx">
-                                <component :is="AvailableFields[field.type].component" :type="AvailableFields[field.type].type" v-model="entry.content[field.key]" :config="field" :index="_idx"/>
+                                <component
+                                    :is="AvailableFields[field.type].component"
+                                    :type="AvailableFields[field.type].type"
+                                    v-model="entry.content[field.key]"
+                                    :config="field"
+                                    :index="_idx"
+                                />
                             </template>
                         </div>
                         <div

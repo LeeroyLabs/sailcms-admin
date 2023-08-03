@@ -269,6 +269,7 @@ system:
   back: Retour
   yes: Oui
   no: Non
+  select: Sélectionner
   search: Recherche
   cancel: Annuler
   add: Ajouter

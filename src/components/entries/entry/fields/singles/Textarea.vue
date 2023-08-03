@@ -5,7 +5,6 @@
             color="primary"
             density="comfortable"
             :label="config.label[$i18n.locale] + ((config.required) ? ' *' : '')"
-            :type="fieldType"
             validate-on="blur"
             :rules="validationRules"
             :hide-details="true"

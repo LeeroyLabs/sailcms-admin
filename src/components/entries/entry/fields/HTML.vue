@@ -29,7 +29,7 @@
                     <template v-for="(item, idx) in arrayValue" :key="'text_' + type + '_' + idx">
                         <div class="tw-relative">
                             <Editor
-                                :content="item"
+                                :content="arrayValue[idx]"
                                 :config="config"
                                 :multi="true"
                                 @change="(e) => arrayValue[idx] = e"
@@ -68,8 +68,6 @@ import Editor from '@/components/globals/Editor.vue';
 
 const i18n = useI18n();
 
-const arrayValue = ref([]);
-
 const props = defineProps({
     modelValue: {
         default: null
@@ -87,6 +85,8 @@ const props = defineProps({
         default: 0
     }
 });
+
+const arrayValue = ref(props.modelValue || []);
 
 const emitter = defineEmits(['update:modelValue']);
 

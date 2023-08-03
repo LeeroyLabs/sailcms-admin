@@ -26,7 +26,7 @@
             </svg>
         </div>
         <div class="tw-w-full tw-flex tw-flex-col tw-gap-y-0.2">
-            <h2 class="tw-font-medium tw-flex-grow">{{ cleanName(file.filename) }}</h2>
+            <h2 class="tw-font-medium tw-flex-grow">{{ cleanName(file.title[$i18n.locale]) }}</h2>
             <div
                 class="tw-w-full tw-flex tw-flex-row"
                 :class="{

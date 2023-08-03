@@ -1,7 +1,8 @@
 <template>
-    <div class="tw-w-6/12 tw-flex tw-flex-row tw-items-start tw-gap-x-2">
+    <div class="tw-w-full tw-flex tw-flex-row tw-items-start tw-gap-x-2">
         <img alt="" :src="(selectedImage !== '') ? selectedImage : 'https://placehold.co/48x48?text=placeholder'" v-if="type === 'image'" class="tw-rounded-md tw-h-[48px] tw-w-[48px]"/>
         <v-text-field
+            ref="phRef"
             variant="outlined"
             color="primary"
             density="comfortable"
@@ -10,13 +11,9 @@
             :rules="validationRules"
             :hide-details="true"
             :model-value="imageName"
+            :readonly="true"
             autocomplete="new-password"
         >
-            <template v-if="showError">
-                <div class="tw-absolute tw-right-3 tw-text-sm tw-text-red-500 tw-mt-0.5">
-                    {{ $t(errorMessage, errorData) }}
-                </div>
-            </template>
             <template v-if="config.explain[$i18n.locale] !== '' && !multi">
                 <div class="tw-absolute tw-right-0 tw-text-sm tw-top-[48px] tw-text-gray-400">
                     {{ config.explain[$i18n.locale] }}
@@ -32,14 +29,15 @@
     <v-text-field :model-value="value" class="!tw-hidden"/>
 
     <Transition>
-        <AssetManager v-if="showAM" :mode="type" :multi="config.config.multi" :cropping="cropping" @close="showAM=false" @selected="handleSelectedAsset" />
+        <AssetManager v-if="showAM" :mode="type" :multi="false" :cropping="cropping" @close="showAM=false" @selected="handleSelectedAsset" />
     </Transition>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import AssetManager from '@/components/globals/AssetManager.vue';
 import { useI18n } from 'vue-i18n';
+import { v4 } from 'uuid';
 
 const showAM = ref(false);
 
@@ -70,6 +68,7 @@ const props = defineProps({
 const emitter = defineEmits(['change']);
 const selectedImage = ref('');
 const imageName = ref('');
+const phRef = ref(null);
 
 const rules = {
     required: value => !!value && value.trim() !== '' || i18n.t('user.errors.required')
@@ -79,16 +78,17 @@ const cropping = computed(() =>
 {
     return {
         name: props.config.config.name,
-        ratio: props.config.config.ratio,
+        ratio: props.config.config.ratio || 0,
+        allowed: props.config.config?.allowed_types || '',
         min: {
-            width: props.config.config.min.width,
-            height: props.config.config.min.height
+            width: props.config.config?.min?.width || 0,
+            height: props.config.config?.min?.height || 0
         },
         max: {
-            width: props.config.config.max.width,
-            height: props.config.config.max.height
+            width: props.config.config?.max?.width || 0,
+            height: props.config.config?.max?.height || 0
         },
-        lockedType: props.config.config.lockedType
+        lockedType: props.config.config?.lockedType || ''
     };
 });
 
@@ -108,6 +108,11 @@ const handleSelectedAsset = (e) =>
     emitter('change', image._id)
 
     showAM.value = false;
+
+    nextTick(() =>
+    {
+        phRef.value.validate();
+    });
 }
 </script>
 

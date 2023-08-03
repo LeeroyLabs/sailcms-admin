@@ -4,7 +4,8 @@ import Color from "./Color.vue";
 import HTML from "./HTML.vue";
 import Textarea from "./Textarea.vue";
 import Asset from "./Asset.vue";
-import AssetManager from "@/components/globals/AssetManager.vue";
+import Select from "./Select.vue";
+import Country from "@/components/entries/entry/fields/Country.vue";
 
 export const AvailableFields = {
     phone: {
@@ -78,5 +79,15 @@ export const AvailableFields = {
     asset_image: {
         component: Asset,
         type: 'image'
+    },
+    asset_file: {
+        component: Asset,
+        type: 'file'
+    },
+    select: {
+        component: Select
+    },
+    country: {
+        component: Country
     }
 }

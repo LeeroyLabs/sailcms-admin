@@ -1,5 +1,5 @@
 <template>
-    <template v-if="config.config.multi">
+    <template v-if="config.repeatable">
         <div
             class="tw-border tw-rounded-md tw-p-4 t-pt-2 tw-relative"
             :class="{
@@ -25,14 +25,20 @@
                 </h3>
             </template>
 
-            <div class="tw-flex tw-flex-row tw-gap-4" :id="'assets_' + instanceId">
+            <div class="tw-flex tw-gap-4" :class="{'tw-flex-row': type === 'image', 'tw-flex-col tw-mt-8': type !== 'image'}" :id="'assets_' + instanceId">
                 <template v-for="(item, idx) in selectedItems" :key="'asset_' + type + '_' + item._id">
-                    <div :data-id="item._id" class="tw-flex tw-flex-col tw-gap-y-2 tw-cursor-grab">
+                    <div v-if="type === 'image'" :data-id="item._id" class="tw-flex tw-flex-col tw-gap-y-2 tw-cursor-grab">
                         <div
-                            v-if="type === 'image'"
                             class="tw-w-[100px] tw-h-[100px] tw-bg-center tw-bg-no-repeat tw-bg-cover tw-rounded-md"
                             :style="'background-image: url(' + item.url + ')'"
                         >
+                        </div>
+                        <v-btn @click.prevent="() => removeItem(item, idx)" variant="tonal" color="red"><v-icon icon="mdi-trash-can-outline" /></v-btn>
+                    </div>
+                    <div v-else class="tw-flex tw-flex-row tw-items-center tw-justify-between">
+                        <div class="tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+                            <v-icon icon="mdi-file-outline"/>
+                            <h4>{{ item.title[$i18n.locale] }}</h4>
                         </div>
                         <v-btn @click.prevent="() => removeItem(item, idx)" variant="tonal" color="red"><v-icon icon="mdi-trash-can-outline" /></v-btn>
                     </div>
@@ -81,7 +87,7 @@ const props = defineProps({
     },
     type: {
         type: String,
-        default: 'text'
+        default: 'image'
     },
     index: {
         type: Number,
@@ -93,16 +99,17 @@ const cropping = computed(() =>
 {
     return {
         name: props.config.config.name,
-        ratio: props.config.config.ratio,
+        ratio: props.config.config.ratio || 0,
+        allowed: props.config.config?.allowed_types || '',
         min: {
-            width: props.config.config.min.width,
-            height: props.config.config.min.height
+            width: props.config.config?.min?.width || 0,
+            height: props.config.config?.min?.height || 0
         },
         max: {
-            width: props.config.config.max.width,
-            height: props.config.config.max.height
+            width: props.config.config?.max?.width || 0,
+            height: props.config.config?.max?.height || 0
         },
-        lockedType: props.config.config.lockedType
+        lockedType: props.config.config?.lockedType || ''
     };
 });
 
@@ -113,7 +120,7 @@ const handleSelectedAssets = (e) =>
     selectedItems.value.push(...e);
 
     for (let item of e) {
-        arrayValue.value.push(e._id);
+        arrayValue.value.push(item._id);
     }
 
     arrayValue.value = uniq(arrayValue.value);
@@ -128,7 +135,8 @@ const removeItem = (item, index) =>
     const items = [];
 
     for (let child of children) {
-        items.push(child.getAttribute('data-id'));
+        const id = child.getAttribute('data-id') ?? '';
+        if (id !== '') items.push(id);
     }
 
     selectedItems.value = selectedItems.value.filter(i => items.includes(i._id));
@@ -149,18 +157,24 @@ const sortingChange = (e) =>
 
 onMounted(() =>
 {
-    new Sortable(
-        document.querySelector('#assets_' + instanceId.value),
-        {
-            tag: 'div',
-            direction: 'horizontal',
-            ghostClass: 'ghost',
-            animation: 300,
-            swapTreshold: 0.05,
-            dragoverBubble: false,
-            onEnd: sortingChange
+    if (props.config.repeatable) {
+        const el = document.querySelector('#assets_' + instanceId.value);
+
+        if (el) {
+            new Sortable(
+                el,
+                {
+                    tag: 'div',
+                    direction: 'horizontal',
+                    ghostClass: 'ghost',
+                    animation: 300,
+                    swapTreshold: 0.05,
+                    dragoverBubble: false,
+                    onEnd: sortingChange
+                }
+            );
         }
-    );
+    }
 });
 
 // Report back any changes to the array

@@ -5,8 +5,8 @@
                 {{ $t('assets.title') }}
 
                 <div>
-                    <v-btn @click="$emit('selected', selectedFileObjects)" flat icon v-if="!showCropper && ((store.assets.selected.length === 1 && !multi) || (store.assets.selected.length >= 1 && multi))">
-                        <v-icon icon="mdi-check-circle-outline"/>
+                    <v-btn :disabled="store.assets.selected.length === 0" :class="{'!tw-opacity-30': store.assets.selected.length === 0}" class="tw-mr-2" @click.prevent="$emit('selected', selectedFileObjects)" flat color="primary" v-if="!showCropper">
+                        {{ $t('system.select') }}
                     </v-btn>
                     <v-btn @click="$emit('close')" icon flat>
                         <v-icon icon="mdi-close"/>
@@ -68,6 +68,7 @@
                                     <v-icon icon="mdi-information-outline"/>
                                 </v-btn>
                                 <v-btn
+                                    v-if="mode === 'image'"
                                     @click="openCropper" flat icon
                                     :class="{'tw-invisible': store.assets.selected.length !== 1}"
                                 >
@@ -96,7 +97,7 @@
                         <div
                             v-if="showSearch"
                             class="tw-w-full tw-flex tw-flex-row tw-py-2 tw-px-3 tw-border-b"
-                            :class="{'tw-bg-slate-800 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-100 tw-border-gray-200': $vuetify.theme.name === 'light'}"
+                            :class="{'tw-bg-darkbg tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-100 tw-border-gray-200': $vuetify.theme.name === 'light'}"
                         >
                             <v-text-field
                                 ref="searchField"

@@ -271,6 +271,7 @@ system:
   back: Back
   yes: Yes
   no: No
+  select: Select
   search: Search
   cancel: Cancel
   add: Add
