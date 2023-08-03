@@ -217,10 +217,8 @@ export const useAppStore = defineStore('app', {
                 found = this.configuration.dynamicSettingsElements.emails.find(n => n.url === param);
 
                 if (!found) {
-                    console.log(this.configuration.dynamicSettingsElements);
                     // @ts-ignore
                     found = this.configuration.dynamicSettingsElements.others.find(n => n.url === param);
-                    console.log("HERE");
                 }
             }
 

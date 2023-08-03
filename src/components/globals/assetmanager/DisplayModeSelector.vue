@@ -15,16 +15,16 @@
                     </span>
                 </div>
 
-                <div
-                    @click.prevent="$emit('change-mode', ['compact-grid'])"
-                    class="tw-px-3.5 tw-mb-1 tw-py-2 tw-cursor-pointer hover:tw-bg-gray-100 tw-rounded-md hover:tw-text-black tw-flex tw-flex-row tw-gap-x-2 tw-items-center"
-                    :class="{'tw-bg-gray-100 tw-text-black': displayMode === 'compact-grid'}"
-                >
-                    <v-icon size="16" icon="mdi-view-compact-outline"></v-icon>
-                    <span class="tw-text-[14px] tw-font-medium tw-tracking-wider" style="font-family: Roboto, sans-serif">
-                        {{ $t('assets.views.compact').toUpperCase() }}
-                    </span>
-                </div>
+<!--                <div-->
+<!--                    @click.prevent="$emit('change-mode', ['compact-grid'])"-->
+<!--                    class="tw-px-3.5 tw-mb-1 tw-py-2 tw-cursor-pointer hover:tw-bg-gray-100 tw-rounded-md hover:tw-text-black tw-flex tw-flex-row tw-gap-x-2 tw-items-center"-->
+<!--                    :class="{'tw-bg-gray-100 tw-text-black': displayMode === 'compact-grid'}"-->
+<!--                >-->
+<!--                    <v-icon size="16" icon="mdi-view-compact-outline"></v-icon>-->
+<!--                    <span class="tw-text-[14px] tw-font-medium tw-tracking-wider" style="font-family: Roboto, sans-serif">-->
+<!--                        {{ $t('assets.views.compact').toUpperCase() }}-->
+<!--                    </span>-->
+<!--                </div>-->
 
                 <div
                     @click.prevent="$emit('change-mode', ['list'])"

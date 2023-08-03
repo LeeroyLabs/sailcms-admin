@@ -27,17 +27,22 @@
             <template v-else>
                 <div class="tw-flex tw-flex-col tw-gap-y-4">
                     <template v-for="(item, idx) in arrayValue" :key="'text_' + type + '_' + idx">
-                        <div class="tw-flex tw-flex-row tw-gap-x-4">
-                            <Text
-                                :value="item"
-                                :id="'text_' + index + '_' + idx"
+                        <div class="tw-relative">
+                            <Editor
+                                :content="arrayValue[idx]"
                                 :config="config"
                                 :multi="true"
-                                :type="type"
-                                :index="index"
                                 @change="(e) => arrayValue[idx] = e"
                             />
-                            <v-btn @click.prevent="(e) => arrayValue.splice(idx, 1)" class="!tw-h-[48px]" variant="tonal" color="red"><v-icon icon="mdi-trash-can-outline" /></v-btn>
+
+                            <v-btn
+                                @click.prevent="(e) => arrayValue.splice(idx, 1)"
+                                class="tw-absolute tw-top-2 tw-right-2 tw-z-[999]"
+                                size="x-small"
+                                variant="tonal"
+                                color="red"
+                                icon="mdi-trash-can-outline"
+                            />
                         </div>
                     </template>
                 </div>
@@ -46,14 +51,11 @@
         </div>
     </template>
     <template v-else>
-        <Text
-            :value="modelValue"
+        <Editor
+            :content="modelValue"
             :config="config"
-            :type="type"
-            :index="index"
-            :key="'text_' + type + '_' + index"
+            :key="'html_' + type + '_' + index"
             @change="(e) => $emit('update:modelValue', e)"
-            :class="{'tw-mb-4': config.explain[$i18n.locale] !== ''}"
         />
     </template>
 </template>
@@ -62,10 +64,9 @@
 import { useI18n } from 'vue-i18n';
 import { nextTick, ref, watch } from 'vue';
 import Text from "./singles/Text.vue";
+import Editor from '@/components/globals/Editor.vue';
 
 const i18n = useI18n();
-
-const arrayValue = ref([]);
 
 const props = defineProps({
     modelValue: {
@@ -85,19 +86,12 @@ const props = defineProps({
     }
 });
 
+const arrayValue = ref(props.modelValue || []);
+
 const emitter = defineEmits(['update:modelValue']);
 
 // Add element to array
-const addElement = () =>
-{
-    arrayValue.value.push('');
-
-    nextTick(() =>
-    {
-        let id = 'text_' + props.index + '_' + (arrayValue.value.length - 1);
-        document.getElementById(id).focus();
-    });
-}
+const addElement = () => arrayValue.value.push('');
 
 // Report back any changes to the array
 watch(arrayValue, (v) => emitter('update:modelValue', arrayValue), {deep: true});
