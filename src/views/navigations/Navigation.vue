@@ -18,9 +18,8 @@
                         <div class="tw-flex tw-flex-col tw-gap-4">
                             <v-form
                                 ref="navFormRef"
-                                @submit.prevent
-                                v-model="isFormValid"
                                 class="tw-flex tw-flex-col tw-gap-4"
+                                @submit.prevent
                             >
                                 <div>
                                     <h3
@@ -52,6 +51,7 @@
                                     :hide-details="true"
                                     :rules="[navFormValidations.required]"
                                     v-model="navItemStructure.label"
+                                    validate-on="submit"
                                 />
 
                                 <v-select
@@ -66,6 +66,7 @@
                                     ]"
                                     :rules="[navFormValidations.required]"
                                     v-model="navItemType"
+                                    validate-on="submit"
                                 />
 
                                 <v-autocomplete
@@ -93,6 +94,7 @@
                                     variant="outlined"
                                     density="comfortable"
                                     :rules="[navFormValidations.required]"
+                                    validate-on="submit"
                                 />
 
                                 <v-text-field
@@ -111,6 +113,7 @@
                                     "
                                     v-model="navItemStructure.url"
                                     :disabled="navItemType !== IS_EXTERNAL_URL"
+                                    validate-on="submit"
                                 />
 
                                 <div
@@ -121,7 +124,6 @@
                                         type="submit"
                                         color="primary"
                                         @click="handleCreateNavigationItem"
-                                        :disabled="!isFormValid"
                                     >
                                         {{
                                             $t(
@@ -134,7 +136,6 @@
                                         type="submit"
                                         @click="handleUpdateNavigation"
                                         color="primary"
-                                        :disabled="!isFormValid"
                                     >
                                         {{
                                             $t(
@@ -171,6 +172,9 @@
                                     @update-list="handleUpdateList"
                                     @delete-item="handleUpdateList"
                                 />
+                                <span v-else>
+                                    {{ $t("navigations.no_navigations") }}</span
+                                >
                             </v-card>
                         </div>
                     </v-col>
@@ -217,9 +221,10 @@ const IS_ENTRY = "Entry";
 const IS_CATEGORY = "Category";
 const CREATE_ACTION = "create";
 const UPDATE_ACTION = "update";
+const UPDATE_LIST_ACTION = "update-list";
+const DELETE_ACTION = "delete";
 
 // Form & Validations
-const isFormValid = ref(false);
 const navItemStructure = ref({
     label: "",
     url: "",
@@ -245,12 +250,20 @@ const emitter = inject("emitter");
 emitter.on("update-item", (navItem) => {
     updateActionSelected(navItem);
 });
-emitter.on("delete-item", (data) => {
+emitter.on("delete-item", async (data) => {
     sortedNavItems.value = data.structure;
+    selectedAction.value = DELETE_ACTION;
+    if (navFormRef.value) {
+        await navFormRef.value.reset();
+    }
     handleUpdateNavigation();
 });
-const handleUpdateList = (structure) => {
+const handleUpdateList = async (structure) => {
     sortedNavItems.value = structure;
+    selectedAction.value = UPDATE_LIST_ACTION;
+    if (navFormRef.value) {
+        await navFormRef.value.reset();
+    }
     handleUpdateNavigation();
 };
 
@@ -322,44 +335,63 @@ const setNavItemsStructure = (dataList) => {
 // CREATE
 // Create a navigation item
 const handleCreateNavigationItem = async () => {
-    const newItem = {
-        ...navItemStructure.value,
-        _id: uuidv4(),
-    };
+    if (navFormRef.value) {
+        await navFormRef.value.validate();
+    }
+    if (
+        navFormRef.value &&
+        navFormRef.value.errors &&
+        !navFormRef.value.errors.length
+    ) {
+        const newItem = {
+            ...navItemStructure.value,
+            _id: uuidv4(),
+        };
 
-    formattedNavItems.value = [newItem, ...formattedNavItems.value];
-    flattenFormattedNavItems.value = [];
-    flatFormattedNavItems(formattedNavItems.value);
-    handleUpdateNavigation();
+        formattedNavItems.value = [newItem, ...formattedNavItems.value];
+        flattenFormattedNavItems.value = [];
+        flatFormattedNavItems(formattedNavItems.value);
+        handleUpdateNavigation();
+    }
 };
 
 // UPDATE
 // Update a navigation
 const handleUpdateNavigation = async () => {
-    if (selectedAction.value === UPDATE_ACTION) {
-        flattenFormattedNavItems.value = flattenFormattedNavItems.value.map(
-            (item) => {
-                if (item._id === selectedNavItem.value?._id)
-                    return { ...navItemStructure.value, _id: item._id };
-                return item;
-            }
-        );
+    if (navFormRef.value && selectedAction.value === UPDATE_ACTION) {
+        await navFormRef.value.validate();
     }
 
-    navStructure.value = setNavItemsStructure(
-        sortedNavItems.value ?? formattedNavItems.value
-    );
+    if (
+        navFormRef.value &&
+        navFormRef.value.errors &&
+        !navFormRef.value.errors.length
+    ) {
+        if (selectedAction.value === UPDATE_ACTION) {
+            flattenFormattedNavItems.value = flattenFormattedNavItems.value.map(
+                (item) => {
+                    if (item._id === selectedNavItem.value?._id)
+                        return { ...navItemStructure.value, _id: item._id };
+                    return item;
+                }
+            );
+        }
 
-    const responseUpdateCategory = await Navigations.updateNavigation({
-        id: navigation.value?._id,
-        title: navigation.value?.title,
-        slug: navigation.value?.slug,
-        structure: navStructure.value,
-        locale: i18n.locale.value,
-    });
-    if (responseUpdateCategory) {
-        getNavigationDetails(navigation.value.slug);
-        handleCancel();
+        navStructure.value = setNavItemsStructure(
+            sortedNavItems.value ?? formattedNavItems.value
+        );
+
+        const responseUpdateCategory = await Navigations.updateNavigation({
+            id: navigation.value?._id,
+            title: navigation.value?.title,
+            slug: navigation.value?.slug,
+            structure: navStructure.value,
+            locale: i18n.locale.value,
+        });
+        if (responseUpdateCategory) {
+            getNavigationDetails(navigation.value.slug);
+            handleCancel();
+        }
     }
 };
 
@@ -376,21 +408,19 @@ const updateActionSelected = (item) => {
         navItemStructure.value.label = selectedNavItem.value.label;
         navItemStructure.value.url = selectedNavItem.value.url;
         navItemStructure.value.entry_id = navItemTypeEntry.value?._id || "";
-
-        if (navFormRef.value) {
-            navFormRef.value.validate();
-        }
     });
 };
 
 // Cancel
 const handleCancel = () => {
-    isFormValid.value = false;
     selectedNavItem.value = null;
     navItemTypeEntry.value = null;
     selectedAction.value = CREATE_ACTION;
     sortedNavItems.value = null;
-    if (navFormRef.value) navFormRef.value.reset();
+    if (navFormRef.value) {
+        navFormRef.value.reset();
+        navFormRef.value.resetValidation();
+    }
 };
 
 // Watch the type of item (external, entry or category)
@@ -409,7 +439,7 @@ watch(navItemType, (newValueType) => {
             navItemTypeEntry.value =
                 entriesList.value.find(
                     (entry) => entry._id === selectedNavItem.value?.entry_id
-                ) || "";
+                ) || null;
             break;
         case IS_CATEGORY:
             navItemStructure.value.external = false;
@@ -419,7 +449,7 @@ watch(navItemType, (newValueType) => {
             navItemTypeEntry.value =
                 formattedCategories.value.find(
                     (cat) => cat._id === selectedNavItem.value?.entry_id
-                ) || "";
+                ) || null;
             break;
         default:
             navItemStructure.value.external = false;
@@ -428,11 +458,6 @@ watch(navItemType, (newValueType) => {
     }
     navItemStructure.value.entry_id = "";
     navItemStructure.value.url = "";
-    nextTick(() => {
-        if (navFormRef.value) {
-            navFormRef.value.validate();
-        }
-    });
 });
 
 // Check which entry is associated with the item & update navItemStructure (id, url)
@@ -444,6 +469,7 @@ watch(navItemTypeEntry, (newValue) => {
     }
 });
 
+/* TODO: Fill entriesList with data when Entries are ready */
 // Entries
 const entriesList = ref([
     {
