@@ -321,11 +321,12 @@ navigations:
   cancel: Annuler
   save: Enregistrer
   add_navigation: Ajouter une navigation
-  add_navigation_msg: Veuillez entrer le nom de la nouvelle navigation que vous désirez créer.
+  add_navigation_msg: Veuillez entrer le nom et L'identifiant unique de la nouvelle navigation que vous désirez créer.
   update_navigation: Mettre à jour une navigation
-  update_navigation_msg: Veuillez mettre à jour le nom de la navigation.
-  new_navigation: Entrer un nom de navigation
+  update_navigation_msg: Veuillez mettre à jour le nom et l'identifiant unique de la navigation.
   no_navigations: Aucune navigation pour le moment.
+  navigation_title: Entrer un titre de navigation
+  navigation_slug: Entrer un identifiant unique de navigation
   confirm: Confirmation
   confirm_msg: Êtes-vous certain de vouloir supprimer la navigation ?
   columns:

@@ -108,7 +108,7 @@ export class Navigations {
      */
     public static async createNavigation(
         navigationInput: CreateNavigation
-    ): Promise<NavigationDetails | null> {
+    ): Promise<string | null> {
         const client = new Client();
         const mutation = NavigationsQueries.createNavigation;
 

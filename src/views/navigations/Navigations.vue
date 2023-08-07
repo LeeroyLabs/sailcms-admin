@@ -12,7 +12,6 @@
                     <SmartTH
                         :text="$t('navigations.columns.title')"
                         :sortable="true"
-                        @sort="setSorting('title')"
                         :showLoaderOnSort="true"
                         :condition="
                             currentSorting !== 'title' || !isLoadingSort
@@ -21,6 +20,7 @@
                             currentSorting === 'title' &&
                             currentSortingDir === 'ASC'
                         "
+                        @sort="setSorting('title')"
                     />
                     <th class="tw-text-center">
                         {{ $t("navigations.columns.slug") }}
@@ -114,15 +114,25 @@
                 >
                     <v-text-field
                         color="primary"
-                        :label="$t('navigations.new_navigation')"
+                        :label="$t('navigations.navigation_title')"
                         variant="outlined"
                         type="text"
                         clearable
                         density="comfortable"
                         :hide-details="true"
                         :rules="[rules.required]"
-                        v-model="navigationTitle"
-                        validate-on="blur"
+                        v-model="navigationInput.title"
+                    />
+                    <v-text-field
+                        color="primary"
+                        :label="$t('navigations.navigation_slug')"
+                        variant="outlined"
+                        type="text"
+                        clearable
+                        density="comfortable"
+                        :hide-details="true"
+                        :rules="[rules.required]"
+                        v-model="navigationInput.slug"
                     />
 
                     <v-card-actions class="tw-p-0 tw-justify-end">
@@ -147,7 +157,7 @@
 
 <script setup>
 // Vue
-import { ref, nextTick } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 // Helpers & Libs
@@ -164,12 +174,23 @@ const i18n = useI18n();
 const router = useRouter();
 const isReady = ref(false);
 
+// Template Refs
+const navFormRef = ref(null);
+
+// Constants
+const CREATE = "create";
+const UPDATE = "update";
+const DELETE = "delete";
+
 const navigationsList = ref([]);
 const selectedNavigation = ref(null);
-const navigationTitle = ref(null);
-const selectedAction = ref("");
+const navigationInput = ref({
+    title: "",
+    slug: "",
+});
+const selectedAction = ref(CREATE);
 
-// Form
+// Form & Validations
 const isFormValid = ref(false);
 const rules = {
     required: (value) => !!value || "Required",
@@ -179,14 +200,6 @@ const rules = {
 const showDeleteConfirm = ref(false);
 const showModal = ref(false);
 const applyingAction = ref(false);
-
-// Template Refs
-const navFormRef = ref(null);
-
-// Constants
-const CREATE = "create";
-const UPDATE = "update";
-const DELETE = "delete";
 
 // Get the list of navigations
 const navigationDetailsList = async () => {
@@ -209,8 +222,8 @@ const handleCreateNavigation = async () => {
     if (isFormValid.value) {
         applyingAction.value = true;
         const responseCreateNavigation = await Navigations.createNavigation({
-            title: navigationTitle.value,
-            slug: navigationTitle.value.toLowerCase(),
+            title: navigationInput.value.title,
+            slug: navigationInput.value.slug,
             structure: [],
             locale: i18n.locale.value,
             site_id: siteId.value,
@@ -218,7 +231,7 @@ const handleCreateNavigation = async () => {
         if (responseCreateNavigation) {
             router.push({
                 name: "Navigation",
-                params: { slug: navigationTitle.value },
+                params: { slug: responseCreateNavigation },
             });
             handleReset();
             applyingAction.value = false;
@@ -228,12 +241,14 @@ const handleCreateNavigation = async () => {
 
 // UPDATE
 const handleUpdateNavigation = async () => {
+    if (applyingAction.value) return;
+
     if (isFormValid.value) {
         applyingAction.value = true;
         const responseUpdateNavigation = await Navigations.updateNavigation({
             id: selectedNavigation.value._id,
             title: selectedNavigation.value.title,
-            slug: navigationTitle.value,
+            slug: navigationInput.value.slug,
             structure: selectedNavigation.value.structure,
             locale: i18n.locale.value,
         });
@@ -259,7 +274,8 @@ const handleDeleteNavigation = async () => {
 const handleReset = () => {
     selectedNavigation.value = null;
     selectedAction.value = CREATE;
-    navigationTitle.value = null;
+    navigationInput.value.title = "";
+    navigationInput.value.slug = "";
     showModal.value = false;
     showDeleteConfirm.value = false;
 };
@@ -267,12 +283,14 @@ const handleReset = () => {
 const selectAction = (nav, action) => {
     selectedNavigation.value = nav;
     selectedAction.value = action;
-    navigationTitle.value = nav.title;
     selectedAction.value === UPDATE
         ? (showModal.value = true)
         : (showDeleteConfirm.value = true);
+
+    navigationInput.value.title = nav.title;
+    navigationInput.value.slug = nav.slug;
     // Validate form
-    nextTick(() => navFormRef.value.validate());
+    if (navFormRef.value) navFormRef.value.validate();
 };
 
 const applyAction = () => {

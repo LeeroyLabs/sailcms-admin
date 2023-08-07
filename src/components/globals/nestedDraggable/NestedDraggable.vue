@@ -30,8 +30,9 @@
                         href="#"
                         class="tw-mr-1 hover:tw-text-primary tw-text-left"
                         @click.prevent="updateItem(item)"
-                        >{{ displayedOption(item) }}</a
                     >
+                        {{ displayedOption(item) }}
+                    </a>
                     <v-icon
                         v-if="item.children.length"
                         :icon="
@@ -100,14 +101,15 @@ const props = defineProps({
     },
 });
 
+// Emits
 const emits = defineEmits(["update-list"]);
 const emitter = inject("emitter");
 
 const isOpened = ref(true);
 const showDeleteConfirm = ref(false);
 const applyingAction = ref(false);
-let nestedList;
 const selectedItem = ref(null);
+let nestedList;
 
 // Open lists having children by default
 const openList = (array) => {

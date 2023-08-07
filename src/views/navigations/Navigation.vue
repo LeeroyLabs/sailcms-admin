@@ -52,7 +52,6 @@
                                     :hide-details="true"
                                     :rules="[navFormValidations.required]"
                                     v-model="navItemStructure.label"
-                                    validate-on="blur"
                                 />
 
                                 <v-select
@@ -83,11 +82,7 @@
                                     "
                                     :items="
                                         navItemType === IS_ENTRY
-                                            ? [
-                                                  { nameToDisplay: 'Entry 1' },
-                                                  { nameToDisplay: 'Entry 2' },
-                                                  { nameToDisplay: 'Entry 3' },
-                                              ]
+                                            ? entriesList
                                             : formattedCategories
                                     "
                                     v-model="navItemTypeEntry"
@@ -97,6 +92,7 @@
                                     return-object
                                     variant="outlined"
                                     density="comfortable"
+                                    :rules="[navFormValidations.required]"
                                 />
 
                                 <v-text-field
@@ -115,7 +111,6 @@
                                     "
                                     v-model="navItemStructure.url"
                                     :disabled="navItemType !== IS_EXTERNAL_URL"
-                                    validate-on="blur"
                                 />
 
                                 <div
@@ -126,6 +121,7 @@
                                         type="submit"
                                         color="primary"
                                         @click="handleCreateNavigationItem"
+                                        :disabled="!isFormValid"
                                     >
                                         {{
                                             $t(
@@ -173,6 +169,7 @@
                                     :modalMsg="$t('navigation.confirm_msg')"
                                     :key="navigationsKey"
                                     @update-list="handleUpdateList"
+                                    @delete-item="handleUpdateList"
                                 />
                             </v-card>
                         </div>
@@ -187,7 +184,7 @@
 
 <script setup>
 // Vue
-import { ref, inject, onMounted, watch } from "vue";
+import { ref, inject, onMounted, watch, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/store/app";
 import { useRoute } from "vue-router";
@@ -207,14 +204,12 @@ const isLoading = ref(true);
 const siteId = ref(SailCMS.getSiteId());
 
 const navigation = ref();
-const navigationSlug = ref(route.params.slug);
+const navStructure = ref([]);
 const selectedNavItem = ref(null);
 const navigationsKey = ref(0);
-
 const formattedNavItems = ref([]);
 const flattenFormattedNavItems = ref([]);
 const sortedNavItems = ref(null);
-const navStructure = ref([]);
 
 // Constants
 const IS_EXTERNAL_URL = "External url";
@@ -223,9 +218,8 @@ const IS_CATEGORY = "Category";
 const CREATE_ACTION = "create";
 const UPDATE_ACTION = "update";
 
-// Search & Validations
+// Form & Validations
 const isFormValid = ref(false);
-const selectedAction = ref(CREATE_ACTION);
 const navItemStructure = ref({
     label: "",
     url: "",
@@ -241,33 +235,26 @@ const navFormValidations = {
     required: (value) => !!value || "Required",
 };
 
+const selectedAction = ref(CREATE_ACTION);
+
 // Template Refs
 const navFormRef = ref(null);
-
-// Reset
-const reset = (input) => {
-    input.reset();
-};
 
 // Emits
 const emitter = inject("emitter");
 emitter.on("update-item", (navItem) => {
-    // Validate form
-    if (navFormRef.value) navFormRef.value.validate();
     updateActionSelected(navItem);
 });
 emitter.on("delete-item", (data) => {
     sortedNavItems.value = data.structure;
-    isFormValid.value = true;
     handleUpdateNavigation();
 });
 const handleUpdateList = (structure) => {
     sortedNavItems.value = structure;
-    isFormValid.value = true;
     handleUpdateNavigation();
 };
 
-// Get the navigations list
+// Get the details of the navigation
 const getNavigationDetails = async (slug) => {
     isLoading.value = true;
     const responseNavigationDetails = await Navigations.navigationDetails(slug);
@@ -335,48 +322,44 @@ const setNavItemsStructure = (dataList) => {
 // CREATE
 // Create a navigation item
 const handleCreateNavigationItem = async () => {
-    if (isFormValid.value) {
-        const newItem = {
-            ...navItemStructure.value,
-            _id: uuidv4(),
-        };
+    const newItem = {
+        ...navItemStructure.value,
+        _id: uuidv4(),
+    };
 
-        formattedNavItems.value = [newItem, ...formattedNavItems.value];
-        flattenFormattedNavItems.value = [];
-        flatFormattedNavItems(formattedNavItems.value);
-        handleUpdateNavigation();
-    }
+    formattedNavItems.value = [newItem, ...formattedNavItems.value];
+    flattenFormattedNavItems.value = [];
+    flatFormattedNavItems(formattedNavItems.value);
+    handleUpdateNavigation();
 };
 
 // UPDATE
 // Update a navigation
 const handleUpdateNavigation = async () => {
-    if (isFormValid.value) {
-        if (selectedAction.value === UPDATE_ACTION) {
-            flattenFormattedNavItems.value = flattenFormattedNavItems.value.map(
-                (item) => {
-                    if (item._id === selectedNavItem.value?._id)
-                        return { ...navItemStructure.value, _id: item._id };
-                    return item;
-                }
-            );
-        }
-
-        navStructure.value = setNavItemsStructure(
-            sortedNavItems.value ?? formattedNavItems.value
+    if (selectedAction.value === UPDATE_ACTION) {
+        flattenFormattedNavItems.value = flattenFormattedNavItems.value.map(
+            (item) => {
+                if (item._id === selectedNavItem.value?._id)
+                    return { ...navItemStructure.value, _id: item._id };
+                return item;
+            }
         );
+    }
 
-        const responseUpdateCategory = await Navigations.updateNavigation({
-            id: navigation.value?._id,
-            title: navigation.value.title,
-            slug: navigation.value.slug,
-            structure: navStructure.value,
-            locale: i18n.locale.value,
-        });
-        if (responseUpdateCategory) {
-            getNavigationDetails(navigation.value.slug);
-            handleCancel();
-        }
+    navStructure.value = setNavItemsStructure(
+        sortedNavItems.value ?? formattedNavItems.value
+    );
+
+    const responseUpdateCategory = await Navigations.updateNavigation({
+        id: navigation.value?._id,
+        title: navigation.value?.title,
+        slug: navigation.value?.slug,
+        structure: navStructure.value,
+        locale: i18n.locale.value,
+    });
+    if (responseUpdateCategory) {
+        getNavigationDetails(navigation.value.slug);
+        handleCancel();
     }
 };
 
@@ -385,16 +368,19 @@ const updateActionSelected = (item) => {
     selectedAction.value = UPDATE_ACTION;
     selectedNavItem.value = item;
 
-    if (item.external) navItemType.value = IS_EXTERNAL_URL;
-    else if (item.is_entry) navItemType.value = IS_ENTRY;
+    if (selectedNavItem.value.external) navItemType.value = IS_EXTERNAL_URL;
+    else if (selectedNavItem.value.is_entry) navItemType.value = IS_ENTRY;
     else navItemType.value = IS_CATEGORY;
 
-    navItemStructure.value.label = item.label;
-    navItemStructure.value.url = item.url;
-    navItemTypeEntry.value =
-        formattedCategories.value.find((cat) => cat._id === item.entry_id) ||
-        null;
-    navItemStructure.value.entry_id = navItemTypeEntry.value?._id || "";
+    nextTick(() => {
+        navItemStructure.value.label = selectedNavItem.value.label;
+        navItemStructure.value.url = selectedNavItem.value.url;
+        navItemStructure.value.entry_id = navItemTypeEntry.value?._id || "";
+
+        if (navFormRef.value) {
+            navFormRef.value.validate();
+        }
+    });
 };
 
 // Cancel
@@ -404,8 +390,7 @@ const handleCancel = () => {
     navItemTypeEntry.value = null;
     selectedAction.value = CREATE_ACTION;
     sortedNavItems.value = null;
-    if (navFormRef.value) reset(navFormRef.value);
-    navigationSlug.value = route.params.slug;
+    if (navFormRef.value) navFormRef.value.reset();
 };
 
 // Watch the type of item (external, entry or category)
@@ -420,30 +405,63 @@ watch(navItemType, (newValueType) => {
             navItemStructure.value.external = false;
             navItemStructure.value.is_entry = true;
             navItemStructure.value.is_category = false;
+
+            navItemTypeEntry.value =
+                entriesList.value.find(
+                    (entry) => entry._id === selectedNavItem.value?.entry_id
+                ) || "";
             break;
         case IS_CATEGORY:
             navItemStructure.value.external = false;
             navItemStructure.value.is_entry = false;
             navItemStructure.value.is_category = true;
+
+            navItemTypeEntry.value =
+                formattedCategories.value.find(
+                    (cat) => cat._id === selectedNavItem.value?.entry_id
+                ) || "";
             break;
         default:
             navItemStructure.value.external = false;
             navItemStructure.value.is_entry = false;
             navItemStructure.value.is_category = false;
     }
+    navItemStructure.value.entry_id = "";
+    navItemStructure.value.url = "";
+    nextTick(() => {
+        if (navFormRef.value) {
+            navFormRef.value.validate();
+        }
+    });
 });
 
-// Check which entry is associated with the item (id, url)
+// Check which entry is associated with the item & update navItemStructure (id, url)
 watch(navItemTypeEntry, (newValue) => {
     navItemTypeEntry.value = newValue;
     if (navItemTypeEntry.value) {
         navItemStructure.value.entry_id = navItemTypeEntry.value._id;
         navItemStructure.value.url = navItemTypeEntry.value.slug;
-    } else {
-        navItemStructure.value.entry_id = "";
-        navItemStructure.value.url = "";
     }
 });
+
+// Entries
+const entriesList = ref([
+    {
+        nameToDisplay: "Entry 1",
+        _id: "1",
+        slug: "/slug-1",
+    },
+    {
+        nameToDisplay: "Entry 2",
+        _id: "2",
+        slug: "/slug-2",
+    },
+    {
+        nameToDisplay: "Entry 3",
+        _id: "3",
+        slug: "/slug-3",
+    },
+]);
 
 // Categories
 const categoriesList = ref([]);
@@ -499,7 +517,7 @@ const setupPage = () => {
 };
 
 onMounted(() => {
-    getNavigationDetails(navigationSlug.value);
+    getNavigationDetails(route.params.slug);
     setupPage();
     categoryFullTree("", siteId.value);
 });
