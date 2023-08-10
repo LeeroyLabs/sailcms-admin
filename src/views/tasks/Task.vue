@@ -146,6 +146,7 @@ const loadTask = async () => {
         task.value = responseLoadTask;
         isReady.value = true;
         console.log("TASK", task.value);
+        taskLogs(task.value._id);
     }
 };
 
@@ -202,6 +203,13 @@ const handleCancelTask = async () => {
         modalMessage.value = "";
         applyingAction.value = false;
         router.push({ name: "Tasks" });
+    }
+};
+
+const taskLogs = async () => {
+    const responseTaskLogs = await Tasks.taskLogs(task.value._id);
+    if (responseTaskLogs) {
+        console.log("LOGS", responseTaskLogs);
     }
 };
 

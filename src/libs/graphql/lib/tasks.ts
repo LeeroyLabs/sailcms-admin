@@ -94,6 +94,31 @@ export class Tasks {
 
     /**
      *
+     * taskLogs
+     *
+     * @param id
+     *
+     */
+    public static async taskLogs(id: string) {
+        const client = new Client();
+        const query = TasksQueries.taskLogs;
+
+        const result = await client.query(
+            gql`
+                    ${query},
+                `,
+            { id }
+        );
+
+        if (result.data) {
+            return result.data.taskLogs;
+        }
+
+        return null;
+    }
+
+    /**
+     *
      * createTask
      *
      * @param name

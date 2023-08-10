@@ -70,6 +70,11 @@ export default {
             cliCommand()
         }
     `,
+    taskLogs: `
+        query taskLogs($id: ID!) {
+            taskLogs(id: $id)
+        }
+    `,
     createTask: `
         mutation createTask($name: String!, $action: String!, $priority: Int!, $retriable: Boolean!) {
             createTask(name: $name, action: $action, priority: $priority, retriable: $retriable) 
