@@ -122,16 +122,16 @@
 </template>
 
 <script setup>
-
 import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import Loader from "@/components/globals/Loader.vue";
 import { ref } from "vue";
 import { Roles, Users, Groups } from "@/libs/graphql";
-import { EmailRule } from "@/libs/validation";
 import AssetManager from "@/components/globals/AssetManager.vue";
 import { usePage } from '@/libs/page';
+import Joi from 'joi';
+import { tlds } from '@hapi/tlds';
 
 const store = useAppStore();
 const i18n = useI18n();
@@ -184,7 +184,14 @@ const currentUser = ref({
 const rules = {
     required: value => !!value || i18n.t('user.errors.required'),
     atLeastOne: value => value.length > 0 || i18n.t('user.errors.at_least_one'),
-    email: value => EmailRule.test(value) || i18n.t('user.errors.email'),
+    email: value => {
+        const schema = Joi.object({
+            email: Joi.string().email({minDomainSegments: 2, tlds: {allow: tlds}}),
+        });
+
+        const result = schema.validate({email: value});
+        return !result.error || i18n.t('login.errors.invalid_email');
+    },
     requiredIfSetting: value => {
         if (forceReset.value) {
             return true;

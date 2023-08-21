@@ -9,7 +9,7 @@
             v-for="item in items"
             :key="item"
             :id="item._id"
-            class="item tw-relative tw-px-4 tw-pt-4 tw-border tw-rounded-md"
+            class="item tw-relative tw-px-4 tw-pt-4 tw-border tw-rounded-md tw-items tw-group"
             :class="{
                 'hover:tw-bg-gray-100': $vuetify.theme.name === 'light',
                 'hover:tw-bg-zinc-800 tw-border-zinc-600':
@@ -17,43 +17,31 @@
                 'tw-pb-4': !isListOpened.includes(item),
             }"
         >
-            <v-icon
-                icon="mdi-drag-horizontal-variant"
-                class="handle tw-cursor-grab"
-            />
-
-            {{ displayedOption(item) }}
-            <v-icon
-                v-if="item.children.length"
-                :icon="
-                    isListOpened.includes(item)
-                        ? 'mdi-chevron-down'
-                        : 'mdi-chevron-up'
-                "
-                class="tw-cursor-pointer"
-                @click="toggleOpenList(item)"
-            />
-
-            <div class="action">
-                <v-btn
-                    @click.prevent="updateItem(item)"
-                    density="comfortable"
-                    icon="mdi-pencil"
-                    height="40"
-                    width="40"
-                    variant="flat"
-                    rounded
-                />
-                <span class="tw-text-red-600">
-                    <v-btn
-                        @click.prevent="deleteItem(item)"
-                        density="comfortable"
-                        color="red"
-                        variant="tonal"
-                        rounded
-                        icon="mdi-trash-can-outline"
+            <div class="tw-flex tw-flex-row tw-justify-between tw-items-center tw-py-0.5">
+                <div class="tw-flex tw-flex-row tw-items-center">
+                    <v-icon
+                        icon="mdi-menu"
+                        class="handle tw-cursor-grab tw-mr-1"
                     />
-                </span>
+
+                    <a href="#" class="tw-mr-1 hover:tw-text-primary tw-text-left" @click.prevent="updateItem(item)">{{ displayedOption(item) }}</a>
+                    <v-icon
+                        v-if="item.children.length"
+                        :icon="
+                        isListOpened.includes(item)
+                            ? 'mdi-chevron-down'
+                            : 'mdi-chevron-up'
+                    "
+                        class="tw-cursor-pointer"
+                        @click="toggleOpenList(item)"
+                    />
+                </div>
+
+                <div class="tw-mr-2">
+                    <div class="tw-hidden group-hover:tw-block hover:tw-text-red-500 tw-cursor-pointer" @click.prevent="deleteItem(item)">
+                        <v-icon icon="mdi-trash-can-outline" size="22"/>
+                    </div>
+                </div>
             </div>
 
             <NestedDraggable
@@ -218,9 +206,5 @@ onMounted(() => {
 
 .dragging {
     @apply tw-opacity-50;
-}
-
-.action {
-    @apply tw-absolute tw-top-6 tw--translate-y-2/4 tw-right-4;
 }
 </style>

@@ -31,7 +31,7 @@
                 </div>
 
                 <v-text-field
-                    v-for="(locale, idx) in SailCMS.locales"
+                    v-for="(locale, idx) in SailCMS.getLocales()"
                     color="primary"
                     :label="$t('email.subject', {locale: locale})"
                     variant="outlined"
@@ -40,7 +40,7 @@
                     validate-on="blur"
                     v-model="currentEmail.subject[locale]"
                     density="comfortable"
-                    :class="{'tw-col-span-2': idx > 1 && idx+1 === SailCMS.locales.length}"
+                    :class="{'tw-col-span-2': idx > 1 && idx+1 === SailCMS.getLocales().length}"
                 />
             </div>
 
@@ -49,7 +49,7 @@
                     <template v-if="['text', 'cta', 'cta_title'].includes(field.type)">
                         <h2 class="tw-col-span-2 tw-text-xl tw-font-medium tw-mb-2">{{ field.label[$i18n.locale] }}</h2>
                         <v-text-field
-                            v-for="(locale, idx) in SailCMS.locales"
+                            v-for="(locale, idx) in SailCMS.getLocales()"
                             color="primary"
                             :label="field.label[$i18n.locale] + ' (' + locale + ')'"
                             variant="outlined"
@@ -58,17 +58,17 @@
                             validate-on="blur"
                             v-model="fields[index].value[locale]"
                             density="comfortable"
-                            :class="{'tw-col-span-2': idx > 1 && idx+1 === SailCMS.locales.length}"
+                            :class="{'tw-col-span-2': idx > 1 && idx+1 === SailCMS.getLocales().length}"
                         />
                     </template>
 
                     <template v-if="field.type === 'content'">
-                        <div v-for="(locale, idx) in SailCMS.locales" class="tw-mb-4">
+                        <div v-for="(locale, idx) in SailCMS.getLocales()" class="tw-mb-4">
                             <h2 class="tw-col-span-2 tw-text-xl tw-font-medium tw-mb-2">{{ field.label[$i18n.locale] }} ({{ locale }})</h2>
                             <Editor
                                 @change="(e) => fields[index].value[locale] = e"
                                 :content="fields[index].value[locale]"
-                                :class="{'tw-col-span-2': idx > 1 && idx+1 === SailCMS.locales.length}"
+                                :class="{'tw-col-span-2': idx > 1 && idx+1 === SailCMS.getLocales().length}"
                             />
                             <small v-html="$t('email.content_note').replace('[[', '{{').replace(']]', '}}')"></small>
                         </div>
@@ -114,19 +114,17 @@
 </template>
 
 <script setup>
-
-// TODO: FINISH LOAD EMAIL + EDIT + TEST PREVIEW
-
 import { usePage } from '@/libs/page';
 import { useRoute, useRouter } from 'vue-router';
 import { nextTick, ref, watch } from 'vue';
-import { EmailRule } from '@/libs/validation';
 import { useI18n } from 'vue-i18n';
 import Loader from '@/components/globals/Loader.vue';
 import { Emails, SailCMS } from '@/libs/graphql';
 import Editor from '@/components/globals/Editor.vue';
 import { useAppStore } from '@/store/app';
 import { cloneDeep } from 'lodash';
+import Joi from 'joi';
+import { tlds } from '@hapi/tlds';
 
 const page = usePage();
 const route = useRoute();
@@ -149,7 +147,12 @@ const showPreviewBox = ref(false);
 const rules = {
     required: value => !!value || i18n.t('login.errors.required'),
     email: value => {
-        return EmailRule.test(value) || i18n.t('login.errors.invalid_email')
+        const schema = Joi.object({
+            email: Joi.string().email({minDomainSegments: 2, tlds: {allow: tlds}}),
+        });
+
+        const result = schema.validate({email: value});
+        return !result.error || i18n.t('login.errors.invalid_email');
     }
 };
 
@@ -184,12 +187,12 @@ watch(selectedTemplate, (v) =>
             if (current) {
                 values = current.value;
             } else {
-                for (let locale of SailCMS.locales) {
+                for (let locale of SailCMS.getLocales()) {
                     values[locale] = '';
                 }
             }
         } else {
-            for (let locale of SailCMS.locales) {
+            for (let locale of SailCMS.getLocales()) {
                 values[locale] = '';
             }
         }
@@ -205,7 +208,7 @@ watch(selectedTemplate, (v) =>
 
 const loadTemplates = async () =>
 {
-    const templates = await Emails.emailTemplates(SailCMS.locales);
+    const templates = await Emails.emailTemplates(SailCMS.getLocales());
 
     availableTemplates.value = templates.map(item => {
         return {value: item, title: item.name};
@@ -218,7 +221,7 @@ const loadTemplates = async () =>
 
 const loadEmail = async () =>
 {
-    currentEmail.value = await Emails.email(route.params.id, SailCMS.locales);
+    currentEmail.value = await Emails.email(route.params.id, SailCMS.getLocales());
 
     //fields.value = currentEmail.value.fields;
     let tpl = availableTemplates.value.find(tpl => tpl.title === currentEmail.value.template);
@@ -285,7 +288,7 @@ const previewEmail = async () =>
     // Load previewer page
     await nextTick(() =>
     {
-        const defaultLocale = SailCMS.locales[0];
+        const defaultLocale = SailCMS.getLocales()[0];
 
         document.getElementById('previewer').setAttribute(
             'src',

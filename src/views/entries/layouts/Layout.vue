@@ -1,102 +1,344 @@
 <template>
     <template v-if="isReady">
-        <template v-if="!$vuetify.display.xs">
-            <div class="tw-mb-6">
-                TITLE FIELD HERE
-            </div>
-            <div class="tw-flex tw-flex-row tw-w-full tw-gap-4">
-                <div class="tw-w-4/12 lg:tw-w-3/12">
-                    <v-card class="tw-p-4 tw-flex tw-flex-col tw-gap-y-4">
-                        <v-expansion-panels v-model="panel" :multiple="true">
-                            <template v-for="items in [{label: 'layout.inputs.text', data: inputFields}, {label: 'layout.inputs.datetime', data: dtFields}, {label: 'layout.inputs.select', data: selectFields}, {label: 'layout.inputs.special', data: specialFields}]">
-                                <v-expansion-panel>
-                                    <v-expansion-panel-title>{{ $t(items.label) }}</v-expansion-panel-title>
-                                    <v-expansion-panel-text>
-                                        <div @click="addField(field)" class="fieldbox" v-for="field in items.data">
-                                            <h2 class="tw-font-medium">{{ $t('layout.names.' + cleanName(field.name)) }}</h2>
-                                            <div class="tw-text-xs">{{ field.description[$i18n.locale]}}</div>
-                                        </div>
-                                    </v-expansion-panel-text>
-                                </v-expansion-panel>
-                            </template>
-                        </v-expansion-panels>
-                    </v-card>
-                </div>
-                <div class="tw-w-8/12 lg:tw-w-9/12 tw-flex-grow">
-                    <v-card class="tw-p-6">
-                        <div v-if="layoutFields.length === 0" class="tw-border tw-border-gray-400 tw-border-dashed tw-w-full tw-py-6 tw-text-center">
-                            {{ $t('layout.no_fields') }}
-                        </div>
+        <BackButton :url="{name: 'EntryLayouts'}"/>
+        <Teleport to="#actions">
+            <v-btn @click="() => saveLayout(true)" :loading="isSaving" color="secondary" class="tw-mr-2" v-if="hasPermission('readwrite_entry_layout')">
+                {{ $t('system.save_exit') }}
+            </v-btn>
+            <v-btn @click="() => saveLayout(false)" :loading="isSaving" color="primary" v-if="hasPermission('readwrite_entry_layout')">
+                {{ $t('system.save') }}
+            </v-btn>
+        </Teleport>
 
-                        <ul id="nested-sort-wrap" class="tw-flex tw-flex-col tw-gap-y-4">
-                            <template v-for="field in layoutFields">
-                                <FieldItem :ref="'field_' + field.id" :id="field.id" :config="field.conf" @remove="removeField" />
-                            </template>
-                        </ul>
-                    </v-card>
+        <div class="tw-flex tw-flex-col md:tw-flex-row tw-justify-start tw-gap-y-6 md:tw-gap-y-0">
+            <div id="workspace" class="tw-w-full tw-overflow-y-auto tw-border tw-rounded-md" :class="{'dark': $vuetify.theme.name === 'dark', 'light tw-border-zinc-400': $vuetify.theme.name === 'light'}">
+                <div class="tw-mb-8 tw-p-5">
+                    <v-form autocomplete="off">
+                        <v-text-field
+                            variant="outlined"
+                            color="primary"
+                            :hide-details="true"
+                            v-model="layoutName"
+                            :rules="[rules.required]"
+                            density="comfortable"
+                            :label="$t('layout.layout_name')"
+                            class="tw-mb-2"
+                            :class="{'tw-bg-white': $vuetify.theme.name === 'light', 'tw-bg-darkbg': $vuetify.theme.name === 'dark'}"
+                        />
+                    </v-form>
+                </div>
+                <div id="workspace-ui" class="tw-w-full bg-grid tw-px-6">
+                    <div id="tablist" class="tw-flex tw-flex-row tw-gap-x-6 tw-flex-wrap tw-gap-y-16">
+                        <template v-if="forced" v-for="(element, index) in schema" :key="element.key">
+                            <Tab
+                                :fields="fields"
+                                :tab="element"
+                                :id="element.id"
+                                :data-id="'tab-' + index"
+                                :title="element.label"
+                                @change="handleChanges"
+                                @added="handleAddition"
+                                @removed="handleRemoved"
+                                @tab-deleted="handleTabDelete"
+                                @tab-name-change="handleTabNameChange"
+                            />
+                        </template>
+                    </div>
+                </div>
+                <div class="tw-p-4 tw-px-6 tw-mt-2 tw-z-0">
+                    <v-btn @click.prevent="showAddTabDialog=true" color="primary" prepend-icon="mdi-plus">{{ $t('layout.add_tab') }}</v-btn>
                 </div>
             </div>
-        </template>
-        <template v-else>
-            <h1 class="tw-text-4xl tw-font-medium tw-text-center tw-mb-6">{{ $t('layout.mobile.wait') }}</h1>
-            <p>{{ $t('layout.mobile.explain') }}</p>
-        </template>
+        </div>
+        <Transition>
+            <AddTab
+                v-if="showAddTabDialog"
+                :show="showAddTabDialog"
+                :loading="false"
+                :overall="true"
+                :title="$t('layout.select_tabname')"
+                @cancel="showAddTabDialog=false"
+                @assign="addTab"
+            />
+        </Transition>
     </template>
     <Loader v-else/>
 </template>
 
 <script setup>
-import { usePage } from '@/libs/page';
-import { computed, nextTick, ref } from 'vue';
-import { v4 } from 'uuid';
-import Loader from '@/components/globals/Loader.vue';
-import { Entries } from '@/libs/graphql/lib/entries';
+import { hasPermission } from '@/libs/tools';
 import Sortable from 'sortablejs';
-import FieldItem from '@/components/entries/fields/FieldItem.vue';
-
-const page = usePage();
-page.setPageTitle('layout.add');
+import { v4 } from "uuid";
+import { getCurrentInstance, nextTick, onBeforeUnmount, ref } from 'vue';
+import Loader from '@/components/globals/Loader.vue';
+import Tab from '@/components/entries/layout/Tab.vue';
+import { Entries } from '@/libs/graphql/lib/entries';
+import { SailCMS } from '@/libs/graphql';
+import BackButton from '@/components/globals/BackButton.vue';
+import { useRoute, useRouter } from 'vue-router';
+import AddTab from '@/components/entries/layout/AddTab.vue';
+import { useI18n } from 'vue-i18n';
+import { deburr, kebabCase } from 'lodash';
+import { useAppStore } from '@/store/app';
 
 const isReady = ref(false);
 const fields = ref([]);
-const panel = ref([0]);
+const route = useRoute();
+const router = useRouter();
+const i18n = useI18n();
+const store = useAppStore();
 
-const layoutFields = ref([]);
+const rules = {
+    required: value => !!value || i18n.t('user.errors.required'),
+};
 
-const loadFields = async () =>
-{
-    fields.value = await Entries.fields();
-    isReady.value = true;
-
-    await nextTick(() =>
+let schemaStruct = [
     {
-        let sortable = Sortable.create(document.querySelector('#nested-sort-wrap'), {
-            handle: '.dnd-handle',
-            animation: 150
-        });
+        label: 'Main',
+        id: v4(),
+        key: v4(),
+        fields: []
+    }
+];
+
+const schema = ref(schemaStruct);
+let virtualSchema = schemaStruct;
+const showAddTabDialog = ref(false);
+const layoutName = ref('');
+const isSaving = ref(false);
+
+const forced = ref(true);
+
+let sortableObj;
+
+onBeforeUnmount(() => window.removeEventListener('resize', () => resizeWorkspace()));
+
+const resizeWorkspace = () =>
+{
+    let headerSize = document.querySelector('header.v-toolbar').clientHeight;
+    let pageControlSize = document.getElementById('pagecontrols').clientHeight;
+    const offset = headerSize + pageControlSize + 50;
+    document.getElementById('workspace').style.height = window.innerHeight - offset + 'px';
+}
+
+const addTab = (name) =>
+{
+    let tabid = v4();
+    schema.value.push({label: name, id: tabid, fields: []});
+    showAddTabDialog.value = false;
+
+    nextTick(() =>
+    {
+        sortableObj.destroy();
+        sortableObj = new Sortable(document.querySelector('#tablist'), opts);
     });
 }
 
-// TODO: GET TREE (run getInfo on all)
+const handleChanges = (e) =>
+{
+    const tab = virtualSchema.find(t => t.id === e.tab);
+    tab.fields = e.used;
+}
 
-const removeField = (id) => layoutFields.value = layoutFields.value.filter(f => f.id !== id);
-const addField = (field) => layoutFields.value.push({id: v4(), conf: field});
-const inputFields = computed(() => fields.value.filter(f => f.category === 'text'));
-const selectFields = computed(() => fields.value.filter(f => f.category === 'select'));
-const specialFields = computed(() => fields.value.filter(f => f.category === 'special'));
-const dtFields = computed(() => fields.value.filter(f => f.category === 'datetime'));
-const cleanName = (name) => name.replace('Field', '');
+const handleAddition = (e) =>
+{
+    const tab = virtualSchema.find(t => t.id === e.tab);
+
+    for (let key of e.used) {
+        let field = fields.value.find(f => f.key === key);
+        field.used = true;
+    }
+
+    tab.fields = e.used;
+}
+
+const handleRemoved = (e) =>
+{
+    const tab = virtualSchema.find(t => t.id === e.tab);
+    const field = fields.value.find(f => f.key === e.key);
+
+    if (field) field.used = false;
+    tab.fields = e.used;
+    tab.key = v4();
+    tab.id = v4();
+
+    schema.value = virtualSchema;
+
+    // This is f***ing terrible, but Vue is being a really a**hole right now.
+    forced.value = false;
+    nextTick(() => forced.value = true);
+}
+
+const handleTabChanges = (e) =>
+{
+    const children = Array.from(document.getElementById('tablist').children).map(c => c.id);
+    let reformatted = [];
+
+    for (let child of children) {
+        for (let tab of schemaStruct) {
+            if (tab.id === child) {
+                reformatted.push(tab);
+            }
+        }
+    }
+}
+
+const handleTabNameChange = (e) =>
+{
+    let tab = virtualSchema.find(t => t.id === e.tab.id);
+    tab.label = e.label;
+
+    tab = schema.value.find(t => t.id === e.tab.id);
+    tab.label = e.label;
+
+    // Force rerender
+    tab.key = v4();
+
+    schema.value = virtualSchema;
+}
+
+const handleTabDelete = (e) =>
+{
+    const clearList = [];
+
+    for (let field of e.fields) {
+        clearList.push(field);
+    }
+
+    virtualSchema = virtualSchema.filter(t => t.id !== e.id);
+    schema.value = schema.value.filter(t => t.id !== e.id);
+
+    for (let key of clearList) {
+        let field = fields.value.find(f => f.key === key);
+        field.used = false;
+    }
+}
+
+const opts = {
+    handle: '.drag-handle',
+    tag: 'div',
+    direction: 'horizontal',
+    ghostClass: 'ghost',
+    animation: 300,
+    swapTreshold: 0.05,
+    dragoverBubble: false,
+    onEnd: handleTabChanges
+};
+
+const loadFields = async () =>
+{
+    fields.value = await Entries.fields(SailCMS.getLocales());
+
+    fields.value = fields.value.map(f => {
+        return {
+            ...f,
+            used: false
+        }
+    });
+
+    if (route.params.id !== 'add') {
+        const layout = await Entries.entryLayout(route.params.id);
+        layoutName.value = layout.title;
+        schemaStruct = [];
+
+        for (let tab of layout.schema) {
+            let _fields = [];
+
+            for (let _field of tab.fields) {
+                _fields.push(_field.key);
+
+                let field = fields.value.find(f => f.key === _field.key);
+                if (field) field.used = true;
+            }
+
+            schemaStruct.push({
+                label: tab.label,
+                id: v4(),
+                key: v4(),
+                fields: _fields
+            });
+        }
+
+        schema.value = schemaStruct;
+        virtualSchema = schemaStruct;
+    }
+
+    isReady.value = true;
+
+    nextTick(() =>
+    {
+        window.addEventListener('resize', () => resizeWorkspace());
+        resizeWorkspace();
+
+        sortableObj = new Sortable(document.querySelector('#tablist'), opts);
+    });
+}
+
+const saveLayout = async (exit = false) =>
+{
+    if (layoutName.value.trim() === '') return;
+    if (isSaving.value) return;
+
+    let saveStruct = [];
+
+    for (let tab of schema.value) {
+        let _fields = [];
+
+        for (let field of tab.fields) {
+            let _field = fields.value.find(f => f.key === field);
+
+            if (_field !== undefined) {
+                _fields.push(_field._id);
+            }
+        }
+
+        saveStruct.push({
+            label: tab.label,
+            fields: _fields
+        });
+    }
+
+    isSaving.value = true;
+    let result;
+
+    if (route.params.id === 'add') {
+        result = await Entries.createEntryLayout(layoutName.value, saveStruct, kebabCase(deburr(layoutName.value)));
+    } else {
+        result = await Entries.updateEntryLayout(route.params.id, layoutName.value, saveStruct, kebabCase(deburr(layoutName.value)));
+    }
+
+    isSaving.value = false;
+
+    if (result) {
+        store.displayToast('success', i18n.t('layout.save_success'));
+
+        if (exit) await router.push({name: 'EntryLayouts'});
+    } else {
+        store.displayToast('error', i18n.t('layout.save_error'));
+    }
+}
 
 loadFields();
 </script>
 
-<style lang="postcss">
-.fieldbox {
-    @apply tw-p-2 hover:tw-bg-primary hover:tw-text-white tw-transition-all tw-duration-300;
-    @apply tw-rounded-md tw-flex tw-flex-col tw-cursor-pointer;
+<style>
+div.light {
+    background-size: 20px 20px;
+    background-repeat: repeat;
+    background-image:
+        linear-gradient(to right, rgba(0, 0, 0, 0.15) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.15) 1px, transparent 1px);
 }
 
-.v-expansion-panel-text__wrapper {
-    @apply !tw-px-4;
+div.dark {
+    background-size: 20px 20px;
+    background-repeat: repeat;
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+}
+
+.ghost {
+    opacity: 0.65;
 }
 </style>

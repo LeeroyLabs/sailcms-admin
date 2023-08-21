@@ -5,12 +5,16 @@
     "locales": ["en", "fr"],
     "strings": {
         "fr": {
+            "fr": "Français",
+            "en": "Anglais",
             "types": {
                 "page": "Pages",
                 "product": "Produits"
             }
         },
         "en": {
+            "fr": "French",
+            "en": "English",
             "types": {
                 "page": "Pages",
                 "product": "Products"

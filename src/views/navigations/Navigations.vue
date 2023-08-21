@@ -6,7 +6,7 @@
             <v-container class="tw-m-0" fluid>
                 <v-row>
                     <v-col cols="12" xs="12" md="3">
-                        <div class="tw-flex tw-flex-col tw-gap-4">
+                        <div class="tw-flex tw-flex-col tw-gap-6">
                             <h3 class="tw-font-medium tw-text-xl">
                                 {{
                                     !selectedNavItem
@@ -19,7 +19,7 @@
                                 ref="navFormRef"
                                 @submit.prevent
                                 v-model="isFormValid"
-                                class="tw-flex tw-flex-col tw-gap-2"
+                                class="tw-flex tw-flex-col tw-gap-4"
                             >
                                 <v-text-field
                                     color="primary"
@@ -27,6 +27,7 @@
                                     variant="outlined"
                                     type="text"
                                     clearable
+                                    :hide-details="true"
                                     density="comfortable"
                                     :rules="[navFormValidations.required]"
                                     v-model="navName"
@@ -40,6 +41,7 @@
                                     type="text"
                                     clearable
                                     density="comfortable"
+                                    :hide-details="true"
                                     :rules="[navFormValidations.required]"
                                     v-model="navItemStructure.label"
                                     @click:clear="handleCancel"
@@ -49,6 +51,7 @@
                                     :label="$t('navigations.form.select_type')"
                                     variant="outlined"
                                     density="comfortable"
+                                    :hide-details="true"
                                     :items="[
                                         IS_EXTERNAL_URL,
                                         IS_ENTRY,
@@ -83,6 +86,7 @@
                                     "
                                     v-model="navItemTypeEntry"
                                     clearable
+                                    :hide-details="true"
                                     item-title="nameToDisplay"
                                     return-object
                                     variant="outlined"
@@ -96,6 +100,7 @@
                                     variant="outlined"
                                     type="text"
                                     clearable
+                                    :hide-details="true"
                                     density="comfortable"
                                     :rules="
                                         navItemType
@@ -107,22 +112,11 @@
                                     @click:clear="handleCancel"
                                 />
 
-                                <div
-                                    class="tw-flex tw-items-center tw-justify-between tw-gap-8 tw-flex-wrap"
-                                >
-                                    <v-btn
-                                        @click="handleCancel"
-                                        color="primary"
-                                        class="tw-min-w-[100px] tw-flex-grow"
-                                    >
-                                        {{ $t("categories.form.cancel") }}
-                                    </v-btn>
+                                <div class="tw-flex tw-items-center tw-flex-wrap">
                                     <v-btn
                                         v-if="selectedAction === CREATE_ACTION"
                                         type="submit"
-                                        block
                                         color="primary"
-                                        class="tw-min-w-[100px] tw-flex-grow"
                                         @click="handleCreateNavigationItem"
                                     >
                                         {{
@@ -135,16 +129,14 @@
                                         v-else
                                         @click="handleUpdateNavigation"
                                         type="submit"
-                                        block
                                         :disabled="!isFormValid"
                                         color="primary"
-                                        class="tw-min-w-[100px] tw-flex-grow"
                                     >
-                                        {{
-                                            $t(
-                                                "navigations.form.edit_navigation_btn"
-                                            )
-                                        }}
+                                        {{ $t("navigations.form.edit_navigation_btn") }}
+                                    </v-btn>
+
+                                    <v-btn @click="handleCancel" variant="text" class="tw-ml-2">
+                                        {{ $t("categories.form.cancel") }}
                                     </v-btn>
                                 </div>
                             </v-form>

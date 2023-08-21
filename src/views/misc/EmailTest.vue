@@ -1,4 +1,5 @@
 <template>
+    <BackButton :url="{name: 'Settings'}"/>
     <p class="tw-text-sm tw-w-full md:tw-w-8/12 lg:tw-w-5/12 tw-mb-6">
         {{ $t('emails.test_explain') }}
     </p>
@@ -22,12 +23,13 @@
 </template>
 
 <script setup>
-
 import { usePage } from '@/libs/page';
 import { ref } from 'vue';
-import { EmailRule } from '@/libs/validation';
 import { useI18n } from 'vue-i18n';
 import { Misc } from '@/libs/graphql';
+import BackButton from '@/components/globals/BackButton.vue';
+import Joi from 'joi';
+import { tlds } from '@hapi/tlds';
 
 const page = usePage();
 page.setPageTitle('emails.test_title');
@@ -37,7 +39,12 @@ const i18n = useI18n();
 const rules = {
     required: value => !!value || i18n.t('login.errors.required'),
     email: value => {
-        return EmailRule.test(value) || i18n.t('login.errors.invalid_email')
+        const schema = Joi.object({
+            email: Joi.string().email({minDomainSegments: 2, tlds: {allow: tlds}}),
+        });
+
+        const result = schema.validate({email: value});
+        return !result.error || i18n.t('login.errors.invalid_email');
     }
 };
 

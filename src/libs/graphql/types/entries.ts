@@ -27,6 +27,7 @@ export type EntryType = {
     handle: string;
     url_prefix: JsonObject;
     entry_layout_id: string;
+    use_categories: string;
 }
 
 export type Parent = {
@@ -114,11 +115,16 @@ export type SocialMetaContent = {
 export type EntryLayout = {
     _id: string;
     slug?: string;
-    titles: LocaleObject;
-    schema: LayoutField[];
+    title: string;
+    schema: EntryLayoutTab[];
     authors: Authors;
     dates: Dates;
     is_trashed: boolean;
+};
+
+export type EntryLayoutTab = {
+    label: string;
+    fields: Field[];
 };
 
 export type FieldInfo = {
@@ -150,3 +156,26 @@ export type Option = {
     value: string;
     label: string;
 };
+
+export type Field = {
+    _id?: string;
+    name: string;
+    key?: string,
+    label: LocaleObject,
+    placeholder: LocaleObject,
+    explain: LocaleObject,
+    repeatable: boolean,
+    validation: string,
+    required: boolean,
+    type: string,
+    config: object;
+};
+
+export type EntryListing = {
+    pagination: {
+        current: number;
+        totalPages: number;
+        total: number;
+    },
+    list: any[]
+}

@@ -29,7 +29,7 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
 import { useAppStore } from '@/store/app';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 import Loader from '@/components/globals/Loader.vue';
 import { hasPermission } from '@/libs/tools';
 import { Misc, SailCMS } from '@/libs/graphql';
@@ -79,12 +79,12 @@ const UIBridge = new Extensions(async (message, data) =>
             break;
 
         case 'runGraphQLQuery':
-            result = await Misc.runExtensionQuery(data.name, data.query, data.variables, SailCMS.locales);
+            result = await Misc.runExtensionQuery(data.name, data.query, data.variables, SailCMS.getLocales());
             UIBridge.respond('queryResult', {query: data.id, result: result});
             break;
 
         case 'runGraphQLMutation':
-            result = await Misc.runExtensionMutation(data.name, data.query, data.variables, SailCMS.locales);
+            result = await Misc.runExtensionMutation(data.name, data.query, data.variables, SailCMS.getLocales());
             UIBridge.respond('mutationResult', {query: data.id, result: result});
             break;
 
@@ -122,7 +122,7 @@ onMounted(async () =>
         if (route.meta.settings) {
             urlSrc.value = SailCMS.getURL().replace('graphql', 'extension/' + conf.name + '/settings')
         } else {
-            urlSrc.value = SailCMS.getURL().replace('graphql', 'extension/' + conf.name + '/ui')
+            urlSrc.value = SailCMS.getURL().replace('graphql', 'extension/' + conf.slug + '/ui')
         }
 
         iframe.value.onload = () =>

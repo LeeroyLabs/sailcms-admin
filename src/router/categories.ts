@@ -8,7 +8,7 @@ export const categoriesRoutes = [
             ),
         meta: {
             guarded: true,
-            permission: "any",
+            permission: "readwrite_category",
             layout: "private",
         },
     },

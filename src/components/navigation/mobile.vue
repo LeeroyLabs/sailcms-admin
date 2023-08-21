@@ -28,11 +28,7 @@
                     :key="i"
                     :value="item"
                     :to="item.to"
-                    :active="
-                        (item.to && $route.meta.parent === item.to.name) ||
-                        $route.name === item.parent ||
-                        (item.to && $route.name === item.to.name)
-                    "
+                    :active="isActive(item)"
                     :title="item.text"
                     color="white"
                 >
@@ -59,9 +55,18 @@ const props = defineProps({
 });
 
 const route = useRoute();
-console.log(route);
 
 const state = computed(() => {
     return props.navigationState;
 });
+
+const isActive = (item) =>
+{
+    if (item.to && route.meta.parent === item.to.name) return true;
+    if (route.name === item.parent) return true;
+    if (item.to && route.name === item.to.name) return true;
+    if (route.meta.isEntries !== undefined && route.meta.isEntries === item.isEntries) return true;
+
+    return false;
+}
 </script>

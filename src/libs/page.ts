@@ -20,13 +20,14 @@ class PageHandler
         watch(i18n.global.locale, () => this.runSetup());
     }
 
-    public setPageTitle(title: string): void
+    public setPageTitle(title: string, untranslatedPart: string = ''): void
     {
         this.title = title;
+        const extra = (untranslatedPart.trim() !== '') ? ' ' + untranslatedPart : '';
 
         // @ts-ignore
-        store.setPageTitle(i18n.global.t(title));
-        document.title = `${i18n.global.t(title)} — SailCMS`;
+        store.setPageTitle(i18n.global.t(title) + extra);
+        document.title = `${i18n.global.t(title)}${extra} — SailCMS`;
     }
 
     public setBreadcrumbs(crumbs: Crumb[]): void

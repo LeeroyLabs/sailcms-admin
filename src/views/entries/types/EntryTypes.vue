@@ -1,5 +1,6 @@
 <template>
     <div v-if="isReady">
+        <BackButton :url="{name: 'Settings'}"/>
         <Teleport to="#actions">
             <v-btn @click="$router.push({name: 'EntryType', params: {id: 'add'}})" color="primary" v-if="hasPermission('readwrite_entry_type')">
                 {{ $t('entry_types.add') }}
@@ -9,11 +10,11 @@
         <div v-if="types.length > 0" class="tw-mt-8 tw-flex tw-flex-row tw-flex-wrap tw-gap-6 tw-w-full">
             <v-card v-for="type in types" variant="tonal" class="tw-group tw-relative tw-p-6 tw-flex tw-flex-row tw-items-center tw-justify-center tw-min-w-[225px] tw-min-h-[130px] tw-text-xl">
                 {{ type.title }}
-                <div v-if="type.handle !== 'page'" class="tw-hidden group-hover:tw-flex tw-flex-row tw-items-center tw-justify-center tw-absolute tw-inset-0 tw-bg-black/40">
+                <div class="tw-hidden group-hover:tw-flex tw-flex-row tw-items-center tw-justify-center tw-absolute tw-inset-0 tw-bg-black/40">
                     <v-btn @click="$router.push({name: 'EntryType', params: {id: type.handle}})" variant="flat" icon color="primary" class="tw-mr-2">
                         <v-icon icon="mdi-pen"/>
                     </v-btn>
-                    <v-btn @click="confirmDelete(type)" variant="flat" icon color="red">
+                    <v-btn v-if="type.handle !== 'page'" @click="confirmDelete(type)" variant="flat" icon color="red">
                         <v-icon icon="mdi-trash-can"/>
                     </v-btn>
                 </div>
@@ -51,6 +52,7 @@ import { Entries } from '@/libs/graphql/lib/entries';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '@/store/app';
 import { useI18n } from 'vue-i18n';
+import BackButton from '@/components/globals/BackButton.vue';
 
 const isReady = ref(false);
 const showDeleteConfirm = ref(false);
@@ -67,7 +69,7 @@ page.setPageTitle('entry_types.title');
 
 const loadTypes = async () =>
 {
-    types.value = await Entries.entryTypes(SailCMS.locales);
+    types.value = await Entries.entryTypes(SailCMS.getLocales());
     isReady.value = true;
 }
 

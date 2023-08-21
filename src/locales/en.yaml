@@ -126,13 +126,14 @@ assets:
   remove: Remove
   folder_name: Folder name
   delete_success: File(s) removed successfully.
-  no_files: No files found at this moment.
+  no_files: No files found at the moment.
   do_upload: Upload
   img_title: Title
   info:
     filename: Filename
     filesize: Filesize
     size: Size
+    type: File type
     transform_count: Transforms
     uploaded_by: Uploaded by
     uploaded_on: Uploaded on
@@ -160,15 +161,14 @@ assets:
     toobig: File is too big
     notallowed: Filetype is not allowed
 
-entries:
-  title: Entries
-
 entry_types:
   title: Entry Types
   add: Add Type
+  single_add: Add New Type
   type_title: Title
   handle: Handle
   prefix: URL prefix ({locale})
+  use_categories: Enable categorization
   save_success: Entry type {name} saved successfully.
   leave_blank: Leave blank for none
   no_types: No entry types at the moment.
@@ -187,6 +187,14 @@ layouts:
   active: Active
   trashed: Trashed
   add: Add Layout
+  confirm_delete: Are you sure you want to delete this layout?
+  confirm_delete_many: Are you sure you want to delete these layouts?
+  confirm_softdelete: Are you sure you want to move this layout to trash?
+  confirm_softdelete_many: Are you sure you want to move these layouts to trash?
+  delete_success: Layout was deleted successfully!
+  delete_success_many: Layouts were deleted successfully!
+  delete_error: Layout could not be deleted. Make sure it's not in use.
+  delete_error_many: One or more layouts could not be deleted. Make sure they are not in use.
   columns:
     title: Name
     created_by: Created by
@@ -200,51 +208,17 @@ layout:
   no_fields: There are no fields in this layout at the moment.
   field_key: The key is used in your code to get the value of this field.
   untitled: Untitled
-  inputs:
-    text: Text Inputs
-    select: Select Inputs
-    datetime: Date & Time Inputs
-    special: Special Inputs
-  names:
-    AssetImage: Image Asset
-    AssetFile: File Asset
-    Entry: Entry
-    Email: Email Address
-    HTML: HTML Content
-    Text: Text Content
-    Textarea: Multiline Text Content
-    Number: Numeric Value
-    Url: URL
-    Date: Date
-    DateTime: Date & Time
-    Time: Time
-    MultipleSelect: Multiple Selections
-    Select: Dropdown Selection
-  configs:
-    required: Required
-    multiline: Multiline
-    maxLength: Maximum Length
-    minLength: Minimum Length
-    min: Minimum value
-    max: Maximum value
-    step: Step
-    format: Format
-    pattern: Match Pattern
-    title_fr: French Title
-    title_en: English Title
-    key: Field Key
-    cropName: Cropping Key
-    ratio: Ratio
-    minWidth: Minimum Width
-    minHeight: Minimum Height
-    maxWidth: Maximum Width
-    maxHeight: Maximum Height
-    lockedType: Locked Cropping Shape
-    multiple: Multiple
-    allowedFormats: Allowed File Extensions
-  explain:
-    cropName: The key is used in your code to get the url of the crop.
-    lockedType: Lock either a square, round or user's choice.
+  name: Name
+  add_tab: Add tab
+  add_field: Add Field
+  delete_field: Delete Field
+  tabname: Tab name
+  select_tabname: Select a name for this tab
+  layout_name: Layout name
+  save_success: Layout saved successfully!
+  save_error: Could not save layout. Please try again.
+  tab_settings: Tab Settings
+  tab_name: Tab name
   mobile:
     wait: Wait!
     explain: The layouts cannot be managed using a phone. Please use a tablet or bigger. We recommend using a laptop or desktop.
@@ -293,14 +267,31 @@ system:
   settings: Settings
   entry_types: Types
   entry_layouts: Layouts
+  entry_fields: Fields
+  back: Back
   yes: Yes
   no: No
+  select: Select
   search: Search
   cancel: Cancel
   add: Add
   save: Save
+  save_exit: Save & Exit
   delete: Delete
   other: Other
+  set: Set
+  trash: Trash
+  active: Active
+  restore: Restore
+  system: System
+  content: Content
+  utilities: Utilities
+  email_templates: Email Templates
+  logs: Logs
+  info: Information
+  tasks: Tasks
+  no_items_now: No items at the moment.
+  add_item: Add Item
   toast:
     error: Error
     success: Success
@@ -313,6 +304,7 @@ system:
     graphql: "SailCMS cannot find the URL to work with."
     graphql2: "Make sure the"
     graphql3: "file is on your server."
+    length: Must be at least 3 characters long.
 
 categories:
   title: Categories
@@ -333,16 +325,453 @@ navigations:
   title: Navigations
   confirm_msg: Are you sure you want to delete the navigation?
   form:
-    title_add: Add Navigation
-    title_edit: Edit Navigation
-    name: Enter name
-    label: Enter label
-    url: Enter url
-    select_type: Select a type of item
+    title_add: Add Navigation Element
+    title_edit: Edit Navigation Element
+    name: Name
+    label: Label
+    url: URL
+    select_type: Select item type
     select_entry: Select an entry
     select_category: Select a category
     add_navigation_btn: Add
     edit_navigation_btn: Save
+
+fields:
+  add: Add Field
+  no_fields: No fields at the moment.
+  title: Fields
+  new: New Field
+  editing: Editing
+  field_name: Name
+  field_key: Key
+  key_explain: This key is used to identify this field in an entry.
+  crop_key_explain: This key is use to identify the crop within an entry. Uses field key if not set.
+  ratio_explain: The ratio is values like 4:3 or 16:9 in a float format. Defaults to 16:9.
+  placeholder: Placeholder
+  explain: Field explanation text
+  repeatable: Repeatable
+  required: Required
+  label: Label
+  select_error: Value already in use.
+  matrix_error: Cannot add the same field twice within the same matrix.
+  confirm_delete: Are you sure you want to delete this field?
+  confirm_delete_many: Are you sure you want to delete these fields?
+  delete_success: Field deleted successfully!
+  delete_success_many: Fields deleted successfully!
+  delete_error: Field could not be deleted. Make sure they are not in use.
+  delete_error_many: One or more fields could not be deleted. Make sure they are not in use.
+  layout: Layout
+  repeatable_title: Group Title
+  minus_one_for_max_limit: Enter -1 not limit
+  columns:
+    name: Name
+    key: Handle
+    repeatable: Repeatable
+    required: Required
+    type: Type
+  types:
+    text: Text
+    textarea: Text Area
+    html: HTML
+    numeric: Numeric
+    integer: Integer
+    float: Float
+    password: Password
+    email: Email
+    phone: Phone
+    creditcard: Credit Card
+    asset_file: File Asset
+    asset_image: Image Asset
+    url: URL
+    domain: Domain
+    directory: Directory Path
+    file: File Path
+    ip: IP
+    select: Select / Multi-Select
+    entry: Single Entry / Multi-Select
+    entry_list: Entry List
+    category: Category
+    categories: Categories
+    switch: Switch
+    hex: HTML Color
+    postal: Postal Code
+    country: Country
+    date: Date
+    datetime: DateTime
+    time: Time
+    checkbox: Checkboxes
+    radio: Radios
+    id: ID
+    matrix: Matrix
+    year: Year selector
+  descriptions:
+    text: Plain text field.
+    textarea: Multi line plain text field.
+    html: Rich HTML text field.
+    numeric: Accepts integer and floating decimal numbers only.
+    integer: Integer number only.
+    float: Floating decimal point only.
+    password: Hides the user input.
+    email: Accepts email only.
+    phone: Accepts phone numbers only.
+    creditcard: Format and validate credit card number.
+    asset_file: File asset(s) selector.
+    asset_image: Image asset(s) selector.
+    url: Accepts properly formatted URLs only.
+    domain: Accepts properly formatted domains only.
+    directory: "Accepts properly formatted path only (ex: /your/path/here)."
+    file: "Accepts properly formatted file path only (ex: /your/path/file.txt)."
+    ip: Accepts properly formatted IP only.
+    select: Dropdown menu that offers a list of predefined choices or 2 lists that enables multiple selections.
+    entry: Dropdown to select a single entry of set type or 2 lists that enables multiple selections.
+    entry_list: 2 Lists that consists of 1 with a list of entries of set type and one for selected entries.
+    category: Dropdown to select a single category from predefined list.
+    categories: List of categories in checkbox form to select 1 or more categories.
+    switch: A toggle for yes/no or on/off value.
+    hex: Color picker for html valid color selection.
+    postal: Accepts only postal or zip code that is valid for set country or countries.
+    country: "Accepts only a valid ISO-3166 Alpha-2 country code (ex: US)."
+    date: Calendar to select a date or date range in the requested format.
+    datetime: Calendar to select date and time or date and time range in the requested formats.
+    year: Calendar to select a year.
+    time: "Time field or range that only accepts time values (ex: 11:30)."
+    checkbox: List of checkboxes to make 1 or more selection from a provided list.
+    radio: List of radio buttons to make a selection from a provided list.
+    id: Allows only a valid SailCMS ID (mongodb) of 24 characters in length.
+    matrix: Group fields together to form a super field. This matrix can be repeated.
+  options:
+    min_num: Minimum value
+    max_num: Maximum value
+    min_length: Minimum length
+    max_length: Maximum length
+    rows: Number of rows
+    max_chars: Maximum number of characters
+    max_chars_explain: set -1 for no limit
+    min_width: Minimum width
+    max_width: Maximum width
+    min_height: Minimum height
+    max_height: Maximum height
+    crop_name: Crop key
+    ratio: Image ratio
+    user_choice: User choice
+    square: Square
+    round: Round
+    crop_format: Crop format
+    select_many: Select many
+    allowed_types: Allowed file types
+    label: Field Label
+    country: Country
+    all_countries: All
+    value: Value
+    select_label: Label
+    multi: Allow multiple selections
+    add_choice: Add Choice
+    no_choices: No Choices yet.
+    entry_type: Entry type
+    date_format: "Date format (ex: d-m-Y)"
+    time_format: "Time format (ex: H:i:s)"
+    add_field: Add field
+    no_fields: No fields yet.
+    field: Field
+    range: Use Range
+  errors:
+    cannot_be_zero: Value cannot be zero or less.
+    key_used: Key already in use or is invalid.
+    key_not_empty: Key cannot be empty.
+  toast:
+    error: The field could not be saved. Please try again.
+    success: The field was saved successfully!
+
+countries:
+  AF: Afghanistan
+  AL: Albania
+  DZ: Algeria
+  AS: American Samoa
+  AD: Andorra
+  AO: Angola
+  AI: Anguilla
+  AQ: Antarctica
+  AG: Antigua and Barbuda
+  AR: Argentina
+  AM: Armenia
+  AW: Aruba
+  AU: Australia
+  AT: Austria
+  AZ: Azerbaijan
+  BS: Bahamas (the)
+  BH: Bahrain
+  BD: Bangladesh
+  BB: Barbados
+  BY: Belarus
+  BE: Belgium
+  BZ: Belize
+  BJ: Benin
+  BM: Bermuda
+  BT: Bhutan
+  BO: Bolivia (Plurinational State of)
+  BQ: Bonaire, Sint Eustatius and Saba
+  BA: Bosnia and Herzegovina
+  BW: Botswana
+  BV: Bouvet Island
+  BR: Brazil
+  IO: British Indian Ocean Territory (the)
+  BN: Brunei Darussalam
+  BG: Bulgaria
+  BF: Burkina Faso
+  BI: Burundi
+  CV: Cabo Verde
+  KH: Cambodia
+  CM: Cameroon
+  CA: Canada
+  KY: Cayman Islands (the)
+  CF: Central African Republic (the)
+  TD: Chad
+  CL: Chile
+  CN: China
+  CX: Christmas Island
+  CC: Cocos (Keeling) Islands (the)
+  CO: Colombia
+  KM: Comoros (the)
+  CD: Congo (the Democratic Republic of the)
+  CG: Congo (the)
+  CK: Cook Islands (the)
+  CR: Costa Rica
+  HR: Croatia
+  CU: Cuba
+  CW: Curaçao
+  CY: Cyprus
+  CZ: Czechia
+  CI: Côte d'Ivoire
+  DK: Denmark
+  DJ: Djibouti
+  DM: Dominica
+  DO: Dominican Republic (the)
+  EC: Ecuador
+  EG: Egypt
+  SV: El Salvador
+  GQ: Equatorial Guinea
+  ER: Eritrea
+  EE: Estonia
+  SZ: Eswatini
+  ET: Ethiopia
+  FK: Falkland Islands (the) [Malvinas]
+  FO: Faroe Islands (the)
+  FJ: Fiji
+  FI: Finland
+  FR: France
+  GF: French Guiana
+  PF: French Polynesia
+  TF: French Southern Territories (the)
+  GA: Gabon
+  GM: Gambia (the)
+  GE: Georgia
+  DE: Germany
+  GH: Ghana
+  GI: Gibraltar
+  GR: Greece
+  GL: Greenland
+  GD: Grenada
+  GP: Guadeloupe
+  GU: Guam
+  GT: Guatemala
+  GG: Guernsey
+  GN: Guinea
+  GW: Guinea-Bissau
+  GY: Guyana
+  HT: Haiti
+  HM: Heard Island and McDonald Islands
+  VA: Holy See (the)
+  HN: Honduras
+  HK: Hong Kong
+  HU: Hungary
+  IS: Iceland
+  IN: India
+  ID: Indonesia
+  IR: Iran (Islamic Republic of)
+  IQ: Iraq
+  IE: Ireland
+  IM: Isle of Man
+  IL: Israel
+  IT: Italy
+  JM: Jamaica
+  JP: Japan
+  JE: Jersey
+  JO: Jordan
+  KZ: Kazakhstan
+  KE: Kenya
+  KI: Kiribati
+  KP: Korea (the Democratic People's Republic of)
+  KR: Korea (the Republic of)
+  KW: Kuwait
+  KG: Kyrgyzstan
+  LA: Lao People's Democratic Republic (the)
+  LV: Latvia
+  LB: Lebanon
+  LS: Lesotho
+  LR: Liberia
+  LY: Libya
+  LI: Liechtenstein
+  LT: Lithuania
+  LU: Luxembourg
+  MO: Macao
+  MG: Madagascar
+  MW: Malawi
+  MY: Malaysia
+  MV: Maldives
+  ML: Mali
+  MT: Malta
+  MH: Marshall Islands (the)
+  MQ: Martinique
+  MR: Mauritania
+  MU: Mauritius
+  YT: Mayotte
+  MX: Mexico
+  FM: Micronesia (Federated States of)
+  MD: Moldova (the Republic of)
+  MC: Monaco
+  MN: Mongolia
+  ME: Montenegro
+  MS: Montserrat
+  MA: Morocco
+  MZ: Mozambique
+  MM: Myanmar
+  NA: Namibia
+  NR: Nauru
+  NP: Nepal
+  NL: Netherlands (the)
+  NC: New Caledonia
+  NZ: New Zealand
+  NI: Nicaragua
+  NE: Niger (the)
+  NG: Nigeria
+  NU: Niue
+  NF: Norfolk Island
+  MP: Northern Mariana Islands (the)
+  NO: Norway
+  OM: Oman
+  PK: Pakistan
+  PW: Palau
+  PS: Palestine, State of
+  PA: Panama
+  PG: Papua New Guinea
+  PY: Paraguay
+  PE: Peru
+  PH: Philippines (the)
+  PN: Pitcairn
+  PL: Poland
+  PT: Portugal
+  PR: Puerto Rico
+  QA: Qatar
+  MK: Republic of North Macedonia
+  RO: Romania
+  RU: Russian Federation (the)
+  RW: Rwanda
+  RE: Réunion
+  BL: Saint Barthélemy
+  SH: Saint Helena, Ascension and Tristan da Cunha
+  KN: Saint Kitts and Nevis
+  LC: Saint Lucia
+  MF: Saint Martin (French part)
+  PM: Saint Pierre and Miquelon
+  VC: Saint Vincent and the Grenadines
+  WS: Samoa
+  SM: San Marino
+  ST: Sao Tome and Principe
+  SA: Saudi Arabia
+  SN: Senegal
+  RS: Serbia
+  SC: Seychelles
+  SL: Sierra Leone
+  SG: Singapore
+  SX: Sint Maarten (Dutch part)
+  SK: Slovakia
+  SI: Slovenia
+  SB: Solomon Islands
+  SO: Somalia
+  ZA: South Africa
+  GS: South Georgia and the South Sandwich Islands
+  SS: South Sudan
+  ES: Spain
+  LK: Sri Lanka
+  SD: Sudan (the)
+  SR: Suriname
+  SJ: Svalbard and Jan Mayen
+  SE: Sweden
+  CH: Switzerland
+  SY: Syrian Arab Republic
+  TW: Taiwan
+  TJ: Tajikistan
+  TZ: Tanzania, United Republic of
+  TH: Thailand
+  TL: Timor-Leste
+  TG: Togo
+  TK: Tokelau
+  TO: Tonga
+  TT: Trinidad and Tobago
+  TN: Tunisia
+  TR: Turkey
+  TM: Turkmenistan
+  TC: Turks and Caicos Islands (the)
+  TV: Tuvalu
+  UG: Uganda
+  UA: Ukraine
+  AE: United Arab Emirates (the)
+  GB: United Kingdom of Great Britain and Northern Ireland (the)
+  UM: United States Minor Outlying Islands (the)
+  US: United States of America (the)
+  UY: Uruguay
+  UZ: Uzbekistan
+  VU: Vanuatu
+  VE: Venezuela (Bolivarian Republic of)
+  VN: Viet Nam
+  VG: Virgin Islands (British)
+  VI: Virgin Islands (U.S.)
+  WF: Wallis and Futuna
+  EH: Western Sahara
+  YE: Yemen
+  ZM: Zambia
+  ZW: Zimbabwe
+  AX: Åland Islands
+  INTL: International
+
+entries:
+  title: Entries
+  draft: Draft
+  published: Published
+  add: Add
+  view_in: View in
+  entries: Entries
+  message:
+    no_items: No {entry} at the moment.
+
+entry:
+  publication: Publication
+  revisions: Revisions
+  translations: Translations
+  categories: Categories
+  title: Title
+  general: General
+  info: Information
+  na: N/A
+  new_entry: New
+  validation:
+    type: Invalid value
+    phone: Invalid phone number
+    phone_country: Invalid phone number (number from {country} only)
+    email: Invalid email address
+    id: Invalid ID
+    ip: Invalid IP
+    url: Invalid URL
+    domain: Invalid Domain
+    hex: Invalid Color Hex
+    min: Number if too low ({min} min)
+    max: Number is too high ({max} max)
+    num_type: Wrong type of value (numeric only)
+    float: Number is not a float
+    integer: Number is not a integer
+    str_min: Text is too short ({min} chars. min)
+    str_max: Text is too long ({max} chars. max)
+    postal: Invalid value (only format allowed is {country})
 
 tasks:
   title: Tasks
