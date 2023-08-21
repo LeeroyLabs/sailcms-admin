@@ -2,7 +2,7 @@
     <template v-if="isReady">
         <BackButton :url="{name: 'Settings'}"/>
         <Teleport to="#actions">
-            <div class="tw-flex tw-flex-row tw-items-center tw-gap-x-4">
+            <div class="tw-flex tw-flex-row tw-items-center tw-gap-x-4 tw-mt-1">
                 <v-select
                     :hide-details="true"
                     v-model="selectedLocale"
@@ -13,9 +13,7 @@
                     density="comfortable"
                     :persistent-hint="false"
                     class="tw-w-[200px]"
-                >
-
-                </v-select>
+                />
                 <v-btn @click.prevent="$router.push({name: 'EntrySingle', params: {name: $route.params.name, id: 'add'}})" color="primary" v-if="hasPermission('readwrite_entry_layout')">
                     {{ $t('entries.add') }}
                 </v-btn>

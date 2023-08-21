@@ -66,7 +66,6 @@
         </div>
     </template>
 
-
     <Transition>
         <DeleteConfirmation
             v-if="showDeleteConfirm"

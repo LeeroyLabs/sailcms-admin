@@ -54,7 +54,7 @@ watch(internalValue.value, (v) =>
 {
     const config = cloneDeep(props.field.config);
     config.rows = parseInt(v.rows);
-    config.max_chars = parseInt(v.max_chars);
+    config.max_chars = parseInt(v.max);
     emitter('change', config);
 });
 </script>

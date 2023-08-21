@@ -30,6 +30,7 @@
     "phone": "^3.1.37",
     "pinia": "^2.0.35",
     "pluralize-fr": "^1.0.1",
+    "postcode-validator": "^3.8.12",
     "roboto-fontface": "*",
     "sortablejs": "^1.15.0",
     "sortablejs-vue3": "^1.2.9",

@@ -84,14 +84,14 @@ export const availableTypes = computed(() =>
         {
             value: 'asset_file',
             component: AssetFile,
-            hideRepeat: true,
+            hideRepeat: false,
             title: t('fields.types.asset_file'),
             description: t('fields.descriptions.asset_file')
         },
         {
             value: 'asset_image',
             component: Asset,
-            hideRepeat: true,
+            hideRepeat: false,
             title: t('fields.types.asset_image'),
             description: t('fields.descriptions.asset_image')
         },
@@ -108,20 +108,6 @@ export const availableTypes = computed(() =>
             hideRepeat: false,
             title: t('fields.types.domain'),
             description: t('fields.descriptions.domain')
-        },
-        {
-            value: 'directory',
-            component: Empty,
-            hideRepeat: false,
-            title: t('fields.types.directory'),
-            description: t('fields.descriptions.directory')
-        },
-        {
-            value: 'file',
-            component: Empty,
-            hideRepeat: false,
-            title: t('fields.types.file'),
-            description: t('fields.descriptions.file')
         },
         {
             value: 'ip',

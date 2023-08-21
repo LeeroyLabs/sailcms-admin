@@ -133,6 +133,7 @@ assets:
     filename: Nom
     filesize: Poids
     size: Taille
+    type: Type
     transform_count: Transformations
     uploaded_by: Téléverser par
     uploaded_on: Téléverser le
@@ -268,10 +269,12 @@ system:
   back: Retour
   yes: Oui
   no: Non
+  select: Sélectionner
   search: Recherche
   cancel: Annuler
   add: Ajouter
   save: Sauvegarder
+  save_exit: Sauvegarder & Quitter
   delete: Supprimer
   other: Autre
   set: Assigner
@@ -375,6 +378,7 @@ fields:
   delete_error_many: Les champs n'ont pu être supprimés. Assurez-vous qu'ils ne sont pas utilisés.
   layout: Mise en page
   repeatable_title: Titre du groupe
+  minus_one_for_max_limit: Entrer -1 pour aucune limite
   columns:
     name: Nom
     key: Clée
@@ -743,6 +747,7 @@ countries:
   ZA: Afrique Du Sud
   ZM: Zambie
   ZW: Zimbabwe
+  INTL: International
 
 entries:
   title: Entrées
@@ -763,17 +768,25 @@ entry:
   general: Général
   info: Information
   na: N/D
+  new_entry: Nouvelle
   validation:
-    phone: Numéro de téléphone invalide.
-    email: Adresse courriel invalide.
-    id: ID invalide.
-    url: URL invalide.
-    domain: Domaine invalide.
-    hex: Couleur HTML invalide.
+    type: Valeur invalide
+    phone: Numéro de téléphone invalide
+    phone_country: Numéro de téléphone invalide (numéro du {country} seulement)
+    email: Adresse courriel invalide
+    id: ID invalide
+    ip: IP invalide
+    url: URL invalide
+    domain: Domaine invalide
+    hex: Couleur HTML invalide
     min: Nombre trop bas ({min} min.)
     max: Nombre trop élevé ({max} max.)
     num_type: Mauvais type de valeur (numérique seulement)
     float: Nombre n'est pas décimal
+    integer: Nombre n'est pas un entier
+    str_min: Texte est trop court ({min} caractères min)
+    str_max: Texte est trop long ({max} caractères max)
+    postal: Valeur invalide (seul format accepté est {country})
 
 tasks:
   title: Tâches

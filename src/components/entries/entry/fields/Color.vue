@@ -40,7 +40,7 @@
                                 :rules="validationRules"
                             >
                                 <ColorPicker
-                                    v-model="arrayValue[idx]"
+                                    v-model:pure-color="arrayValue[idx]"
                                     :bind="item"
                                     :key="index + '_' + idx"
                                     format="hex8"
@@ -79,6 +79,11 @@
                 round-history
                 lang="En"
             />
+            <template v-if="config.explain[$i18n.locale] !== '' && !multi">
+                <div class="tw-absolute tw-right-0 tw-text-sm tw-top-[48px]">
+                    {{ config.explain[$i18n.locale] }}
+                </div>
+            </template>
         </v-text-field>
     </template>
 </template>
@@ -110,13 +115,13 @@ const props = defineProps({
 
 const emitter = defineEmits(['update:modelValue']);
 const pureColor = ref(props.modelValue);
-const arrayValue = ref([]);
+const arrayValue = ref(props.modelValue || []);
 
-const handleChange = (e) => emitter('update:modelValue', e);
-
-watch(arrayValue.value, (v) => emitter('update:modelValue', arrayValue.value));
-watch(pureColor, (v) => emitter('update:modelValue', pureColor.value));
-watch(props.modelValue, (v) => pureColor.value = v);
+watch(arrayValue, (v) => emitter('update:modelValue', v));
+watch(pureColor, (v) => emitter('update:modelValue', v));
+watch(props, (v) => {
+    pureColor.value = v.modelValue;
+});
 
 const rules = {
     required: value => !!value && value.trim() !== '' || i18n.t('user.errors.required')

@@ -31,11 +31,15 @@
                         <span>{{ $t('assets.info.filesize') }}:</span>
                         <span>{{ humanFileSize(file.filesize) }}</span>
                     </div>
-                    <div class="info-row">
+                    <div class="info-row" v-if="!isImage">
+                        <span>{{ $t('assets.info.type') }}:</span>
+                        <span class="tw-uppercase">{{ fileExtension(file.filename) }}</span>
+                    </div>
+                    <div class="info-row" v-if="isImage">
                         <span>{{ $t('assets.info.size') }}:</span>
                         <span>{{ file.size.width }}x{{ file.size.height}}</span>
                     </div>
-                    <div class="info-row">
+                    <div class="info-row" v-if="isImage">
                         <span>{{ $t('assets.info.transform_count') }}:</span>
                         <span>{{ file.transforms.length }}</span>
                     </div>
@@ -54,8 +58,8 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
-import { humanFileSize } from '@/libs/tools';
+import { computed, onMounted, ref } from 'vue';
+import { fileExtension, humanFileSize } from '@/libs/tools';
 import { useAppStore } from '@/store/app';
 import { useI18n } from 'vue-i18n';
 import { Assets } from '@/libs/graphql';
@@ -88,6 +92,13 @@ const closePanel = () =>
     show.value = false;
     setTimeout(() => emitter('close'), 250);
 }
+
+const isImage = computed(() =>
+{
+    const imageTypes = ['jpeg', 'jpg', 'png', 'webp'];
+    const ext = props.file.url.split('.').pop();
+    return (imageTypes.includes(ext));
+});
 
 onMounted(() =>
 {

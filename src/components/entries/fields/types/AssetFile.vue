@@ -9,19 +9,11 @@
             v-model="internalValue.allowed_types"
             class="tw-col-span-2"
         />
-
-        <div>
-            <h2>{{ $t('fields.options.select_many') }}</h2>
-            <v-radio-group v-model="internalValue.multi" hide-details :inline="true" class="tw-flex tw-flex-row tw-col-span-2">
-                <v-radio :label="$t('system.no')" :value="false" class="tw-mr-4"></v-radio>
-                <v-radio :label="$t('system.yes')" :value="true" class="tw-mr-4"></v-radio>
-            </v-radio-group>
-        </div>
     </div>
 </template>
 
 <script setup>
-import { watch, ref } from 'vue';
+import { watch, ref, onMounted } from 'vue';
 import { cloneDeep } from 'lodash';
 import { useI18n } from 'vue-i18n';
 
@@ -45,15 +37,21 @@ const props = defineProps({
 const emitter = defineEmits(['change']);
 
 const internalValue = ref({
-    allowed_types: props.field.config.allowed_types || '.docx,.doc,.xlsx,.xls,.pdf,.pptx,.ppt',
-    multi: false,
+    allowed_types: props.field.config.allowed_types || '.docx,.doc,.xlsx,.xls,.pdf,.pptx,.ppt'
 });
 
 watch(internalValue.value, (v) =>
 {
     const config = cloneDeep(props.field.config);
     config.allowed_types = v.allowed_types.replace(/\s/g, '');
-    config.multi = v.multi;
+    emitter('change', config);
+});
+
+// Trigger set value for the config
+onMounted(() =>
+{
+    const config = cloneDeep(props.field.config);
+    config.allowed_types = internalValue.value.allowed_types;
     emitter('change', config);
 });
 </script>

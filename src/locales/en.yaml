@@ -133,6 +133,7 @@ assets:
     filename: Filename
     filesize: Filesize
     size: Size
+    type: File type
     transform_count: Transforms
     uploaded_by: Uploaded by
     uploaded_on: Uploaded on
@@ -270,10 +271,12 @@ system:
   back: Back
   yes: Yes
   no: No
+  select: Select
   search: Search
   cancel: Cancel
   add: Add
   save: Save
+  save_exit: Save & Exit
   delete: Delete
   other: Other
   set: Set
@@ -377,6 +380,7 @@ fields:
   delete_error_many: One or more fields could not be deleted. Make sure they are not in use.
   layout: Layout
   repeatable_title: Group Title
+  minus_one_for_max_limit: Enter -1 not limit
   columns:
     name: Name
     key: Handle
@@ -746,6 +750,7 @@ countries:
   ZM: Zambia
   ZW: Zimbabwe
   AX: Åland Islands
+  INTL: International
 
 entries:
   title: Entries
@@ -766,17 +771,25 @@ entry:
   general: General
   info: Information
   na: N/A
+  new_entry: New
   validation:
-    phone: Invalid phone number.
-    email: Invalid email address.
-    id: Invalid ID.
-    url: Invalid URL.
-    domain: Invalid Domain.
+    type: Invalid value
+    phone: Invalid phone number
+    phone_country: Invalid phone number (number from {country} only)
+    email: Invalid email address
+    id: Invalid ID
+    ip: Invalid IP
+    url: Invalid URL
+    domain: Invalid Domain
     hex: Invalid Color Hex
     min: Number if too low ({min} min)
     max: Number is too high ({max} max)
     num_type: Wrong type of value (numeric only)
     float: Number is not a float
+    integer: Number is not a integer
+    str_min: Text is too short ({min} chars. min)
+    str_max: Text is too long ({max} chars. max)
+    postal: Invalid value (only format allowed is {country})
 
 tasks:
   title: Tasks

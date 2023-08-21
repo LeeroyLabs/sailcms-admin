@@ -27,8 +27,8 @@
             <template v-else>
                 <div class="tw-flex tw-flex-col tw-gap-y-4">
                     <template v-for="(item, idx) in arrayValue" :key="'text_' + type + '_' + idx">
-                        <div class="tw-flex tw-flex-row tw-gap-x-4">
-                            <Text
+                        <div class="tw-relative tw-mb-4">
+                            <Textarea
                                 :value="item"
                                 :id="'text_' + index + '_' + idx"
                                 :config="config"
@@ -36,8 +36,17 @@
                                 :type="type"
                                 :index="index"
                                 @change="(e) => arrayValue[idx] = e"
+                                class="tw-flex-grow"
                             />
-                            <v-btn @click.prevent="(e) => arrayValue.splice(idx, 1)" class="!tw-h-[48px]" variant="tonal" color="red"><v-icon icon="mdi-trash-can-outline" /></v-btn>
+                            <div class="tw-absolute tw-right-0 tw-bottom-[-20px]">
+                                <v-btn
+                                    @click.prevent="(e) => arrayValue.splice(idx, 1)"
+                                    variant="tonal"
+                                    color="red"
+                                >
+                                    <v-icon icon="mdi-trash-can-outline" />
+                                </v-btn>
+                            </div>
                         </div>
                     </template>
                 </div>
@@ -46,7 +55,7 @@
         </div>
     </template>
     <template v-else>
-        <Text
+        <Textarea
             :value="modelValue"
             :config="config"
             :type="type"
@@ -61,11 +70,9 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { nextTick, ref, watch } from 'vue';
-import Text from "./singles/Text.vue";
+import Textarea from "./singles/Textarea.vue";
 
 const i18n = useI18n();
-
-const arrayValue = ref([]);
 
 const props = defineProps({
     modelValue: {
@@ -84,6 +91,8 @@ const props = defineProps({
         default: 0
     }
 });
+
+const arrayValue = ref(props.modelValue || []);
 
 const emitter = defineEmits(['update:modelValue']);
 

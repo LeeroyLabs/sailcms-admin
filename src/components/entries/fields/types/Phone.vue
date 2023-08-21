@@ -55,12 +55,16 @@ const internalValue = ref({country: props.field.config.country || 'CA'});
 
 const updateValue = (v) =>
 {
+    const config = cloneDeep(props.field.config);
+
     if (v) {
-        const config = cloneDeep(props.field.config);
         config.country = v.country;
+        emitter('change', config);
+        return;
     }
 
-    emitter('change', internalValue);
+    config.country = internalValue.value.country;
+    emitter('change', config);
 }
 
 watch(internalValue.value, (v) => updateValue(v));

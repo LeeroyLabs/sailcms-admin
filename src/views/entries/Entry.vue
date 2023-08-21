@@ -19,7 +19,13 @@
                             </template>
 
                             <template v-for="(field, _idx) in entryLayout.schema[idx].fields" :key="'field_' + idx + '_' + _idx">
-                                <component :is="AvailableFields[field.type].component" :type="AvailableFields[field.type].type" v-model="entry.content[field.key]" :config="field" :index="_idx"/>
+                                <component
+                                    :is="AvailableFields[field.type].component"
+                                    :type="AvailableFields[field.type].type"
+                                    v-model="entry.content[field.key]"
+                                    :config="field"
+                                    :index="_idx"
+                                />
                             </template>
                         </div>
                         <div
@@ -64,11 +70,13 @@ import PubRev from '@/components/entries/entry/PubRev.vue';
 import Title from '@/components/entries/entry/fields/Title.vue';
 import { deburr, kebabCase } from 'lodash';
 import { AvailableFields } from '@/components/entries/entry/fields/Fields';
+import { usePage } from '@/libs/page';
 
 // Use
 const i18n = useI18n();
 const store = useAppStore();
 const route = useRoute();
+const page = usePage();
 
 // Variables
 const isReady = ref(false);
@@ -101,6 +109,8 @@ const loadBase = async () =>
     }
 
     if (route.params.id === 'add') {
+        page.setPageTitle('entry.new_entry', entryType.value.title);
+
         // Prepare all fields for use in entry
         for (let tab of entryLayout.value.schema) {
             for (let field of tab.fields) {
@@ -145,8 +155,8 @@ watch(entry.value, (v) =>
         entry.value.slug = kebabCase(deburr(v.title.trim()));
     }
 
-    console.log(entry.value.content);
     saveableEntryState = JSON.parse(JSON.stringify(entry.value));
+    console.log(saveableEntryState);
 });
 
 // Setup back button url (remove the base url from it, remove the current id, bingo!)

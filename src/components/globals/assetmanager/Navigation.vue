@@ -1,10 +1,10 @@
 <template>
-    <div :class="{'tw-w-[290px] lg:tw-w-[250px]': show, 'tw-w-[0px]': !show, 'tw-bg-slate-600': $vuetify.theme.name !== 'light', 'tw-bg-gray-200': $vuetify.theme.name === 'light'}" class="tw-transition-all tw-duration-300 tw-flex tw-flex-shrink-0 tw-flex-col tw-h-full tw-max-h-full">
+    <div :class="{'tw-w-[290px] lg:tw-w-[250px]': show, 'tw-w-[0px]': !show, 'tw-bg-darkbg': $vuetify.theme.name !== 'light', 'tw-bg-gray-200': $vuetify.theme.name === 'light'}" class="tw-transition-all tw-duration-300 tw-flex tw-flex-shrink-0 tw-flex-col tw-h-full tw-max-h-full">
         <Transition>
             <div
                 v-if="showContent"
                 class="tw-flex-grow tw-max-h-full tw-w-full tw-flex tw-flex-col tw-justify-between tw-border-r"
-                :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
+                :class="{'tw-bg-darkbg tw-border-neutral-600': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
             >
                 <div v-if="folders?.length > 0" class="tw-overflow-y-auto tw-flex tw-flex-col tw-p-4 tw-gap-y-1">
                     <template v-for="folder in folders">
@@ -24,12 +24,12 @@
                 <div>
                     <div
                         class="tw-border-t tw-flex tw-flex-row"
-                        :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
+                        :class="{'tw-bg-darkbg tw-border-neutral-600': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
                     >
                         <div
                             @click.prevent="showAddFolder=true"
                             class="tw-py-2 tw-px-2 tw-cursor-pointer tw-text-center hover:tw-bg-primary tw-border-r"
-                            :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
+                            :class="{'tw-bg-darkbg tw-border-neutral-600': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
                         >
                             <v-icon icon="mdi-plus"/>
                         </div>
@@ -37,7 +37,7 @@
                         <div
                             @click.prevent="showDeleteConfirmationView"
                             class="tw-py-2 tw-px-2 tw-cursor-pointer tw-text-center hover:tw-bg-primary tw-border-r"
-                            :class="{'tw-bg-slate-600 tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
+                            :class="{'tw-bg-darkbg tw-border-neutral-600': $vuetify.theme.name !== 'light', 'tw-bg-gray-200 tw-border-gray-300': $vuetify.theme.name === 'light'}"
                         >
                             <v-icon icon="mdi-minus"/>
                         </div>

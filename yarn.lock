@@ -2270,6 +2270,11 @@ pluralize-fr@^1.0.1:
   resolved "https://registry.npmjs.org/pluralize-fr/-/pluralize-fr-1.0.1.tgz"
   integrity sha512-V8g7mIjoS67tW3LKkejUVwZsVKqCJM2ceEQdihrgMfo5A9iSI4yO+unuifpxREV4KhUHmg1RTk6jRURpzPXxrQ==
 
+postcode-validator@^3.8.12:
+  version "3.8.12"
+  resolved "https://registry.yarnpkg.com/postcode-validator/-/postcode-validator-3.8.12.tgz#2cdb7105e86079b142ba2adfbb72d28a8ac50dc3"
+  integrity sha512-fkz3htfUM9lQzD+DgEg4+VYDnOVeBdV2QRBAUck2QXfONnmaTxUb/ZJgvCUUS6JlRYuyvRNk7clxcZhU1RF4YA==
+
 postcss-import@^15.1.0:
   version "15.1.0"
   resolved "https://registry.npmjs.org/postcss-import/-/postcss-import-15.1.0.tgz"
