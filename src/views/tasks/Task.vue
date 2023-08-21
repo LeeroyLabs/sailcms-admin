@@ -74,15 +74,27 @@
             <div>
                 <h4 class="tw-font-medium tw-text-sm tw-mb-2">Config</h4>
                 <div
-                    class="task-config tw-h-[200px] tw-bg-[rgb(33,33,33)] tw-overflow-y-auto"
+                    class="tw-h-[200px] tw-overflow-y-auto tw-bg-darkbg"
+                    :class="{
+                        'tw-text-gray-200': $vuetify.theme.name === 'light',
+                    }"
                 ></div>
             </div>
 
             <div>
                 <h4 class="tw-font-medium tw-text-sm tw-mb-2">Logs</h4>
                 <div
-                    class="task-config tw-h-[200px] tw-bg-[rgb(33,33,33)] tw-overflow-y-auto"
-                ></div>
+                    class="tw-h-[200px] tw-overflow-y-auto tw-p-5 tw-bg-darkbg mb-6"
+                    :class="{
+                        'tw-text-gray-200': $vuetify.theme.name === 'light',
+                    }"
+                >
+                    <ul>
+                        <li v-for="log in taskLogs" :key="log">
+                            {{ log }}
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -129,6 +141,7 @@ const router = useRouter();
 
 const isReady = ref(false);
 const task = ref(null);
+const taskLogs = ref([]);
 const selectedAction = ref("");
 const applyingAction = ref(false);
 const showModal = ref(false);
@@ -145,8 +158,7 @@ const loadTask = async () => {
     if (responseLoadTask) {
         task.value = responseLoadTask;
         isReady.value = true;
-        console.log("TASK", task.value);
-        taskLogs(task.value._id);
+        loadTaskLogs(task.value._id);
     }
 };
 
@@ -206,10 +218,10 @@ const handleCancelTask = async () => {
     }
 };
 
-const taskLogs = async () => {
+const loadTaskLogs = async () => {
     const responseTaskLogs = await Tasks.taskLogs(task.value._id);
     if (responseTaskLogs) {
-        console.log("LOGS", responseTaskLogs);
+        taskLogs.value = responseTaskLogs;
     }
 };
 
