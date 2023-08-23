@@ -11,9 +11,9 @@ export const navigationItems = computed(() => {
     let dynamics = [];
 
     for (let type of store.configuration.dataTypes) {
-        let name = '';
+        let name = "";
 
-        if (i18n.global.locale.value === 'fr') {
+        if (i18n.global.locale.value === "fr") {
             name = plural(type.title);
         } else {
             name = inflector.pluralize(type.title);
@@ -47,7 +47,8 @@ export const navigationItems = computed(() => {
         });
     }
 
-    for (let item of store.configuration.dynamicNavigationElements.pre_settings) {
+    for (let item of store.configuration.dynamicNavigationElements
+        .pre_settings) {
         pre_settings.push({
             icon: item.icon,
             text: store.configuration.customLocales[i18n.global.locale.value][
@@ -74,6 +75,13 @@ export const navigationItems = computed(() => {
             to: { name: "Categories" },
             parent: "",
             text: i18n.global.t("categories.title"),
+            permission: "any",
+        },
+        {
+            icon: "mdi-shape-outline",
+            to: { name: "Forms" },
+            parent: "",
+            text: i18n.global.t("forms.title"),
             permission: "any",
         },
         {

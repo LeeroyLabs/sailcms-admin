@@ -810,3 +810,6 @@ task:
     priority: Select priority
   errors:
     required: Required
+
+  forms:
+    title: Forms

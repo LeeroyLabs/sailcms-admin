@@ -806,3 +806,6 @@ task:
     priority: Sélectioner la priorité
   errors:
     required: Champs requis
+
+forms:
+  title: Formulaires

@@ -10,6 +10,7 @@ import { entryRoutes } from "@/router/entries";
 import { hasPermission } from "@/libs/tools";
 import { emailRoutes } from "@/router/emails";
 import { tasksRoutes } from "@/router/tasks";
+import { formsRoutes } from "@/router/forms";
 
 const routes = [
     ...publicRoutes,
@@ -20,6 +21,7 @@ const routes = [
     ...entryRoutes,
     ...emailRoutes,
     ...tasksRoutes,
+    ...formsRoutes,
 ];
 
 function routerInit() {
@@ -33,7 +35,8 @@ function routerInit() {
         const appStore = useAppStore();
         appStore.setBreadcrumbs([]);
 
-        const token = localStorage.getItem(import.meta.env.VITE_SAILCMS_TOKEN) || '';
+        const token =
+            localStorage.getItem(import.meta.env.VITE_SAILCMS_TOKEN) || "";
 
         if (!appStore.isLoggedIn && token !== "") {
             // Check if we have a valid session
