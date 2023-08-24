@@ -811,5 +811,5 @@ task:
   errors:
     required: Required
 
-  forms:
-    title: Forms
+forms:
+  title: Forms
