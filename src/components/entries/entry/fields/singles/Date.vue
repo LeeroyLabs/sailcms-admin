@@ -39,6 +39,10 @@ const props = defineProps({
     id: {
         type: String,
         default: 'date_' + v4()
+    },
+    useTimestamp: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -54,6 +58,17 @@ const handleDateChange = (selectedDates, dateStr, instance) =>
 
         // Range, wait til we are done
         if (dates.length === 1) {
+            return;
+        }
+
+        if (props.useTimestamp) {
+            emitter('change', Math.floor(selectedDates.getTime() / 1000));
+            return;
+        }
+
+        if (props.useTimestamp) {
+            const timestamps = selectedDates.map(d => Math.floor(d.getTime() / 1000));
+            emitter('change', timestamps);
             return;
         }
 
