@@ -13,7 +13,7 @@
                 'tw-border-neutral-500': $vuetify.theme.name === 'dark'
             }"
         >
-            <template v-if="!isCountry" v-for="item in config.config.choices">
+            <template v-if="!isCountry" v-for="item in choices">
                 <div @click.prevent="() => toggleItem(item.value)" v-if="!values.includes(item.value)" class="tw-p-1 tw-px-2 tw-cursor-pointer tw-rounded-md hover:tw-bg-primary/40" :class="{'tw-bg-primary/40': selected.includes(item.value)}">
                     <div class="tw-truncate">{{ item.title }}</div>
                 </div>
@@ -75,12 +75,23 @@ const props = defineProps({
     countries: {
         type: Array,
         default: []
+    },
+    choices: {
+        type: Array,
+        default: []
     }
 });
 
 const values = ref(props.value);
 const selected = ref([]);
 const selected2 = ref([]);
+
+const choices = ref((props.choices) ? props.choices : props.config.config.choices);
+
+watch(props.choices, v =>
+{
+    choices.value = v;
+});
 
 const toggleItem = (v) =>
 {

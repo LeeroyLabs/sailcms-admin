@@ -58,6 +58,14 @@ const props = defineProps({
     folder: {
         type: String,
         default: 'root'
+    },
+    mode: {
+        type: String,
+        default: 'image'
+    },
+    allowed: {
+        type: String,
+        default: ''
     }
 });
 
@@ -130,6 +138,21 @@ const prepareFiles = async (file) =>
     // File type is blacklisted
     if (config.blacklist.includes(fileExtension(file.name))) {
         fileObj.uploadable = false;
+    }
+
+    // Image required for image mode
+    if (props.mode === 'image' && !isImage) {
+        fileObj.uploadable = false;
+    }
+
+    // Is type allowed
+    if (props.mode !== 'image') {
+        const ext = fileExtension(file.name);
+        const allowed = props.allowed.split(',');
+
+        if (!allowed.includes(ext)) {
+            fileObj.uploadable = false;
+        }
     }
 
     reader.addEventListener('load', (event) =>

@@ -21,6 +21,8 @@
         />
 
         <small class="tw-col-span-2 tw-mt-[-15px]">
+<!--            // TODO: FIX THIS-->
+            TODO: SET TO POINT TO DOCUMENTATION + TRANSLATE
             for compatible formats please visit:
             <a class="tw-text-primary hover:tw-underline" target="_blank" href="https://date-fns.org/v2.30.0/docs/format">
                 https://date-fns.org/v2.30.0/docs/format

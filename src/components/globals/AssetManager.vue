@@ -139,7 +139,7 @@
             </Transition>
 
             <Transition>
-                <UploadPanel v-if="showUploader" :folder="activeFolder" @cancel="showUploader=false" @upload="showFile"/>
+                <UploadPanel v-if="showUploader" :allowed="cropping.allowed" :mode="mode" :folder="activeFolder" @cancel="showUploader=false" @upload="showFile"/>
             </Transition>
 
             <DeleteConfirmation
@@ -214,7 +214,7 @@ const show = computed(() => props.show);
 const props = defineProps({
     cropping: {
         type: Object,
-        default: {name: '', ratio: 0, min: { width: 50, height: 50 }, max: {width: 10000, height: 10000}, lockedType: ''}
+        default: {name: '', allowed: '', ratio: 0, min: { width: 50, height: 50 }, max: {width: 10000, height: 10000}, lockedType: ''}
     },
     allowed: {
         type: Array,
