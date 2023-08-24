@@ -6,6 +6,7 @@ import Textarea from "./Textarea.vue";
 import Asset from "./Asset.vue";
 import Select from "./Select.vue";
 import Country from "@/components/entries/entry/fields/Country.vue";
+import Switch from "@/components/entries/entry/fields/Switch.vue";
 
 export const AvailableFields = {
     phone: {
@@ -89,5 +90,8 @@ export const AvailableFields = {
     },
     country: {
         component: Country
+    },
+    switch: {
+        component: Switch
     }
 }

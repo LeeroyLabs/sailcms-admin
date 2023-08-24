@@ -48,7 +48,7 @@ const props = defineProps({
     },
     config: {
         type: Object,
-        default: {type: '', label: '', name: '', validation: '', required: false, repeatable: false, config: null}
+        default: {type: '', label: '', name: '', validation: '', required: false, repeatable: false, config: null, width: 'full'}
     },
     index: {
         type: Number,

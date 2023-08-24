@@ -18,8 +18,9 @@
             <div :id="'tab-' + tab.id" class="field-list tw-flex tw-flex-col tw-gap-3 sorting-parent tw-min-h-full tw-h-full tw-relative">
                 <div
                     v-for="(element, index) in tab.fields"
-                    :id="element"
-                    :data-fid="'field-' + element"
+                    :id="element.key"
+                    :data-width="element.width"
+                    :data-fid="'field-' + element.key"
                     class="tw-border tw-py-2 tw-px-2 tw-flex tw-flex-row tw-items-center"
                     :class="{'tw-bg-white hover:tw-bg-gray-100 tw-border-zinc-400': $vuetify.theme.name === 'light', 'tw-bg-neutral-900 tw-text-white hover:tw-bg-neutral-800 tw-border-neutral-500': $vuetify.theme.name === 'dark'}"
                 >
@@ -28,11 +29,40 @@
                         class="list-dnd-handle tw-mr-2 tw-cursor-grab"
                         :class="{'tw-text-zinc-400': $vuetify.theme.name === 'light', 'tw-text-neutral-500': $vuetify.theme.name === 'dark'}"
                     />
-                    <div class="tw-truncate tw-mr-1">{{ fields.find(f => f.key === element)?.name }}</div>
+                    <div class="tw-truncate tw-mr-1">{{ fields.find(f => f.key === element.key)?.name }}</div>
                     <div class="tw-flex-grow tw-flex tw-flex-row tw-justify-end tw-gap-x-2">
-                        <button @click.prevent="removeField(element, tab.id)"><v-icon icon="mdi-trash-can-outline" size="small" class="hover:tw-text-red-500"/>
+                        <button @click.prevent="openFieldSettings(index, element)">
+                            <v-icon icon="mdi-cog" size="small" class="hover:tw-text-primary"/>
+                        </button>
+
+<!--                        <button @click.prevent="tab.fields[index].width='half'">-->
+<!--                            <v-icon icon="mdi-arrow-collapse-horizontal" size="small" class="hover:tw-text-primary"/>-->
+<!--                            <v-tooltip activator="parent" location="bottom" :open-delay="750">{{ $t('layout.field_half_width') }}</v-tooltip>-->
+<!--                        </button>-->
+
+<!--                        <button @click.prevent="tab.fields[index].width='full'">-->
+<!--                            <v-icon icon="mdi-arrow-expand-horizontal" size="small" class="hover:tw-text-primary"/>-->
+<!--                            <v-tooltip activator="parent" location="bottom" :open-delay="750">{{ $t('layout.field_full_width') }}</v-tooltip>-->
+<!--                        </button>-->
+
+<!--                        <button @click.prevent="tab.fields[index].width='full'">-->
+<!--                            <v-icon icon="mdi-arrow-expand-horizontal" size="small" class="hover:tw-text-primary"/>-->
+<!--                            <v-tooltip activator="parent" location="bottom" :open-delay="750">{{ $t('layout.field_full_width') }}</v-tooltip>-->
+<!--                        </button>-->
+
+                        <button @click.prevent="removeField(element.key, tab.id)">
+                            <v-icon icon="mdi-trash-can-outline" size="small" class="hover:tw-text-red-500"/>
                             <v-tooltip activator="parent" location="bottom" :open-delay="750">{{ $t('layout.delete_field') }}</v-tooltip>
                         </button>
+
+                        <Transition>
+                            <FieldSettings
+                                v-if="showFieldSettings"
+                                :field="tab.fields[fieldSettingsCurrentField]"
+                                @close="showFieldSettings=false"
+                                @change="(e) => handleFieldChange(index, e)"
+                            />
+                        </Transition>
                     </div>
                 </div>
                 <div class="tw-h-full">
@@ -108,14 +138,14 @@
 
 <script setup>
 import Sortable from 'sortablejs';
-import { nextTick, onMounted, onUpdated, ref, watch } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import { deburr, lowerCase } from 'lodash';
 import ArrowUpBox from '@/components/globals/ArrowUpBox.vue';
 import { onClickOutside } from '@vueuse/core';
 import TabSettings from '@/components/entries/layout/TabSettings.vue';
-import { v4 } from 'uuid';
+import FieldSettings from '@/components/entries/layout/FieldSettings.vue';
 
-const emitter = defineEmits(['change', 'added', 'tabDeleted', 'tabNameChange']);
+const emitter = defineEmits(['change', 'added', 'tabDeleted', 'tabNameChange', 'fieldWidthChange']);
 
 const props = defineProps({
     tab: {
@@ -143,13 +173,22 @@ const addbox = ref(null);
 const offsetBox = ref(false);
 const usedFields = ref([]);
 const showTabSettings = ref(false);
+const showFieldSettings = ref(false);
+
+const fieldSettingsCurrentField = ref(-1);
 
 const handleChange = (e) =>
 {
     let tab = 'tab-' + props.tab.id;
 
-    let children = Array.from(document.getElementById(tab).children).map(c => c.id);
-    usedFields.value = children.filter(c => c !== '');
+    let children = Array.from(document.getElementById(tab).children).map(c =>
+    {
+        if (c.id !== '') {
+            return { key: c.id, width: c.getAttribute('data-width') }
+        }
+    });
+
+    usedFields.value = children.filter(c => (c !== undefined));
     emitter('change', {tab: props.tab.id, used: usedFields.value});
 }
 
@@ -179,7 +218,7 @@ const addToTab = (element, tab) =>
 
 const removeField = (fieldName, tab) =>
 {
-    let newFields = usedFields.value.filter(f => f !== fieldName);
+    let newFields = usedFields.value.filter(f => f.key !== fieldName);
     usedFields.value = newFields;
     emitter('removed', {tab: tab, key: fieldName, used: newFields});
     //document.getElementById(fieldName).remove();
@@ -190,6 +229,18 @@ const isUsed = (key) =>
     let field = props.fields.find(f => f.key === key);
     if (field) return field.used;
     return false;
+}
+
+const openFieldSettings = (index, field) =>
+{
+    showFieldSettings.value = true;
+    fieldSettingsCurrentField.value = index;
+}
+
+const handleFieldChange = (index, value) =>
+{
+    showFieldSettings.value = false;
+    emitter('fieldWidthChange', {tab: props.tab.id, index: fieldSettingsCurrentField.value, width: value})
 }
 
 onMounted(() =>

@@ -55,3 +55,21 @@
 /* ns-targeted is the class name of the item on which the dragged item is hovering */
 .nested-sort .ns-targeted {
 }
+
+.halfsize {
+  width: 48.5%;
+}
+
+.thirdsize {
+  width: 32.5%;
+}
+
+// Calendar
+//.datepicker-input {
+//  @apply tw-h-full tw-w-full;
+//}
+//
+//.datepicker-input.in-edit,
+//.datepicker-input:focus {
+//  @apply tw-border-none tw-ring-0;
+//}

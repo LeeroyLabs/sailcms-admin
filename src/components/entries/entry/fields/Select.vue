@@ -1,11 +1,13 @@
 <template>
     <div>
         <template v-if="config.config.multi">
-            <Multiselect
-                :value="value"
-                :config="config"
-                @change="(e) => value = e"
-            />
+            <div>
+                <Multiselect
+                    :value="value"
+                    :config="config"
+                    @change="(e) => value = e"
+                />
+            </div>
         </template>
         <template v-else>
             <div>
@@ -34,7 +36,7 @@
 
 <script setup>
 import { useI18n } from 'vue-i18n';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import Multiselect from '@/components/entries/entry/fields/singles/Multiselect.vue';
 
 const i18n = useI18n();
@@ -45,7 +47,7 @@ const props = defineProps({
     },
     config: {
         type: Object,
-        default: {type: '', label: '', name: '', validation: '', required: false, repeatable: false, config: null}
+        default: {type: '', label: '', name: '', validation: '', required: false, repeatable: false, config: null, width: 'full'}
     },
     index: {
         type: Number,
@@ -64,7 +66,6 @@ if (value.value === '' || value.value.length === 0) {
 }
 
 const emitter = defineEmits(['update:modelValue']);
-// emitter('update:modelValue', value);
 
 // Report back any changes to the array
 watch(value, (v) => emitter('update:modelValue', value), {deep: true});

@@ -82,7 +82,7 @@ const thumbnail = computed(() =>
 
 const isImage = computed(() =>
 {
-    const imageTypes = ['jpeg', 'jpg', 'png', 'webp'];
+    const imageTypes = ['jpeg', 'jpg', 'png', 'webp', 'svg', 'gif'];
     const ext = props.file.url.split('.').pop();
     return (imageTypes.includes(ext));
 });

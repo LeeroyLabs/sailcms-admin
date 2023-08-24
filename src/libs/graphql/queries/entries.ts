@@ -226,6 +226,7 @@ export default {
                         repeatable
                         type
                         config
+                        width
                     }
                 }
                 authors {

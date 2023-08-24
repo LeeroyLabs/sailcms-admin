@@ -8,24 +8,34 @@
                     <template v-for="(name, idx) in tabNames">
                         <div
                             v-if="name !== 'SEO'"
-                            class="tw-p-6 tw-rounded-b-md tw-flex tw-flex-col tw-gap-y-4"
+                            class="tw-p-6 tw-rounded-b-md tw-flex tw-flex-col tw-w-full tw-gap-4"
                             :class="{
                                 'tw-rounded-tr-md': idx === 0, 'tw-rounded-t-md': (idx !== 0 && idx !== 1), 'tw-rounded-tl-md': idx === 1, 'tw-hidden': tab !== idx,
                                 'tw-bg-white ': $vuetify.theme.name === 'light', 'tw-bg-darkbg': $vuetify.theme.name === 'dark'
                             }"
                         >
                             <template v-if="idx === 0">
-                                <Title v-model="entry.title" />
+                                <div class="grid grid-cols-1 tw-w-full">
+                                    <Title v-model="entry.title" />
+                                </div>
                             </template>
 
-                            <template v-for="(field, _idx) in entryLayout.schema[idx].fields" :key="'field_' + idx + '_' + _idx">
-                                <component
-                                    :is="AvailableFields[field.type].component"
-                                    :type="AvailableFields[field.type].type"
-                                    v-model="entry.content[field.key]"
-                                    :config="field"
-                                    :index="_idx"
-                                />
+                            <template v-for="(gridRow, _idx) in gridFit(entryLayout.schema[idx].fields)" :key="'field_' + idx + '_' + _idx">
+                                <div class="tw-grid tw-gap-x-4" :class="{
+                                        'tw-grid-cols-1': gridRow.length === 1,
+                                        'tw-grid-cols-2': gridRow.length === 2,
+                                        'tw-grid-cols-3': gridRow.length === 3
+                                }">
+                                    <template v-for="(field, _idxx) in gridRow" :key="'field_' + idx + '_' + _idx + '_' + _idxx">
+                                        <component
+                                            :is="AvailableFields[field.type].component"
+                                            :type="AvailableFields[field.type].type"
+                                            v-model="entry.content[field.key]"
+                                            :config="field"
+                                            :index="_idxx"
+                                        />
+                                    </template>
+                                </div>
                             </template>
                         </div>
                         <div
@@ -71,6 +81,7 @@ import Title from '@/components/entries/entry/fields/Title.vue';
 import { deburr, kebabCase } from 'lodash';
 import { AvailableFields } from '@/components/entries/entry/fields/Fields';
 import { usePage } from '@/libs/page';
+import { GridMaker } from '@/libs/gridmaker';
 
 // Use
 const i18n = useI18n();
@@ -143,6 +154,13 @@ const loadBase = async () =>
     }
 
     isReady.value = true;
+}
+
+// Build an array of rows to build a solid grid with
+const gridFit = (list) =>
+{
+    const gridMaker = new GridMaker(list);
+    return gridMaker.make();
 }
 
 // Utilities

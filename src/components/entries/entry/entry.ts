@@ -27,12 +27,6 @@ export const entry = ref({
     },
     categories: [],
     content: {
-        textarea: ['Hello World!'],
-        html: ['Hello World!', 'This is It!'],
-        background: '#ff0000',
-        color: ['#0000ff', '#ffffff'],
-        select: '2',
-        multiselect: ['2', '5'],
     },
     seo: {
         title: '',

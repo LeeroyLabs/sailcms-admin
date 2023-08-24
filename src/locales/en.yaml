@@ -219,6 +219,11 @@ layout:
   save_error: Could not save layout. Please try again.
   tab_settings: Tab Settings
   tab_name: Tab name
+  field_full_width: Make field take full width
+  field_half_width: Make field take half width
+  field_third_width: Make field take third of width
+  field_settings: Field Settings
+  explain_field_size: You can set the width of the field to make space for the next field to be on the same line. This enables building enjoyable form layouts for data entry.
   mobile:
     wait: Wait!
     explain: The layouts cannot be managed using a phone. Please use a tablet or bigger. We recommend using a laptop or desktop.
