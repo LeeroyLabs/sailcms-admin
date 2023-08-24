@@ -41,6 +41,7 @@
                                 @removed="handleRemoved"
                                 @tab-deleted="handleTabDelete"
                                 @tab-name-change="handleTabNameChange"
+                                @field-width-change="handleFieldWidthChange"
                             />
                         </template>
                     </div>
@@ -181,6 +182,8 @@ const handleTabChanges = (e) =>
             }
         }
     }
+
+    schema.value = reformatted;
 }
 
 const handleTabNameChange = (e) =>
@@ -214,6 +217,12 @@ const handleTabDelete = (e) =>
     }
 }
 
+const handleFieldWidthChange = (e) =>
+{
+    const tab = schema.value.find(t => t.id === e.tab);
+    tab.fields[e.index].width = e.width;
+}
+
 const opts = {
     handle: '.drag-handle',
     tag: 'div',
@@ -245,7 +254,7 @@ const loadFields = async () =>
             let _fields = [];
 
             for (let _field of tab.fields) {
-                _fields.push(_field.key);
+                _fields.push({key: _field.key, width: _field.width});
 
                 let field = fields.value.find(f => f.key === _field.key);
                 if (field) field.used = true;
@@ -285,10 +294,10 @@ const saveLayout = async (exit = false) =>
         let _fields = [];
 
         for (let field of tab.fields) {
-            let _field = fields.value.find(f => f.key === field);
+            let _field = fields.value.find(f => f.key === field.key);
 
             if (_field !== undefined) {
-                _fields.push(_field._id);
+                _fields.push({id: _field._id, width: field.width});
             }
         }
 

@@ -10,6 +10,7 @@
         :hide-details="true"
         :model-value="value"
         @input="updateField"
+        @focus="isDirty=true"
         autocomplete="new-password"
     >
         <template v-if="showError">
@@ -62,6 +63,7 @@ const emitter = defineEmits(['change']);
 const showError = ref(false);
 const errorMessage = ref('');
 const errorData = ref({});
+const isDirty = ref(false);
 
 const fieldType = computed(() =>
 {
@@ -113,7 +115,8 @@ const rules = {
         if (!validated.isValid) {
             let msg = (props.config.config.country === 'all') ? 'entry.validation.phone' : 'entry.validation.phone_country';
 
-            showError.value = true;
+            if (isDirty.value) showError.value = true;
+            
             errorMessage.value = msg;
             errorData.value = {country: i18n.t('countries.' + props.config.config.country)};
             return i18n.t(msg);
@@ -226,12 +229,13 @@ const rules = {
         showError.value = false;
 
         let isAvailable = postcodeValidatorExistsForCountry(props.config.config.country);
-        let countryCode = (isAvailable) ? props.config.config.country : 'INTL';
+        let countryCode = (isAvailable) ? props.config.config.country:'INTL';
         let valid = postcodeValidator(v, countryCode);
 
         if (valid) return true;
 
-        showError.value = true;
+        if (isDirty.value) showError.value = true;
+
         errorMessage.value = 'entry.validation.postal';
         errorData.value = {country: countryCode};
         return i18n.t('entry.validation.postal');
@@ -243,7 +247,9 @@ const handleNumericalErrors = (result, max) =>
     if (result.error) {
         let locale = 'en-US';
 
-        showError.value = true;
+        if (isDirty.value) {
+            showError.value = true;
+        }
 
         switch (result.error.details[0].type)
         {

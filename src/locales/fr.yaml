@@ -217,6 +217,11 @@ layout:
   save_error: La mise en page n'a pu être sauvegardée. Veuillez réessayer.
   tab_settings: Réglages de l'onglet
   tab_name: Nom de l'onglet
+  field_full_width: Champ prend pleine largeur
+  field_half_width: Champ prend demie largeur
+  field_third_width: champ prend tiers de la largeur
+  field_settings: Paramètres du champ
+  explain_field_size: Vous pouvez choisir la largeur du champ pour permettre au prochain d'être sur la même ligne. Ceci permet d'avoir de beau formulaire d'entré de contenu.
   mobile:
     wait: Attendez!
     explain: Les mises en page ne peuvent être administrer sur un téléphone. Veuillez utiliser une tablet ou plus grand. Nous recommandons un portable ou ordinateur de bureau.
