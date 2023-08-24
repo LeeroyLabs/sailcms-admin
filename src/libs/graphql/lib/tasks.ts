@@ -154,10 +154,10 @@ export class Tasks {
      *
      * cancelTask
      *
-     * @param id
+     * @param ids
      *
      */
-    public static async cancelTask(id: string) {
+    public static async cancelTask(ids: string[]) {
         const client = new Client();
         const mutation = TasksQueries.cancelTask;
 
@@ -165,7 +165,7 @@ export class Tasks {
             gql`
                 ${mutation},
             `,
-            { id }
+            { ids }
         );
 
         if (result.data) {
@@ -179,10 +179,10 @@ export class Tasks {
      *
      * retryTask
      *
-     * @param id
+     * @param ids
      *
      */
-    public static async retryTask(id: string) {
+    public static async retryTask(ids: string[]) {
         const client = new Client();
         const mutation = TasksQueries.retryTask;
 
@@ -190,7 +190,7 @@ export class Tasks {
             gql`
                 ${mutation},
             `,
-            { id }
+            { ids }
         );
 
         if (result.data) {
@@ -204,10 +204,10 @@ export class Tasks {
      *
      * stopTask
      *
-     * @param pid
+     * @param pids
      *
      */
-    public static async stopTask(pid: number) {
+    public static async stopTask(pids: number[]) {
         const client = new Client();
         const mutation = TasksQueries.stopTask;
 
@@ -215,7 +215,7 @@ export class Tasks {
             gql`
                 ${mutation},
             `,
-            { pid }
+            { pids }
         );
 
         if (result.data) {
@@ -246,6 +246,54 @@ export class Tasks {
 
         if (result.data) {
             return result.data.changeTaskSchedule;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * startAllTasks
+     *
+     *
+     */
+    public static async startAllTasks() {
+        const client = new Client();
+        const mutation = TasksQueries.startAllTasks;
+
+        const result = await client.mutation(
+            gql`
+                    ${mutation},
+                `,
+            {}
+        );
+
+        if (result.data) {
+            return result.data.startAllTasks;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * stopAllTasks
+     *
+     *
+     */
+    public static async stopAllTasks() {
+        const client = new Client();
+        const mutation = TasksQueries.stopAllTasks;
+
+        const result = await client.mutation(
+            gql`
+                    ${mutation},
+                `,
+            {}
+        );
+
+        if (result.data) {
+            return result.data.stopAllTasks;
         }
 
         return null;

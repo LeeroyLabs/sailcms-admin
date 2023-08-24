@@ -784,7 +784,9 @@ tasks:
     executed: Terminé
     no_executed: À venir
   actions:
+    start: Débuter
     retry: Relancer
+    stop: Arrêter
     delete: Supprimer
 
 task:
@@ -798,11 +800,17 @@ task:
   back: Retour
   name: Nom
   save: Enregistrer
+  update: Modifier
   cancel: Annuler
   create_task: Créer une tâche
+  update_task: Modifier la tâche
   form:
     name: Entrer un nom
     action: Sélectioner une action
     priority: Sélectioner la priorité
+    priority_low: Basse
+    priority_normal: Normale
+    priority_high: importante
+    priority_urgent: Urgente
   errors:
     required: Champs requis

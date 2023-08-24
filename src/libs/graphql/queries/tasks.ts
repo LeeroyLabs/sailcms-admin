@@ -81,8 +81,8 @@ export default {
         }
     `,
     retryTask: `
-        mutation retryTask($id: ID!) {
-            retryTask(id: $id) 
+        mutation retryTask($ids: [ID!]!) {
+            retryTask(ids: $ids) 
         }
     `,
     changeTaskSchedule: `
@@ -96,8 +96,8 @@ export default {
         }
     `,
     stopTask: `
-        mutation stopTask($pid: Int!) {
-            stopTask(pid: $pid) 
+        mutation stopTask($pids: [Int!]!) {
+            stopTask(pids: $pids) 
         }
     `,
     stopAllTasks: `
@@ -106,8 +106,13 @@ export default {
         }
     `,
     cancelTask: `
-        mutation cancelTask($id: ID!) {
-            cancelTask(id: $id) 
+        mutation cancelTask($ids: [ID!]!) {
+            cancelTask(ids: $ids) 
+        }
+    `,
+    updateTask: `
+        mutation updateTask($id: ID!, $name: String!, $action: String!, $priority: Int!, $retriable: Boolean!, $timestamp: Int!, $settings: String!) {
+            updateTask(id: $id, name: $name, action: $action, priority: $priority, retriable: $retriable, timestamp: $timestamp, settings: $settings) 
         }
     `,
 };

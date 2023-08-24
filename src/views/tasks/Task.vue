@@ -1,24 +1,24 @@
 <template>
-    <div v-if="isReady">
-        <Teleport to="#actions">
-            <v-btn
-                v-if="hasPermission('readwrite_task')"
-                color="primary"
-                @click="$router.push({ name: 'Tasks' })"
+    <div
+        v-if="isReady"
+        class="tw-w-full md:tw-w-10/12 lg:tw-w-8/12 xl:tw-w-8/12 2xl:tw-w-7/12"
+    >
+        <div class="tw-flex tw-flex-col tw-gap-4">
+            <div
+                class="tw-flex tw-flex-col sm:tw-flex-row sm:tw-justify-between sm:tw-items-center"
             >
-                {{ $t("task.back") }}
-            </v-btn>
-        </Teleport>
-
-        <div class="tw-flex tw-flex-col tw-gap-8">
-            <div class="tw-flex tw-justify-between">
                 <div>
-                    <h3 class="tw-font-medium tw-text-xl">{{ task.name }}</h3>
+                    <h3 class="tw-font-medium tw-text-xl">
+                        {{
+                            actionMode === CREATE
+                                ? $t("task.create_task")
+                                : $t("task.update_task")
+                        }}
+                    </h3>
                     <span>ID: {{ task._id }}</span>
-                    <p>Priority: {{ task.priority }}</p>
                 </div>
 
-                <div>
+                <div v-if="actionMode === UPDATE">
                     <div class="tw-flex tw-gap-2 tw-justify-end">
                         <v-btn
                             @click.prevent="
@@ -71,31 +71,99 @@
                 </div>
             </div>
 
-            <div>
-                <h4 class="tw-font-medium tw-text-sm tw-mb-2">Config</h4>
-                <div
-                    class="tw-h-[200px] tw-overflow-y-auto tw-bg-darkbg"
-                    :class="{
-                        'tw-text-gray-200': $vuetify.theme.name === 'light',
-                    }"
-                ></div>
-            </div>
+            <v-form
+                ref="form"
+                class="tw-flex tw-flex-col tw-gap-2 mb-6"
+                @submit.prevent
+                v-model="isFormValid"
+            >
+                <v-text-field
+                    color="primary"
+                    :label="$t('task.form.name')"
+                    variant="outlined"
+                    type="text"
+                    validate-on="blur"
+                    density="comfortable"
+                    :rules="[rules.required]"
+                    v-model="taskInput.name"
+                />
 
-            <div>
-                <h4 class="tw-font-medium tw-text-sm tw-mb-2">Logs</h4>
                 <div
-                    class="tw-h-[200px] tw-overflow-y-auto tw-p-5 tw-bg-darkbg mb-6"
-                    :class="{
-                        'tw-text-gray-200': $vuetify.theme.name === 'light',
-                    }"
+                    class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-x-4 tw-gap-y-4 md:tw-gap-y-0"
                 >
-                    <ul>
-                        <li v-for="log in taskLogs" :key="log">
-                            {{ log }}
-                        </li>
-                    </ul>
+                    <v-select
+                        :label="$t('task.form.action')"
+                        :items="['test:task-command']"
+                        variant="outlined"
+                        density="comfortable"
+                        single-line
+                        :rules="[rules.required]"
+                        v-model="taskInput.action"
+                    />
+                    <v-select
+                        :label="$t('task.form.priority')"
+                        :items="taskPriority"
+                        item-title="label"
+                        item-value="value"
+                        variant="outlined"
+                        density="comfortable"
+                        single-line
+                        :rules="[rules.required]"
+                        v-model="taskInput.priority"
+                    />
                 </div>
-            </div>
+
+                <div v-if="actionMode === UPDATE">
+                    <h4 class="tw-font-medium tw-text-sm tw-mb-2">Config</h4>
+                    <div
+                        class="tw-h-[200px] tw-overflow-y-auto tw-bg-darkbg"
+                        :class="{
+                            'tw-text-gray-200': $vuetify.theme.name === 'light',
+                        }"
+                    ></div>
+                </div>
+
+                <div v-if="actionMode === UPDATE" class="tw-mt-[22px]">
+                    <h4 class="tw-font-medium tw-text-sm tw-mb-2">Logs</h4>
+                    <div
+                        class="tw-h-[200px] tw-overflow-y-auto tw-p-5 tw-bg-darkbg"
+                        :class="{
+                            'tw-text-gray-200': $vuetify.theme.name === 'light',
+                        }"
+                    >
+                        <ul>
+                            <li v-for="log in taskLogs" :key="log">
+                                {{ log }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <v-checkbox
+                    label="Retriable"
+                    hide-details
+                    v-model="taskInput.retriable"
+                />
+
+                <div class="tw-self-end tw-gap-x-3 tw-flex">
+                    <v-btn
+                        type="submit"
+                        :loading="isLoading"
+                        @click="createTask"
+                        color="primary"
+                    >
+                        {{
+                            actionMode === CREATE
+                                ? $t("task.save")
+                                : $t("task.update")
+                        }}
+                    </v-btn>
+
+                    <v-btn flat @click="showModal = true" color="text">
+                        {{ $t("task.cancel") }}
+                    </v-btn>
+                </div>
+            </v-form>
         </div>
 
         <Transition>
@@ -119,46 +187,94 @@
             />
         </Transition>
     </div>
-
-    <Loader v-else />
 </template>
 
 <script setup>
 import { ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useRouter, useRoute } from "vue-router";
 
-import { usePage } from "@/libs/page";
 import { Tasks } from "@/libs/graphql/lib/tasks";
-import { hasPermission } from "@/libs/tools";
 
-import Loader from "@/components/globals/Loader.vue";
 import DeleteConfirmation from "@/components/globals/DeleteConfirmation.vue";
 import DatePicker from "@/components/globals/task/DatePicker.vue";
 
-const page = usePage();
-const route = useRoute();
+const i18n = useI18n();
+const { t } = i18n;
 const router = useRouter();
+const route = useRoute();
 
-const isReady = ref(false);
+// Form
+const form = ref(null);
+const isFormValid = ref(false);
+const rules = {
+    required: (value) => {
+        if (value) return true;
+        return i18n.t("task.errors.required");
+    },
+};
+
 const task = ref(null);
 const taskLogs = ref([]);
-const selectedAction = ref("");
-const applyingAction = ref(false);
-const showModal = ref(false);
-const modalMessage = ref("");
+const taskInput = ref({
+    name: "",
+    action: null,
+    priority: null,
+    retriable: false,
+});
+const taskPriority = [
+    { label: t("task.form.priority_low"), value: 1 },
+    { label: t("task.form.priority_normal"), value: 2 },
+    { label: t("task.form.priority_high"), value: 3 },
+    { label: t("task.form.priority_urgent"), value: 4 },
+];
 
 // Constants
+const CREATE = "create";
+const UPDATE = "update";
 const RETRY = "retry";
-const RESCHEDULE = "reschedule";
 const STOP = "stop";
 const CANCEL = "cancel";
+
+const actionMode = ref("");
+const selectedAction = ref("");
+const applyingAction = ref(false);
+const isReady = ref(false);
+const isLoading = ref(false);
+const showModal = ref(false);
+const modalMessage = ref(t("task.leave_msg"));
+
+const createTask = async () => {
+    if (isFormValid.value) {
+        const responseCreateTask = await Tasks.createTask(
+            taskInput.value.name,
+            taskInput.value.action,
+            taskInput.value.priority,
+            taskInput.value.retriable
+        );
+        if (responseCreateTask) {
+            router.push({ name: "Tasks" });
+        }
+    }
+};
 
 const loadTask = async () => {
     const responseLoadTask = await Tasks.task(route.params.id);
     if (responseLoadTask) {
         task.value = responseLoadTask;
+        taskInput.value.name = task.value.name;
+        taskInput.value.action = task.value.action;
+        taskInput.value.priority = task.value.priority;
+        taskInput.value.retriable = task.value.retriable;
         isReady.value = true;
         loadTaskLogs(task.value._id);
+    }
+};
+
+const loadTaskLogs = async () => {
+    const responseTaskLogs = await Tasks.taskLogs(task.value._id);
+    if (responseTaskLogs) {
+        taskLogs.value = responseTaskLogs;
     }
 };
 
@@ -171,7 +287,7 @@ const handleAction = (action, message) => {
 
 const handleRetryTask = async () => {
     applyingAction.value = true;
-    const responseRetryTask = await Tasks.retryTask(task.value._id);
+    const responseRetryTask = await Tasks.retryTask([task.value._id]);
     if (responseRetryTask) {
         showModal.value = false;
         selectedAction.value = "";
@@ -197,7 +313,7 @@ const handleChangeTaskSchedule = async (newDate) => {
 
 const handleStopTask = async () => {
     applyingAction.value = true;
-    const responseStopTask = await Tasks.stopTask(task.value._id);
+    const responseStopTask = await Tasks.stopTask([task.value._id]);
     if (responseStopTask) {
         showModal.value = false;
         selectedAction.value = "";
@@ -208,20 +324,13 @@ const handleStopTask = async () => {
 
 const handleCancelTask = async () => {
     applyingAction.value = true;
-    const responseCancelTask = await Tasks.cancelTask(task.value._id);
+    const responseCancelTask = await Tasks.cancelTask([task.value._id]);
     if (responseCancelTask) {
         showModal.value = false;
         selectedAction.value = "";
         modalMessage.value = "";
         applyingAction.value = false;
         router.push({ name: "Tasks" });
-    }
-};
-
-const loadTaskLogs = async () => {
-    const responseTaskLogs = await Tasks.taskLogs(task.value._id);
-    if (responseTaskLogs) {
-        taskLogs.value = responseTaskLogs;
     }
 };
 
@@ -236,16 +345,17 @@ const applyAction = async () => {
         case CANCEL:
             await handleCancelTask();
             break;
+        default:
+            router.push({ name: "Tasks" });
     }
 };
 
-// Setup page data
-const setupPage = (name = "") => {
-    page.setPageTitle(name);
-};
-
-setupPage();
-loadTask();
+if (route.params.id === "add") {
+    actionMode.value = CREATE;
+} else {
+    actionMode.value = UPDATE;
+    loadTask();
+}
 </script>
 
 <style lang="scss" scoped></style>

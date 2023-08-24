@@ -4,105 +4,33 @@
             <v-btn
                 v-if="hasPermission('readwrite_task')"
                 color="primary"
-                @click="$router.push({ name: 'CreateTask' })"
+                @click="$router.push({ name: 'Task', params: { id: 'add' } })"
             >
                 {{ $t("tasks.add") }}
             </v-btn>
         </Teleport>
 
-        <section class="tw-mt-6 tw-mb-4">
-            <div
-                class="tw-mb-4 md:tw-mb-0 lg:tw-w-4/12 tw-flex tw-flex-row tw-gap-x-4 tw-items-center"
+        <div
+            class="tw-p-6 tw-rounded-b-md"
+            :class="{
+                'tw-bg-white ': $vuetify.theme.name === 'light',
+                'tw-bg-darkbg': $vuetify.theme.name === 'dark',
+            }"
+        >
+            <Manager
+                :active="0"
+                :list="tasks.list"
+                :actions="actions"
+                :deleteCallback="deleteEntries"
+                :no_items="$t('tasks.no_tasks')"
+                :columns="columns"
+                :index="0"
             >
-                <v-text-field
-                    color="primary"
-                    :label="$t('tasks.search')"
-                    variant="outlined"
-                    :hide-details="true"
-                    type="text"
-                    clearable
-                    density="comfortable"
-                    v-model="currentSearch"
-                    @keydown.enter="runSearch"
-                    @click:clear="clearSearch"
-                >
-                    <template v-slot:append-inner>
-                        <div class="tw-opacity-[0.20]">
-                            <v-icon icon="mdi-keyboard-return" />
-                        </div>
-                    </template>
-                </v-text-field>
-
-                <v-progress-circular
-                    :class="{
-                        'tw-invisible': !isLoadingSearch,
-                        'tw-hidden': $vuetify.display.mobile,
-                    }"
-                    indeterminate
-                    size="small"
-                    width="3"
-                />
-            </div>
-        </section>
-
-        <v-table class="utable">
-            <thead>
-                <tr>
-                    <SmartTH
-                        :text="$t('tasks.columns.name')"
-                        :sortable="true"
-                        @sort="setSorting('name')"
-                        :showLoaderOnSort="true"
-                        :condition="currentSorting !== 'name' || !isLoadingSort"
-                        :ascending="
-                            currentSorting === 'name' &&
-                            currentSortingDir === 'ASC'
-                        "
-                    />
-                    <SmartTH
-                        :text="$t('tasks.columns.status')"
-                        :sortable="true"
-                        @sort="setSorting('executed')"
-                        :showLoaderOnSort="true"
-                        :condition="
-                            currentSorting !== 'executed' || !isLoadingSort
-                        "
-                        :ascending="
-                            currentSorting === 'executed' &&
-                            currentSortingDir === 'ASC'
-                        "
-                    />
-                    <SmartTH
-                        :text="$t('tasks.columns.scheduled')"
-                        :sortable="true"
-                        @sort="setSorting('executed_at')"
-                        :showLoaderOnSort="true"
-                        :condition="
-                            currentSorting !== 'executed_at' || !isLoadingSort
-                        "
-                        :ascending="
-                            currentSorting === 'executed_at' &&
-                            currentSortingDir === 'ASC'
-                        "
-                    />
-                    <SmartTH
-                        :text="$t('tasks.columns.priority')"
-                        :sortable="true"
-                        @sort="setSorting('priority')"
-                        :showLoaderOnSort="true"
-                        :condition="
-                            currentSorting !== 'priority' || !isLoadingSort
-                        "
-                        :ascending="
-                            currentSorting === 'priority' &&
-                            currentSortingDir === 'ASC'
-                        "
-                    />
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr v-for="task in tasks.list" :key="task._id">
+                <template v-slot:extra>
+                    <!-- SEARCH -->
+                    SEARCH
+                </template>
+                <template v-slot="{ row }">
                     <td>
                         <router-link
                             class="hover:tw-text-primary hover:tw-underline"
@@ -111,16 +39,16 @@
                                     $vuetify.theme.name !== 'light',
                             }"
                             :to="{
-                                name: 'SingleTask',
-                                params: { id: task._id },
+                                name: 'Task',
+                                params: { id: row._id },
                             }"
                         >
-                            {{ task.name }}
+                            {{ row.name }}
                         </router-link>
                     </td>
                     <td>
                         {{
-                            task.executed
+                            row.executed
                                 ? $t("tasks.columns.executed")
                                 : $t("tasks.columns.no_executed")
                         }}
@@ -128,26 +56,23 @@
                     <td>
                         {{
                             new Date(
-                                task.scheduled_at * 1000
+                                row.scheduled_at * 1000
                             ).toLocaleDateString("en-US")
                         }}
                     </td>
-                    <td>{{ task.priority }}</td>
-                </tr>
-
-                <tr v-if="tasks.list && !tasks.list.length">
-                    <td colspan="7" class="tw-text-center tw-font-medium">
-                        {{ $t("tasks.no_tasks") }}
-                    </td>
-                </tr>
-            </tbody>
-        </v-table>
-
-        <Pagination
-            class="tw-mt-6"
-            :limit="currentLimit"
-            :pagination="pagination"
-        />
+                    <td>{{ row.priority }}</td>
+                </template>
+                <template #footer="{ index }">
+                    <v-pagination
+                        v-model="currentPage[index - 1]"
+                        class="tw-mt-6"
+                        density="comfortable"
+                        :rounded="true"
+                        :length="pagination.totalPages"
+                    />
+                </template>
+            </Manager>
+        </div>
     </div>
 
     <Loader v-else />
@@ -161,15 +86,31 @@ import { useI18n } from "vue-i18n";
 import { hasPermission } from "@/libs/tools";
 import { Tasks } from "@/libs/graphql/lib/tasks";
 
-import Pagination from "@/components/globals/Pagination.vue";
 import Loader from "@/components/globals/Loader.vue";
-import SmartTH from "@/components/globals/table/SmartTH.vue";
+import Manager from "@/components/globals/Manager.vue";
 
 const store = useAppStore();
 const i18n = useI18n();
 const isReady = ref(false);
 
 const tasks = ref([]);
+
+const actions = ref([
+    { value: "start", title: i18n.t("tasks.actions.start") },
+    { value: "start", title: i18n.t("tasks.actions.retry") },
+    { value: "stop", title: i18n.t("tasks.actions.stop") },
+    {
+        value: "delete",
+        title: i18n.t("tasks.actions.delete"),
+    },
+]);
+
+const columns = ref([
+    { label: i18n.t("tasks.columns.name"), centered: false },
+    { label: i18n.t("tasks.columns.status"), centered: false },
+    { label: i18n.t("tasks.columns.scheduled"), centered: false },
+    { label: i18n.t("tasks.columns.priority"), centered: false },
+]);
 
 // Load tasks
 const loadTasks = async () => {
@@ -188,6 +129,20 @@ const loadTasks = async () => {
     }
 };
 
+const startAllTasks = async () => {
+    const responseStartAllTasks = await Tasks.startAllTasks();
+    if (responseStartAllTasks) {
+        console.log("ALL STARTED");
+    }
+};
+
+const stopAllTasks = async () => {
+    const responseStopAllTasks = await Tasks.stopAllTasks();
+    if (responseStopAllTasks) {
+        console.log("ALL STOPPED");
+    }
+};
+
 // Pagination handling
 const currentPage = ref(1);
 const currentLimit = ref(25);
@@ -199,7 +154,7 @@ const currentSortingDir = ref("ASC");
 const isLoadingSort = ref(false);
 
 // Sorting from the Table
-const setSorting = async (field) => {
+/* const setSorting = async (field) => {
     if (isLoadingSort.value) return;
 
     if (currentSorting.value !== field) {
@@ -213,13 +168,13 @@ const setSorting = async (field) => {
     isLoadingSort.value = true;
     await loadTasks();
     isLoadingSort.value = false;
-};
+}; */
 
 // Search
 const currentSearch = ref("");
 const isLoadingSearch = ref(false);
 
-const runSearch = async () => {
+/* const runSearch = async () => {
     isLoadingSearch.value = true;
     currentPage.value = 1;
     currentSorting.value = "name";
@@ -236,7 +191,7 @@ const clearSearch = async () => {
     currentSortingDir.value = "ASC";
     await loadTasks();
     isLoadingSearch.value = false;
-};
+}; */
 
 // Setup page data
 const setupPage = () => {

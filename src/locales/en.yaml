@@ -788,7 +788,9 @@ tasks:
     executed: Fulfilled
     no_executed: Coming
   actions:
+    start: Start
     retry: Retry
+    stop: Stop
     delete: Delete
 
 task:
@@ -801,12 +803,18 @@ task:
   leave_msg: Are you sure you want to leave?
   back: Back
   name: Name
-  create_task: Create a task
+  create_task: Create task
+  update_task: Update task
   save: Save
+  update: Update
   cancel: Cancel
   form:
     name: Enter name
     action: Select action
     priority: Select priority
+    priority_low: Low
+    priority_normal: Normal
+    priority_high: High
+    priority_urgent: Urgent
   errors:
     required: Required
