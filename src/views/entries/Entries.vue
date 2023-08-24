@@ -14,7 +14,7 @@
                     :persistent-hint="false"
                     class="tw-w-[200px]"
                 />
-                <v-btn @click.prevent="$router.push({name: 'EntrySingle', params: {name: $route.params.name, id: 'add'}})" color="primary" v-if="hasPermission('readwrite_entry_layout')">
+                <v-btn @click.prevent="$router.push({name: 'EntrySingle', params: {name: $route.params.name, id: 'add-' + selectedLocale}})" color="primary" v-if="hasPermission('readwrite_entry_layout')">
                     {{ $t('entries.add') }}
                 </v-btn>
             </div>

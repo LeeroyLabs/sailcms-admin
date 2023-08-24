@@ -33,6 +33,7 @@
                                             v-model="entry.content[field.key]"
                                             :config="field"
                                             :index="_idxx"
+                                            :locale="entry.locale"
                                         />
                                     </template>
                                 </div>
@@ -119,8 +120,10 @@ const loadBase = async () =>
         }
     }
 
-    if (route.params.id === 'add') {
+    if (route.params.id.includes('add-')) {
         page.setPageTitle('entry.new_entry', entryType.value.title);
+        const [staticpart, currentLocale] = route.params.id.split('-');
+        entry.value.locale = currentLocale;
 
         // Prepare all fields for use in entry
         for (let tab of entryLayout.value.schema) {

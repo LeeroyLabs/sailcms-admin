@@ -27,6 +27,7 @@ export const entry = ref({
     },
     categories: [],
     content: {
+        datetime: {date: '04-04-2024', time: '14:00'}
     },
     seo: {
         title: '',

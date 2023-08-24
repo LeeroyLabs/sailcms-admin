@@ -495,5 +495,13 @@ export default {
                 }
             }
         }
+    `,
+    entriesForListing: `
+        query entriesForListing($locale: String!, $type: String!) {
+            query entriesForListing(locale: $locale, type: $type) {
+                _id
+                title
+            }
+        }
     `
 }

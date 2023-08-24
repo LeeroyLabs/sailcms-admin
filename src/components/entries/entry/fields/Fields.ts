@@ -5,8 +5,11 @@ import HTML from "./HTML.vue";
 import Textarea from "./Textarea.vue";
 import Asset from "./Asset.vue";
 import Select from "./Select.vue";
-import Country from "@/components/entries/entry/fields/Country.vue";
-import Switch from "@/components/entries/entry/fields/Switch.vue";
+import Country from "./Country.vue";
+import Switch from "./Switch.vue";
+import DateTime from "./DateTime.vue";
+import Time from "@/components/entries/entry/fields/Time.vue";
+import Entry from "@/components/entries/entry/fields/Entry.vue";
 
 export const AvailableFields = {
     phone: {
@@ -19,6 +22,9 @@ export const AvailableFields = {
     },
     date: {
         component: Date
+    },
+    datetime: {
+        component: DateTime
     },
     id: {
         component: Text,
@@ -93,5 +99,8 @@ export const AvailableFields = {
     },
     switch: {
         component: Switch
+    },
+    entry: {
+        component: Entry
     }
 }

@@ -113,6 +113,10 @@ const props = defineProps({
         type: Function,
         default: () => {}
     },
+    actionCallback: {
+        type: Function,
+        default: (action) => {}
+    },
     columns: {
         type: Array,
         default: []
@@ -124,6 +128,10 @@ const props = defineProps({
     index: {
         type: Number,
         default: 0
+    },
+    overrideActions: {
+        type: Array,
+        default: []
     }
 });
 
@@ -137,6 +145,10 @@ const selectedAction = ref(null);
 
 const availableActions = computed(() =>
 {
+    if (props.overrideActions.length > 0) {
+        return props.overrideActions;
+    }
+
     if (props.active) return [{value: 'delete', title: props.active ? i18n.t('system.trash') : i18n.t('system.delete')}];
 
     return [
@@ -155,8 +167,10 @@ const performAction = async () =>
 {
     if (selectedAction.value === 'delete') {
         showDeleteConfirm.value = true;
-    } else {
+    } else if (selectedAction.value === 'restore') {
         await confirmRestore();
+    } else {
+        props.actionCallback(selectedAction.value);
     }
 }
 

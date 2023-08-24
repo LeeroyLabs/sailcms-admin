@@ -174,13 +174,6 @@ export const availableTypes = computed(() =>
             description: t('fields.descriptions.datetime')
         },
         {
-            value: 'time',
-            component: Date,
-            hideRepeat: false,
-            title: t('fields.types.time'),
-            description: t('fields.descriptions.time')
-        },
-        {
             value: 'year',
             component: Empty,
             hideRepeat: false,

@@ -182,6 +182,8 @@ const handleTabChanges = (e) =>
             }
         }
     }
+
+    schema.value = reformatted;
 }
 
 const handleTabNameChange = (e) =>

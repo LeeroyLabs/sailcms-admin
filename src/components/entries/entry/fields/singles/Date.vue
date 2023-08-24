@@ -4,7 +4,7 @@
         class="dp tw-h-[50px] tw-rounded-md tw-border tw-py-2 tw-px-3 focus-within:tw-border-primary"
         :class="{'tw-border-neutral-400': $vuetify.theme.name === 'light', 'tw-border-neutral-500': $vuetify.theme.name === 'dark'}"
     >
-        <input :id="id" v-bind:value="value" class="focus-visible:tw-ring-0 focus-visible:tw-outline-0 tw-h-full tw-w-full"/>
+        <input :id="id" v-bind:value="(typeof value === 'object') ? value.date + sepChar + value.time : value" class="focus-visible:tw-ring-0 focus-visible:tw-outline-0 tw-h-full tw-w-full"/>
     </div>
 </template>
 
@@ -18,6 +18,8 @@ import { useTheme } from "vuetify";
 import { v4 } from "uuid";
 
 const emitter = defineEmits(['change']);
+
+const sepChar = ' — ';
 
 const props = defineProps({
     value: {
@@ -43,6 +45,10 @@ const props = defineProps({
     useTimestamp: {
         type: Boolean,
         default: false
+    },
+    minuteIncrement: {
+        type: Number,
+        default: 5
     }
 });
 
@@ -76,6 +82,12 @@ const handleDateChange = (selectedDates, dateStr, instance) =>
         return;
     }
 
+    if (props.showTime) {
+        const [d, t] = dateStr.split(sepChar);
+        emitter('change', {date: d, time: t});
+        return;
+    }
+
     emitter('change', dateStr);
 }
 
@@ -84,8 +96,10 @@ const initPicker = () =>
     const el = document.querySelector('#' + props.id);
     datepicker.value = flatpickr(el, {
         positionElement: document.querySelector('#' + props.id),
-        dateFormat: props.config.config.date_format,
+        dateFormat: (props.showTime) ? props.config.config.date_format + sepChar + props.config.config.time_format  : props.config.config.date_format,
         locale: locales[i18n.locale.value],
+        enableTime: props.showTime,
+        minuteIncrement: props.minuteIncrement,
         mode: (props.config.config.range) ? 'range' : 'single',
         onChange: handleDateChange
     });

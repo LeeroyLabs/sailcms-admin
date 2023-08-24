@@ -210,7 +210,7 @@ const opts = {
 const addToTab = (element, tab) =>
 {
     offsetBox.value = false;
-    usedFields.value.push(element.key);
+    usedFields.value.push({key: element.key, width: 'full'});
     emitter('added', {element: element, key: element.key, tab: tab, used: usedFields.value});
 
     nextTick(() => addbox.value.reposition());
