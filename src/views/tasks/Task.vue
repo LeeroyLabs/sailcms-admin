@@ -15,11 +15,13 @@
                                 : $t("task.update_task")
                         }}
                     </h3>
-                    <span>ID: {{ task._id }}</span>
+                    <span v-if="actionMode === UPDATE">ID: {{ task._id }}</span>
                 </div>
 
-                <div v-if="actionMode === UPDATE">
-                    <div class="tw-flex tw-gap-2 tw-justify-end">
+                <div v-if="actionMode === UPDATE" class="tw-flex tw-flex-col">
+                    <div
+                        class="tw-order-2 sm:tw-order-1 tw-flex tw-gap-2 tw-justify-end"
+                    >
                         <v-btn
                             @click.prevent="
                                 handleAction(RETRY, $t('task.retry_msg'))
@@ -59,13 +61,19 @@
                             class="tw-text-red-600"
                         />
                     </div>
-                    <p>
+                    <p
+                        v-if="actionMode === UPDATE"
+                        class="tw-order-1 sm:tw-order-2"
+                    >
                         {{
                             task.executed
-                                ? `Started at: ${task.executed_at}`
-                                : `Scheduled at: ${new Date(
-                                      task.scheduled_at * 1000
-                                  ).toLocaleDateString("en-US")}`
+                                ? `${$t("task.started_at")}: `
+                                : `${$t("task.scheduled_at")}: `
+                        }}
+                        {{
+                            new Date(
+                                task.scheduled_at * 1000
+                            ).toLocaleDateString("en-US")
                         }}
                     </p>
                 </div>
@@ -77,16 +85,30 @@
                 @submit.prevent
                 v-model="isFormValid"
             >
-                <v-text-field
-                    color="primary"
-                    :label="$t('task.form.name')"
-                    variant="outlined"
-                    type="text"
-                    validate-on="blur"
-                    density="comfortable"
-                    :rules="[rules.required]"
-                    v-model="taskInput.name"
-                />
+                <div
+                    class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-x-4 tw-gap-y-4 md:tw-gap-y-0"
+                >
+                    <v-text-field
+                        color="primary"
+                        :label="$t('task.form.name')"
+                        variant="outlined"
+                        type="text"
+                        validate-on="blur"
+                        density="comfortable"
+                        :rules="[rules.required]"
+                        v-model="taskInput.name"
+                    />
+                    <v-text-field
+                        color="primary"
+                        :label="$t('task.form.name')"
+                        variant="outlined"
+                        type="text"
+                        validate-on="blur"
+                        density="comfortable"
+                        :rules="[rules.required]"
+                        v-model="taskInput.name"
+                    />
+                </div>
 
                 <div
                     class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-x-4 tw-gap-y-4 md:tw-gap-y-0"
@@ -145,7 +167,9 @@
                     v-model="taskInput.retriable"
                 />
 
-                <div class="tw-self-end tw-gap-x-3 tw-flex">
+                <div
+                    class="tw-self-center sm:tw-self-end tw-gap-x-3 tw-flex tw-flex-col sm:tw-flex-row tw-gap-2"
+                >
                     <v-btn
                         type="submit"
                         :loading="isLoading"
@@ -174,16 +198,8 @@
                 :title="$t('task.confirm')"
                 :loading="applyingAction"
                 :message="modalMessage"
-                @cancel="showModal = false"
+                @cancel="handleCancel"
                 @accept="applyAction"
-            />
-        </Transition>
-
-        <Transition>
-            <DatePicker
-                :show="selectedAction === RESCHEDULE"
-                @cancel="selectedAction = ''"
-                @selected="handleChangeTaskSchedule($event)"
             />
         </Transition>
     </div>
@@ -289,9 +305,7 @@ const handleRetryTask = async () => {
     applyingAction.value = true;
     const responseRetryTask = await Tasks.retryTask([task.value._id]);
     if (responseRetryTask) {
-        showModal.value = false;
-        selectedAction.value = "";
-        modalMessage.value = "";
+        handleCancel();
         applyingAction.value = false;
     }
 };
@@ -303,10 +317,8 @@ const handleChangeTaskSchedule = async (newDate) => {
         newDate / 1000
     );
     if (responseChangeTaskSchedule) {
-        showModal.value = false;
-        selectedAction.value = "";
-        modalMessage.value = "";
-        loadTask();
+        await loadTask();
+        handleCancel();
         applyingAction.value = false;
     }
 };
@@ -315,9 +327,7 @@ const handleStopTask = async () => {
     applyingAction.value = true;
     const responseStopTask = await Tasks.stopTask([task.value._id]);
     if (responseStopTask) {
-        showModal.value = false;
-        selectedAction.value = "";
-        modalMessage.value = "";
+        handleCancel();
         applyingAction.value = false;
     }
 };
@@ -326,9 +336,7 @@ const handleCancelTask = async () => {
     applyingAction.value = true;
     const responseCancelTask = await Tasks.cancelTask([task.value._id]);
     if (responseCancelTask) {
-        showModal.value = false;
-        selectedAction.value = "";
-        modalMessage.value = "";
+        handleCancel();
         applyingAction.value = false;
         router.push({ name: "Tasks" });
     }
@@ -350,8 +358,15 @@ const applyAction = async () => {
     }
 };
 
+const handleCancel = () => {
+    showModal.value = false;
+    selectedAction.value = "";
+    modalMessage.value = t("task.leave_msg");
+};
+
 if (route.params.id === "add") {
     actionMode.value = CREATE;
+    isReady.value = true;
 } else {
     actionMode.value = UPDATE;
     loadTask();

@@ -804,11 +804,13 @@ task:
   leave_msg: Êtes-vous certain de vouloir quitter ?
   back: Retour
   name: Nom
+  create_task: Créer une tâche
+  update_task: Modifier la tâche
   save: Enregistrer
   update: Modifier
   cancel: Annuler
-  create_task: Créer une tâche
-  update_task: Modifier la tâche
+  started_at: Débuté le
+  scheduled_at: Plannifié le
   form:
     name: Entrer un nom
     action: Sélectioner une action

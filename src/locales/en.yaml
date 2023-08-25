@@ -813,6 +813,8 @@ task:
   save: Save
   update: Update
   cancel: Cancel
+  started_at: Started at
+  scheduled_at: Scheduled at
   form:
     name: Enter name
     action: Select action

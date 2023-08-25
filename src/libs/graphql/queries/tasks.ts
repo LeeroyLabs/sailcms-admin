@@ -14,6 +14,7 @@ export default {
                 executed_at
                 execution_result
                 execution_success
+                pid
             }
         }
     `,
@@ -32,6 +33,7 @@ export default {
                 executed_at
                 execution_result
                 execution_success
+                pid
             }
         }
     `,
@@ -76,7 +78,7 @@ export default {
         }
     `,
     createTask: `
-        mutation createTask($name: String!, $action: String!, $priority: Int!, $retriable: Boolean!) {
+        mutation createTask($name: String!, $action: String!, $priority: Int!, $retriable: Boolean!, $timestamp: Int!, $settings: String!) {
             createTask(name: $name, action: $action, priority: $priority, retriable: $retriable) 
         }
     `,
@@ -88,6 +90,11 @@ export default {
     changeTaskSchedule: `
         mutation changeTaskSchedule($id: ID!, $timestamp: Int!) {
             changeTaskSchedule(id: $id, timestamp: $timestamp) 
+        }
+    `,
+    startTasks: `
+        mutation startTasks($ids: [ID!]!) {
+            startTasks() 
         }
     `,
     startAllTasks: `

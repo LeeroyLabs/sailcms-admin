@@ -20,16 +20,13 @@
             <Manager
                 :active="0"
                 :list="tasks.list"
-                :actions="actions"
+                :overrideActions="actions"
+                :actionCallback="applyAction"
                 :deleteCallback="deleteEntries"
                 :no_items="$t('tasks.no_tasks')"
                 :columns="columns"
                 :index="0"
             >
-                <template v-slot:extra>
-                    <!-- SEARCH -->
-                    SEARCH
-                </template>
                 <template v-slot="{ row }">
                     <td>
                         <router-link
@@ -82,6 +79,7 @@
 import { ref, onMounted } from "vue";
 import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 
 import { hasPermission } from "@/libs/tools";
 import { Tasks } from "@/libs/graphql/lib/tasks";
@@ -92,12 +90,14 @@ import Manager from "@/components/globals/Manager.vue";
 const store = useAppStore();
 const i18n = useI18n();
 const isReady = ref(false);
+const router = useRouter();
 
 const tasks = ref([]);
 
+const applyingAction = ref(false);
 const actions = ref([
     { value: "start", title: i18n.t("tasks.actions.start") },
-    { value: "start", title: i18n.t("tasks.actions.retry") },
+    { value: "retry", title: i18n.t("tasks.actions.retry") },
     { value: "stop", title: i18n.t("tasks.actions.stop") },
     {
         value: "delete",
@@ -111,6 +111,12 @@ const columns = ref([
     { label: i18n.t("tasks.columns.scheduled"), centered: false },
     { label: i18n.t("tasks.columns.priority"), centered: false },
 ]);
+
+// Constants
+const START = "start";
+const RETRY = "retry";
+const STOP = "stop";
+const CANCEL = "cancel";
 
 // Load tasks
 const loadTasks = async () => {
@@ -143,6 +149,51 @@ const stopAllTasks = async () => {
     }
 };
 
+//  Actions
+const handleRetryTask = async (items) => {
+    applyingAction.value = true;
+    const responseRetryTask = await Tasks.retryTask(
+        items.map((item) => item._id)
+    );
+    if (responseRetryTask) {
+        applyingAction.value = false;
+    }
+};
+
+const handleStopTask = async (items) => {
+    console.log("ITEMS", items);
+    /* applyingAction.value = true;
+    const responseStopTask = await Tasks.stopTask(
+        items.map((item) => item._id)
+    );
+    if (responseStopTask) {
+        applyingAction.value = false;
+    } */
+};
+
+const handleCancelTask = async (items) => {
+    applyingAction.value = true;
+    const responseCancelTask = await Tasks.cancelTask(
+        items.map((item) => item._id)
+    );
+    if (responseCancelTask) {
+        applyingAction.value = false;
+    }
+};
+
+const applyAction = async (action, items) => {
+    switch (action) {
+        case RETRY:
+            return handleRetryTask(items);
+        case STOP:
+            return handleStopTask(items);
+        case CANCEL:
+            return handleCancelTask(items);
+        default:
+            router.push({ name: "Tasks" });
+    }
+};
+
 // Pagination handling
 const currentPage = ref(1);
 const currentLimit = ref(25);
@@ -151,47 +202,9 @@ const pagination = ref({ total: 0, current: 0, totalPages: 0 });
 // Sorting
 const currentSorting = ref("name");
 const currentSortingDir = ref("ASC");
-const isLoadingSort = ref(false);
-
-// Sorting from the Table
-/* const setSorting = async (field) => {
-    if (isLoadingSort.value) return;
-
-    if (currentSorting.value !== field) {
-        currentSorting.value = field;
-        currentSortingDir.value = "ASC";
-    } else {
-        currentSortingDir.value =
-            currentSortingDir.value === "ASC" ? "DESC" : "ASC";
-    }
-
-    isLoadingSort.value = true;
-    await loadTasks();
-    isLoadingSort.value = false;
-}; */
 
 // Search
 const currentSearch = ref("");
-const isLoadingSearch = ref(false);
-
-/* const runSearch = async () => {
-    isLoadingSearch.value = true;
-    currentPage.value = 1;
-    currentSorting.value = "name";
-    currentSortingDir.value = "ASC";
-    await loadTasks();
-    isLoadingSearch.value = false;
-};
-
-const clearSearch = async () => {
-    isLoadingSearch.value = true;
-    currentSearch.value = "";
-    currentPage.value = 1;
-    currentSorting.value = "name";
-    currentSortingDir.value = "ASC";
-    await loadTasks();
-    isLoadingSearch.value = false;
-}; */
 
 // Setup page data
 const setupPage = () => {
