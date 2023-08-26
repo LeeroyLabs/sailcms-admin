@@ -7,7 +7,7 @@ module.exports = {
     prefix: 'tw-',
     theme: {
         fontFamily: {
-            'body': ['Roboto', 'Sans-Serif']
+            'body': ['Radio Canada', 'Sans-Serif']
         },
         extend: {
             colors: {

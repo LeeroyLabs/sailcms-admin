@@ -7,36 +7,41 @@
             </v-btn>
         </Teleport>
         <section class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between">
-            <div class="tw-flex tw-flex-row tw-w-full lg:tw-w-3/12 tw-items-center" v-if="hasPermission('readwrite_entryfields')">
-                <v-select
-                    v-model="selectedAction"
-                    label="Actions"
-                    color="primary"
-                    :items="availableActions"
-                    variant="outlined"
-                    density="comfortable"
-                    single-line
-                    placeholder="Actions"
-                    :persistent-hint="false"
-                    :hide-details="true"
-                />
+            <div class="tw-flex tw-flex-row tw-w-full lg:tw-w-full tw-justify-between tw-items-center" v-if="hasPermission('readwrite_entryfields')">
+                <div class="tw-flex tw-flex-row tw-items-center tw-w-4/12">
+                    <v-select
+                        v-model="selectedAction"
+                        label="Actions"
+                        color="primary"
+                        :items="availableActions"
+                        variant="outlined"
+                        density="comfortable"
+                        single-line
+                        placeholder="Actions"
+                        :persistent-hint="false"
+                        :hide-details="true"
+                    />
 
-                <v-btn
-                    v-if="selectedFields.length > 0 && hasPermission('readwrite_entryfields')"
-                    :class="{
-                        'tw-invisible tw-opacity-0': selectedAction === null,
-                        'tw-opacity-100': selectedAction !== null
-                    }"
-                    class="!tw-hidden md:!tw-block tw-ml-2 tw-transition-opacity tw-duration-300"
-                    color="primary"
-                    size="small"
-                    icon
-                    @click.prevent="performAction"
-                >
-                    <v-icon icon="mdi-chevron-right"/>
-                </v-btn>
+                    <v-btn
+                        v-if="selectedFields.length > 0 && hasPermission('readwrite_entryfields')"
+                        :class="{
+                            'tw-invisible tw-opacity-0': selectedAction === null,
+                            'tw-opacity-100': selectedAction !== null
+                        }"
+                        class="!tw-hidden md:!tw-block tw-ml-2 tw-transition-opacity tw-duration-300"
+                        color="primary"
+                        size="small"
+                        icon
+                        @click.prevent="performAction"
+                    >
+                        <v-icon icon="mdi-chevron-right"/>
+                    </v-btn>
 
-                <v-progress-circular indeterminate size="x-small" width="2" class="tw-ml-2" :class="{'tw-invisible': !applyingAction}"/>
+                    <v-progress-circular indeterminate size="x-small" width="2" class="tw-ml-2" :class="{'tw-invisible': !applyingAction}"/>
+                </div>
+                <div>
+                    SEARCH
+                </div>
             </div>
             <div v-else></div>
         </section>
@@ -95,6 +100,8 @@
             </tr>
             </tbody>
         </v-table>
+        <!-- Spacer -->
+        <div class="tw-h-[30px]"></div>
 
         <Transition>
             <DeleteConfirmation

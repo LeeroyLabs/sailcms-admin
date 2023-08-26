@@ -29,26 +29,12 @@
                         class="list-dnd-handle tw-mr-2 tw-cursor-grab"
                         :class="{'tw-text-zinc-400': $vuetify.theme.name === 'light', 'tw-text-neutral-500': $vuetify.theme.name === 'dark'}"
                     />
+
                     <div class="tw-truncate tw-mr-1">{{ fields.find(f => f.key === element.key)?.name }}</div>
                     <div class="tw-flex-grow tw-flex tw-flex-row tw-justify-end tw-gap-x-2">
                         <button @click.prevent="openFieldSettings(index, element)">
                             <v-icon icon="mdi-cog" size="small" class="hover:tw-text-primary"/>
                         </button>
-
-<!--                        <button @click.prevent="tab.fields[index].width='half'">-->
-<!--                            <v-icon icon="mdi-arrow-collapse-horizontal" size="small" class="hover:tw-text-primary"/>-->
-<!--                            <v-tooltip activator="parent" location="bottom" :open-delay="750">{{ $t('layout.field_half_width') }}</v-tooltip>-->
-<!--                        </button>-->
-
-<!--                        <button @click.prevent="tab.fields[index].width='full'">-->
-<!--                            <v-icon icon="mdi-arrow-expand-horizontal" size="small" class="hover:tw-text-primary"/>-->
-<!--                            <v-tooltip activator="parent" location="bottom" :open-delay="750">{{ $t('layout.field_full_width') }}</v-tooltip>-->
-<!--                        </button>-->
-
-<!--                        <button @click.prevent="tab.fields[index].width='full'">-->
-<!--                            <v-icon icon="mdi-arrow-expand-horizontal" size="small" class="hover:tw-text-primary"/>-->
-<!--                            <v-tooltip activator="parent" location="bottom" :open-delay="750">{{ $t('layout.field_full_width') }}</v-tooltip>-->
-<!--                        </button>-->
 
                         <button @click.prevent="removeField(element.key, tab.id)">
                             <v-icon icon="mdi-trash-can-outline" size="small" class="hover:tw-text-red-500"/>

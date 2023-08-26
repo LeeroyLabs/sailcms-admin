@@ -84,7 +84,6 @@ import plural from "pluralize-fr";
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { hasPermission } from '@/libs/tools';
-import { format } from 'date-fns';
 import BackButton from '@/components/globals/BackButton.vue';
 import Manager from '@/components/globals/Manager.vue';
 import Loader from '@/components/globals/Loader.vue';

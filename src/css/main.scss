@@ -3,9 +3,18 @@
   $color-pack: false
 );
 
+@import url('https://fonts.googleapis.com/css2?family=Radio+Canada:ital,wght@0,400;0,700;1,500&display=swap');
+
+$body-font-family: 'Radio-Canada';
+$title-font: 'Radio-Canada';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  font-family: "Radio-Canada", sans-serif !important;
+}
 
 :root {
   --editor-dark-bg: #6C6C6C;
