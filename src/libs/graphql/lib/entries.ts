@@ -210,30 +210,6 @@ export class Entries
 
     /**
      *
-     * Get homepage entry
-     *
-     * @param locale
-     * @param siteId
-     */
-    public static async homepageEntry(locale: string, siteId: string): Promise<Entry|null>
-    {
-        return null;
-    }
-
-    /**
-     *
-     * Alias of homepageEntry
-     *
-     * @param locale
-     * @param siteId
-     */
-    public static async homepage(locale: string, siteId: string): Promise<Entry|null>
-    {
-        return Entries.homepageEntry(locale, siteId);
-    }
-
-    /**
-     *
      * Create an entry layout
      *
      * @param title
@@ -253,6 +229,21 @@ export class Entries
         });
 
         return !!(result.data && result.data.createEntryLayout !== null);
+    }
+
+    public static async fieldsForMatrix(id: string, locales: string[] = ['fr', 'en']): Promise<any[]>
+    {
+        const client = new Client();
+        let query = EntryQueries.fieldsForMatrix;
+
+        query = query.replace(/#locale#/g, Entries.parseLocales(locales));
+        let result = await client.mutation(gql`${query}`, {id});
+
+        if (result.data) {
+            return result.data.fieldsForMatrix;
+        }
+
+        return [];
     }
 
     /**
@@ -358,7 +349,11 @@ export class Entries
 
         let result = await client.mutation(gql`${query}`, field);
 
-        return !!(result.data && result.data.updateEntryField !== null);
+        if (result.data) {
+            return result.data.updateEntryField;
+        }
+
+        return false;
     }
 
     /**
@@ -446,10 +441,21 @@ export class Entries
      * @param locale
      *
      */
-    public static async entries(type: string, page: number, search: string = '', direction: number = 1, locales: string[] = ['fr', 'en'], trash: boolean, locale: string): Promise<EntryListing>
+    public static async entries(type: string, page: number, search: string = '', direction: string = 'ASC', locales: string[] = ['fr', 'en'], trash: boolean, locale: string): Promise<EntryListing>
     {
         const client = new Client();
         let query = EntryQueries.entries;
+
+        console.log({
+            entry_type_handle: type,
+            page: page,
+            limit: 30,
+            search: search,
+            sort: 'title',
+            direction: direction,
+            only_trash: trash,
+            locale: locale
+        });
 
         query = query.replace(/#locale#/g, Entries.parseLocales(locales));
         let result = await client.query(gql`${query}`, {

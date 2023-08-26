@@ -32,20 +32,27 @@
                 <h3 v-if="internalValue.fields.length === 0" class="tw-text-center tw-font-medium">{{ $t('fields.options.no_fields') }}</h3>
 
                 <div v-else id="sortable-choices" class="tw-flex tw-flex-col tw-gap-y-2">
-                    <div
-                        v-for="choice in internalValue.fields"
-                        :id="choice.value"
-                        class="tw-px-4 tw-py-2 tw-group tw-rounded-md tw-flex tw-flex-row tw-items-center tw-justify-between"
-                        :class="{'hover:tw-bg-neutral-800 tw-border tw-border-white/30': $vuetify.theme.name === 'dark', 'hover:tw-bg-gray-300 tw-border tw-border-black/30': $vuetify.theme.name === 'light'}"
-                    >
-                        <div>
-                            <v-icon icon="mdi-menu" class="list-dnd-handle tw-mr-1 tw-cursor-grab"/>
-                            {{ choice.title }}
+                    <template v-if="isReady">
+                        <div
+                            v-for="choice in internalValue.fields"
+                            :id="'mtx-' + choice"
+                            class="tw-px-4 tw-py-2 tw-group tw-rounded-md tw-flex tw-flex-row tw-items-center tw-justify-between"
+                            :class="{'hover:tw-bg-neutral-800 tw-border tw-border-white/30': $vuetify.theme.name === 'dark', 'hover:tw-bg-gray-300 tw-border tw-border-black/30': $vuetify.theme.name === 'light'}"
+                        >
+                            <div>
+                                <v-icon icon="mdi-menu" class="list-dnd-handle tw-mr-1 tw-cursor-grab"/>
+                                {{ getTitle(choice) }}
+                            </div>
+                            <a href="" @click.prevent="removeSelection(choice)" class="hover:tw-text-red-500 tw-invisible group-hover:tw-visible">
+                                <v-icon icon="mdi-trash-can-outline" size="small"/>
+                            </a>
                         </div>
-                        <a href="" @click.prevent="removeSelection(choice)" class="hover:tw-text-red-500 tw-invisible group-hover:tw-visible">
-                            <v-icon icon="mdi-trash-can-outline" size="small"/>
-                        </a>
-                    </div>
+                    </template>
+                    <template v-else>
+                        <div class="tw-h-[140px] tw-flex tw-flex-col tw-items-center tw-justify-center">
+                            <v-progress-circular :size="60" :width="4" indeterminate/>
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>
@@ -60,6 +67,7 @@ import Sortable from 'sortablejs';
 import { Entries } from '@/libs/graphql/lib/entries';
 import { availableTypes } from '@/libs/fieldTypes';
 import { SailCMS } from '@/libs/graphql';
+import Loader from '@/components/globals/Loader.vue';
 
 const i18n = useI18n();
 
@@ -81,24 +89,25 @@ const props = defineProps({
 const showAlreadySelected = ref(false);
 const fieldList = ref([]);
 const selectedField = ref(null);
+const isReady = ref(false);
 
 const addChoice = () =>
 {
     let item = fieldList.value.find(f => f.value === selectedField.value);
 
-    if (item.disabled) {
+    if (internalValue.value.fields.includes(item.value)) {
         showAlreadySelected.value = true;
         return;
     } else {
         showAlreadySelected.value = false;
     }
 
-    item.disabled = true;
-    internalValue.value.fields.push(item);
+    internalValue.value.fields.push(item.value);
     selectedField.value = null;
 
     nextTick(() =>
     {
+        handleChange(null);
         if (internalValue.value.fields.length > 0 && !sortableCreated.value) {
             sortableCreated.value = true;
             let el = document.querySelector('#sortable-choices');
@@ -109,15 +118,24 @@ const addChoice = () =>
 
 const removeSelection = (item) =>
 {
-    document.getElementById(item.value).remove();
+    document.getElementById('mtx-' + item).remove();
     handleChange(null);
 
     // Update listing to allow that field again
     for (let field of fieldList.value) {
-        if (field.value === item.value) {
+        if (field.value === item) {
             field.disabled = false;
         }
     }
+}
+
+const getTitle = (field) =>
+{
+    const _field = fieldList.value.find(f => f.value === field);
+
+    if (!_field) return '';
+
+    return _field.title;
 }
 
 const handleChange = (e) =>
@@ -126,7 +144,7 @@ const handleChange = (e) =>
     let children = Array.from(document.querySelector('#sortable-choices').children);
 
     for (let child of children) {
-        const item = internalValue.value.fields.find(i => i.value === child.id);
+        const item = internalValue.value.fields.find(i => 'mtx-' + i === child.id);
 
         if (item) {
             choices.push(item);
@@ -137,7 +155,7 @@ const handleChange = (e) =>
     const config = cloneDeep(props.field.config);
     config.fields = choices.map(c =>
     {
-        return c.value;
+        return c;
     });
 
     emitter('change', config);
@@ -178,6 +196,11 @@ onBeforeMount(async () =>
 
     fieldList.value = fields.map(field => {
         return {value: field.key, title: field.name, disabled: false}
+    });
+
+    nextTick(() =>
+    {
+        isReady.value = true;
     });
 });
 </script>

@@ -321,7 +321,7 @@ export default {
         }
     `,
     entries: `
-        query entries($entry_type_handle: String!, $page: Int, $limit: Int, $search: String, $sort: String, $direction: Int, $only_trash: Boolean, $locale: String) {
+        query entries($entry_type_handle: String!, $page: Int, $limit: Int, $search: String, $sort: String, $direction: SortingOrder, $only_trash: Boolean, $locale: String) {
             entries(entry_type_handle: $entry_type_handle, page: $page, limit: $limit, search: $search, sort: $sort, direction: $direction, only_trash: $only_trash, locale: $locale) {
                 pagination {
                     current
@@ -498,9 +498,30 @@ export default {
     `,
     entriesForListing: `
         query entriesForListing($locale: String!, $type: String!) {
-            query entriesForListing(locale: $locale, type: $type) {
+            entriesForListing(locale: $locale, type: $type) {
                 _id
                 title
+            }
+        }
+    `,
+    // TODO: MAKE BACKEND CONFIGURE THAT FIELD PROPERLY WHEN FETCHING LAYOUT INSTEAD OF THIS CALL
+    fieldsForMatrix: `
+        query fieldsForMatrix($id: ID!) {
+            entryFieldsForMatrix(id: $id) {
+                _id
+                name
+                label {
+                    #locale#
+                },
+                placeholder {
+                    #locale#
+                }
+                explain {
+                    #locale#
+                }
+                validation
+                required
+                config
             }
         }
     `

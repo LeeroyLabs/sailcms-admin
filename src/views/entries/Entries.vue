@@ -146,7 +146,7 @@ const runSetup = async () =>
         route.params.name,
         currentPage.value[0],
         currentSearch.value[0],
-        direction.value[0],
+        (direction.value[0] === 1) ? 'ASC' : 'DESC',
         SailCMS.getLocales(),
         true,
         selectedLocale.value
@@ -156,7 +156,7 @@ const runSetup = async () =>
         route.params.name,
         currentPage.value[1],
         currentSearch.value[1],
-        direction.value[1],
+        (direction.value[1] === 1) ? 'ASC' : 'DESC',
         SailCMS.getLocales(),
         false,
         selectedLocale.value

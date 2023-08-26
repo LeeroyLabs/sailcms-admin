@@ -79,8 +79,6 @@ const emitter = defineEmits(['update:modelValue']);
 
 onMounted(async () =>
 {
-    //config.config.choices
-
     const entryList = await Entries.entriesForListing(props.locale, props.config.config.type);
     choices.value = entryList.map(e => {
         return {value: e._id, title: e.title};
