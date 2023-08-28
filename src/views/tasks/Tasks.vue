@@ -96,12 +96,12 @@ const tasks = ref([]);
 
 const applyingAction = ref(false);
 const actions = ref([
-    { value: "start", title: i18n.t("tasks.actions.start") },
-    { value: "retry", title: i18n.t("tasks.actions.retry") },
-    { value: "stop", title: i18n.t("tasks.actions.stop") },
+    { value: START, title: i18n.t("tasks.actions.start") },
+    { value: RETRY, title: i18n.t("tasks.actions.retry") },
+    { value: STOP, title: i18n.t("tasks.actions.stop") },
     {
-        value: "delete",
-        title: i18n.t("tasks.actions.delete"),
+        value: CANCEL,
+        title: i18n.t("tasks.actions.cancel"),
     },
 ]);
 
@@ -135,21 +135,17 @@ const loadTasks = async () => {
     }
 };
 
-const startAllTasks = async () => {
-    const responseStartAllTasks = await Tasks.startAllTasks();
-    if (responseStartAllTasks) {
-        console.log("ALL STARTED");
-    }
-};
-
-const stopAllTasks = async () => {
-    const responseStopAllTasks = await Tasks.stopAllTasks();
-    if (responseStopAllTasks) {
-        console.log("ALL STOPPED");
-    }
-};
-
 //  Actions
+const handleStartTask = async (items) => {
+    applyingAction.value = true;
+    const responseStartTask = await Tasks.startTasks(
+        items.map((item) => item._id)
+    );
+    if (responseStartTask) {
+        applyingAction.value = false;
+    }
+};
+
 const handleRetryTask = async (items) => {
     applyingAction.value = true;
     const responseRetryTask = await Tasks.retryTask(
@@ -161,14 +157,13 @@ const handleRetryTask = async (items) => {
 };
 
 const handleStopTask = async (items) => {
-    console.log("ITEMS", items);
-    /* applyingAction.value = true;
+    applyingAction.value = true;
     const responseStopTask = await Tasks.stopTask(
-        items.map((item) => item._id)
+        items.map((item) => +item.pid)
     );
     if (responseStopTask) {
         applyingAction.value = false;
-    } */
+    }
 };
 
 const handleCancelTask = async (items) => {
@@ -178,11 +173,14 @@ const handleCancelTask = async (items) => {
     );
     if (responseCancelTask) {
         applyingAction.value = false;
+        loadTasks();
     }
 };
 
 const applyAction = async (action, items) => {
     switch (action) {
+        case START:
+            return handleStartTask(items);
         case RETRY:
             return handleRetryTask(items);
         case STOP:

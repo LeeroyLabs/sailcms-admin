@@ -6,6 +6,8 @@ export default {
                 name
                 action
                 priority
+                logs
+                settings
                 retriable
                 retry_count
                 scheduled_at
@@ -58,6 +60,7 @@ export default {
                     executed_at
                     execution_result
                     execution_success
+                    pid
                 }
             }
         }
@@ -79,7 +82,7 @@ export default {
     `,
     createTask: `
         mutation createTask($name: String!, $action: String!, $priority: Int!, $retriable: Boolean!, $timestamp: Int!, $settings: String!) {
-            createTask(name: $name, action: $action, priority: $priority, retriable: $retriable) 
+            createTask(name: $name, action: $action, priority: $priority, retriable: $retriable, timestamp: $timestamp, settings: $settings) 
         }
     `,
     retryTask: `
@@ -94,7 +97,7 @@ export default {
     `,
     startTasks: `
         mutation startTasks($ids: [ID!]!) {
-            startTasks() 
+            startTasks(ids: $ids) 
         }
     `,
     startAllTasks: `

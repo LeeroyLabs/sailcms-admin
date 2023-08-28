@@ -131,7 +131,9 @@ export class Tasks {
         name: string,
         action: string,
         priority: number,
-        retriable: boolean
+        retriable: boolean,
+        timestamp: number,
+        settings: string
     ) {
         const client = new Client();
         const mutation = TasksQueries.createTask;
@@ -140,11 +142,75 @@ export class Tasks {
             gql`
                 ${mutation},
             `,
-            { name, action, priority, retriable }
+            { name, action, priority, retriable, timestamp, settings }
         );
 
         if (result.data) {
             return result.data.createTask;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * updateTask
+     *
+     * @param id
+     * @param name
+     * @param action
+     * @param priority
+     * @param retriable
+     * @param timestamp
+     * @param settings
+     *
+     */
+    public static async updateTask(
+        id: string,
+        name: string,
+        action: string,
+        priority: number,
+        retriable: boolean,
+        timestamp: number,
+        settings: string
+    ) {
+        const client = new Client();
+        const mutation = TasksQueries.updateTask;
+
+        const result = await client.mutation(
+            gql`
+                ${mutation},
+            `,
+            { id, name, action, priority, retriable, timestamp, settings }
+        );
+
+        if (result.data) {
+            return result.data.updateTask;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * startTasks
+     *
+     * @param ids
+     *
+     */
+    public static async startTasks(ids: string[]) {
+        const client = new Client();
+        const mutation = TasksQueries.startTasks;
+
+        const result = await client.mutation(
+            gql`
+                ${mutation},
+            `,
+            { ids }
+        );
+
+        if (result.data) {
+            return result.data.startTasks;
         }
 
         return null;
