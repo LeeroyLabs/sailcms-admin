@@ -143,7 +143,7 @@
 
                 <div>
                     <div
-                        class="tw-h-[150px] tw-overflow-y-auto"
+                        class="tw-h-[150px]"
                         :class="{
                             'tw-text-gray-200': $vuetify.theme.name === 'light',
                         }"
@@ -297,7 +297,7 @@ const loadTask = async () => {
         taskInput.value.retriable = task.value.retriable;
         taskInput.value.settings = JSON.parse(task.value.settings).settings;
         taskInput.value.date = {
-            date: format(task.value.scheduled_at, "Y-m-d H:i"),
+            date: format(task.value.scheduled_at * 1000, "Y-MM-d H:mm"),
             time: task.value.scheduled_at,
         };
         isReady.value = true;
@@ -361,7 +361,7 @@ const handleRetryTask = async () => {
 
 const handleStopTask = async () => {
     applyingAction.value = true;
-    const responseStopTask = await Tasks.stopTask([task.value._id]);
+    const responseStopTask = await Tasks.stopTask([+task.value.pid]);
     if (responseStopTask) {
         handleCancel();
     }

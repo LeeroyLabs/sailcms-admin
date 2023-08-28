@@ -57,7 +57,13 @@
                             ).toLocaleDateString("en-US")
                         }}
                     </td>
-                    <td>{{ row.priority }}</td>
+                    <td>
+                        {{
+                            taskPriority.find(
+                                (priority) => priority.value === row.priority
+                            ).label
+                        }}
+                    </td>
                 </template>
                 <template #footer="{ index }">
                     <v-pagination
@@ -89,6 +95,7 @@ import Manager from "@/components/globals/Manager.vue";
 
 const store = useAppStore();
 const i18n = useI18n();
+const { t } = i18n;
 const isReady = ref(false);
 const router = useRouter();
 
@@ -111,6 +118,13 @@ const columns = ref([
     { label: i18n.t("tasks.columns.scheduled"), centered: false },
     { label: i18n.t("tasks.columns.priority"), centered: false },
 ]);
+
+const taskPriority = [
+    { label: t("task.form.priority_low"), value: 1 },
+    { label: t("task.form.priority_normal"), value: 2 },
+    { label: t("task.form.priority_high"), value: 3 },
+    { label: t("task.form.priority_urgent"), value: 4 },
+];
 
 // Constants
 const START = "start";
