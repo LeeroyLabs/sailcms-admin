@@ -325,10 +325,29 @@ categories:
 
 navigations:
   title: Navigations
+  add: Ajouter
+  cancel: Annuler
+  save: Enregistrer
+  add_navigation: Ajouter une navigation
+  add_navigation_msg: Veuillez entrer le nom et L'identifiant unique de la nouvelle navigation que vous désirez créer.
+  update_navigation: Mettre à jour une navigation
+  update_navigation_msg: Veuillez mettre à jour le nom et l'identifiant unique de la navigation.
+  no_navigations: Aucune navigation pour le moment.
+  navigation_title: Entrer un titre de navigation
+  navigation_slug: Entrer un identifiant unique de navigation
+  confirm: Confirmation
+  confirm_msg: Êtes-vous certain de vouloir supprimer la navigation ?
+  columns:
+    slug: Identifiannt unique
+    title: Title
+
+navigation:
+  back: Retour
+  confirm_msg: Êtes-vous certain de vouloir supprimer l'élément' ?
   form:
     title_add: Ajouter un élement
     title_edit: Mettre à jour l'élément
-    name: Nom de l'élément
+    title: Titre de l'élément
     label: Libellé
     url: URL
     select_type: Sélectioner un type d'item

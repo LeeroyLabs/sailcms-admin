@@ -20,13 +20,14 @@ export interface SortedNavigationItem {
 export interface NavigationDetails {
     _id: string;
     title: string;
-    name: string;
+    slug: string;
     structure: NavigationItem[];
     locale: string;
 }
 
 export interface CreateNavigation {
-    name: string;
+    title: string;
+    slug: string;
     structure: NavigationItem[];
     locale: string;
     site_id: string;
@@ -34,7 +35,8 @@ export interface CreateNavigation {
 
 export interface UpdateNavigation {
     id: string;
-    name: string;
+    title: string;
+    slug: string;
     structure: NavigationItem[];
     locale: string;
     site_id?: string;
