@@ -3,6 +3,15 @@
     "base_url": "/admin",
     "site_id": "default",
     "locales": ["en", "fr"],
+    "navigation": {
+        "roles": false,
+        "users": true,
+        "types": false,
+        "fields": false,
+        "layouts": false,
+        "tasks": false,
+        "logs": false
+    },
     "strings": {
         "fr": {
             "fr": "Français",
