@@ -789,25 +789,36 @@ tasks:
     executed: Terminé
     no_executed: À venir
   actions:
+    start: Débuter
     retry: Relancer
-    delete: Supprimer
+    stop: Arrêter
+    cancel: Annuler
 
 task:
   confirm: Confirmation
   cancel_msg: Êtes-vous certain de vouloir anuler la tâche ?
   retry_msg: Êtes-vous certain de vouloir relancer la tâche ?
   stop_msg: Êtes-vous certain de vouloir arrêter la tâche ?
-  select_date: Sélectionnez une nouvelle date
   reschedule_msg: Veuillez svp sélectionner une nouvelle date afin de reprogrammer la tâche.
   leave_msg: Êtes-vous certain de vouloir quitter ?
+  select_date: Sélectionner une date
   back: Retour
   name: Nom
-  save: Enregistrer
-  cancel: Annuler
   create_task: Créer une tâche
+  update_task: Modifier la tâche
+  save: Enregistrer
+  update: Modifier
+  cancel: Annuler
+  started_at: Débuté le
+  scheduled_at: Plannifié le
   form:
     name: Entrer un nom
+    settings: Entrer vos paramètres
     action: Sélectioner une action
     priority: Sélectioner la priorité
+    priority_low: Basse
+    priority_normal: Normale
+    priority_high: importante
+    priority_urgent: Urgente
   errors:
     required: Champs requis

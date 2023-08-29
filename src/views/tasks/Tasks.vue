@@ -4,105 +4,30 @@
             <v-btn
                 v-if="hasPermission('readwrite_task')"
                 color="primary"
-                @click="$router.push({ name: 'CreateTask' })"
+                @click="$router.push({ name: 'Task', params: { id: 'add' } })"
             >
                 {{ $t("tasks.add") }}
             </v-btn>
         </Teleport>
 
-        <section class="tw-mt-6 tw-mb-4">
-            <div
-                class="tw-mb-4 md:tw-mb-0 lg:tw-w-4/12 tw-flex tw-flex-row tw-gap-x-4 tw-items-center"
+        <div
+            class="tw-p-6 tw-rounded-b-md"
+            :class="{
+                'tw-bg-white ': $vuetify.theme.name === 'light',
+                'tw-bg-darkbg': $vuetify.theme.name === 'dark',
+            }"
+        >
+            <Manager
+                :active="0"
+                :list="tasks.list"
+                :overrideActions="actions"
+                :actionCallback="applyAction"
+                :deleteCallback="deleteEntries"
+                :no_items="$t('tasks.no_tasks')"
+                :columns="columns"
+                :index="0"
             >
-                <v-text-field
-                    color="primary"
-                    :label="$t('tasks.search')"
-                    variant="outlined"
-                    :hide-details="true"
-                    type="text"
-                    clearable
-                    density="comfortable"
-                    v-model="currentSearch"
-                    @keydown.enter="runSearch"
-                    @click:clear="clearSearch"
-                >
-                    <template v-slot:append-inner>
-                        <div class="tw-opacity-[0.20]">
-                            <v-icon icon="mdi-keyboard-return" />
-                        </div>
-                    </template>
-                </v-text-field>
-
-                <v-progress-circular
-                    :class="{
-                        'tw-invisible': !isLoadingSearch,
-                        'tw-hidden': $vuetify.display.mobile,
-                    }"
-                    indeterminate
-                    size="small"
-                    width="3"
-                />
-            </div>
-        </section>
-
-        <v-table class="utable">
-            <thead>
-                <tr>
-                    <SmartTH
-                        :text="$t('tasks.columns.name')"
-                        :sortable="true"
-                        @sort="setSorting('name')"
-                        :showLoaderOnSort="true"
-                        :condition="currentSorting !== 'name' || !isLoadingSort"
-                        :ascending="
-                            currentSorting === 'name' &&
-                            currentSortingDir === 'ASC'
-                        "
-                    />
-                    <SmartTH
-                        :text="$t('tasks.columns.status')"
-                        :sortable="true"
-                        @sort="setSorting('executed')"
-                        :showLoaderOnSort="true"
-                        :condition="
-                            currentSorting !== 'executed' || !isLoadingSort
-                        "
-                        :ascending="
-                            currentSorting === 'executed' &&
-                            currentSortingDir === 'ASC'
-                        "
-                    />
-                    <SmartTH
-                        :text="$t('tasks.columns.scheduled')"
-                        :sortable="true"
-                        @sort="setSorting('executed_at')"
-                        :showLoaderOnSort="true"
-                        :condition="
-                            currentSorting !== 'executed_at' || !isLoadingSort
-                        "
-                        :ascending="
-                            currentSorting === 'executed_at' &&
-                            currentSortingDir === 'ASC'
-                        "
-                    />
-                    <SmartTH
-                        :text="$t('tasks.columns.priority')"
-                        :sortable="true"
-                        @sort="setSorting('priority')"
-                        :showLoaderOnSort="true"
-                        :condition="
-                            currentSorting !== 'priority' || !isLoadingSort
-                        "
-                        :ascending="
-                            currentSorting === 'priority' &&
-                            currentSortingDir === 'ASC'
-                        "
-                    />
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr v-for="task in tasks.list" :key="task._id">
+                <template v-slot="{ row }">
                     <td>
                         <router-link
                             class="hover:tw-text-primary hover:tw-underline"
@@ -111,16 +36,16 @@
                                     $vuetify.theme.name !== 'light',
                             }"
                             :to="{
-                                name: 'SingleTask',
-                                params: { id: task._id },
+                                name: 'Task',
+                                params: { id: row._id },
                             }"
                         >
-                            {{ task.name }}
+                            {{ row.name }}
                         </router-link>
                     </td>
                     <td>
                         {{
-                            task.executed
+                            row.executed
                                 ? $t("tasks.columns.executed")
                                 : $t("tasks.columns.no_executed")
                         }}
@@ -128,26 +53,29 @@
                     <td>
                         {{
                             new Date(
-                                task.scheduled_at * 1000
+                                row.scheduled_at * 1000
                             ).toLocaleDateString("en-US")
                         }}
                     </td>
-                    <td>{{ task.priority }}</td>
-                </tr>
-
-                <tr v-if="tasks.list && !tasks.list.length">
-                    <td colspan="7" class="tw-text-center tw-font-medium">
-                        {{ $t("tasks.no_tasks") }}
+                    <td>
+                        {{
+                            taskPriority.find(
+                                (priority) => priority.value === row.priority
+                            ).label
+                        }}
                     </td>
-                </tr>
-            </tbody>
-        </v-table>
-
-        <Pagination
-            class="tw-mt-6"
-            :limit="currentLimit"
-            :pagination="pagination"
-        />
+                </template>
+                <template #footer="{ index }">
+                    <v-pagination
+                        v-model="currentPage[index - 1]"
+                        class="tw-mt-6"
+                        density="comfortable"
+                        :rounded="true"
+                        :length="pagination.totalPages"
+                    />
+                </template>
+            </Manager>
+        </div>
     </div>
 
     <Loader v-else />
@@ -157,19 +85,52 @@
 import { ref, onMounted } from "vue";
 import { useAppStore } from "@/store/app";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 
 import { hasPermission } from "@/libs/tools";
 import { Tasks } from "@/libs/graphql/lib/tasks";
 
-import Pagination from "@/components/globals/Pagination.vue";
 import Loader from "@/components/globals/Loader.vue";
-import SmartTH from "@/components/globals/table/SmartTH.vue";
+import Manager from "@/components/globals/Manager.vue";
 
 const store = useAppStore();
 const i18n = useI18n();
+const { t } = i18n;
 const isReady = ref(false);
+const router = useRouter();
 
 const tasks = ref([]);
+
+const applyingAction = ref(false);
+const actions = ref([
+    { value: START, title: i18n.t("tasks.actions.start") },
+    { value: RETRY, title: i18n.t("tasks.actions.retry") },
+    { value: STOP, title: i18n.t("tasks.actions.stop") },
+    {
+        value: CANCEL,
+        title: i18n.t("tasks.actions.cancel"),
+    },
+]);
+
+const columns = ref([
+    { label: i18n.t("tasks.columns.name"), centered: false },
+    { label: i18n.t("tasks.columns.status"), centered: false },
+    { label: i18n.t("tasks.columns.scheduled"), centered: false },
+    { label: i18n.t("tasks.columns.priority"), centered: false },
+]);
+
+const taskPriority = [
+    { label: t("task.form.priority_low"), value: 1 },
+    { label: t("task.form.priority_normal"), value: 2 },
+    { label: t("task.form.priority_high"), value: 3 },
+    { label: t("task.form.priority_urgent"), value: 4 },
+];
+
+// Constants
+const START = "start";
+const RETRY = "retry";
+const STOP = "stop";
+const CANCEL = "cancel";
 
 // Load tasks
 const loadTasks = async () => {
@@ -188,6 +149,63 @@ const loadTasks = async () => {
     }
 };
 
+//  Actions
+const handleStartTask = async (items) => {
+    applyingAction.value = true;
+    const responseStartTask = await Tasks.startTasks(
+        items.map((item) => item._id)
+    );
+    if (responseStartTask) {
+        applyingAction.value = false;
+    }
+};
+
+const handleRetryTask = async (items) => {
+    applyingAction.value = true;
+    const responseRetryTask = await Tasks.retryTask(
+        items.map((item) => item._id)
+    );
+    if (responseRetryTask) {
+        applyingAction.value = false;
+    }
+};
+
+const handleStopTask = async (items) => {
+    applyingAction.value = true;
+    const responseStopTask = await Tasks.stopTask(
+        items.map((item) => +item.pid)
+    );
+    if (responseStopTask) {
+        applyingAction.value = false;
+    }
+};
+
+const handleCancelTask = async (items) => {
+    applyingAction.value = true;
+    const responseCancelTask = await Tasks.cancelTask(
+        items.map((item) => item._id)
+    );
+    if (responseCancelTask) {
+        applyingAction.value = false;
+        loadTasks();
+    }
+};
+
+const applyAction = async (action, items) => {
+    switch (action) {
+        case START:
+            return handleStartTask(items);
+        case RETRY:
+            return handleRetryTask(items);
+        case STOP:
+            return handleStopTask(items);
+        case CANCEL:
+            return handleCancelTask(items);
+        default:
+            router.push({ name: "Tasks" });
+    }
+};
+
 // Pagination handling
 const currentPage = ref(1);
 const currentLimit = ref(25);
@@ -196,47 +214,9 @@ const pagination = ref({ total: 0, current: 0, totalPages: 0 });
 // Sorting
 const currentSorting = ref("name");
 const currentSortingDir = ref("ASC");
-const isLoadingSort = ref(false);
-
-// Sorting from the Table
-const setSorting = async (field) => {
-    if (isLoadingSort.value) return;
-
-    if (currentSorting.value !== field) {
-        currentSorting.value = field;
-        currentSortingDir.value = "ASC";
-    } else {
-        currentSortingDir.value =
-            currentSortingDir.value === "ASC" ? "DESC" : "ASC";
-    }
-
-    isLoadingSort.value = true;
-    await loadTasks();
-    isLoadingSort.value = false;
-};
 
 // Search
 const currentSearch = ref("");
-const isLoadingSearch = ref(false);
-
-const runSearch = async () => {
-    isLoadingSearch.value = true;
-    currentPage.value = 1;
-    currentSorting.value = "name";
-    currentSortingDir.value = "ASC";
-    await loadTasks();
-    isLoadingSearch.value = false;
-};
-
-const clearSearch = async () => {
-    isLoadingSearch.value = true;
-    currentSearch.value = "";
-    currentPage.value = 1;
-    currentSorting.value = "name";
-    currentSortingDir.value = "ASC";
-    await loadTasks();
-    isLoadingSearch.value = false;
-};
 
 // Setup page data
 const setupPage = () => {

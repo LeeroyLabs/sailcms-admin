@@ -793,25 +793,36 @@ tasks:
     executed: Fulfilled
     no_executed: Coming
   actions:
+    start: Start
     retry: Retry
-    delete: Delete
+    stop: Stop
+    cancel: Cancel
 
 task:
   confirm: Confirmation
   cancel_msg: Are you sure you want to cancel the task?
   retry_msg: Are you sure you want to retry the task?
   stop_msg: Are you sure you want to stop the task?
-  select_date: Select a new date
   reschedule_msg: Please select a new date in order to reschedule the task.
   leave_msg: Are you sure you want to leave?
+  select_date: Select date
   back: Back
   name: Name
-  create_task: Create a task
+  create_task: Create task
+  update_task: Update task
   save: Save
+  update: Update
   cancel: Cancel
+  started_at: Started at
+  scheduled_at: Scheduled at
   form:
     name: Enter name
+    settings: Enter your settings
     action: Select action
     priority: Select priority
+    priority_low: Low
+    priority_normal: Normal
+    priority_high: High
+    priority_urgent: Urgent
   errors:
     required: Required
