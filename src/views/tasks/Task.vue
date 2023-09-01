@@ -92,7 +92,7 @@
                         :rules="[rules.required]"
                         v-model="taskInput.name"
                     />
-                    <!-- TODO: Add time to format -->
+
                     <DateTime
                         :id="'date_time'"
                         :value="taskInput.date.date"
