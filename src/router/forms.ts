@@ -10,4 +10,16 @@ export const formsRoutes = [
             layout: "private",
         },
     },
+    {
+        path: "/forms/:id",
+        name: "Form",
+        component: () =>
+            import(/* webpackChunkName: "tasks" */ "@/views/forms/Form.vue"),
+        meta: {
+            guarded: true,
+            permission: "any",
+            layout: "private",
+            parent: "Forms",
+        },
+    },
 ];

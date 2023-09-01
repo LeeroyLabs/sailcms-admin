@@ -844,3 +844,13 @@ task:
 
 forms:
   title: Formulaires
+  no_forms: Aucun formulaire pour le moment.
+  add_form: Ajouter un formulaire
+  actions:
+    delete: Supprimer
+  columns:
+    title: Titre
+    handle: Identifiant
+
+form:
+  save: Enregistrer

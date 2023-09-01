@@ -1,7 +1,7 @@
 export default {
-    formType: `
-        query formType($handle: String) {
-            formType(handle: $handle) {
+    getForm: `
+        query form($handle: String) {
+            form(handle: $handle) {
                 _id
                 title
                 handle
@@ -9,7 +9,10 @@ export default {
                 settings {
                     from
                     to
-                    subject
+                    subject {
+                        en
+                        fr
+                    }
                     cc
                     bcc
                     success_email_handle
@@ -17,9 +20,9 @@ export default {
             }
         }
     `,
-    formTypes: `
-        query formTypes() {
-            formTypes() {
+    getForms: `
+        query forms {
+            forms {
                 _id
                 title
                 handle
@@ -27,7 +30,10 @@ export default {
                 settings {
                     from
                     to
-                    subject
+                    subject {
+                        en
+                        fr
+                    }
                     cc
                     bcc
                     success_email_handle
@@ -38,6 +44,62 @@ export default {
     formLayout: `
         query formLayout($id: ID!) {
             formLayout(id: $id) {
+                _id
+                slug
+                titles {
+                    fr
+                    en
+                }
+                schema {
+                    label
+                    fields {
+                        _id
+                        key
+                        name
+                        label {
+                            en
+                            fr
+                        }
+                        placeholder {
+                            en
+                            fr
+                        }
+                        explain {
+                            en
+                            fr
+                        }
+                        validation
+                        required
+                        repeatable
+                        searchable!
+                        type
+                        config
+                    }
+                }
+                authors {
+                    created_by {
+                        _id
+                    }
+                    updated_by {
+                        _id
+                    }
+                    deleted_by {
+                        _id
+                    }
+                }
+                dates {
+                    created
+                    updated
+                    deleted
+                }
+                is_trashed
+              }
+            }
+        }
+    `,
+    formLayouts: `
+        query formLayout {
+            formLayout {
                 _id
                 slug
                 titles {

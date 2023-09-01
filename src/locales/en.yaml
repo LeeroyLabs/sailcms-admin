@@ -847,3 +847,13 @@ task:
 
 forms:
   title: Forms
+  no_forms: No forms at the moment.
+  add_form: Add form
+  actions:
+    delete: Delete
+  columns:
+    title: Title
+    handle: Handle
+
+form:
+  save: Save
