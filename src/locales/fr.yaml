@@ -217,6 +217,11 @@ layout:
   save_error: La mise en page n'a pu être sauvegardée. Veuillez réessayer.
   tab_settings: Réglages de l'onglet
   tab_name: Nom de l'onglet
+  field_full_width: Champ prend pleine largeur
+  field_half_width: Champ prend demie largeur
+  field_third_width: champ prend tiers de la largeur
+  field_settings: Paramètres du champ
+  explain_field_size: Vous pouvez choisir la largeur du champ pour permettre au prochain d'être sur la même ligne. Ceci permet d'avoir de beau formulaire d'entré de contenu.
   mobile:
     wait: Attendez!
     explain: Les mises en page ne peuvent être administrer sur un téléphone. Veuillez utiliser une tablet ou plus grand. Nous recommandons un portable ou ordinateur de bureau.
@@ -320,10 +325,29 @@ categories:
 
 navigations:
   title: Navigations
+  add: Ajouter
+  cancel: Annuler
+  save: Enregistrer
+  add_navigation: Ajouter une navigation
+  add_navigation_msg: Veuillez entrer le nom et L'identifiant unique de la nouvelle navigation que vous désirez créer.
+  update_navigation: Mettre à jour une navigation
+  update_navigation_msg: Veuillez mettre à jour le nom et l'identifiant unique de la navigation.
+  no_navigations: Aucune navigation pour le moment.
+  navigation_title: Entrer un titre de navigation
+  navigation_slug: Entrer un identifiant unique de navigation
+  confirm: Confirmation
+  confirm_msg: Êtes-vous certain de vouloir supprimer la navigation ?
+  columns:
+    slug: Identifiannt unique
+    title: Title
+
+navigation:
+  back: Retour
+  confirm_msg: Êtes-vous certain de vouloir supprimer l'élément' ?
   form:
     title_add: Ajouter un élement
     title_edit: Mettre à jour l'élément
-    name: Nom de l'élément
+    title: Titre de l'élément
     label: Libellé
     url: URL
     select_type: Sélectioner un type d'item
@@ -784,26 +808,37 @@ tasks:
     executed: Terminé
     no_executed: À venir
   actions:
+    start: Débuter
     retry: Relancer
-    delete: Supprimer
+    stop: Arrêter
+    cancel: Annuler
 
 task:
   confirm: Confirmation
   cancel_msg: Êtes-vous certain de vouloir anuler la tâche ?
   retry_msg: Êtes-vous certain de vouloir relancer la tâche ?
   stop_msg: Êtes-vous certain de vouloir arrêter la tâche ?
-  select_date: Sélectionnez une nouvelle date
   reschedule_msg: Veuillez svp sélectionner une nouvelle date afin de reprogrammer la tâche.
   leave_msg: Êtes-vous certain de vouloir quitter ?
+  select_date: Sélectionner une date
   back: Retour
   name: Nom
-  save: Enregistrer
-  cancel: Annuler
   create_task: Créer une tâche
+  update_task: Modifier la tâche
+  save: Enregistrer
+  update: Modifier
+  cancel: Annuler
+  started_at: Débuté le
+  scheduled_at: Plannifié le
   form:
     name: Entrer un nom
+    settings: Entrer vos paramètres
     action: Sélectioner une action
     priority: Sélectioner la priorité
+    priority_low: Basse
+    priority_normal: Normale
+    priority_high: importante
+    priority_urgent: Urgente
   errors:
     required: Champs requis
 

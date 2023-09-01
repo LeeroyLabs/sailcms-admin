@@ -16,9 +16,13 @@ module.exports = {
                 lightdark: '#252525',
                 darkbg: '#212121',
                 darkest: '#111111'
+            },
+            boxShadow: {
+                'calendar': '-10px 0 0 #52688F !important'
             }
         }
     },
-    plugins: []
+    plugins: [
+    ]
 };
 

@@ -5,6 +5,7 @@
                 <Multiselect
                     :value="value"
                     :config="config"
+                    :choices="choices"
                     @change="(e) => value = e"
                 />
             </div>
@@ -16,7 +17,7 @@
                     :hide-details="true"
                     v-model="value"
                     color="primary"
-                    :items="config.config.choices"
+                    :items="choices"
                     variant="outlined"
                     density="comfortable"
                     :persistent-hint="false"
@@ -36,10 +37,15 @@
 
 <script setup>
 import { useI18n } from 'vue-i18n';
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import Multiselect from '@/components/entries/entry/fields/singles/Multiselect.vue';
+import { useAppStore } from '@/store/app';
+import { Entries } from '@/libs/graphql/lib/entries';
 
 const i18n = useI18n();
+const store = useAppStore();
+
+const choices = ref([]);
 
 const props = defineProps({
     modelValue: {
@@ -47,11 +53,15 @@ const props = defineProps({
     },
     config: {
         type: Object,
-        default: {type: '', label: '', name: '', validation: '', required: false, repeatable: false, config: null, width: 'full'}
+        default: {type: '', label: '', name: '', validation: '', explain: '', required: false, repeatable: false, config: {choices: []}, width: 'full'}
     },
     index: {
         type: Number,
         default: 0
+    },
+    locale: {
+        type: String,
+        default: 'en'
     }
 });
 
@@ -66,6 +76,16 @@ if (value.value === '' || value.value.length === 0) {
 }
 
 const emitter = defineEmits(['update:modelValue']);
+
+onMounted(async () =>
+{
+    //config.config.choices
+
+    const entryList = await Entries.entriesForListing(props.locale, props.config.config.type);
+    choices.value = entryList.map(e => {
+        return {value: e._id, title: e.title};
+    });
+});
 
 // Report back any changes to the array
 watch(value, (v) => emitter('update:modelValue', value), {deep: true});

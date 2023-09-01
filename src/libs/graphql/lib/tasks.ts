@@ -94,6 +94,31 @@ export class Tasks {
 
     /**
      *
+     * taskLogs
+     *
+     * @param id
+     *
+     */
+    public static async taskLogs(id: string) {
+        const client = new Client();
+        const query = TasksQueries.taskLogs;
+
+        const result = await client.query(
+            gql`
+                    ${query},
+                `,
+            { id }
+        );
+
+        if (result.data) {
+            return result.data.taskLogs;
+        }
+
+        return null;
+    }
+
+    /**
+     *
      * createTask
      *
      * @param name
@@ -106,7 +131,9 @@ export class Tasks {
         name: string,
         action: string,
         priority: number,
-        retriable: boolean
+        retriable: boolean,
+        timestamp: number,
+        settings: string
     ) {
         const client = new Client();
         const mutation = TasksQueries.createTask;
@@ -115,7 +142,7 @@ export class Tasks {
             gql`
                 ${mutation},
             `,
-            { name, action, priority, retriable }
+            { name, action, priority, retriable, timestamp, settings }
         );
 
         if (result.data) {
@@ -127,12 +154,76 @@ export class Tasks {
 
     /**
      *
-     * cancelTask
+     * updateTask
      *
      * @param id
+     * @param name
+     * @param action
+     * @param priority
+     * @param retriable
+     * @param timestamp
+     * @param settings
      *
      */
-    public static async cancelTask(id: string) {
+    public static async updateTask(
+        id: string,
+        name: string,
+        action: string,
+        priority: number,
+        retriable: boolean,
+        timestamp: number,
+        settings: string
+    ) {
+        const client = new Client();
+        const mutation = TasksQueries.updateTask;
+
+        const result = await client.mutation(
+            gql`
+                ${mutation},
+            `,
+            { id, name, action, priority, retriable, timestamp, settings }
+        );
+
+        if (result.data) {
+            return result.data.updateTask;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * startTasks
+     *
+     * @param ids
+     *
+     */
+    public static async startTasks(ids: string[]) {
+        const client = new Client();
+        const mutation = TasksQueries.startTasks;
+
+        const result = await client.mutation(
+            gql`
+                ${mutation},
+            `,
+            { ids }
+        );
+
+        if (result.data) {
+            return result.data.startTasks;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * cancelTask
+     *
+     * @param ids
+     *
+     */
+    public static async cancelTask(ids: string[]) {
         const client = new Client();
         const mutation = TasksQueries.cancelTask;
 
@@ -140,7 +231,7 @@ export class Tasks {
             gql`
                 ${mutation},
             `,
-            { id }
+            { ids }
         );
 
         if (result.data) {
@@ -154,10 +245,10 @@ export class Tasks {
      *
      * retryTask
      *
-     * @param id
+     * @param ids
      *
      */
-    public static async retryTask(id: string) {
+    public static async retryTask(ids: string[]) {
         const client = new Client();
         const mutation = TasksQueries.retryTask;
 
@@ -165,7 +256,7 @@ export class Tasks {
             gql`
                 ${mutation},
             `,
-            { id }
+            { ids }
         );
 
         if (result.data) {
@@ -179,10 +270,10 @@ export class Tasks {
      *
      * stopTask
      *
-     * @param pid
+     * @param pids
      *
      */
-    public static async stopTask(pid: number) {
+    public static async stopTask(pids: number[]) {
         const client = new Client();
         const mutation = TasksQueries.stopTask;
 
@@ -190,7 +281,7 @@ export class Tasks {
             gql`
                 ${mutation},
             `,
-            { pid }
+            { pids }
         );
 
         if (result.data) {
@@ -221,6 +312,54 @@ export class Tasks {
 
         if (result.data) {
             return result.data.changeTaskSchedule;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * startAllTasks
+     *
+     *
+     */
+    public static async startAllTasks() {
+        const client = new Client();
+        const mutation = TasksQueries.startAllTasks;
+
+        const result = await client.mutation(
+            gql`
+                    ${mutation},
+                `,
+            {}
+        );
+
+        if (result.data) {
+            return result.data.startAllTasks;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * stopAllTasks
+     *
+     *
+     */
+    public static async stopAllTasks() {
+        const client = new Client();
+        const mutation = TasksQueries.stopAllTasks;
+
+        const result = await client.mutation(
+            gql`
+                    ${mutation},
+                `,
+            {}
+        );
+
+        if (result.data) {
+            return result.data.stopAllTasks;
         }
 
         return null;

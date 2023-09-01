@@ -219,6 +219,11 @@ layout:
   save_error: Could not save layout. Please try again.
   tab_settings: Tab Settings
   tab_name: Tab name
+  field_full_width: Make field take full width
+  field_half_width: Make field take half width
+  field_third_width: Make field take third of width
+  field_settings: Field Settings
+  explain_field_size: You can set the width of the field to make space for the next field to be on the same line. This enables building enjoyable form layouts for data entry.
   mobile:
     wait: Wait!
     explain: The layouts cannot be managed using a phone. Please use a tablet or bigger. We recommend using a laptop or desktop.
@@ -323,11 +328,29 @@ categories:
 
 navigations:
   title: Navigations
+  add: Add
+  cancel: Cancel
+  save: Save
+  add_navigation: Add a navigation
+  add_navigation_msg: Please enter the name and slug of a new navigation that you want to create
+  update_navigation: Update a navigation
+  update_navigation_msg: Please update the name and slug of the navigation
+  navigation_title: Enter navigation title
+  navigation_slug: Enter navigation slug
+  no_navigations: No navigations at the moment.
+  confirm: Confirmation
   confirm_msg: Are you sure you want to delete the navigation?
+  columns:
+    slug: Slug
+    title: Title
+
+navigation:
+  back: Back
+  confirm_msg: Are you sure you want to delete the item?
   form:
     title_add: Add Navigation Element
     title_edit: Edit Navigation Element
-    name: Name
+    title: Title
     label: Label
     url: URL
     select_type: Select item type
@@ -788,26 +811,37 @@ tasks:
     executed: Fulfilled
     no_executed: Coming
   actions:
+    start: Start
     retry: Retry
-    delete: Delete
+    stop: Stop
+    cancel: Cancel
 
 task:
   confirm: Confirmation
   cancel_msg: Are you sure you want to cancel the task?
   retry_msg: Are you sure you want to retry the task?
   stop_msg: Are you sure you want to stop the task?
-  select_date: Select a new date
   reschedule_msg: Please select a new date in order to reschedule the task.
   leave_msg: Are you sure you want to leave?
+  select_date: Select date
   back: Back
   name: Name
-  create_task: Create a task
+  create_task: Create task
+  update_task: Update task
   save: Save
+  update: Update
   cancel: Cancel
+  started_at: Started at
+  scheduled_at: Scheduled at
   form:
     name: Enter name
+    settings: Enter your settings
     action: Select action
     priority: Select priority
+    priority_low: Low
+    priority_normal: Normal
+    priority_high: High
+    priority_urgent: Urgent
   errors:
     required: Required
 

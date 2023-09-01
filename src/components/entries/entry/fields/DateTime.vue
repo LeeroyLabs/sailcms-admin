@@ -29,13 +29,13 @@
                     <div class="tw-flex tw-flex-col tw-gap-y-4">
                         <template v-for="(item, idx) in arrayValue" :key="'text_' + type + '_' + idx">
                             <div class="tw-flex tw-flex-row tw-gap-x-4">
-                                <Text
+                                <Date
                                     :value="item"
-                                    :id="'text_' + index + '_' + idx"
                                     :config="config"
-                                    :multi="true"
-                                    :type="type"
+                                    :show-time="true"
+                                    :id="'date_' + index + '_' + idx"
                                     :index="index"
+                                    :key="'date_' + index"
                                     @change="(e) => arrayValue[idx] = e"
                                 />
                                 <v-btn @click.prevent="(e) => arrayValue.splice(idx, 1)" class="!tw-h-[48px]" variant="tonal" color="red"><v-icon icon="mdi-trash-can-outline" /></v-btn>
@@ -47,14 +47,14 @@
             </div>
         </template>
         <template v-else>
-            <Text
+            <Date
                 :value="modelValue"
                 :config="config"
-                :type="type"
+                :show-time="true"
                 :index="index"
-                :key="'text_' + type + '_' + index"
+                :id="'date_' + index + '_' + idx"
+                :key="'date_' + index"
                 @change="(e) => $emit('update:modelValue', e)"
-                :class="{'tw-mb-4': config.explain[$i18n.locale] !== ''}"
             />
         </template>
     </div>
@@ -62,8 +62,8 @@
 
 <script setup>
 import { useI18n } from 'vue-i18n';
-import { computed, nextTick, ref, watch } from 'vue';
-import Text from "./singles/Text.vue";
+import { nextTick, ref, watch } from 'vue';
+import Date from "./singles/Date.vue";
 
 const i18n = useI18n();
 
@@ -95,7 +95,7 @@ const addElement = () =>
 
     nextTick(() =>
     {
-        let id = 'text_' + props.index + '_' + (arrayValue.value.length - 1);
+        let id = 'date_' + props.index + '_' + (arrayValue.value.length - 1);
         document.getElementById(id).focus();
     });
 }

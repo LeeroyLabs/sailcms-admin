@@ -442,7 +442,8 @@ export class Entries
      * @param search
      * @param direction
      * @param locales
-     * @param ignoreTrash
+     * @param trash
+     * @param locale
      *
      */
     public static async entries(type: string, page: number, search: string = '', direction: number = 1, locales: string[] = ['fr', 'en'], trash: boolean, locale: string): Promise<EntryListing>
@@ -474,6 +475,28 @@ export class Entries
             },
             list: []
         };
+    }
+
+    /**
+     *
+     * Get entries of given locale and type for selection
+     *
+     * @param locale
+     * @param type
+     *
+     */
+    public static async entriesForListing(locale: string, type: string): Promise<Entry[]>
+    {
+        const client = new Client();
+        let query = EntryQueries.entriesForListing;
+
+        let result = await client.query(gql`${query}`, {locale, type});
+
+        if (result.data) {
+            return result.data.entriesForListing;
+        }
+
+        return [];
     }
 
     private static parseLocales(locales: string[]): string
