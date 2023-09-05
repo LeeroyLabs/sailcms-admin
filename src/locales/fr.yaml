@@ -805,7 +805,7 @@ tasks:
     status: Status
     scheduled: Prévu à
     priority: Priorité
-    executed: Terminé
+    executed: Complété
     no_executed: À venir
   actions:
     start: Débuter

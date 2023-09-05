@@ -808,8 +808,8 @@ tasks:
     status: Status
     scheduled: Scheduled at
     priority: Priority
-    executed: Fulfilled
-    no_executed: Coming
+    executed: Completed
+    no_executed: Upcoming
   actions:
     start: Start
     retry: Retry
