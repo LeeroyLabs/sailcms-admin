@@ -56,7 +56,6 @@
 import { ref } from "vue";
 import { Forms } from "@/libs/graphql/lib/forms";
 import { useI18n } from "vue-i18n";
-import { hasPermission } from "@/libs/tools";
 import Manager from "@/components/globals/Manager.vue";
 
 const i18n = useI18n();
