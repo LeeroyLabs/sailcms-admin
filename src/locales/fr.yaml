@@ -328,8 +328,8 @@ navigations:
   add: Ajouter
   cancel: Annuler
   save: Enregistrer
-  add_navigation: Ajouter une navigation
-  add_navigation_msg: Veuillez entrer le nom et L'identifiant unique de la nouvelle navigation que vous désirez créer.
+  create_navigation: Ajouter une navigation
+  create_navigation_msg: Veuillez entrer le nom et L'identifiant unique de la nouvelle navigation que vous désirez créer.
   update_navigation: Mettre à jour une navigation
   update_navigation_msg: Veuillez mettre à jour le nom et l'identifiant unique de la navigation.
   no_navigations: Aucune navigation pour le moment.
@@ -340,6 +340,9 @@ navigations:
   columns:
     slug: Identifiannt unique
     title: Title
+  actions:
+    update: Modifier
+    delete: Supprimer
 
 navigation:
   back: Retour

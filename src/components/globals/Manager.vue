@@ -215,6 +215,7 @@ const performAction = async () => {
 
 const confirmDelete = async () => {
     if (applyingAction.value) return;
+    console.log("ACTION", selectedAction.value);
 
     isDeleting.value = true;
     applyingAction.value = true;

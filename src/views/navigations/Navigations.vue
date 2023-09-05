@@ -1,12 +1,69 @@
 <template>
     <div v-if="isReady">
         <Teleport to="#actions">
-            <v-btn @click="showModal = true" color="primary">
+            <v-btn @click="selectAction(null, CREATE)" color="primary">
                 {{ $t("navigations.add") }}
             </v-btn>
         </Teleport>
 
-        <v-table class="utable">
+        <div
+            class="tw-p-6 tw-rounded-b-md"
+            :class="{
+                'tw-bg-white ': $vuetify.theme.name === 'light',
+                'tw-bg-darkbg': $vuetify.theme.name === 'dark',
+            }"
+        >
+            <Manager
+                :active="0"
+                :list="navigationsList"
+                :overrideActions="actions"
+                :actionCallback="applyAction"
+                :deleteCallback="deleteEntries"
+                :no_items="$t('navigations.no_navigations')"
+                :columns="columns"
+                :index="0"
+            >
+                <template v-slot="{ row }">
+                    <td>
+                        <router-link
+                            class="hover:tw-text-primary hover:tw-underline"
+                            :class="{
+                                'hover:tw-text-white':
+                                    $vuetify.theme.name !== 'light',
+                            }"
+                            :to="{
+                                name: 'Navigation',
+                                params: { slug: row.slug },
+                            }"
+                        >
+                            {{ row.title }}
+                        </router-link>
+                    </td>
+                    <td>
+                        {{ row.slug }}
+                    </td>
+                    <td class="tw-relative">
+                        <v-icon
+                            icon="mdi-square-edit-outline"
+                            size="22"
+                            class="icon icon-edit tw-cursor-pointer tw-absolute tw-top-2/4 tw--translate-y-2/4 tw-right-4"
+                            @click="selectAction(row, UPDATE)"
+                        />
+                    </td>
+                </template>
+                <template #footer="{ index }">
+                    <v-pagination
+                        v-model="currentPage[index - 1]"
+                        class="tw-mt-6"
+                        density="comfortable"
+                        :rounded="true"
+                        :length="pagination.totalPages"
+                    />
+                </template>
+            </Manager>
+        </div>
+
+        <!--         <v-table class="utable">
             <thead>
                 <tr>
                     <SmartTH
@@ -73,37 +130,16 @@
                     </td>
                 </tr>
             </tbody>
-        </v-table>
+        </v-table> -->
     </div>
 
     <Loader v-else />
 
     <Transition>
-        <DeleteConfirmation
-            v-if="showDeleteConfirm"
-            :show="true"
-            :overall="true"
-            :title="$t('navigations.confirm')"
-            :loading="applyingAction"
-            :message="$t('navigations.confirm_msg')"
-            @cancel="showDeleteConfirm = false"
-            @accept="applyAction"
-        />
-    </Transition>
-
-    <Transition>
         <Modal
             v-if="showModal"
-            :title="
-                selectedAction === CREATE
-                    ? $t('navigations.add_navigation')
-                    : $t('navigations.update_navigation')
-            "
-            :message="
-                selectedAction === CREATE
-                    ? $t('navigations.add_navigation_msg')
-                    : $t('navigations.update_navigation_msg')
-            "
+            :title="$t(`navigations.${selectedAction}_navigation`)"
+            :message="$t(`navigations.${selectedAction}_navigation_msg`)"
         >
             <template v-slot:content>
                 <v-form
@@ -144,7 +180,7 @@
                             variant="flat"
                             color="primary"
                             :loading="applyingAction"
-                            @click="applyAction"
+                            @click="applyAction(selectedAction, null)"
                         >
                             {{ $t("navigations.save") }}
                         </v-btn>
@@ -165,9 +201,8 @@ import { Navigations } from "@/libs/graphql/lib/navigations";
 import { SailCMS } from "@/libs/graphql";
 // Components
 import Loader from "@/components/globals/Loader.vue";
-import SmartTH from "@/components/globals/table/SmartTH.vue";
-import DeleteConfirmation from "@/components/globals/DeleteConfirmation.vue";
 import Modal from "@/components/globals/Modal.vue";
+import Manager from "@/components/globals/Manager.vue";
 
 const siteId = ref(SailCMS.getSiteId());
 const i18n = useI18n();
@@ -180,7 +215,7 @@ const navFormRef = ref(null);
 // Constants
 const CREATE = "create";
 const UPDATE = "update";
-const DELETE = "delete";
+const DELETE = "cancel";
 
 const navigationsList = ref([]);
 const selectedNavigation = ref(null);
@@ -188,7 +223,18 @@ const navigationInput = ref({
     title: "",
     slug: "",
 });
+const selectedItems = ref([]);
+
+const actions = ref([
+    { value: DELETE, title: i18n.t("navigations.actions.delete") },
+]);
 const selectedAction = ref(CREATE);
+
+const columns = ref([
+    { label: i18n.t("navigations.columns.title"), centered: false },
+    { label: i18n.t("navigations.columns.slug"), centered: false },
+    { label: "", centered: false },
+]);
 
 // Form & Validations
 const isFormValid = ref(false);
@@ -197,7 +243,6 @@ const rules = {
 };
 
 // Modals
-const showDeleteConfirm = ref(false);
 const showModal = ref(false);
 const applyingAction = ref(false);
 
@@ -213,6 +258,7 @@ const navigationDetailsList = async () => {
         );
     if (responseNavigationDetailsList) {
         navigationsList.value = responseNavigationDetailsList;
+        pagination.value.totalPages = navigationsList.value.length;
         isReady.value = true;
     }
 };
@@ -247,7 +293,7 @@ const handleUpdateNavigation = async () => {
         applyingAction.value = true;
         const responseUpdateNavigation = await Navigations.updateNavigation({
             id: selectedNavigation.value._id,
-            title: selectedNavigation.value.title,
+            title: navigationInput.value.title,
             slug: navigationInput.value.slug,
             structure: selectedNavigation.value.structure,
             locale: i18n.locale.value,
@@ -261,9 +307,9 @@ const handleUpdateNavigation = async () => {
 };
 
 // DELETE
-const handleDeleteNavigation = async () => {
+const handleDeleteNavigation = async (items) => {
     const responseDeleteNavigation = await Navigations.deleteNavigation(
-        selectedNavigation.value._id
+        items.map((i) => i._id)
     );
     if (responseDeleteNavigation) {
         navigationDetailsList();
@@ -277,32 +323,38 @@ const handleReset = () => {
     navigationInput.value.title = "";
     navigationInput.value.slug = "";
     showModal.value = false;
-    showDeleteConfirm.value = false;
 };
 
-const selectAction = (nav, action) => {
+const selectAction = (nav = null, action) => {
     selectedNavigation.value = nav;
     selectedAction.value = action;
-    selectedAction.value === UPDATE
-        ? (showModal.value = true)
-        : (showDeleteConfirm.value = true);
+    showModal.value = true;
 
-    navigationInput.value.title = nav.title;
-    navigationInput.value.slug = nav.slug;
-    // Validate form
-    if (navFormRef.value) navFormRef.value.validate();
+    if (selectedAction.value === UPDATE) {
+        navigationInput.value.title = nav.title;
+        navigationInput.value.slug = nav.slug;
+        // Validate form
+        if (navFormRef.value) navFormRef.value.validate();
+    }
 };
 
-const applyAction = () => {
+const applyAction = async (action, items = null) => {
+    selectedAction.value = action;
+    selectedItems.value = items;
+
     switch (selectedAction.value) {
         case UPDATE:
             return handleUpdateNavigation();
         case DELETE:
-            return handleDeleteNavigation();
+            return handleDeleteNavigation(selectedItems.value);
         default:
             return handleCreateNavigation();
     }
 };
+
+// Pagination handling
+const currentPage = ref(1);
+const pagination = ref({ total: 0, current: 0, totalPages: 0 });
 
 // Sorting
 const currentSorting = ref("slug");
