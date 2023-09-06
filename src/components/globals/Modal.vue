@@ -5,7 +5,7 @@
         <v-card rounded class="tw-p-6">
             <v-card-title class="tw-p-0">{{ title }}</v-card-title>
             <v-card-text
-                class="tw-min-w-[300px] lg:tw-min-w-[450px] tw-my-4 tw-p-0"
+                class="tw-min-w-[300px] lg:tw-min-w-[450px] tw-my-4 tw-mb-6 tw-p-0"
             >
                 {{ message }}
             </v-card-text>
