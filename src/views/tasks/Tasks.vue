@@ -51,11 +51,7 @@
                         }}
                     </td>
                     <td>
-                        {{
-                            new Date(
-                                row.scheduled_at * 1000
-                            ).toLocaleDateString("en-US")
-                        }}
+                        {{ format(row.scheduled_at * 1000, "yyyy/MM/dd") }}
                     </td>
                     <td>
                         {{
@@ -64,15 +60,6 @@
                             ).label
                         }}
                     </td>
-                </template>
-                <template #footer="{ index }">
-                    <v-pagination
-                        v-model="currentPage[index - 1]"
-                        class="tw-mt-6"
-                        density="comfortable"
-                        :rounded="true"
-                        :length="pagination.totalPages"
-                    />
                 </template>
             </Manager>
         </div>
@@ -89,6 +76,7 @@ import { useRouter } from "vue-router";
 
 import { hasPermission } from "@/libs/tools";
 import { Tasks } from "@/libs/graphql/lib/tasks";
+import { format } from "date-fns";
 
 import Loader from "@/components/globals/Loader.vue";
 import Manager from "@/components/globals/Manager.vue";
@@ -135,8 +123,8 @@ const CANCEL = "cancel";
 // Load tasks
 const loadTasks = async () => {
     const responseLoadTasks = await Tasks.taskSearch(
-        currentPage.value,
-        currentLimit.value,
+        1,
+        25,
         currentSearch.value,
         currentSorting.value,
         currentSortingDir.value
@@ -144,7 +132,6 @@ const loadTasks = async () => {
 
     if (responseLoadTasks) {
         tasks.value = responseLoadTasks;
-        pagination.value = responseLoadTasks.pagination;
         isReady.value = true;
     }
 };
@@ -205,11 +192,6 @@ const applyAction = async (action, items) => {
             router.push({ name: "Tasks" });
     }
 };
-
-// Pagination handling
-const currentPage = ref(1);
-const currentLimit = ref(25);
-const pagination = ref({ total: 0, current: 0, totalPages: 0 });
 
 // Sorting
 const currentSorting = ref("name");

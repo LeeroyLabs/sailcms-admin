@@ -64,11 +64,8 @@
                                 ? `${$t("task.started_at")}: `
                                 : `${$t("task.scheduled_at")}: `
                         }}
-                        {{
-                            new Date(
-                                task.scheduled_at * 1000
-                            ).toLocaleDateString("en-US")
-                        }}
+
+                        {{ format(task.scheduled_at * 1000, "yyyy/MM/dd") }}
                     </p>
                 </div>
             </div>
@@ -92,10 +89,10 @@
                         :rules="[rules.required]"
                         v-model="taskInput.name"
                     />
-                    <!-- TODO: Add time to format -->
+
                     <DateTime
                         :id="'date_time'"
-                        :value="taskInput.date.date"
+                        :value="taskInput.date.date ? taskInput.date : ''"
                         :placeholder="$t('task.select_date')"
                         :config="{
                             type: 'text',
@@ -103,7 +100,8 @@
                             required: false,
                             repeatable: false,
                             config: {
-                                date_format: 'Y-m-d H:i',
+                                date_format: 'Y-m-d',
+                                time_format: 'H:i',
                                 minDate: Date.now(),
                             },
                         }"
@@ -297,8 +295,8 @@ const loadTask = async () => {
         taskInput.value.retriable = task.value.retriable;
         taskInput.value.settings = JSON.parse(task.value.settings).settings;
         taskInput.value.date = {
-            date: format(task.value.scheduled_at * 1000, "Y-MM-d H:mm"),
-            time: task.value.scheduled_at,
+            date: format(task.value.scheduled_at * 1000, "Y-MM-d"),
+            time: format(task.value.scheduled_at * 1000, "H:ii"),
         };
         isReady.value = true;
     }
