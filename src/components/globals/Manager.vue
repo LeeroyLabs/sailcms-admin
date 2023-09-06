@@ -27,6 +27,7 @@
                 color="primary"
                 size="small"
                 icon
+                :disabled="!selectedItems.length"
                 @click.prevent="performAction"
             >
                 <v-icon icon="mdi-chevron-right" />
@@ -164,7 +165,7 @@ const props = defineProps({
     },
 });
 
-const emitter = defineEmits(["confirmDelete", "selected-items"]);
+const emitter = defineEmits(["confirmDelete"]);
 
 const applyingAction = ref(false);
 const showDeleteConfirm = ref(false);
@@ -215,7 +216,6 @@ const performAction = async () => {
 
 const confirmDelete = async () => {
     if (applyingAction.value) return;
-    console.log("ACTION", selectedAction.value);
 
     isDeleting.value = true;
     applyingAction.value = true;

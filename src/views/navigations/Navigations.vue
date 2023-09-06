@@ -18,7 +18,7 @@
                 :list="navigationsList"
                 :overrideActions="actions"
                 :actionCallback="applyAction"
-                :deleteCallback="deleteEntries"
+                :deleteCallback="handleDeleteNavigation"
                 :no_items="$t('navigations.no_navigations')"
                 :columns="columns"
                 :index="0"
@@ -51,86 +51,8 @@
                         />
                     </td>
                 </template>
-                <template #footer="{ index }">
-                    <v-pagination
-                        v-model="currentPage[index - 1]"
-                        class="tw-mt-6"
-                        density="comfortable"
-                        :rounded="true"
-                        :length="pagination.totalPages"
-                    />
-                </template>
             </Manager>
         </div>
-
-        <!--         <v-table class="utable">
-            <thead>
-                <tr>
-                    <SmartTH
-                        :text="$t('navigations.columns.title')"
-                        :sortable="true"
-                        :showLoaderOnSort="true"
-                        :condition="
-                            currentSorting !== 'title' || !isLoadingSort
-                        "
-                        :ascending="
-                            currentSorting === 'title' &&
-                            currentSortingDir === 'ASC'
-                        "
-                        @sort="setSorting('title')"
-                    />
-                    <th class="tw-text-center">
-                        {{ $t("navigations.columns.slug") }}
-                    </th>
-                    <th class="tw-text-center"></th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr v-for="nav in navigationsList" :key="nav._id">
-                    <td>
-                        <router-link
-                            class="hover:tw-text-primary hover:tw-underline"
-                            :class="{
-                                'hover:tw-text-white':
-                                    $vuetify.theme.name !== 'light',
-                            }"
-                            :to="{
-                                name: 'Navigation',
-                                params: { slug: nav.slug },
-                            }"
-                        >
-                            {{ nav.title }}
-                        </router-link>
-                    </td>
-                    <td>{{ nav.slug }}</td>
-                    <td class="tw-relative">
-                        <div
-                            class="tw-flex tw-gap-2 tw-absolute tw-top-2/4 tw--translate-y-2/4 tw-right-4"
-                        >
-                            <v-icon
-                                icon="mdi-square-edit-outline"
-                                size="22"
-                                class="icon icon-edit tw-cursor-pointer"
-                                @click="selectAction(nav, UPDATE)"
-                            />
-                            <v-icon
-                                icon="mdi-trash-can-outline"
-                                size="22"
-                                class="icon icon-delete tw-cursor-pointer"
-                                @click="selectAction(nav, DELETE)"
-                            />
-                        </div>
-                    </td>
-                </tr>
-
-                <tr v-if="!navigationsList.length">
-                    <td colspan="7" class="tw-text-center tw-font-medium">
-                        {{ $t("navigations.no_navigations") }}
-                    </td>
-                </tr>
-            </tbody>
-        </v-table> -->
     </div>
 
     <Loader v-else />
@@ -144,7 +66,7 @@
             <template v-slot:content>
                 <v-form
                     ref="navFormRef"
-                    class="tw-flex tw-flex-col tw-gap-4"
+                    class="tw-flex tw-flex-col tw-gap-6"
                     @submit.prevent
                     v-model="isFormValid"
                 >
@@ -215,7 +137,7 @@ const navFormRef = ref(null);
 // Constants
 const CREATE = "create";
 const UPDATE = "update";
-const DELETE = "cancel";
+const DELETE = "delete";
 
 const navigationsList = ref([]);
 const selectedNavigation = ref(null);
@@ -223,7 +145,6 @@ const navigationInput = ref({
     title: "",
     slug: "",
 });
-const selectedItems = ref([]);
 
 const actions = ref([
     { value: DELETE, title: i18n.t("navigations.actions.delete") },
@@ -246,6 +167,10 @@ const rules = {
 const showModal = ref(false);
 const applyingAction = ref(false);
 
+// Sorting
+const currentSorting = ref("slug");
+const currentSortingDir = ref("ASC");
+
 // Get the list of navigations
 const navigationDetailsList = async () => {
     isReady.value = false;
@@ -258,7 +183,7 @@ const navigationDetailsList = async () => {
         );
     if (responseNavigationDetailsList) {
         navigationsList.value = responseNavigationDetailsList;
-        pagination.value.totalPages = navigationsList.value.length;
+
         isReady.value = true;
     }
 };
@@ -307,9 +232,9 @@ const handleUpdateNavigation = async () => {
 };
 
 // DELETE
-const handleDeleteNavigation = async (items) => {
+const handleDeleteNavigation = async (event) => {
     const responseDeleteNavigation = await Navigations.deleteNavigation(
-        items.map((i) => i._id)
+        event.list
     );
     if (responseDeleteNavigation) {
         navigationDetailsList();
@@ -338,44 +263,15 @@ const selectAction = (nav = null, action) => {
     }
 };
 
-const applyAction = async (action, items = null) => {
+const applyAction = async (action) => {
     selectedAction.value = action;
-    selectedItems.value = items;
 
     switch (selectedAction.value) {
         case UPDATE:
             return handleUpdateNavigation();
-        case DELETE:
-            return handleDeleteNavigation(selectedItems.value);
         default:
             return handleCreateNavigation();
     }
-};
-
-// Pagination handling
-const currentPage = ref(1);
-const pagination = ref({ total: 0, current: 0, totalPages: 0 });
-
-// Sorting
-const currentSorting = ref("slug");
-const currentSortingDir = ref("ASC");
-const isLoadingSort = ref(false);
-
-// Sorting from the Table
-const setSorting = async (field) => {
-    if (isLoadingSort.value) return;
-
-    if (currentSorting.value !== field) {
-        currentSorting.value = field;
-        currentSortingDir.value = "ASC";
-    } else {
-        currentSortingDir.value =
-            currentSortingDir.value === "ASC" ? "DESC" : "ASC";
-    }
-
-    isLoadingSort.value = true;
-    await navigationDetailsList();
-    isLoadingSort.value = false;
 };
 
 navigationDetailsList();

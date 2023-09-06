@@ -160,7 +160,9 @@ export class Navigations {
      * @param navigationInput
      *
      */
-    public static async deleteNavigation(id: string): Promise<boolean | null> {
+    public static async deleteNavigation(
+        ids: string[]
+    ): Promise<boolean | null> {
         const client = new Client();
         const mutation = NavigationsQueries.deleteNavigation;
 
@@ -168,7 +170,7 @@ export class Navigations {
             gql`
                 ${mutation}
             `,
-            { id }
+            { ids }
         );
 
         if (result.data) {
