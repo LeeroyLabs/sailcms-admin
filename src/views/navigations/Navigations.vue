@@ -1,36 +1,29 @@
 <template>
     <div v-if="isReady">
         <Teleport to="#actions">
-            <v-btn @click="showModal = true" color="primary">
+            <v-btn @click="selectAction(null, CREATE)" color="primary">
                 {{ $t("navigations.add") }}
             </v-btn>
         </Teleport>
 
-        <v-table class="utable">
-            <thead>
-                <tr>
-                    <SmartTH
-                        :text="$t('navigations.columns.title')"
-                        :sortable="true"
-                        :showLoaderOnSort="true"
-                        :condition="
-                            currentSorting !== 'title' || !isLoadingSort
-                        "
-                        :ascending="
-                            currentSorting === 'title' &&
-                            currentSortingDir === 'ASC'
-                        "
-                        @sort="setSorting('title')"
-                    />
-                    <th class="tw-text-center">
-                        {{ $t("navigations.columns.slug") }}
-                    </th>
-                    <th class="tw-text-center"></th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr v-for="nav in navigationsList" :key="nav._id">
+        <div
+            class="tw-p-6 tw-rounded-b-md"
+            :class="{
+                'tw-bg-white ': $vuetify.theme.name === 'light',
+                'tw-bg-darkbg': $vuetify.theme.name === 'dark',
+            }"
+        >
+            <Manager
+                :active="0"
+                :list="navigationsList"
+                :overrideActions="actions"
+                :actionCallback="applyAction"
+                :deleteCallback="handleDeleteNavigation"
+                :no_items="$t('navigations.no_navigations')"
+                :columns="columns"
+                :index="0"
+            >
+                <template v-slot="{ row }">
                     <td>
                         <router-link
                             class="hover:tw-text-primary hover:tw-underline"
@@ -40,75 +33,40 @@
                             }"
                             :to="{
                                 name: 'Navigation',
-                                params: { slug: nav.slug },
+                                params: { slug: row.slug },
                             }"
                         >
-                            {{ nav.title }}
+                            {{ row.title }}
                         </router-link>
                     </td>
-                    <td>{{ nav.slug }}</td>
+                    <td>
+                        {{ row.slug }}
+                    </td>
                     <td class="tw-relative">
-                        <div
-                            class="tw-flex tw-gap-2 tw-absolute tw-top-2/4 tw--translate-y-2/4 tw-right-4"
-                        >
-                            <v-icon
-                                icon="mdi-square-edit-outline"
-                                size="22"
-                                class="icon icon-edit tw-cursor-pointer"
-                                @click="selectAction(nav, UPDATE)"
-                            />
-                            <v-icon
-                                icon="mdi-trash-can-outline"
-                                size="22"
-                                class="icon icon-delete tw-cursor-pointer"
-                                @click="selectAction(nav, DELETE)"
-                            />
-                        </div>
+                        <v-icon
+                            icon="mdi-square-edit-outline"
+                            size="22"
+                            class="icon icon-edit tw-cursor-pointer tw-absolute tw-top-2/4 tw--translate-y-2/4 tw-right-4"
+                            @click="selectAction(row, UPDATE)"
+                        />
                     </td>
-                </tr>
-
-                <tr v-if="!navigationsList.length">
-                    <td colspan="7" class="tw-text-center tw-font-medium">
-                        {{ $t("navigations.no_navigations") }}
-                    </td>
-                </tr>
-            </tbody>
-        </v-table>
+                </template>
+            </Manager>
+        </div>
     </div>
 
     <Loader v-else />
 
     <Transition>
-        <DeleteConfirmation
-            v-if="showDeleteConfirm"
-            :show="true"
-            :overall="true"
-            :title="$t('navigations.confirm')"
-            :loading="applyingAction"
-            :message="$t('navigations.confirm_msg')"
-            @cancel="showDeleteConfirm = false"
-            @accept="applyAction"
-        />
-    </Transition>
-
-    <Transition>
         <Modal
             v-if="showModal"
-            :title="
-                selectedAction === CREATE
-                    ? $t('navigations.add_navigation')
-                    : $t('navigations.update_navigation')
-            "
-            :message="
-                selectedAction === CREATE
-                    ? $t('navigations.add_navigation_msg')
-                    : $t('navigations.update_navigation_msg')
-            "
+            :title="$t(`navigations.${selectedAction}_navigation`)"
+            :message="$t(`navigations.${selectedAction}_navigation_msg`)"
         >
             <template v-slot:content>
                 <v-form
                     ref="navFormRef"
-                    class="tw-flex tw-flex-col tw-gap-4"
+                    class="tw-flex tw-flex-col tw-gap-6"
                     @submit.prevent
                     v-model="isFormValid"
                 >
@@ -144,7 +102,7 @@
                             variant="flat"
                             color="primary"
                             :loading="applyingAction"
-                            @click="applyAction"
+                            @click="applyAction(selectedAction, null)"
                         >
                             {{ $t("navigations.save") }}
                         </v-btn>
@@ -165,9 +123,8 @@ import { Navigations } from "@/libs/graphql/lib/navigations";
 import { SailCMS } from "@/libs/graphql";
 // Components
 import Loader from "@/components/globals/Loader.vue";
-import SmartTH from "@/components/globals/table/SmartTH.vue";
-import DeleteConfirmation from "@/components/globals/DeleteConfirmation.vue";
 import Modal from "@/components/globals/Modal.vue";
+import Manager from "@/components/globals/Manager.vue";
 
 const siteId = ref(SailCMS.getSiteId());
 const i18n = useI18n();
@@ -188,7 +145,17 @@ const navigationInput = ref({
     title: "",
     slug: "",
 });
+
+const actions = ref([
+    { value: DELETE, title: i18n.t("navigations.actions.delete") },
+]);
 const selectedAction = ref(CREATE);
+
+const columns = ref([
+    { label: i18n.t("navigations.columns.title"), centered: false },
+    { label: i18n.t("navigations.columns.slug"), centered: false },
+    { label: "", centered: false },
+]);
 
 // Form & Validations
 const isFormValid = ref(false);
@@ -197,9 +164,12 @@ const rules = {
 };
 
 // Modals
-const showDeleteConfirm = ref(false);
 const showModal = ref(false);
 const applyingAction = ref(false);
+
+// Sorting
+const currentSorting = ref("slug");
+const currentSortingDir = ref("ASC");
 
 // Get the list of navigations
 const navigationDetailsList = async () => {
@@ -213,6 +183,7 @@ const navigationDetailsList = async () => {
         );
     if (responseNavigationDetailsList) {
         navigationsList.value = responseNavigationDetailsList;
+
         isReady.value = true;
     }
 };
@@ -247,7 +218,7 @@ const handleUpdateNavigation = async () => {
         applyingAction.value = true;
         const responseUpdateNavigation = await Navigations.updateNavigation({
             id: selectedNavigation.value._id,
-            title: selectedNavigation.value.title,
+            title: navigationInput.value.title,
             slug: navigationInput.value.slug,
             structure: selectedNavigation.value.structure,
             locale: i18n.locale.value,
@@ -261,9 +232,9 @@ const handleUpdateNavigation = async () => {
 };
 
 // DELETE
-const handleDeleteNavigation = async () => {
+const handleDeleteNavigation = async (event) => {
     const responseDeleteNavigation = await Navigations.deleteNavigation(
-        selectedNavigation.value._id
+        event.list
     );
     if (responseDeleteNavigation) {
         navigationDetailsList();
@@ -277,53 +248,30 @@ const handleReset = () => {
     navigationInput.value.title = "";
     navigationInput.value.slug = "";
     showModal.value = false;
-    showDeleteConfirm.value = false;
 };
 
-const selectAction = (nav, action) => {
+const selectAction = (nav = null, action) => {
     selectedNavigation.value = nav;
     selectedAction.value = action;
-    selectedAction.value === UPDATE
-        ? (showModal.value = true)
-        : (showDeleteConfirm.value = true);
+    showModal.value = true;
 
-    navigationInput.value.title = nav.title;
-    navigationInput.value.slug = nav.slug;
-    // Validate form
-    if (navFormRef.value) navFormRef.value.validate();
+    if (selectedAction.value === UPDATE) {
+        navigationInput.value.title = nav.title;
+        navigationInput.value.slug = nav.slug;
+        // Validate form
+        if (navFormRef.value) navFormRef.value.validate();
+    }
 };
 
-const applyAction = () => {
+const applyAction = async (action) => {
+    selectedAction.value = action;
+
     switch (selectedAction.value) {
         case UPDATE:
             return handleUpdateNavigation();
-        case DELETE:
-            return handleDeleteNavigation();
         default:
             return handleCreateNavigation();
     }
-};
-
-// Sorting
-const currentSorting = ref("slug");
-const currentSortingDir = ref("ASC");
-const isLoadingSort = ref(false);
-
-// Sorting from the Table
-const setSorting = async (field) => {
-    if (isLoadingSort.value) return;
-
-    if (currentSorting.value !== field) {
-        currentSorting.value = field;
-        currentSortingDir.value = "ASC";
-    } else {
-        currentSortingDir.value =
-            currentSortingDir.value === "ASC" ? "DESC" : "ASC";
-    }
-
-    isLoadingSort.value = true;
-    await navigationDetailsList();
-    isLoadingSort.value = false;
 };
 
 navigationDetailsList();

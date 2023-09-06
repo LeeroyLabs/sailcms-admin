@@ -149,8 +149,8 @@ export default {
         }
     `,
     deleteNavigation: `
-        mutation deleteNavigation($id: ID!) {
-            deleteNavigation(id: $id)
+        mutation deleteNavigation($ids: [ID!]!) {
+            deleteNavigation(ids: $ids)
         }
     `,
 };

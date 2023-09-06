@@ -331,8 +331,8 @@ navigations:
   add: Add
   cancel: Cancel
   save: Save
-  add_navigation: Add a navigation
-  add_navigation_msg: Please enter the name and slug of a new navigation that you want to create
+  create_navigation: Add a navigation
+  create_navigation_msg: Please enter the name and slug of a new navigation that you want to create
   update_navigation: Update a navigation
   update_navigation_msg: Please update the name and slug of the navigation
   navigation_title: Enter navigation title
@@ -343,6 +343,9 @@ navigations:
   columns:
     slug: Slug
     title: Title
+  actions:
+    update: Update
+    delete: Delete
 
 navigation:
   back: Back
@@ -808,8 +811,8 @@ tasks:
     status: Status
     scheduled: Scheduled at
     priority: Priority
-    executed: Fulfilled
-    no_executed: Coming
+    executed: Completed
+    no_executed: Upcoming
   actions:
     start: Start
     retry: Retry
