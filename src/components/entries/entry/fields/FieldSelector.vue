@@ -9,13 +9,14 @@
                 :id="element.key"
                 :data-width="element.width"
                 :data-fid="'field-' + element.key"
-                class="tw-border tw-py-2 tw-px-2 tw-flex tw-flex-row tw-items-center"
+                class="sortable tw-border tw-py-2 tw-px-2 tw-flex tw-flex-row tw-items-center"
                 :class="{
                     'tw-bg-white hover:tw-bg-gray-100 tw-border-zinc-400':
                         $vuetify.theme.name === 'light',
                     'tw-bg-neutral-900 tw-text-white hover:tw-bg-neutral-800 tw-border-neutral-500':
                         $vuetify.theme.name === 'dark',
                 }"
+                @end="handleSorting"
             >
                 <v-icon
                     icon="mdi-menu"
@@ -31,7 +32,7 @@
                 <div
                     class="tw-flex-grow tw-flex tw-flex-row tw-justify-end tw-gap-x-2"
                 >
-                    <button @click.prevent="openFieldSettings(index, element)">
+                    <button @click.prevent="openFieldSettings(index)">
                         <v-icon
                             icon="mdi-cog"
                             size="small"
@@ -56,7 +57,7 @@
                     <Transition>
                         <FieldSettings
                             v-if="showFieldSettings"
-                            :field="fields[fieldSettingsCurrentField]"
+                            :field="selectedFields[fieldSettingsCurrentField]"
                             @close="showFieldSettings = false"
                             @change="(e) => handleFieldChange(e)"
                         />
@@ -173,19 +174,13 @@
 
 <script setup>
 import Sortable from "sortablejs";
-import { nextTick, onMounted, ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { deburr, lowerCase } from "lodash";
 import ArrowUpBox from "@/components/globals/ArrowUpBox.vue";
 import { onClickOutside } from "@vueuse/core";
 import FieldSettings from "@/components/entries/layout/FieldSettings.vue";
 
-const emitter = defineEmits([
-    "change",
-    "added",
-    "tabDeleted",
-    "tabNameChange",
-    "fieldWidthChange",
-]);
+const emitter = defineEmits(["update:usedFields"]);
 
 const props = defineProps({
     tab: {
@@ -200,57 +195,18 @@ const props = defineProps({
         type: Array,
         default: [],
     },
-    title: {
-        type: String,
-        default: "Unamed",
-    },
-    used: {
-        type: Array,
-        default: [],
-    },
 });
 
-let sortable;
 const selectedFields = ref(props.usedFields);
 const searchFilter = ref("");
+const showFieldSettings = ref(false);
+const fieldSettingsCurrentField = ref(-1);
+
 const showAddBox = ref(false);
 const addbox = ref(null);
 const offsetBox = ref(false);
-const usedFields = ref([]);
-const showTabSettings = ref(false);
-const showFieldSettings = ref(false);
-
-const fieldSettingsCurrentField = ref(-1);
-
-const handleChange = (e) => {
-    let tab = "tab-" + props.tab.id;
-
-    let children = Array.from(document.getElementById(tab).children).map(
-        (c) => {
-            if (c.id !== "") {
-                return { key: c.id, width: c.getAttribute("data-width") };
-            }
-        }
-    );
-
-    usedFields.value = children.filter((c) => c !== undefined);
-    emitter("change", { tab: props.tab.id, used: usedFields.value });
-};
 
 onClickOutside(addbox, (e) => (showAddBox.value = false));
-
-const opts = {
-    tag: "div",
-    direction: "vertical",
-    handle: ".list-dnd-handle",
-    ghostClass: "ghost",
-    animation: 0,
-    swapTreshold: 0.45,
-    dragoverBubble: false,
-    onAdd: handleChange,
-    onRemove: handleChange,
-    onUpdate: handleChange,
-};
 
 const addToTab = (element) => {
     offsetBox.value = false;
@@ -269,15 +225,15 @@ const isUsed = (key) => {
     return false;
 };
 
-const openFieldSettings = (index, field) => {
+const openFieldSettings = (index) => {
     showFieldSettings.value = true;
     fieldSettingsCurrentField.value = index;
-    console.log(props.fields[fieldSettingsCurrentField.value]);
 };
 
 const handleFieldChange = (value) => {
     showFieldSettings.value = false;
     selectedFields.value[fieldSettingsCurrentField.value].width = value;
+    console.log("INDEX", fieldSettingsCurrentField.value, selectedFields.value);
 };
 
 watch(
@@ -290,23 +246,56 @@ watch(
     }
 );
 
+watch(selectedFields, () => {
+    const elements = document.getElementsByClassName("sortable");
+    for (let i = 0; i < elements.length; i++) {
+        new Sortable(elements[i], opts);
+    }
+});
+
+const handleChange = (e) => {
+    let tab = "tab-" + props.tab.id;
+
+    let children = Array.from(document.getElementById(tab).children).map(
+        (c) => {
+            if (c.id !== "") {
+                return { key: c.id, width: c.getAttribute("data-width") };
+            }
+        }
+    );
+
+    usedFields.value = children.filter((c) => c !== undefined);
+    emitter("change", { tab: props.tab.id, used: usedFields.value });
+};
+
+const handleSorting = () => {
+    console.log("SORTING");
+};
+
+const opts = {
+    tag: "div",
+    direction: "vertical",
+    handle: ".list-dnd-handle",
+    ghostClass: "ghost",
+    animation: 0,
+    swapTreshold: 0.45,
+    dragoverBubble: false,
+    onAdd: handleChange,
+    onRemove: handleChange,
+    onUpdate: handleChange,
+};
+
+// Lifecycle hooks
 onMounted(() => {
-    let el = document.querySelector("#tab-" + props.tab.id);
-    sortable = new Sortable(el, opts);
+    const elements = document.getElementsByClassName("sortable");
+
+    for (let i = 0; i < elements.length; i++) {
+        new Sortable(elements[i], opts);
+    }
 });
 </script>
 
 <style>
-.arrow::after {
-    content: "";
-    height: 10px;
-    width: 10px;
-    position: absolute;
-    top: -6px;
-    left: calc(50% - 5px);
-    transform: rotate(45deg);
-}
-
 .v-enter-active,
 .v-leave-active {
     transition: opacity 0.35s ease;

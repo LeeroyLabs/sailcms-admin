@@ -55,7 +55,6 @@
                                     v-model:usedFields="usedFields"
                                     :tab="tab"
                                     :fields="fields"
-                                    @removed="handleRemoveField"
                                 />
                             </div>
                         </div>
@@ -73,19 +72,15 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted } from "vue";
+import { ref, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter, useRoute } from "vue-router";
 
 import { Entries } from "@/libs/graphql/lib/entries";
 import { SailCMS } from "@/libs/graphql";
-import Sortable from "sortablejs";
 import { v4 } from "uuid";
-import { deburr, lowerCase } from "lodash";
 import { onClickOutside } from "@vueuse/core";
 
-import ArrowUpBox from "@/components/globals/ArrowUpBox.vue";
-import Tab from "@/components/entries/layout/Tab.vue";
 import TabBar from "@/components/globals/Tab.vue";
 import BackButton from "@/components/globals/BackButton.vue";
 import FieldSelector from "@/components/entries/entry/fields/FieldSelector.vue";
@@ -95,6 +90,7 @@ const isReady = ref(false);
 const router = useRouter();
 const route = useRoute();
 
+// Form + validations
 const formInput = ref({
     name: "",
 });
@@ -109,37 +105,11 @@ const offsetBox = ref(false);
 
 const fields = ref([]);
 const usedFields = ref([]);
-
-let sortableObj;
-const searchFilter = ref("");
 const tab = ref(0);
 
 // Constants
 const CREATE = "create";
 const UPDATE = "update";
-
-const opts = {
-    handle: ".drag-handle",
-    tag: "div",
-    direction: "horizontal",
-    ghostClass: "ghost",
-    animation: 300,
-    swapTreshold: 0.05,
-    dragoverBubble: false,
-    //onEnd: handleTabChanges,
-};
-
-let schemaStruct = [
-    {
-        label: "Main",
-        id: v4(),
-        key: v4(),
-        fields: [],
-    },
-];
-
-const schema = ref(schemaStruct);
-let virtualSchema = schemaStruct;
 
 const loadFields = async () => {
     fields.value = await Entries.fields(SailCMS.getLocales());
@@ -151,33 +121,6 @@ const loadFields = async () => {
         };
     });
 
-    /*     if (route.params.id !== "add") {
-        const layout = await Entries.entryLayout(route.params.id);
-        layoutName.value = layout.title;
-        schemaStruct = [];
-
-        for (let tab of layout.schema) {
-            let _fields = [];
-
-            for (let _field of tab.fields) {
-                _fields.push({ key: _field.key, width: _field.width });
-
-                let field = fields.value.find((f) => f.key === _field.key);
-                if (field) field.used = true;
-            }
-
-            schemaStruct.push({
-                label: tab.label,
-                id: v4(),
-                key: v4(),
-                fields: _fields,
-            });
-        }
-
-        schema.value = schemaStruct;
-        virtualSchema = schemaStruct;
-    } */
-
     isReady.value = true;
 
     nextTick(() => {
@@ -185,30 +128,6 @@ const loadFields = async () => {
         resizeWorkspace(); */
         //sortableObj = new Sortable(document.querySelector("#tablist"), opts);
     });
-};
-
-const isUsed = (key) => {
-    let field = fields.value.find((f) => f.key === key);
-    if (field) return field.used;
-    return false;
-};
-
-const addToTab = (element, tab) => {
-    offsetBox.value = false;
-    usedFields.value.push({ key: element.key, width: "full" });
-    /*     emitter("added", {
-        element: element,
-        key: element.key,
-        tab: tab,
-        used: usedFields.value,
-    });
-
-    nextTick(() => addbox.value.reposition()); */
-};
-
-const handleRemoveField = (useFields) => {
-    console.log("FIELDS", usedFields);
-    usedFields.value = useFields.value;
 };
 
 onClickOutside(addbox, (e) => (showAddBox.value = false));
