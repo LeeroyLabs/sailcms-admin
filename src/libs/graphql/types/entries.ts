@@ -1,4 +1,6 @@
 import { LocaleObject } from "./general";
+import { entry } from "@/components/entries/entry/entry";
+import { SailCMS } from "@/libs/graphql";
 
 export type Entry = {
     _id: string;
@@ -20,6 +22,20 @@ export type Entry = {
     schema: LayoutField[];
     seo?: EntrySeo;
 };
+
+export type EntryStructure = {
+    entry_type_handle: string;
+    locale: string;
+    is_homepage: boolean;
+    title: string;
+    template: string;
+    slug: string;
+    categories: string[];
+    content: any,
+    parent: string,
+    site_id: string;
+    alternates?: any;
+}
 
 export type EntryType = {
     _id: string;

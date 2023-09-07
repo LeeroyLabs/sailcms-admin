@@ -7,36 +7,53 @@
             </v-btn>
         </Teleport>
         <section class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between">
-            <div class="tw-flex tw-flex-row tw-w-full lg:tw-w-3/12 tw-items-center" v-if="hasPermission('readwrite_entryfields')">
-                <v-select
-                    v-model="selectedAction"
-                    label="Actions"
-                    color="primary"
-                    :items="availableActions"
-                    variant="outlined"
-                    density="comfortable"
-                    single-line
-                    placeholder="Actions"
-                    :persistent-hint="false"
-                    :hide-details="true"
-                />
+            <div class="tw-flex tw-flex-row tw-w-full lg:tw-w-full tw-justify-between tw-items-center" v-if="hasPermission('readwrite_entryfields')">
+                <div class="tw-flex tw-flex-row tw-items-center tw-w-4/12">
+                    <v-select
+                        v-model="selectedAction"
+                        label="Actions"
+                        color="primary"
+                        :items="availableActions"
+                        variant="outlined"
+                        density="comfortable"
+                        single-line
+                        placeholder="Actions"
+                        :persistent-hint="false"
+                        :hide-details="true"
+                    />
 
-                <v-btn
-                    v-if="selectedFields.length > 0 && hasPermission('readwrite_entryfields')"
-                    :class="{
-                        'tw-invisible tw-opacity-0': selectedAction === null,
-                        'tw-opacity-100': selectedAction !== null
-                    }"
-                    class="!tw-hidden md:!tw-block tw-ml-2 tw-transition-opacity tw-duration-300"
-                    color="primary"
-                    size="small"
-                    icon
-                    @click.prevent="performAction"
-                >
-                    <v-icon icon="mdi-chevron-right"/>
-                </v-btn>
+                    <v-btn
+                        v-if="selectedFields.length > 0 && hasPermission('readwrite_entryfields')"
+                        :class="{
+                            'tw-invisible tw-opacity-0': selectedAction === null,
+                            'tw-opacity-100': selectedAction !== null
+                        }"
+                        class="!tw-hidden md:!tw-block tw-ml-2 tw-transition-opacity tw-duration-300"
+                        color="primary"
+                        size="small"
+                        icon
+                        @click.prevent="performAction"
+                    >
+                        <v-icon icon="mdi-chevron-right"/>
+                    </v-btn>
 
-                <v-progress-circular indeterminate size="x-small" width="2" class="tw-ml-2" :class="{'tw-invisible': !applyingAction}"/>
+                    <v-progress-circular indeterminate size="x-small" width="2" class="tw-ml-2" :class="{'tw-invisible': !applyingAction}"/>
+                </div>
+                <div class="tw-w-4/12 tw-flex tw-items-center">
+                    <v-text-field
+                        color="primary"
+                        :label="$t('fields.search')"
+                        variant="outlined"
+                        :hide-details="true"
+                        type="text"
+                        :clearable="true"
+                        density="comfortable"
+                        v-model="currentSearch"
+                        @keydown.enter="runSearch"
+                        @click:clear="clearSearch"
+                        prepend-inner-icon="mdi-magnify"
+                    />
+                </div>
             </div>
             <div v-else></div>
         </section>
@@ -66,7 +83,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(field, idx) in fieldListing" :key="field._id">
+            <tr v-for="(field, idx) in filteredFieldList" :key="field._id">
                 <td>
                     <v-checkbox v-model="selectedFields" color="primary" :value="field" hide-details></v-checkbox>
                 </td>
@@ -95,6 +112,8 @@
             </tr>
             </tbody>
         </v-table>
+        <!-- Spacer -->
+        <div class="tw-h-[30px]"></div>
 
         <Transition>
             <DeleteConfirmation
@@ -113,18 +132,16 @@
 </template>
 
 <script setup>
-
-import { hasPermission, isAdmin } from '@/libs/tools';
-import { format } from 'date-fns';
+import { hasPermission } from '@/libs/tools';
 import DeleteConfirmation from '@/components/globals/DeleteConfirmation.vue';
 import Loader from '@/components/globals/Loader.vue';
-import Pagination from '@/components/globals/Pagination.vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { Entries } from '@/libs/graphql/lib/entries';
 import { usePage } from '@/libs/page';
 import { useI18n } from 'vue-i18n';
 import BackButton from '@/components/globals/BackButton.vue';
 import { useAppStore } from '@/store/app';
+import { lowerCase } from 'lodash';
 
 const page = usePage();
 const i18n = useI18n();
@@ -137,6 +154,7 @@ const selectedFields = ref([]);
 const selectedAction = ref(null);
 const applyingAction = ref(false);
 const isDeleting = ref(false);
+const currentSearch = ref(null);
 
 const availableActions = ref([
     {value: 'delete', title: i18n.t('system.delete')}
@@ -153,6 +171,27 @@ const loadFields = async () =>
     fieldListing.value = await Entries.fields();
     isReady.value = true;
 }
+
+const clearSearch = () => currentSearch.value = null;
+
+const filteredFieldList = computed(() =>
+{
+    if (currentSearch.value) {
+        return fieldListing.value.filter(f => {
+            // By Name
+            if (lowerCase(f.name).includes(lowerCase(currentSearch.value))) {
+                return true;
+            }
+
+            // By Key
+            if (lowerCase(f.key).includes(lowerCase(currentSearch.value))) {
+                return true;
+            }
+        });
+    }
+
+    return fieldListing.value;
+});
 
 const performAction = async () => showDeleteConfirm.value = true;
 
@@ -188,3 +227,19 @@ page.setPageTitle('fields.title')
 
 loadFields();
 </script>
+
+<style lang="postcss">
+.utable tr:hover td {
+    background-color: rgba(229, 231, 235, 0.20);
+}
+
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.35s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
+</style>

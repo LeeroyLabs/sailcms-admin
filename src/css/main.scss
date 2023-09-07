@@ -12,6 +12,11 @@
   --editor-light-bg: #ffffff;
 }
 
+// Fix Vuetify Floating Label Position Bug
+.v-field__outline__start {
+  flex: 0 0 12px !important;
+}
+
 .v-enter-active,
 .v-leave-active {
   transition: opacity 0.35s ease;

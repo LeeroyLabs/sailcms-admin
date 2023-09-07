@@ -85,7 +85,7 @@
                 <div class="tw-text-center tw-mt-2">{{ $t('emails.test') }}</div>
             </div>
             <div class="tw-flex tw-flex-col tw-items-center" v-if="hasPermission('any')">
-                <v-btn @click.prevent="$router.push({name: 'SysInfo'})" icon size="x-large" variant="flat">
+                <v-btn @click.prevent="$router.push({name: 'Monitoring'})" icon size="x-large" variant="flat">
                     <v-icon icon="mdi-server" size="42"/>
                 </v-btn>
                 <div class="tw-text-center tw-mt-2">{{ $t('system.info') }}</div>

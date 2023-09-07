@@ -146,7 +146,7 @@ const handleAddition = (e) =>
     const tab = virtualSchema.find(t => t.id === e.tab);
 
     for (let key of e.used) {
-        let field = fields.value.find(f => f.key === key);
+        let field = fields.value.find(f => f.key === key.key);
         field.used = true;
     }
 

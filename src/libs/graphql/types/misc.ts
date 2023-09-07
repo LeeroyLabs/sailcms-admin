@@ -1,4 +1,4 @@
-import { LocaleObject } from "./general";
+import { LocaleObject, Pagination } from "./general";
 
 export type RegisteredExtensions = {
     modules: Module[];
@@ -78,3 +78,66 @@ export type SettingsElement = {
     label: LocaleObject;
     permission: string;
 };
+
+export type NavigationConfiguration = {
+    [key: string]: boolean
+}
+
+export type Template = {
+    name: string;
+    filename: string;
+}
+
+export type LogListing = {
+    pagination: Pagination;
+    list: Log[];
+}
+
+export type Log = {
+    _id: string;
+    message: string;
+    date: number;
+}
+
+export type MonitoringSample = {
+    warning: boolean;
+    timestamp: number;
+    php_tested: boolean;
+    ram: RamSample;
+    disk: DiskSample;
+    cpu: CpuSample;
+    php: PHPVersion;
+    boot: BootSample;
+}
+
+export type RamSample = {
+    total: number;
+    available: number;
+    used: number;
+    percent: number;
+}
+
+export type DiskSample = {
+    total: number;
+    available: number;
+    used: number;
+    percent: number;
+}
+
+export type CpuSample = {
+    cores: number;
+    percent: number;
+}
+
+export type BootSample = {
+    boot_time: number;
+    uptime: string;
+}
+
+export type PHPVersion = {
+    installed: string;
+    current: string;
+    latest: boolean;
+    secure: boolean;
+    supported: boolean;
+}

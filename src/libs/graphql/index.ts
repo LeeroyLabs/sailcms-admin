@@ -1,4 +1,5 @@
 import { Client } from "./lib/client";
+import { NavigationConfiguration } from "@/libs/graphql/types/misc";
 export { Client } from "./lib/client";
 export { Users } from "./lib/users";
 export { Categories } from "./lib/categories";
@@ -16,6 +17,8 @@ export class SailCMS {
     private static baseURL: string = "";
     private static siteId: string = "default";
 
+    private static navigation: NavigationConfiguration;
+
     /**
      *
      * Set both url and token for the cms
@@ -25,6 +28,7 @@ export class SailCMS {
      * @param locales
      * @param baseURL
      * @param siteId
+     * @param navigation
      *
      */
     public static setConfig(
@@ -32,13 +36,15 @@ export class SailCMS {
         accessToken: string = "",
         locales: string[] = ["fr", "en"],
         baseURL: string,
-        siteId: string
+        siteId: string,
+        navigation: NavigationConfiguration
     ): void {
         SailCMS.url = url;
         SailCMS.accessToken = accessToken;
         SailCMS.locales = locales;
         SailCMS.baseURL = baseURL;
         SailCMS.siteId = siteId;
+        SailCMS.navigation = navigation
     }
 
     /**
@@ -66,6 +72,10 @@ export class SailCMS {
      */
     public static getSiteId(): string {
         return SailCMS.siteId;
+    }
+
+    public static  getNavigation(): NavigationConfiguration {
+        return SailCMS.navigation;
     }
 
     /**

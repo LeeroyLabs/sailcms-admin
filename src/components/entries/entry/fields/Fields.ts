@@ -8,8 +8,10 @@ import Select from "./Select.vue";
 import Country from "./Country.vue";
 import Switch from "./Switch.vue";
 import DateTime from "./DateTime.vue";
-import Time from "@/components/entries/entry/fields/Time.vue";
 import Entry from "@/components/entries/entry/fields/Entry.vue";
+import Checkbox from "@/components/entries/entry/fields/Checkbox.vue";
+import Radio from "@/components/entries/entry/fields/Radio.vue";
+import Matrix from "@/components/entries/entry/fields/Matrix.vue";
 
 export const AvailableFields = {
     phone: {
@@ -102,5 +104,14 @@ export const AvailableFields = {
     },
     entry: {
         component: Entry
+    },
+    checkbox: {
+        component: Checkbox
+    },
+    radio: {
+        component: Radio
+    },
+    matrix: {
+        component: Matrix
     }
 }

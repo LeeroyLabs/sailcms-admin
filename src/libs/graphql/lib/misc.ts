@@ -1,14 +1,8 @@
-import { NavigationElement, RegisteredExtensions, SettingsElements } from "../types/misc";
+import { LogListing, MonitoringSample, NavigationElement, RegisteredExtensions, SettingsElements, Template } from "../types/misc";
 import { Client } from "./client";
 import MiscQueries from "../queries/misc";
 import gql from "graphql-tag";
 import { SailCMS } from "@/libs/graphql";
-
-// TODO
-// _.mapKeys(obj, (v, k) => _.camelCase(k))
-
-// TODO
-// Fragments with aspect (basic, public, full)
 
 export class Misc
 {
@@ -165,6 +159,110 @@ export class Misc
 
         if (result.error) {
             return result.error;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * Load available templates for an entry
+     *
+     * @param forSelect
+     *
+     */
+    public static async availableTemplates(forSelect: boolean = false): Promise<any[] | Template[]>
+    {
+        const client = new Client();
+        let query = MiscQueries.availableTemplates;
+
+        let result = await client.query(gql`${query}`, {});
+
+        if (result.data) {
+            if (forSelect) {
+                return result.data.availableTemplates.map((t: Template) =>
+                {
+                    return {value: t.filename, title: t.name};
+                });
+            }
+
+            return result.data.availableTemplates;
+        }
+
+        return [];
+    }
+
+    /**
+     *
+     * Get Sail Logs
+     *
+     * @param page
+     * @param dateSearch
+     *
+     */
+    public static async getSailLogs(page: number = 1, dateSearch: number = 0): Promise<LogListing>
+    {
+        const client = new Client();
+        let query = MiscQueries.getSailLogs;
+
+        let variables = {page: page, limit: 50, date_search: null};
+
+        if (dateSearch >= 0) {
+            // @ts-ignore
+            variables.date_search = dateSearch;
+        }
+
+        let result = await client.query(gql`${query}`, variables);
+
+        if (result.data) {
+            return result.data.getSailLogs as LogListing;
+        }
+
+        return {
+            pagination: {
+                current: page,
+                totalPages: 1,
+                total: 0
+            },
+            list: []
+        }
+    }
+
+    /**
+     *
+     * Get latest php logs (every found in error.log latest first)
+     *
+     */
+    public static async getPHPLogs(): Promise<string>
+    {
+        const client = new Client();
+        let query = MiscQueries.getPHPLogs;
+
+        let result = await client.query(gql`${query}`, {});
+
+        if (result.data) {
+            return result.data.getPHPLogs.replace(/\n/g, '<br/>');
+        }
+
+        return '';
+    }
+
+    /**
+     *
+     * Get a live sample of the server's health
+     *
+     */
+    public static async getLiveMonitoringSample(): Promise<MonitoringSample|null>
+    {
+        const client = new Client();
+        let query = MiscQueries.monitoringSample;
+
+        let result = await client.query(gql`${query}`, {});
+
+        console.log(result.data);
+
+        if (result.data) {
+            return result.data.monitoringSample as MonitoringSample;
         }
 
         return null;
