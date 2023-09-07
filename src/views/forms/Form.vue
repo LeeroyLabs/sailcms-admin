@@ -1,138 +1,69 @@
 <template>
     <div v-if="isReady">
+        <BackButton :url="{ name: 'Forms' }" />
         <Teleport to="#actions">
-            <v-btn
-                color="primary"
-                @click="$router.push({ name: 'Form', params: { id: 'add' } })"
-            >
+            <v-btn color="primary" @click="() => console.log('SAVE')">
                 {{ $t("form.save") }}
             </v-btn>
         </Teleport>
-        FORM
+
         <section
             class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between"
         >
             <v-container class="tw-m-0" :fluid="true">
                 <v-row>
-                    <v-col cols="12" xs="12" md="3">
-                        <!-- Small + button -->
-                        <template v-if="fields.length > 0">
-                            <v-btn
-                                :id="'add_btn_'"
-                                @click.prevent="
-                                    () => {
-                                        offsetBox = false;
-                                        showAddBox = true;
-                                    }
-                                "
-                                variant="flat"
-                                color="primary"
-                                class="tw-w-full"
-                                >{{ $t("layout.add_field") }}</v-btn
-                            >
-                        </template>
+                    <v-col cols="12" xs="12" md="9">
+                        <div class="tw-h-[80vh] tw-flex tw-flex-col">
+                            <TabBar
+                                :tabs="[
+                                    $t('forms.tabs.structure'),
+                                    $t('forms.tabs.data'),
+                                ]"
+                                :active="tab"
+                                @change="(e) => (tab = e)"
+                            />
 
-                        <!-- Big + button -->
-                        <template v-if="fields.length === 0">
                             <div
-                                class="tw-h-full tw-min-h-[75px] tw-w-full tw-flex tw-flex-row tw-items-center tw-justify-center tw-rounded-md"
+                                class="tw-flex-grow tw-p-6 tw-rounded-b"
                                 :class="{
-                                    'tw-bg-gray-100':
+                                    'tw-bg-white':
                                         $vuetify.theme.name === 'light',
                                     'tw-bg-darkbg':
                                         $vuetify.theme.name === 'dark',
                                 }"
                             >
-                                <div
-                                    :id="'add_btn_'"
-                                    @click.prevent="
-                                        () => {
-                                            offsetBox = true;
-                                            showAddBox = true;
-                                        }
-                                    "
-                                    class="tw-rounded-full tw-w-[40px] tw-h-[40px] tw-cursor-pointer hover:tw-bg-primary tw-flex tw-flex-row tw-items-center tw-justify-between tw-text-white tw-transition tw-duration-250"
-                                    :class="{
-                                        'tw-bg-gray-400':
-                                            $vuetify.theme.name === 'light',
-                                        'tw-bg-neutral-700':
-                                            $vuetify.theme.name === 'dark',
-                                    }"
-                                >
-                                    <v-icon
-                                        icon="mdi-plus"
-                                        class="tw-mx-auto"
-                                    />
-                                </div>
-                            </div>
-                        </template>
-
-                        <Transition>
-                            <ArrowUpBox
-                                v-if="showAddBox"
-                                ref="addbox"
-                                :emptyAddButton="'add_btn_'"
-                                :offset="offsetBox"
-                            >
-                                <template v-slot:extra>
+                                <v-form autocomplete="off">
                                     <v-text-field
+                                        v-model="formInput.name"
+                                        :label="$t('forms.form_title')"
                                         variant="outlined"
                                         color="primary"
-                                        :clearable="true"
                                         :hide-details="true"
-                                        :single-line="true"
-                                        v-model="searchFilter"
-                                        append-inner-icon="mdi-magnify"
                                         density="comfortable"
-                                        :label="$t('system.search')"
+                                        :rules="[rules.required]"
                                         class="tw-mb-2"
+                                        :class="{
+                                            'tw-bg-white':
+                                                $vuetify.theme.name === 'light',
+                                            'tw-bg-darkbg':
+                                                $vuetify.theme.name === 'dark',
+                                        }"
                                     />
-                                </template>
-                                <template v-slot:default>
-                                    <div class="tw-flex tw-flex-col tw-gap-y-2">
-                                        <template
-                                            v-for="(
-                                                element, index
-                                            ) in fields.filter((f) =>
-                                                deburr(
-                                                    lowerCase(f.name || '')
-                                                ).includes(
-                                                    deburr(
-                                                        lowerCase(
-                                                            searchFilter || ''
-                                                        )
-                                                    )
-                                                )
-                                            )"
-                                        >
-                                            <div
-                                                @click.prevent="
-                                                    addToTab(element, tab.id)
-                                                "
-                                                class="tw-p-2 tw-border tw-border-neutral-300 tw-rounded-md tw-cursor-pointer"
-                                                :class="{
-                                                    'tw-pointer-events-none tw-opacity-50 tw-select-none':
-                                                        isUsed(element.key),
-                                                    'hover:tw-bg-zinc-800 ':
-                                                        $vuetify.theme.name ===
-                                                        'dark',
-                                                    'hover:tw-bg-gray-200':
-                                                        $vuetify.theme.name ===
-                                                        'light',
-                                                }"
-                                            >
-                                                {{ element.name }}
-                                            </div>
-                                        </template>
-                                    </div>
-                                </template>
-                            </ArrowUpBox>
-                        </Transition>
+                                </v-form>
+
+                                <FieldSelector
+                                    v-model:usedFields="usedFields"
+                                    :tab="tab"
+                                    :fields="fields"
+                                    @removed="handleRemoveField"
+                                />
+                            </div>
+                        </div>
                     </v-col>
 
-                    <v-col cols="12" xs="12" md="9">
-                        <v-card class="tw-p-4 tw-h-[80vh] tw-overflow-auto">
-                            RIGHT
+                    <v-col cols="12" xs="12" md="3">
+                        <v-card class="tw-p-4 tw-overflow-auto">
+                            ACTIONS
                         </v-card>
                     </v-col>
                 </v-row>
@@ -142,25 +73,46 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from "vue";
+import { ref, nextTick, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRouter, useRoute } from "vue-router";
 
 import { Entries } from "@/libs/graphql/lib/entries";
 import { SailCMS } from "@/libs/graphql";
 import Sortable from "sortablejs";
 import { v4 } from "uuid";
+import { deburr, lowerCase } from "lodash";
+import { onClickOutside } from "@vueuse/core";
 
 import ArrowUpBox from "@/components/globals/ArrowUpBox.vue";
 import Tab from "@/components/entries/layout/Tab.vue";
+import TabBar from "@/components/globals/Tab.vue";
+import BackButton from "@/components/globals/BackButton.vue";
+import FieldSelector from "@/components/entries/entry/fields/FieldSelector.vue";
 
+const i18n = useI18n();
 const isReady = ref(false);
 const router = useRouter();
 const route = useRoute();
 
+const formInput = ref({
+    name: "",
+});
+const rules = {
+    required: (value) => !!value || i18n.t("user.errors.required"),
+};
+
 const actionMode = ref("");
 const showAddBox = ref(false);
+const addbox = ref(null);
+const offsetBox = ref(false);
+
 const fields = ref([]);
+const usedFields = ref([]);
+
 let sortableObj;
+const searchFilter = ref("");
+const tab = ref(0);
 
 // Constants
 const CREATE = "create";
@@ -187,6 +139,7 @@ let schemaStruct = [
 ];
 
 const schema = ref(schemaStruct);
+let virtualSchema = schemaStruct;
 
 const loadFields = async () => {
     fields.value = await Entries.fields(SailCMS.getLocales());
@@ -198,7 +151,7 @@ const loadFields = async () => {
         };
     });
 
-    if (route.params.id !== "add") {
+    /*     if (route.params.id !== "add") {
         const layout = await Entries.entryLayout(route.params.id);
         layoutName.value = layout.title;
         schemaStruct = [];
@@ -223,27 +176,50 @@ const loadFields = async () => {
 
         schema.value = schemaStruct;
         virtualSchema = schemaStruct;
-    }
-    console.log("FIELDS", fields.value);
+    } */
 
     isReady.value = true;
 
     nextTick(() => {
         /*         window.addEventListener("resize", () => resizeWorkspace());
         resizeWorkspace(); */
-
-        sortableObj = new Sortable(document.querySelector("#tablist"), opts);
+        //sortableObj = new Sortable(document.querySelector("#tablist"), opts);
     });
 };
 
-loadFields();
+const isUsed = (key) => {
+    let field = fields.value.find((f) => f.key === key);
+    if (field) return field.used;
+    return false;
+};
+
+const addToTab = (element, tab) => {
+    offsetBox.value = false;
+    usedFields.value.push({ key: element.key, width: "full" });
+    /*     emitter("added", {
+        element: element,
+        key: element.key,
+        tab: tab,
+        used: usedFields.value,
+    });
+
+    nextTick(() => addbox.value.reposition()); */
+};
+
+const handleRemoveField = (useFields) => {
+    console.log("FIELDS", usedFields);
+    usedFields.value = useFields.value;
+};
+
+onClickOutside(addbox, (e) => (showAddBox.value = false));
 
 if (route.params.id === "add") {
     actionMode.value = CREATE;
     isReady.value = true;
+    loadFields();
 } else {
     actionMode.value = UPDATE;
-    //loadTask();
+    loadFields();
 }
 </script>
 

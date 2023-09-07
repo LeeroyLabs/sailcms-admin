@@ -850,6 +850,10 @@ task:
 
 forms:
   title: Forms
+  tabs:
+    structure: Structure
+    data: Data
+  form_title: Form title
   no_forms: No forms at the moment.
   add_form: Add form
   actions:

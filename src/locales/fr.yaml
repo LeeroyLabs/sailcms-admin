@@ -847,6 +847,10 @@ task:
 
 forms:
   title: Formulaires
+  tabs:
+    structure: Structure
+    data: Données
+  form_title: Titre du formulaire
   no_forms: Aucun formulaire pour le moment.
   add_form: Ajouter un formulaire
   actions:
