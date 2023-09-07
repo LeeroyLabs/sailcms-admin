@@ -23,8 +23,8 @@
         </template>
 
         <div class="tw-h-full tw-flex tw-flex-row tw-items-center" v-if="loading">
-            <div class="tw-flex tw-w-full tw-flex-col tw-items-center">
-                <v-progress-circular indeterminate size="150"/>
+            <div class="tw-flex tw-w-6/12 tw-flex-col tw-items-center tw-mx-auto">
+                <v-progress-linear :indeterminate="true" color="primary" :height="12" class="tw-rounded-md" />
             </div>
         </div>
 

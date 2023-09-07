@@ -4,7 +4,7 @@ import { SailCMS } from "@/libs/graphql";
 export const entry = ref({
     _id: '',
     entry_type: '',
-    parent: null,
+    parent: '',
     site_id: SailCMS.getSiteId(),
     locale: SailCMS.getLocales()[0],
     alternates: [],
@@ -26,9 +26,7 @@ export const entry = ref({
         deleted: 0,
     },
     categories: [],
-    content: {
-        datetime: {date: '04-04-2024', time: '14:00'}
-    },
+    content: {},
     seo: {
         title: '',
         alternates: [],

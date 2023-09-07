@@ -18,6 +18,7 @@ export default {
                 _id
                 title
                 handle
+                use_categories
                 url_prefix {
                     #locale#
                 }
@@ -116,8 +117,8 @@ export default {
        }
     `,
     updateEntryType: `
-        mutation updateEntryType($handle: String!, $title: String!, $url_prefix: LocaleFieldInput!) {
-            updateEntryType(handle: $handle, title: $title, url_prefix: $url_prefix)
+        mutation updateEntryType($handle: String!, $title: String!, $url_prefix: LocaleFieldInput!, $entry_layout_id: ID, $use_categories: Boolean) {
+            updateEntryType(handle: $handle, title: $title, url_prefix: $url_prefix, entry_layout_id: $entry_layout_id, use_categories: $use_categories)
        }
     `,
     deleteEntryType: `
@@ -504,15 +505,15 @@ export default {
             }
         }
     `,
-    // TODO: MAKE BACKEND CONFIGURE THAT FIELD PROPERLY WHEN FETCHING LAYOUT INSTEAD OF THIS CALL
-    fieldsForMatrix: `
-        query fieldsForMatrix($id: ID!) {
+    entryFieldsForMatrix: `
+        query entryFieldsForMatrix($id: ID!) {
             entryFieldsForMatrix(id: $id) {
                 _id
+                key
                 name
                 label {
                     #locale#
-                },
+                }
                 placeholder {
                     #locale#
                 }
@@ -521,7 +522,22 @@ export default {
                 }
                 validation
                 required
+                repeatable
+                type
                 config
+            }
+        }
+    `,
+    createEntry: `
+        mutation createEntry($entry_type_handle: String, $locale: String!, $is_homepage: Boolean!, $title: String!, $template: String!, $slug: String, $categories: [ID!], $content: Json, $parent: ParentInput, $site_id: ID, $alternates: [AlternateInput!]) {
+            createEntry(entry_type_handle: $entry_type_handle, locale: $locale, is_homepage: $is_homepage, title: $title, template: $template, slug: $slug, categories: $categories, content: $content, parent: $parent, site_id: $site_id, alternates: $alternates) {
+                entry {
+                    _id
+                }
+                errors {
+                    key
+                    errors
+                }
             }
         }
     `

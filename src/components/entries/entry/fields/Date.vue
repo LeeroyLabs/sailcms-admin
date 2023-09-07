@@ -50,7 +50,7 @@
                 :value="modelValue"
                 :config="config"
                 :index="index"
-                :id="'date_' + index + '_' + idx"
+                :id="'date_' + index + '_single'"
                 :key="'date_' + index"
                 @change="(e) => $emit('update:modelValue', e)"
             />

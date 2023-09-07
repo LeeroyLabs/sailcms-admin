@@ -289,12 +289,15 @@ system:
   system: Système
   content: Contenu
   utilities: Utilitaires
+  type_to_search: Écrire pour rechercher
+  no_result: Aucun match trouvé.
   email_templates: Gabarits Courriels
   logs: Journaux
   info: Information
   tasks: Tâches
   no_items_now: Aucun item pour le moment.
   add_item: Ajouter un item
+  group: Groupe
   toast:
     error: Erreur
     success: Succès
@@ -346,6 +349,7 @@ fields:
   editing: Modification de
   field_name: Nom
   field_key: Clée
+  search: Recherche
   key_explain: Cette clée est utilisée pour identifier ce champ dans une entrée.
   crop_key_explain: Cette clée est utilisée pour identifier le recadrage dans une entrée. la clée du champ utilisée si laissé vide.
   ratio_explain: Le ratio est une valeur comme 4:3 ou 16:9 en décimal. 16:9 est la valeur par défaut.
@@ -755,6 +759,15 @@ entry:
   info: Information
   na: N/D
   new_entry: Nouvelle
+  no_parent: Aucun Parent
+  not_available_yet: Disponible seulement après la création
+  created_at: Créé
+  last_mod: Dernières modifications
+  slug: Nom
+  publish_string1: La version publiée est
+  publish_string2: et a été publiée le
+  publish_string3: à
+  template: Gabarit
   validation:
     type: Valeur invalide
     phone: Numéro de téléphone invalide

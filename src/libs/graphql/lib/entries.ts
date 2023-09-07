@@ -1,7 +1,7 @@
 import { Client } from "./client";
 import EntryQueries from "../queries/entries";
 import gql from "graphql-tag";
-import { Entry, EntryLayout, EntryListing, EntryType, Field, FieldInfo } from "../types/entries";
+import { Entry, EntryLayout, EntryListing, EntryStructure, EntryType, Field, FieldInfo } from "../types/entries";
 import { LocaleObject } from "@/libs/graphql/types/general";
 
 export class Entries
@@ -115,6 +115,14 @@ export class Entries
         for (let locale of type.url_prefix) {
             prefixes[locale.locale] = locale.data;
         }
+
+        console.log({
+            handle: type.handle,
+            title: type.title,
+            url_prefix: prefixes,
+            entry_layout_id: type.entry_layout_id,
+            use_categories: type.use_categories
+        });
 
         let result = await client.mutation(gql`${query}`, {
             handle: type.handle,
@@ -231,16 +239,24 @@ export class Entries
         return !!(result.data && result.data.createEntryLayout !== null);
     }
 
+    /**
+     *
+     * Get field configuration for all fields in the given matrix
+     *
+     * @param id
+     * @param locales
+     *
+     */
     public static async fieldsForMatrix(id: string, locales: string[] = ['fr', 'en']): Promise<any[]>
     {
         const client = new Client();
-        let query = EntryQueries.fieldsForMatrix;
+        let query = EntryQueries.entryFieldsForMatrix;
 
         query = query.replace(/#locale#/g, Entries.parseLocales(locales));
         let result = await client.mutation(gql`${query}`, {id});
 
         if (result.data) {
-            return result.data.fieldsForMatrix;
+            return result.data.entryFieldsForMatrix;
         }
 
         return [];
@@ -446,17 +462,6 @@ export class Entries
         const client = new Client();
         let query = EntryQueries.entries;
 
-        console.log({
-            entry_type_handle: type,
-            page: page,
-            limit: 30,
-            search: search,
-            sort: 'title',
-            direction: direction,
-            only_trash: trash,
-            locale: locale
-        });
-
         query = query.replace(/#locale#/g, Entries.parseLocales(locales));
         let result = await client.query(gql`${query}`, {
             entry_type_handle: type,
@@ -489,20 +494,39 @@ export class Entries
      *
      * @param locale
      * @param type
+     * @param search
      *
      */
-    public static async entriesForListing(locale: string, type: string): Promise<Entry[]>
+    public static async entriesForListing(locale: string, type: string, search: string = ''): Promise<Entry[]>
     {
         const client = new Client();
         let query = EntryQueries.entriesForListing;
 
-        let result = await client.query(gql`${query}`, {locale, type});
+        let result = await client.query(gql`${query}`, {locale, type, search});
 
         if (result.data) {
             return result.data.entriesForListing;
         }
 
         return [];
+    }
+
+    /**
+     *
+     * Create an entry
+     *
+     * @param opts
+     *
+     */
+    public static async createEntry(opts: EntryStructure): Promise<boolean>
+    {
+        const client = new Client();
+        let query = EntryQueries.createEntry;
+
+        //6502 = error HTML script found
+
+        let result = await client.mutation(gql`${query}`, opts);
+        return !!(result.data && result.data.createEntry !== null);
     }
 
     private static parseLocales(locales: string[]): string

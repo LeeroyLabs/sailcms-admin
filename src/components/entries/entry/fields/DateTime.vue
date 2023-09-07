@@ -52,7 +52,8 @@
                 :config="config"
                 :show-time="true"
                 :index="index"
-                :id="'date_' + index + '_' + idx"
+                :minute-increment="minuteIncrement"
+                :id="'date_' + index + id"
                 :key="'date_' + index"
                 @change="(e) => $emit('update:modelValue', e)"
             />
@@ -75,6 +76,10 @@ const props = defineProps({
         type: Object,
         default: {type: '', label: '', name: '', validation: '', required: false, repeatable: false, config: null, width: 'full'}
     },
+    minuteIncrement: {
+        type: Number,
+        default: 5
+    },
     type: {
         type: String,
         default: 'text'
@@ -82,6 +87,10 @@ const props = defineProps({
     index: {
         type: Number,
         default: 0
+    },
+    id: {
+        type: String,
+        default: '_single'
     }
 });
 

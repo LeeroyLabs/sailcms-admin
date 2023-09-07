@@ -291,12 +291,15 @@ system:
   system: System
   content: Content
   utilities: Utilities
+  type_to_search: Type to search
+  no_result: No match found.
   email_templates: Email Templates
   logs: Logs
   info: Information
   tasks: Tasks
   no_items_now: No items at the moment.
   add_item: Add Item
+  group: Group
   toast:
     error: Error
     success: Success
@@ -349,6 +352,7 @@ fields:
   editing: Editing
   field_name: Name
   field_key: Key
+  search: Search
   key_explain: This key is used to identify this field in an entry.
   crop_key_explain: This key is use to identify the crop within an entry. Uses field key if not set.
   ratio_explain: The ratio is values like 4:3 or 16:9 in a float format. Defaults to 16:9.
@@ -759,6 +763,15 @@ entry:
   info: Information
   na: N/A
   new_entry: New
+  no_parent: No Parent
+  not_available_yet: Will be available after creation
+  created_at: Created
+  last_mod: Last Modification
+  slug: Slug
+  publish_string1: Published version is
+  publish_string2: and was published on
+  publish_string3: at
+  template: Template
   validation:
     type: Invalid value
     phone: Invalid phone number

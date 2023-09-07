@@ -1,5 +1,5 @@
 <template>
-    <div class="tw-rounded-md tw-pb-4" :class="{'tw-bg-white ': $vuetify.theme.name === 'light', 'tw-bg-darkbg': $vuetify.theme.name === 'dark'}">
+    <div v-if="entry._id !== ''" class="tw-rounded-md tw-pb-4" :class="{'tw-bg-white ': $vuetify.theme.name === 'light', 'tw-bg-darkbg': $vuetify.theme.name === 'dark'}">
         <h2 class="panel-title tw-p-4 tw-pb-0 tw-mb-2">Translations</h2>
 
         <div class="panel-trans">
@@ -15,7 +15,12 @@
 </template>
 
 <script setup>
-
+const props = defineProps({
+    entry: {
+        type: Object,
+        default: {}
+    }
+});
 </script>
 
 <style lang="postcss">

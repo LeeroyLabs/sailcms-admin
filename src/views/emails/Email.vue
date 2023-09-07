@@ -47,7 +47,7 @@
             <div v-if="selectedTemplate" class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-x-6 tw-gap-y-2">
                 <template v-for="(field, index) in selectedTemplate.configs">
                     <template v-if="['text', 'cta', 'cta_title'].includes(field.type)">
-                        <h2 class="tw-col-span-2 tw-text-xl tw-font-medium tw-mb-2">{{ field.label[$i18n.locale] }}</h2>
+                        <h2 class="tw-col-span-2 tw-font-medium tw-mb-2">{{ field.label[$i18n.locale] }}</h2>
                         <v-text-field
                             v-for="(locale, idx) in SailCMS.getLocales()"
                             color="primary"
@@ -64,7 +64,7 @@
 
                     <template v-if="field.type === 'content'">
                         <div v-for="(locale, idx) in SailCMS.getLocales()" class="tw-mb-4">
-                            <h2 class="tw-col-span-2 tw-text-xl tw-font-medium tw-mb-2">{{ field.label[$i18n.locale] }} ({{ locale }})</h2>
+                            <h2 class="tw-col-span-2 tw-font-medium tw-mb-2">{{ field.label[$i18n.locale] }} ({{ locale }})</h2>
                             <Editor
                                 @change="(e) => fields[index].value[locale] = e"
                                 :content="fields[index].value[locale]"
@@ -179,7 +179,6 @@ watch(selectedTemplate, (v) =>
 
     for (let field of v.configs) {
         let values = {};
-
         let current = currentEmail.value.fields.find(f => f.key === field.key);
 
         if (route.params.id !== 'add') {
@@ -200,7 +199,7 @@ watch(selectedTemplate, (v) =>
         configs.push({
             key: field.key,
             value: values
-        })
+        });
     }
 
     fields.value = configs;

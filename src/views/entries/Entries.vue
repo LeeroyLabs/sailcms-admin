@@ -39,8 +39,28 @@
                     :index="idx"
                 >
                     <template v-slot:extra>
-                        <!-- SEARCH -->
-                        SEARCH
+                        <div class="tw-w-4/12">
+                            <v-progress-circular :class="{'!tw-invisible': !isLoadingSearch, '!tw-hidden': $vuetify.display.mobile}" indeterminate size="small" width="3"/>
+                            <v-text-field
+                                color="primary"
+                                :label="$t('system.search')"
+                                variant="outlined"
+                                :hide-details="true"
+                                type="text"
+                                :clearable="true"
+                                density="comfortable"
+                                v-model="currentSearch[idx]"
+                                @keydown.enter="runSearch"
+                                @click:clear="clearSearch"
+                                prepend-inner-icon="mdi-magnify"
+                            >
+                                <template v-slot:append-inner>
+                                    <div class="tw-opacity-[0.20]">
+                                        <v-icon icon="mdi-keyboard-return"/>
+                                    </div>
+                                </template>
+                            </v-text-field>
+                        </div>
                     </template>
                     <template v-slot="{ row }">
                         <td>
@@ -98,9 +118,9 @@ const isReady = ref(false);
 const entry = ref(null);
 const typeName = ref('');
 const tab = ref(0);
-const currentPage = ref([1, 1, 1]);
-const currentSearch = ref(['', '', '']);
-const direction = ref([1, 1, 1]);
+const currentPage = ref([1, 1]);
+const currentSearch = ref(['', '']);
+const direction = ref([1, 1]);
 
 const selectedLocale = ref(SailCMS.getLocales()[0]);
 

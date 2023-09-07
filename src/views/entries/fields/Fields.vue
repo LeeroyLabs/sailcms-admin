@@ -39,8 +39,20 @@
 
                     <v-progress-circular indeterminate size="x-small" width="2" class="tw-ml-2" :class="{'tw-invisible': !applyingAction}"/>
                 </div>
-                <div>
-                    SEARCH
+                <div class="tw-w-4/12 tw-flex tw-items-center">
+                    <v-text-field
+                        color="primary"
+                        :label="$t('fields.search')"
+                        variant="outlined"
+                        :hide-details="true"
+                        type="text"
+                        :clearable="true"
+                        density="comfortable"
+                        v-model="currentSearch"
+                        @keydown.enter="runSearch"
+                        @click:clear="clearSearch"
+                        prepend-inner-icon="mdi-magnify"
+                    />
                 </div>
             </div>
             <div v-else></div>
@@ -71,7 +83,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(field, idx) in fieldListing" :key="field._id">
+            <tr v-for="(field, idx) in filteredFieldList" :key="field._id">
                 <td>
                     <v-checkbox v-model="selectedFields" color="primary" :value="field" hide-details></v-checkbox>
                 </td>
@@ -120,18 +132,16 @@
 </template>
 
 <script setup>
-
-import { hasPermission, isAdmin } from '@/libs/tools';
-import { format } from 'date-fns';
+import { hasPermission } from '@/libs/tools';
 import DeleteConfirmation from '@/components/globals/DeleteConfirmation.vue';
 import Loader from '@/components/globals/Loader.vue';
-import Pagination from '@/components/globals/Pagination.vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { Entries } from '@/libs/graphql/lib/entries';
 import { usePage } from '@/libs/page';
 import { useI18n } from 'vue-i18n';
 import BackButton from '@/components/globals/BackButton.vue';
 import { useAppStore } from '@/store/app';
+import { lowerCase } from 'lodash';
 
 const page = usePage();
 const i18n = useI18n();
@@ -144,6 +154,7 @@ const selectedFields = ref([]);
 const selectedAction = ref(null);
 const applyingAction = ref(false);
 const isDeleting = ref(false);
+const currentSearch = ref(null);
 
 const availableActions = ref([
     {value: 'delete', title: i18n.t('system.delete')}
@@ -160,6 +171,27 @@ const loadFields = async () =>
     fieldListing.value = await Entries.fields();
     isReady.value = true;
 }
+
+const clearSearch = () => currentSearch.value = null;
+
+const filteredFieldList = computed(() =>
+{
+    if (currentSearch.value) {
+        return fieldListing.value.filter(f => {
+            // By Name
+            if (lowerCase(f.name).includes(lowerCase(currentSearch.value))) {
+                return true;
+            }
+
+            // By Key
+            if (lowerCase(f.key).includes(lowerCase(currentSearch.value))) {
+                return true;
+            }
+        });
+    }
+
+    return fieldListing.value;
+});
 
 const performAction = async () => showDeleteConfirm.value = true;
 
@@ -195,3 +227,19 @@ page.setPageTitle('fields.title')
 
 loadFields();
 </script>
+
+<style lang="postcss">
+.utable tr:hover td {
+    background-color: rgba(229, 231, 235, 0.20);
+}
+
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.35s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
+</style>

@@ -49,8 +49,8 @@
                         </div>
                     </template>
                     <template v-else>
-                        <div class="tw-h-[140px] tw-flex tw-flex-col tw-items-center tw-justify-center">
-                            <v-progress-circular :size="60" :width="4" indeterminate/>
+                        <div class="tw-h-[140px] tw-w-6/12 tw-mx-auto tw-flex tw-flex-col tw-items-center tw-justify-center">
+                            <v-progress-linear :indeterminate="true" color="primary" :height="7" class="tw-rounded-md"/>
                         </div>
                     </template>
                 </div>

@@ -1,10 +1,10 @@
 <template>
     <div
         :id="'dpp_' + dpid"
-        class="dp tw-h-[50px] tw-rounded-md tw-border tw-py-2 tw-px-3 focus-within:tw-border-primary"
+        class="dp tw-h-[50px] tw-rounded-md tw-border tw-py-2 tw-px-3 focus-within:!tw-px-[11px] focus-within:tw-border-primary focus-within:tw-border-[2px] tw-relative group"
         :class="{'tw-border-neutral-400': $vuetify.theme.name === 'light', 'tw-border-neutral-500': $vuetify.theme.name === 'dark'}"
     >
-        <input :id="id" v-bind:value="(typeof value === 'object') ? value.date + sepChar + value.time : value" class="focus-visible:tw-ring-0 focus-visible:tw-outline-0 tw-h-full tw-w-full"/>
+        <input :placeholder="config.label[$i18n.locale]" :id="id" v-bind:value="(typeof value === 'object') ? value.date + sepChar + value.time : value" class="focus-visible:tw-ring-0 focus-visible:tw-outline-0 tw-h-full tw-w-full"/>
     </div>
 </template>
 
@@ -12,7 +12,7 @@
 import flatpickr from "flatpickr";
 import locales from "flatpickr/dist/l10n/index"
 
-import { onMounted, ref, watch } from 'vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 import { useI18n } from "vue-i18n";
 import { useTheme } from "vuetify";
 import { v4 } from "uuid";
@@ -94,10 +94,12 @@ const handleDateChange = (selectedDates, dateStr, instance) =>
 const initPicker = () =>
 {
     const el = document.querySelector('#' + props.id);
+    let locale = locales[i18n.locale.value];
+
     datepicker.value = flatpickr(el, {
         positionElement: document.querySelector('#' + props.id),
-        dateFormat: (props.showTime) ? props.config.config.date_format + sepChar + props.config.config.time_format  : props.config.config.date_format,
-        locale: locales[i18n.locale.value],
+        dateFormat: (props.showTime) ? props.config.config.date_format + sepChar + props.config.config.time_format : props.config.config.date_format,
+        locale: locale,
         enableTime: props.showTime,
         minuteIncrement: props.minuteIncrement,
         mode: (props.config.config.range) ? 'range' : 'single',
@@ -113,7 +115,7 @@ onMounted(() =>
         document.getElementById('calendar-theme').setAttribute('href', 'https://npmcdn.com/flatpickr@4.6.13/dist/themes/dark.css');
     }
 
-    initPicker();
+    nextTick(() => initPicker());
 });
 
 watch(theme.name, v =>

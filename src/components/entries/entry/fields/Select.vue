@@ -55,13 +55,13 @@ const props = defineProps({
     }
 });
 
-const value = ref(props.modelValue);
+const value = ref(props.modelValue || (props.config.config.multi) ? [] : null);
 
-if (value.value === '' || value.value.length === 0) {
+if (!value.value) {
     if (props.config.config.multi) {
         value.value = [];
     } else {
-        value.value = null;
+        value.value = '';
     }
 }
 

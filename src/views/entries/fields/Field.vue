@@ -234,13 +234,7 @@ const saveField = async () =>
         result = await Entries.updateEntryField(devuetify(field.value));
     }
 
-    console.log(field.value);
-
     isSaving.value = false;
-
-    return;
-
-
 
     if (result) {
         store.displayToast('success', i18n.t('fields.toast.success'));

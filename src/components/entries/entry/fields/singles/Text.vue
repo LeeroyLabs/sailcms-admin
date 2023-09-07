@@ -90,6 +90,8 @@ const rules = {
     required: value => !!value && value.trim() !== '' || i18n.t('user.errors.required'),
     email: v =>
     {
+        if (!v && !isDirty.value) return false;
+
         const result = schema.validate({email: v});
 
         if (result.error) {
@@ -116,7 +118,7 @@ const rules = {
             let msg = (props.config.config.country === 'all') ? 'entry.validation.phone' : 'entry.validation.phone_country';
 
             if (isDirty.value) showError.value = true;
-            
+
             errorMessage.value = msg;
             errorData.value = {country: i18n.t('countries.' + props.config.config.country)};
             return i18n.t(msg);

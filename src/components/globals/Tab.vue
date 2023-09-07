@@ -11,7 +11,8 @@
                 'tw-bg-white hover:tw-bg-white/70 tw-font-medium tw-text-primary': $vuetify.theme.name === 'light' && active === idx,
                 'tw-font-medium tw-text-primary tw-bg-darkbg': $vuetify.theme.name === 'dark' && active === idx,
                 'hover:tw-bg-gray-300': $vuetify.theme.name === 'light' && active !== idx,
-                'hover:tw-bg-neutral-900': $vuetify.theme.name === 'dark' && active !== idx
+                'hover:tw-bg-neutral-900': $vuetify.theme.name === 'dark' && active !== idx,
+                'tw-pointer-events-none': locked.includes(idx)
             }"
         >
                 {{ tab }}
@@ -36,6 +37,10 @@ defineProps({
     smallText: {
         type: Boolean,
         default: false
+    },
+    locked: {
+        type: Array,
+        default: []
     }
 });
 

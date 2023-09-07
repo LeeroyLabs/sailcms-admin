@@ -21,7 +21,6 @@ import mitt from 'mitt';
 const emitter = mitt();
 
 const app = createApp(App);
-
 app.provide('emitter', emitter);
 
 registerPlugins(app).then(() =>

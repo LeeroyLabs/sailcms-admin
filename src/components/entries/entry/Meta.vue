@@ -1,30 +1,58 @@
  <template>
      <div>
-         <TabBar :tabs="tabNames" :active="tab" :smallText="true" :stretch="true" @change="(e) => tab=e"/>
+         <TabBar :tabs="tabNames" :active="tab" :smallText="true" :locked="[1]" :stretch="true" @change="(e) => tab=e"/>
          <div class="panel" :class="{'tw-bg-white ': $vuetify.theme.name === 'light', 'tw-bg-darkbg': $vuetify.theme.name === 'dark'}">
-             <div class="panel-info" v-if="tab === 0">
+             <div class="panelinfo" v-if="tab === 0">
                  <div>
-                     <h2>Slug</h2>
+                     <h2>{{ $t('entry.slug') }}</h2>
                      <p>{{ entry.slug || $t('entry.na') }}</p>
                  </div>
-                 <div>
-                     <h2>Parent</h2>
-                     <p>XXXXXXXXXXXXXXXXXXXXXXXX</p>
+                 <div class="tw-mt-4">
+                     <Search v-model="entry.parent" :type="entry.entry_type" @change="(e) => $emit('parentChange', e)" />
+                 </div>
+                 <div class="tw-mt-4">
+                     <v-select
+                         :label="$t('entry.template')"
+                         :hide-details="true"
+                         v-model="template"
+                         color="primary"
+                         :items="templates"
+                         variant="outlined"
+                         density="comfortable"
+                         :persistent-hint="false"
+                         class="tw-w-full"
+                         @update:modelValue="(e) => $emit('templateChange', e)"
+                     />
                  </div>
              </div>
 
-             <div class="panel-info" v-if="tab === 1">
+             <div class="panelinfo" v-if="entry._id !== '' && tab === 1">
                  <div>
                      <h2>ID</h2>
-                     <p>XXXXXXXXXXXXXXXXXXXXXXXX</p>
+                     <p v-if="entry._id !== ''">
+
+                     </p>
+                     <p v-else>
+                         {{ $t('entry.not_available_yet') }}
+                     </p>
                  </div>
                  <div>
-                     <h2>Created</h2>
-                     <p>dd-mm-yyyy h:i by Bob Jones</p>
+                     <h2>{{ $t('entry.created_at') }}</h2>
+                     <p v-if="entry._id !== ''">
+                         dd-mm-yyyy h:i by Bob Jones
+                     </p>
+                     <p v-else>
+                         {{ $t('entry.not_available_yet') }}
+                     </p>
                  </div>
                  <div>
-                     <h2>Last Modification</h2>
-                     <p>dd-mm-yyyy h:i by Bob Jones</p>
+                     <h2>{{ $t('entry.last_mod') }}</h2>
+                     <p v-if="entry._id !== ''">
+                         dd-mm-yyyy h:i by Bob Jones
+                     </p>
+                     <p v-else>
+                         {{ $t('entry.not_available_yet') }}
+                     </p>
                  </div>
              </div>
 
@@ -34,8 +62,8 @@
                  :class="{'tw-border-gray-200 tw-bg-gray-50': $vuetify.theme.name === 'light', 'tw-bg-lightdark tw-border-neutral-700': $vuetify.theme.name === 'dark'}"
              >
 
-                 <v-btn variant="text" color="red">Trash</v-btn>
-                 <v-btn variant="flat" color="primary">Save</v-btn>
+                 <v-btn v-if="entry._id !== ''" variant="text" color="red">Trash</v-btn>
+                 <v-btn @click.prevent="$emit('save')" variant="flat" color="primary">Save</v-btn>
              </div>
          </div>
      </div>
@@ -45,13 +73,20 @@
 import { computed, ref } from 'vue';
 import TabBar from '@/components/globals/Tab.vue';
 import { useI18n } from 'vue-i18n';
+import Search from '@/components/entries/entry/tools/Search.vue';
 
 const props = defineProps({
     entry: {
         type: Object,
-        default: {slug: '', parent: null}
+        default: {slug: '', parent: ''}
+    },
+    templates: {
+        type: Array,
+        default: []
     }
 });
+
+const emitter = defineEmits(['parentChange', 'templateChange', 'save', 'trash']);
 
 // Use
 const i18n = useI18n();
@@ -59,7 +94,11 @@ const i18n = useI18n();
 // Variables
 const tab = ref(0);
 
-const tabNames = computed(() => [i18n.t('entry.general'), i18n.t('entry.info')]);
+const tabNames = computed(() => {
+    return [i18n.t('entry.general'), i18n.t('entry.info')];
+});
+
+const template = ref(props.entry.template || props.entry.entry_type || 'default');
 </script>
 
 <style lang="postcss">
@@ -67,23 +106,23 @@ const tabNames = computed(() => [i18n.t('entry.general'), i18n.t('entry.info')])
     @apply tw-rounded-md tw-flex tw-flex-col tw-justify-between;
 }
 
-.panel-info {
+.panelinfo {
     @apply tw-p-4 tw-flex tw-flex-col tw-gap-y-2;
 }
 
-.panel-info div {
+.panelinfo > div {
     @apply tw-flex tw-flex-col;
 }
 
-.panel-info div h2 {
+.panelinfo > div h2 {
     @apply tw-font-medium tw-text-neutral-600;
 }
 
-.panel-info div p {
+.panelinfo > div p {
     @apply tw-text-neutral-400 tw-text-sm;
 }
 
 .panel-bottom {
-    @apply tw-mt-4 tw-px-4 tw-py-3 tw-rounded-b-md tw-border-t tw-flex tw-flex-row tw-items-center tw-justify-end tw-gap-x-2;
+    @apply tw-mt-0 tw-px-4 tw-py-3 tw-rounded-b-md tw-border-t tw-flex tw-flex-row tw-items-center tw-justify-end tw-gap-x-2;
 }
 </style>

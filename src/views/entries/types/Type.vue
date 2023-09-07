@@ -59,7 +59,7 @@
                         v-model="currentType.use_categories"
                         :label="$t('entry_types.use_categories')"
                         color="primary"
-                        value="1"
+                        :value="true"
                         hide-details
                         class="tw-flex-grow"
                     />
@@ -158,7 +158,7 @@ const saveType = async () =>
         await nextTick(async () =>
         {
             store.displayToast('success', i18n.t('entry_types.save_success', { name: currentType.value.title }));
-            await router.go({ name: 'EntryTypes' });
+            await router.push({ name: 'EntryTypes' });
         });
         return;
     } else {
