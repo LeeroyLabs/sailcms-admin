@@ -18,6 +18,7 @@ export default {
                 _id
                 title
                 handle
+                use_categories
                 url_prefix {
                     #locale#
                 }
@@ -116,8 +117,8 @@ export default {
        }
     `,
     updateEntryType: `
-        mutation updateEntryType($handle: String!, $title: String!, $url_prefix: LocaleFieldInput!) {
-            updateEntryType(handle: $handle, title: $title, url_prefix: $url_prefix)
+        mutation updateEntryType($handle: String!, $title: String!, $url_prefix: LocaleFieldInput!, $entry_layout_id: ID, $use_categories: Boolean) {
+            updateEntryType(handle: $handle, title: $title, url_prefix: $url_prefix, entry_layout_id: $entry_layout_id, use_categories: $use_categories)
        }
     `,
     deleteEntryType: `
@@ -321,7 +322,7 @@ export default {
         }
     `,
     entries: `
-        query entries($entry_type_handle: String!, $page: Int, $limit: Int, $search: String, $sort: String, $direction: Int, $only_trash: Boolean, $locale: String) {
+        query entries($entry_type_handle: String!, $page: Int, $limit: Int, $search: String, $sort: String, $direction: SortingOrder, $only_trash: Boolean, $locale: String) {
             entries(entry_type_handle: $entry_type_handle, page: $page, limit: $limit, search: $search, sort: $sort, direction: $direction, only_trash: $only_trash, locale: $locale) {
                 pagination {
                     current
@@ -498,9 +499,45 @@ export default {
     `,
     entriesForListing: `
         query entriesForListing($locale: String!, $type: String!) {
-            query entriesForListing(locale: $locale, type: $type) {
+            entriesForListing(locale: $locale, type: $type) {
                 _id
                 title
+            }
+        }
+    `,
+    entryFieldsForMatrix: `
+        query entryFieldsForMatrix($id: ID!) {
+            entryFieldsForMatrix(id: $id) {
+                _id
+                key
+                name
+                label {
+                    #locale#
+                }
+                placeholder {
+                    #locale#
+                }
+                explain {
+                    #locale#
+                }
+                validation
+                required
+                repeatable
+                type
+                config
+            }
+        }
+    `,
+    createEntry: `
+        mutation createEntry($entry_type_handle: String, $locale: String!, $is_homepage: Boolean!, $title: String!, $template: String!, $slug: String, $categories: [ID!], $content: Json, $parent: ParentInput, $site_id: ID, $alternates: [AlternateInput!]) {
+            createEntry(entry_type_handle: $entry_type_handle, locale: $locale, is_homepage: $is_homepage, title: $title, template: $template, slug: $slug, categories: $categories, content: $content, parent: $parent, site_id: $site_id, alternates: $alternates) {
+                entry {
+                    _id
+                }
+                errors {
+                    key
+                    errors
+                }
             }
         }
     `

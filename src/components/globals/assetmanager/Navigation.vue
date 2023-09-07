@@ -17,8 +17,8 @@
                     </template>
                 </div>
                 <div v-if="folders?.length === 0" class="tw-flex tw-flex-row tw-items-center tw-w-full tw-h-full">
-                    <div class="tw-flex tw-flex-col tw-items-center tw-w-full">
-                        <v-progress-circular size="large" indeterminate/>
+                    <div class="tw-flex tw-flex-col tw-items-center tw-w-6/12 tw-mx-auto">
+                        <v-progress-linear :indeterminate="true" color="primary" :height="7" class="tw-rounded-md" />
                     </div>
                 </div>
                 <div>

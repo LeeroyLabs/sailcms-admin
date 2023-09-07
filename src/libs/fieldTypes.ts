@@ -127,6 +127,7 @@ export const availableTypes = computed(() =>
             value: 'entry',
             component: Entry,
             hideRepeat: true,
+            hideExplain: true,
             title: t('fields.types.entry'),
             description: t('fields.descriptions.entry')
         },
@@ -135,6 +136,7 @@ export const availableTypes = computed(() =>
             component: Empty,
             hideRepeat: true,
             hideRequired: true,
+            hideExplain: true,
             title: t('fields.types.switch'),
             description: t('fields.descriptions.switch')
         },
@@ -183,14 +185,17 @@ export const availableTypes = computed(() =>
         {
             value: 'checkbox',
             component: Select,
-            hideRepeat: false,
+            hideRepeat: true,
+            hideExplain: true,
             title: t('fields.types.checkbox'),
             description: t('fields.descriptions.checkbox')
         },
         {
             value: 'radio',
             component: Select,
-            hideRepeat: false,
+            hideRepeat: true,
+            hideRequired: true,
+            hideExplain: true,
             title: t('fields.types.radio'),
             description: t('fields.descriptions.radio')
         },
@@ -204,7 +209,8 @@ export const availableTypes = computed(() =>
         {
             value: 'matrix',
             component: Matrix,
-            hideRepeat: false,
+            hideRepeat: true,
+            hideRequired: true,
             title: t('fields.types.matrix'),
             description: t('fields.descriptions.matrix')
         }

@@ -47,11 +47,12 @@
                     variant="outlined"
                     :hide-details="true"
                     type="text"
-                    clearable
+                    :clearable="true"
                     density="comfortable"
                     v-model="currentSearch"
                     @keydown.enter="runSearch"
                     @click:clear="clearSearch"
+                    prepend-inner-icon="mdi-magnify"
                 >
                     <template v-slot:append-inner>
                         <div class="tw-opacity-[0.20]">

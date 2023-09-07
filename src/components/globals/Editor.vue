@@ -1,7 +1,7 @@
 <template>
     <div>
         <textarea :id="'tiny-' + id" class="tinymce">{{ content }}</textarea>
-        <template v-if="config.explain[$i18n.locale] !== '' && !multi">
+        <template v-if="config.explain && config.explain[$i18n.locale] !== '' && !multi">
             <div class="tw-text-right tw-mt-2 tw-text-sm tw-text-gray-400">
                 {{ config.explain[$i18n.locale] }}
             </div>

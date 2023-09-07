@@ -1,18 +1,10 @@
 <template>
     <div
         :id="'dpp_' + dpid"
-        class="tw-relative dp tw-h-[50px] tw-rounded tw-outline tw-outline-1 tw-py-2 tw-px-3 focus-within:tw-outline-2 tw-cursor-pointer"
-        :class="{
-            'tw-outline-neutral-400 focus-within:tw-outline-primary focus-within:hover:tw-outline-2 focus-within:hover:tw-outline-primary hover:tw-outline-1 hover:tw-outline-black':
-                $vuetify.theme.name === 'light' && !error,
-            'tw-outline-neutral-500 focus-within:tw-outline-white focus-within:hover:tw-outline-2 hover:tw-outline-1 hover:tw-outline-white':
-                $vuetify.theme.name === 'dark' && !error,
-            'tw-outline-[#B00020] focus-within:tw-outline-[#B00020] hover:tw-outline-[#B00020]':
-                error && $vuetify.theme.name === 'light',
-            'tw-outline-[#CF6679] focus-within:tw-outline-[#CF6679] hover:tw-outline-[#CF6679]':
-                error && $vuetify.theme.name === 'dark',
-        }"
+        class="dp tw-h-[50px] tw-rounded-md tw-border tw-py-2 tw-px-3 focus-within:!tw-px-[11px] focus-within:tw-border-primary focus-within:tw-border-[2px] tw-relative group"
+        :class="{'tw-border-neutral-400': $vuetify.theme.name === 'light', 'tw-border-neutral-500': $vuetify.theme.name === 'dark'}"
     >
+        <input :placeholder="config.label[$i18n.locale]" :id="id" v-bind:value="(typeof value === 'object') ? value.date + sepChar + value.time : value" class="focus-visible:tw-ring-0 focus-visible:tw-outline-0 tw-h-full tw-w-full"/>
         <input
             :id="id"
             :placeholder="placeholder"
@@ -56,7 +48,7 @@
 import flatpickr from "flatpickr";
 import locales from "flatpickr/dist/l10n/index";
 
-import { onMounted, ref, watch } from "vue";
+import { nextTick, onMounted, ref, watch } from 'vue';
 import { useI18n } from "vue-i18n";
 import { useTheme } from "vuetify";
 import { v4 } from "uuid";
@@ -154,16 +146,15 @@ const handleDateChange = (selectedDates, dateStr, instance) => {
     emitter("change", dateStr);
 };
 
-const initPicker = () => {
-    const el = document.querySelector("#" + props.id);
+const initPicker = () =>
+{
+    const el = document.querySelector('#' + props.id);
+    let locale = locales[i18n.locale.value];
+
     datepicker.value = flatpickr(el, {
-        positionElement: document.querySelector("#" + props.id),
-        dateFormat: props.showTime
-            ? props.config.config.date_format +
-              sepChar +
-              props.config.config.time_format
-            : props.config.config.date_format,
-        locale: locales[i18n.locale.value],
+        positionElement: document.querySelector('#' + props.id),
+        dateFormat: (props.showTime) ? props.config.config.date_format + sepChar + props.config.config.time_format : props.config.config.date_format,
+        locale: locale,
         enableTime: props.showTime,
         minuteIncrement: props.minuteIncrement,
         mode: props.config.config.range ? "range" : "single",
@@ -193,7 +184,7 @@ onMounted(() => {
             );
     }
 
-    initPicker();
+    nextTick(() => initPicker());
 });
 
 watch(theme.name, (v) => {

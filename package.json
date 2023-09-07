@@ -16,6 +16,8 @@
     "@types/lodash": "^4.14.195",
     "@vuepic/vue-datepicker": "^5.4.0",
     "@vueuse/core": "^10.2.1",
+    "apexcharts": "^3.42.0",
+    "array-move": "^4.0.0",
     "date-fns": "^2.30.0",
     "flatpickr": "^4.6.13",
     "graphql": "^16.6.0",

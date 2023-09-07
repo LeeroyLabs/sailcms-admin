@@ -39,8 +39,28 @@
                     :index="idx"
                 >
                     <template v-slot:extra>
-                        <!-- SEARCH -->
-                        SEARCH
+                        <div class="tw-w-4/12">
+                            <v-progress-circular :class="{'!tw-invisible': !isLoadingSearch, '!tw-hidden': $vuetify.display.mobile}" indeterminate size="small" width="3"/>
+                            <v-text-field
+                                color="primary"
+                                :label="$t('system.search')"
+                                variant="outlined"
+                                :hide-details="true"
+                                type="text"
+                                :clearable="true"
+                                density="comfortable"
+                                v-model="currentSearch[idx]"
+                                @keydown.enter="runSearch"
+                                @click:clear="clearSearch"
+                                prepend-inner-icon="mdi-magnify"
+                            >
+                                <template v-slot:append-inner>
+                                    <div class="tw-opacity-[0.20]">
+                                        <v-icon icon="mdi-keyboard-return"/>
+                                    </div>
+                                </template>
+                            </v-text-field>
+                        </div>
                     </template>
                     <template v-slot="{ row }">
                         <td>
@@ -84,7 +104,6 @@ import plural from "pluralize-fr";
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { hasPermission } from '@/libs/tools';
-import { format } from 'date-fns';
 import BackButton from '@/components/globals/BackButton.vue';
 import Manager from '@/components/globals/Manager.vue';
 import Loader from '@/components/globals/Loader.vue';
@@ -99,9 +118,9 @@ const isReady = ref(false);
 const entry = ref(null);
 const typeName = ref('');
 const tab = ref(0);
-const currentPage = ref([1, 1, 1]);
-const currentSearch = ref(['', '', '']);
-const direction = ref([1, 1, 1]);
+const currentPage = ref([1, 1]);
+const currentSearch = ref(['', '']);
+const direction = ref([1, 1]);
 
 const selectedLocale = ref(SailCMS.getLocales()[0]);
 
@@ -146,7 +165,7 @@ const runSetup = async () =>
         route.params.name,
         currentPage.value[0],
         currentSearch.value[0],
-        direction.value[0],
+        (direction.value[0] === 1) ? 'ASC' : 'DESC',
         SailCMS.getLocales(),
         true,
         selectedLocale.value
@@ -156,7 +175,7 @@ const runSetup = async () =>
         route.params.name,
         currentPage.value[1],
         currentSearch.value[1],
-        direction.value[1],
+        (direction.value[1] === 1) ? 'ASC' : 'DESC',
         SailCMS.getLocales(),
         false,
         selectedLocale.value

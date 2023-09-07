@@ -99,7 +99,6 @@ const props = defineProps({
 
 const cropping = computed(() =>
 {
-    console.log(props.config.config?.allowed_types);
     return {
         name: props.config.config.name,
         ratio: props.config.config.ratio || 0,

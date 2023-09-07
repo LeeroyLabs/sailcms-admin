@@ -50,15 +50,17 @@
                 :class="{'tw-col-span-2': (SailCMS.getLocales().length % 2 !== 0 && idx+1 === SailCMS.getLocales().length)}"
             />
 
-            <v-text-field
-                v-for="(locale, idx) in SailCMS.getLocales()"
-                variant="outlined"
-                color="primary"
-                density="comfortable"
-                :label="$t('fields.explain') + ' (' + locale + ')'"
-                v-model="field.explain[locale]"
-                :class="{'tw-col-span-2': (SailCMS.getLocales().length % 2 !== 0 && idx+1 === SailCMS.getLocales().length)}"
-            />
+            <template v-if="!selectedComponent || (selectedComponent && !selectedComponent.hideExplain)">
+                <v-text-field
+                    v-for="(locale, idx) in SailCMS.getLocales()"
+                    variant="outlined"
+                    color="primary"
+                    density="comfortable"
+                    :label="$t('fields.explain') + ' (' + locale + ')'"
+                    v-model="field.explain[locale]"
+                    :class="{'tw-col-span-2': (SailCMS.getLocales().length % 2 !== 0 && idx+1 === SailCMS.getLocales().length)}"
+                />
+            </template>
 
             <v-autocomplete
                 :model-value="field.type"

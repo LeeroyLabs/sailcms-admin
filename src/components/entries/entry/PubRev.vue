@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="entry._id !== ''">
         <TabBar :tabs="tabNames" :active="tab" :smallText="true" :stretch="true" @change="(e) => tab=e"/>
         <template v-for="(name, idx) in tabNames">
             <div
@@ -10,7 +10,7 @@
                     'tw-bg-white ': $vuetify.theme.name === 'light', 'tw-bg-darkbg': $vuetify.theme.name === 'dark'
                 }"
             >
-                <Publication v-if="idx === 0"/>
+                <Publication :entry="entry" v-if="idx === 0"/>
                 <Revisions v-else/>
             </div>
         </template>
@@ -23,6 +23,13 @@ import Publication from '@/components/entries/entry/Publication.vue';
 import Revisions from '@/components/entries/entry/Revisions.vue';
 import { useI18n } from 'vue-i18n';
 import { computed, ref } from 'vue';
+
+const props = defineProps({
+   entry: {
+       type: Object,
+       default: {}
+   }
+});
 
 // Use
 const i18n = useI18n();

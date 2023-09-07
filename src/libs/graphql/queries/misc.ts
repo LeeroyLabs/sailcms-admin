@@ -142,5 +142,70 @@ export default {
                 }
             }
         }
+    `,
+    availableTemplates: `
+        query availableTemplates {
+            availableTemplates {
+                name
+                filename
+            }
+        }
+    `,
+    getSailLogs: `
+        query getSailLogs($page: Int!, $limit: Int!, $date_search: Int) {
+            getSailLogs(page: $page, limit: $limit, date_search: $date_search) {
+                pagination {
+                    current
+                    totalPages
+                    total
+                }
+                list {
+                    _id
+                    message
+                    date
+                }
+            }
+        }
+    `,
+    getPHPLogs: `
+        query getPHPLogs {
+            getPHPLogs
+        }
+    `,
+    monitoringSample: `
+        query monitoringSample {
+            monitoringSample {
+                warning
+                timestamp
+                php_tested
+                ram {
+                    total
+                    available
+                    used
+                    percent
+                }
+                disk {
+                    total
+                    available
+                    used
+                    percent
+                }
+                cpu {
+                    cores
+                    percent
+                }
+                boot {
+                    boot_time
+                    uptime
+                }
+                php {
+                    installed
+                    current
+                    latest
+                    secure
+                    supported
+                }
+            }
+        }
     `
 }

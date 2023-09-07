@@ -86,7 +86,7 @@ const values = ref(props.value);
 const selected = ref([]);
 const selected2 = ref([]);
 
-const choices = ref((props.choices) ? props.choices : props.config.config.choices);
+const choices = ref((props.choices.length) ? props.choices : props.config.config.choices);
 
 watch(props.choices, v =>
 {

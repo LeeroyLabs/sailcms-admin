@@ -39,19 +39,19 @@
                                     <v-icon icon="mdi-menu" />
                                 </v-btn>
 
-                                <v-btn v-if="$vuetify.display.mobile && !showSidebar" @click.prevent="toggleSearch" flat icon>
+                                <v-btn v-if="$vuetify.display.mobile && !showSidebar" @click.prevent="toggleSearch" :flat="true" icon>
                                     <v-icon icon="mdi-magnify" />
                                 </v-btn>
                             </div>
                             <div v-if="!$vuetify.display.mobile" class="tw-w-[40%]">
                                 <v-text-field
+                                    id="searchfield1"
                                     class="tw-my-2"
-                                    :class="{'tw-bg-white': $vuetify.theme.name === 'light'}"
                                     density="compact"
                                     variant="outlined"
                                     color="primary"
+                                    :bg-color="($vuetify.theme.name === 'light') ? 'white' : '#404040'"
                                     :placeholder="$t('system.search')"
-                                    rounded
                                     :hide-details="true"
                                     prepend-inner-icon="mdi-magnify"
                                     @keydown.enter="searchFiles"
@@ -100,6 +100,7 @@
                             :class="{'tw-bg-darkbg tw-border-slate-700': $vuetify.theme.name !== 'light', 'tw-bg-gray-100 tw-border-gray-200': $vuetify.theme.name === 'light'}"
                         >
                             <v-text-field
+                                id="searchfield2"
                                 ref="searchField"
                                 class="tw-w-[300px] lg:tw-w-[400px] tw-my-2"
                                 density="compact"

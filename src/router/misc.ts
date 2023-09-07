@@ -32,6 +32,30 @@ export const miscRoutes = [
         }
     },
     {
+        path: '/system-logs',
+        name: 'Logs',
+        component: () => import(/* webpackChunkName: "settings" */ '@/views/misc/Logs.vue'),
+        meta: {
+            guarded: true,
+            permission: 'any',
+            layout: 'private',
+            parent: 'Settings',
+            settings: true
+        }
+    },
+    {
+        path: '/monitoring',
+        name: 'Monitoring',
+        component: () => import(/* webpackChunkName: "settings" */ '@/views/misc/Monitoring.vue'),
+        meta: {
+            guarded: true,
+            permission: 'any',
+            layout: 'private',
+            parent: 'Settings',
+            settings: true
+        }
+    },
+    {
         path: '/extras/:param',
         name: 'DynamicContent',
         component: () => import(/* webpackChunkName: "misc" */ '@/views/misc/Dynamic.vue'),

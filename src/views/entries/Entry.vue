@@ -52,10 +52,18 @@
                     </template>
                 </div>
                 <div class="md:tw-pt-12 tw-flex tw-flex-col tw-gap-y-8 md:tw-w-4/12 xl:tw-w-3/12">
-                    <Meta :entry="entry" />
-                    <PubRev/>
-                    <Translations/>
-                    <Categories/>
+                    <Meta
+                        :loading="isSaving"
+                        :entry="entry"
+                        :templates="availableTemplates"
+                        @template-change="(e) => entry.template = e"
+                        @parent-change="(e) => entry.value.parent = e"
+                        @save="saveEntry"
+                    />
+                    <PubRev :entry="entry"/>
+                    <Translations :entry="entry"/>
+
+                    <Categories v-if="entryType.use_categories"/>
                 </div>
             </div>
         </v-form>
@@ -69,7 +77,7 @@ import { useI18n } from 'vue-i18n';
 import { useAppStore } from '@/store/app';
 import { useRoute } from 'vue-router';
 import { Entries } from '@/libs/graphql/lib/entries';
-import { SailCMS } from '@/libs/graphql';
+import { Misc, SailCMS } from '@/libs/graphql';
 import { entry } from '@/components/entries/entry/entry';
 import TabBar from '@/components/globals/Tab.vue';
 import Meta from '@/components/entries/entry/Meta.vue';
@@ -98,6 +106,8 @@ const tabNames = ref([]);
 const tab = ref(0);
 const backURL = ref('');
 const form = ref(null);
+const isSaving = ref(false);
+const availableTemplates = ref([]);
 
 // Entry Status
 const isDirty = ref(false);
@@ -108,6 +118,7 @@ let saveableEntryState = {};
 // Loaders
 const loadBase = async () =>
 {
+    // Load entry type data
     entry.value.entry_type = route.params.name;
     entryType.value = await Entries.entryType(route.params.name);
 
@@ -120,43 +131,39 @@ const loadBase = async () =>
         }
     }
 
+    // Load available templates
+    availableTemplates.value = await Misc.availableTemplates(true);
+
     if (route.params.id.includes('add-')) {
         page.setPageTitle('entry.new_entry', entryType.value.title);
         const [staticpart, currentLocale] = route.params.id.split('-');
         entry.value.locale = currentLocale;
 
         // Prepare all fields for use in entry
-        for (let tab of entryLayout.value.schema) {
-            for (let field of tab.fields) {
-                if (entry.value.content[field.key] === undefined) {
-                    if (field.repeatable) {
-                        entry.value.content[field.key] = ref([]);
-                    } else {
-                        entry.value.content[field.key] = ref('');
-                    }
-                } else {
-                    entry.value.content[field.key] = ref(entry.value.content[field.key]);
-                }
-            }
-        }
+        initEntryFields();
     } else {
         // Load all fields and make them reactive (create missing fields)
-        for (let tab of entryLayout.value.schema) {
-            for (let field of tab.fields) {
-                if (entry.value.content[field.key] === undefined) {
-                    if (field.repeatable) {
-                        entry.value.content[field.key] = ref([]);
-                    } else {
-                        entry.value.content[field.key] = ref('');
-                    }
-                } else {
-                    entry.value.content[field.key] = ref(entry.value.content[field.key]);
-                }
-            }
-        }
+        initEntryFields();
     }
 
     isReady.value = true;
+}
+
+const initEntryFields = () =>
+{
+    for (let tab of entryLayout.value.schema) {
+        for (let field of tab.fields) {
+            if (entry.value.content[field.key] === undefined) {
+                if (field.repeatable) {
+                    entry.value.content[field.key] = ref([]);
+                } else {
+                    entry.value.content[field.key] = ref('');
+                }
+            } else {
+                entry.value.content[field.key] = ref(entry.value.content[field.key]);
+            }
+        }
+    }
 }
 
 // Build an array of rows to build a solid grid with
@@ -175,9 +182,6 @@ watch(entry.value, (v) =>
         // Create slug
         entry.value.slug = kebabCase(deburr(v.title.trim()));
     }
-
-    saveableEntryState = JSON.parse(JSON.stringify(entry.value));
-    console.log(saveableEntryState);
 });
 
 // Setup back button url (remove the base url from it, remove the current id, bingo!)
@@ -186,6 +190,40 @@ parts.splice(parts.length - 1, 1);
 backURL.value = parts.join('/');
 
 // TODO: ON SAVE, JSON PARSE + STRINGIFY THE VUE MESS TO BASIC JS
+
+const saveEntry = async () =>
+{
+    if (isSaving.value) return;
+
+    isSaving.value = true;
+
+    if (entry.value._id === '') {
+        saveableEntryState = JSON.parse(JSON.stringify(entry.value));
+        let parent = null;
+
+        if (entry.value.parent !== '') {
+            parent = { handle: saveableEntryState.entry_type, parent_id: entry.value.parent };
+        }
+
+        const opts = {
+            entry_type_handle: saveableEntryState.entry_type,
+            locale: saveableEntryState.locale,
+            is_homepage: false, // make settable
+            title: saveableEntryState.title,
+            template: 'default',
+            slug: entry.value.slug,
+            categories: [],
+            content: saveableEntryState.content,
+            parent: parent,
+            site_id: SailCMS.getSiteId()
+        };
+
+        let result = await Entries.createEntry(opts);
+
+        console.log(result);
+        isSaving.value = false;
+    }
+}
 
 // Load Base
 loadBase();

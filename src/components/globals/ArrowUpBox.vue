@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted } from 'vue';
 
 const props = defineProps({
     offset: {

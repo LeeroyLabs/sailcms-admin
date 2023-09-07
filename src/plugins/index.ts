@@ -33,7 +33,7 @@ export async function registerPlugins(app: App)
             let json = await response.json();
 
             let tokenStr = localStorage.getItem(import.meta.env.VITE_SAILCMS_TOKEN) || '';
-            SailCMS.setConfig(json.sailcms_url, tokenStr, json.locales, json.base_url, json.site_id);
+            SailCMS.setConfig(json.sailcms_url, tokenStr, json.locales, json.base_url, json.site_id, json.navigation);
 
             window.baseURL = json.base_url;
 
