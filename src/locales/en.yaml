@@ -857,7 +857,7 @@ task:
   scheduled_at: Scheduled at
   form:
     name: Enter name
-    settings: Enter your settings
+    settings: Enter your settings (JSON)
     action: Select action
     priority: Select priority
     priority_low: Low

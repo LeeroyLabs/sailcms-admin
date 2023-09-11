@@ -93,9 +93,9 @@
                     <DateTime
                         :id="'date_time'"
                         :value="taskInput.date.date ? taskInput.date : ''"
-                        :placeholder="$t('task.select_date')"
                         :config="{
                             type: 'text',
+                            label: {fr: $t('task.select_date'), en: $t('task.select_date')},
                             validation: '',
                             required: false,
                             repeatable: false,
@@ -153,7 +153,7 @@
                             :rules="[rules.required]"
                             validate-on="blur"
                             bg-color="#212121"
-                            clearable
+                            :no-resize="true"
                             v-model="taskInput.settings"
                         />
                     </div>
@@ -182,6 +182,7 @@
                 </div>
 
                 <v-checkbox
+                    class="tw-mt-2"
                     label="Retriable"
                     hide-details
                     v-model="taskInput.retriable"
@@ -261,7 +262,7 @@ const taskInput = ref({
     priority: null,
     retriable: false,
     date: { date: "", time: "" },
-    settings: "",
+    settings: "{}",
 });
 const taskPriority = [
     { label: t("task.form.priority_low"), value: 1 },

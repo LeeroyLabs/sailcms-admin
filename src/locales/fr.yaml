@@ -854,7 +854,7 @@ task:
   scheduled_at: Plannifié le
   form:
     name: Entrer un nom
-    settings: Entrer vos paramètres
+    settings: Entrer vos paramètres (JSON)
     action: Sélectioner une action
     priority: Sélectioner la priorité
     priority_low: Basse
