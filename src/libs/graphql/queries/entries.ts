@@ -26,89 +26,6 @@ export default {
             }
         }
     `,
-    homepageEntry: `
-        query homepageEntry($locale: String!, $site_id: ID!) {
-            homepageEntry(locale: $locale, site_id: $site_id) {
-                _id
-                entry_type_id
-                parent {
-                    handle
-                    parent_id
-                }
-                site_id
-                locale
-                alternates {
-                    locale
-                    entry_id
-                }
-                is_homepage
-                status
-                title
-                template
-                slug
-                url
-                authors {
-                    created_by
-                    updated_by
-                    published_by
-                    deleted_by
-                }
-                dates {
-                    created
-                    updated
-                    published
-                    deleted
-                }
-                categories
-                content {
-                    key
-                    content
-                    handle
-                    type
-                }
-                schema {
-                    key
-                    fieldConfigs {
-                        labels {
-                            #locale#
-                        }
-                        handle
-                        inputSettings {
-                            inputKey
-                            settings {
-                                name
-                                value
-                                choices
-                                type
-                            }
-                        }
-                    }
-                }
-                seo {
-                    entry_seo_id
-                    title
-                    alternates {
-                        locale
-                        entry_id
-                    }
-                    url
-                    locale
-                    description
-                    keywords
-                    robots
-                    sitemap
-                    default_image
-                    social_metas {
-                        handle
-                        content {
-                            name
-                            content
-                        }
-                    }
-                }
-            }
-        }
-    `,
     createEntryType: `
         mutation createEntryType($handle: String!, $title: String!, $url_prefix: LocaleFieldInput!) {
             createEntryType(handle: $handle, title: $title, url_prefix: $url_prefix) {
@@ -380,7 +297,7 @@ export default {
         }
     `,
     entry: `
-        query entry($id: ID!, entry_type_handle: String!) {
+        query entry($id: ID!, $entry_type_handle: String!) {
             entry(id: $id, entry_type_handle: $entry_type_handle) {
                 _id
                 entry_type {
@@ -467,10 +384,7 @@ export default {
                     parent_id
                     children
                 }
-                content {
-                    key
-                    content
-                }
+                content
                 seo {
                     _id
                     title

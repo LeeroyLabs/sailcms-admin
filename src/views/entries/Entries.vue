@@ -72,10 +72,8 @@
                                 {{ row.title }}
                             </router-link>
                         </td>
-                        <td>{{ row.authors }}</td>
-                        <td></td>
-                        <td class="tw-text-center"></td>
-                        <td class="tw-text-center"></td>
+                        <td>{{ row.authors.created_by.name.full }}</td>
+                        <td>{{ format(row.dates.updated * 1000, 'dd-MM-yyyy HH:mm:ss') }}</td>
                     </template>
                     <template #footer="{ index }">
                         <v-pagination
@@ -108,6 +106,7 @@ import BackButton from '@/components/globals/BackButton.vue';
 import Manager from '@/components/globals/Manager.vue';
 import Loader from '@/components/globals/Loader.vue';
 import TabBar from '@/components/globals/Tab.vue';
+import { format } from 'date-fns';
 
 const store = useAppStore();
 const page = usePage();
@@ -125,7 +124,6 @@ const direction = ref([1, 1]);
 const selectedLocale = ref(SailCMS.getLocales()[0]);
 
 const entries = ref([
-    {pagination: {}, list: []},
     {pagination: {}, list: []},
     {pagination: {}, list: []}
 ]);
@@ -167,7 +165,7 @@ const runSetup = async () =>
         currentSearch.value[0],
         (direction.value[0] === 1) ? 'ASC' : 'DESC',
         SailCMS.getLocales(),
-        true,
+        false,
         selectedLocale.value
     );
 
@@ -177,7 +175,7 @@ const runSetup = async () =>
         currentSearch.value[1],
         (direction.value[1] === 1) ? 'ASC' : 'DESC',
         SailCMS.getLocales(),
-        false,
+        true,
         selectedLocale.value
     );
 

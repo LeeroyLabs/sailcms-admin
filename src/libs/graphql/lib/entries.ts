@@ -490,6 +490,33 @@ export class Entries
 
     /**
      *
+     * Fetch an entry by id and type handle
+     *
+     * @param id
+     * @param type
+     * @param locales
+     *
+     */
+    public static async entry(id: string, type: string, locales: string[] = ['fr', 'en']): Promise<Entry|null>
+    {
+        const client = new Client();
+        let query = EntryQueries.entry;
+
+        query = query.replace(/#locale#/g, Entries.parseLocales(locales));
+        let result = await client.query(gql`${query}`, {
+            id: id,
+            entry_type_handle: type
+        });
+
+        if (result.data) {
+            return result.data.entry as Entry;
+        }
+
+        return null;
+    }
+
+    /**
+     *
      * Get entries of given locale and type for selection
      *
      * @param locale
