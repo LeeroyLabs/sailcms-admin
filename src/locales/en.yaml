@@ -866,7 +866,6 @@ forms:
   tabs:
     structure: Structure
     data: Data
-  form_title: Form title
   no_forms: No forms at the moment.
   add_form: Add form
   actions:
@@ -877,3 +876,5 @@ forms:
 
 form:
   save: Save
+  form_title: Title
+  form_slug: Slug

@@ -1,22 +1,21 @@
 <template>
     <div :id="tab.id" class="tw-relative">
         <div
-            :id="'tab-' + tab.id"
-            class="field-list tw-flex tw-flex-col tw-gap-3 sorting-parent tw-min-h-full tw-h-full tw-relative"
+            class="sortable field-list tw-flex tw-flex-col tw-gap-3 sorting-parent tw-min-h-full tw-h-full"
+            @end="handleSorting"
         >
             <div
                 v-for="(element, index) in selectedFields"
                 :id="element.key"
                 :data-width="element.width"
                 :data-fid="'field-' + element.key"
-                class="sortable tw-border tw-py-2 tw-px-2 tw-flex tw-flex-row tw-items-center"
+                class="tw-border tw-py-2 tw-px-2 tw-flex tw-flex-row tw-items-center"
                 :class="{
                     'tw-bg-white hover:tw-bg-gray-100 tw-border-zinc-400':
                         $vuetify.theme.name === 'light',
                     'tw-bg-neutral-900 tw-text-white hover:tw-bg-neutral-800 tw-border-neutral-500':
                         $vuetify.theme.name === 'dark',
                 }"
-                @end="handleSorting"
             >
                 <v-icon
                     icon="mdi-menu"
@@ -64,7 +63,7 @@
                     </Transition>
                 </div>
             </div>
-            <div class="tw-h-full">
+            <div class="tw-relative tw-h-full">
                 <!-- Small + button -->
                 <template v-if="fields.length > 0">
                     <v-btn
@@ -119,7 +118,7 @@
                         ref="addbox"
                         :emptyAddButton="'add_btn_' + tab.id"
                         :offset="offsetBox"
-                        class="!tw-absolute !tw-top-[80px] tw-left-2/4 tw--translate-x-2/4"
+                        class="!tw-absolute !tw-top-[50px] tw-left-2/4 tw--translate-x-2/4"
                     >
                         <template v-slot:extra>
                             <v-text-field
@@ -173,11 +172,13 @@
 </template>
 
 <script setup>
-import Sortable from "sortablejs";
 import { ref, watch, onMounted } from "vue";
+
+import Sortable from "sortablejs";
 import { deburr, lowerCase } from "lodash";
-import ArrowUpBox from "@/components/globals/ArrowUpBox.vue";
 import { onClickOutside } from "@vueuse/core";
+
+import ArrowUpBox from "@/components/globals/ArrowUpBox.vue";
 import FieldSettings from "@/components/entries/layout/FieldSettings.vue";
 
 const emitter = defineEmits(["update:usedFields"]);
@@ -210,12 +211,16 @@ onClickOutside(addbox, (e) => (showAddBox.value = false));
 
 const addToTab = (element) => {
     offsetBox.value = false;
+    element.used = true;
     const fields = [...selectedFields.value, element];
     emitter("update:usedFields", fields);
 };
 
 const removeField = (element) => {
-    selectedFields.value = props.fields.filter((f) => f.key !== element.key);
+    element.used = false;
+    selectedFields.value = selectedFields.value.filter(
+        (f) => f.key !== element.key
+    );
     emitter("update:usedFields", selectedFields.value);
 };
 
@@ -233,7 +238,10 @@ const openFieldSettings = (index) => {
 const handleFieldChange = (value) => {
     showFieldSettings.value = false;
     selectedFields.value[fieldSettingsCurrentField.value].width = value;
-    console.log("INDEX", fieldSettingsCurrentField.value, selectedFields.value);
+};
+
+const handleSorting = (event) => {
+    console.log("SORTING", event);
 };
 
 watch(
@@ -246,32 +254,6 @@ watch(
     }
 );
 
-watch(selectedFields, () => {
-    const elements = document.getElementsByClassName("sortable");
-    for (let i = 0; i < elements.length; i++) {
-        new Sortable(elements[i], opts);
-    }
-});
-
-const handleChange = (e) => {
-    let tab = "tab-" + props.tab.id;
-
-    let children = Array.from(document.getElementById(tab).children).map(
-        (c) => {
-            if (c.id !== "") {
-                return { key: c.id, width: c.getAttribute("data-width") };
-            }
-        }
-    );
-
-    usedFields.value = children.filter((c) => c !== undefined);
-    emitter("change", { tab: props.tab.id, used: usedFields.value });
-};
-
-const handleSorting = () => {
-    console.log("SORTING");
-};
-
 const opts = {
     tag: "div",
     direction: "vertical",
@@ -280,9 +262,6 @@ const opts = {
     animation: 0,
     swapTreshold: 0.45,
     dragoverBubble: false,
-    onAdd: handleChange,
-    onRemove: handleChange,
-    onUpdate: handleChange,
 };
 
 // Lifecycle hooks

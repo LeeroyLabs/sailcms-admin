@@ -5,7 +5,7 @@ import gql from "graphql-tag";
 export class Forms {
     /**
      *
-     * form
+     * getForm
      *
      * @param handle
      *
@@ -31,7 +31,7 @@ export class Forms {
 
     /**
      *
-     * forms
+     * getForms
      *
      *
      */
@@ -73,6 +73,34 @@ export class Forms {
 
         if (result.data) {
             return result.data.deleteForm;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * createFormLayout
+     *
+     *
+     */
+    public static async createFormLayout(
+        title: string,
+        schema: any,
+        slug: string
+    ) {
+        const client = new Client();
+        const mutation = FormsQueries.createFormLayout;
+
+        const result = await client.mutation(
+            gql`
+                ${mutation},
+            `,
+            { titles, schema, slug }
+        );
+
+        if (result.data) {
+            return result.data.createFormLayout;
         }
 
         return null;

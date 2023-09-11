@@ -2,7 +2,7 @@
     <div v-if="isReady">
         <BackButton :url="{ name: 'Forms' }" />
         <Teleport to="#actions">
-            <v-btn color="primary" @click="() => console.log('SAVE')">
+            <v-btn color="primary" @click="createFormLayout">
                 {{ $t("form.save") }}
             </v-btn>
         </Teleport>
@@ -32,23 +32,45 @@
                                         $vuetify.theme.name === 'dark',
                                 }"
                             >
-                                <v-form autocomplete="off">
-                                    <v-text-field
-                                        v-model="formInput.name"
-                                        :label="$t('forms.form_title')"
-                                        variant="outlined"
-                                        color="primary"
-                                        :hide-details="true"
-                                        density="comfortable"
-                                        :rules="[rules.required]"
-                                        class="tw-mb-2"
-                                        :class="{
-                                            'tw-bg-white':
-                                                $vuetify.theme.name === 'light',
-                                            'tw-bg-darkbg':
-                                                $vuetify.theme.name === 'dark',
-                                        }"
-                                    />
+                                <v-form ref="form" autocomplete="off">
+                                    <div class="tw-flex tw-gap-x-6 tw-gap-y-2">
+                                        <v-text-field
+                                            v-model="formInput.title"
+                                            :label="`${$t(
+                                                'form.form_title'
+                                            )} *`"
+                                            variant="outlined"
+                                            color="primary"
+                                            density="comfortable"
+                                            :rules="[rules.required]"
+                                            class="tw-mb-2"
+                                            :class="{
+                                                'tw-bg-white':
+                                                    $vuetify.theme.name ===
+                                                    'light',
+                                                'tw-bg-darkbg':
+                                                    $vuetify.theme.name ===
+                                                    'dark',
+                                            }"
+                                        />
+                                        <v-text-field
+                                            v-model="formInput.slug"
+                                            :label="`${$t('form.form_slug')} *`"
+                                            variant="outlined"
+                                            color="primary"
+                                            density="comfortable"
+                                            :rules="[rules.required]"
+                                            class="tw-mb-2"
+                                            :class="{
+                                                'tw-bg-white':
+                                                    $vuetify.theme.name ===
+                                                    'light',
+                                                'tw-bg-darkbg':
+                                                    $vuetify.theme.name ===
+                                                    'dark',
+                                            }"
+                                        />
+                                    </div>
                                 </v-form>
 
                                 <FieldSelector
@@ -72,13 +94,13 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter, useRoute } from "vue-router";
 
 import { Entries } from "@/libs/graphql/lib/entries";
+import { Forms } from "@/libs/graphql/lib/forms";
 import { SailCMS } from "@/libs/graphql";
-import { v4 } from "uuid";
 import { onClickOutside } from "@vueuse/core";
 
 import TabBar from "@/components/globals/Tab.vue";
@@ -91,8 +113,11 @@ const router = useRouter();
 const route = useRoute();
 
 // Form + validations
+const form = ref(null);
 const formInput = ref({
-    name: "",
+    title: "",
+    fields: [],
+    slug: "",
 });
 const rules = {
     required: (value) => !!value || i18n.t("user.errors.required"),
@@ -101,7 +126,6 @@ const rules = {
 const actionMode = ref("");
 const showAddBox = ref(false);
 const addbox = ref(null);
-const offsetBox = ref(false);
 
 const fields = ref([]);
 const usedFields = ref([]);
@@ -118,23 +142,43 @@ const loadFields = async () => {
         return {
             ...f,
             used: false,
+            width: "full",
         };
     });
 
     isReady.value = true;
+};
 
-    nextTick(() => {
-        /*         window.addEventListener("resize", () => resizeWorkspace());
-        resizeWorkspace(); */
-        //sortableObj = new Sortable(document.querySelector("#tablist"), opts);
+const createFormLayout = async () => {
+    const status = await form.value.validate();
+    if (!status.valid) return;
+
+    const fields = usedFields.value.map((field) => {
+        return { id: field._id, width: field.width };
     });
+    const response = await Forms.createFormLayout(
+        formInput.value.title,
+        [
+            {
+                label: formInput.value.slug,
+                fields: fields,
+            },
+        ],
+        formInput.value.slug
+    );
+    if (response) {
+        console.log("RESPONSE", response);
+    }
 };
 
 onClickOutside(addbox, (e) => (showAddBox.value = false));
 
+watch(usedFields, (value) => {
+    console.log("FIELDS", value);
+});
+
 if (route.params.id === "add") {
     actionMode.value = CREATE;
-    isReady.value = true;
     loadFields();
 } else {
     actionMode.value = UPDATE;

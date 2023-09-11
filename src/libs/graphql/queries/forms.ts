@@ -204,4 +204,39 @@ export default {
             deleteForm(id: $id)
         }
     `,
+    createFormLayout: `
+        mutation createFormLayout($title: String!, $schema: [EntryLayoutTabInput!]!, $slug: String) {
+            createFormLayout(title: $title, schema: $schema, slug: $slug) {
+                _id
+                slug
+                title
+                authors {
+                    created_by {
+                        _id
+                    }
+                     updated_by {
+                        _id
+                    }
+                    deleted_by {
+                        _id
+                    }
+                }
+                dates {
+                    created
+                    updated
+                    deleted
+                }
+                is_trashed
+                used_by
+                record_count
+                schema {
+                    label
+                    fields {
+                        _id
+                        name
+                    }
+                }
+            }
+        }
+    `,
 };
