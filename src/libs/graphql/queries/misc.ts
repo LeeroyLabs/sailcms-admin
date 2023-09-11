@@ -207,5 +207,21 @@ export default {
                 }
             }
         }
+    `,
+    getRangeSample: `
+        query getRangeSample($start: Int!, $end: Int!) {
+            getRangeSample(start: $start, end: $end) {
+                timestamp
+                ram {
+                    percent
+                }
+                disk {
+                    percent
+                }
+                cpu {
+                    percent
+                }
+            }
+        }
     `
 }

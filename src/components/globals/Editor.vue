@@ -66,13 +66,13 @@ const handleTheme = () =>
             frame.contentWindow.document.body.style.backgroundColor = '#111111';
 
             // This is the only way to make the colors work
-            document.querySelectorAll('.tox:not(.tox-tinymce-inline) .tox-editor-header').forEach((item) => item.style.backgroundColor = '#354152');
-            document.querySelectorAll('.tox .tox-menubar').forEach((item) => item.style.backgroundColor = '#354152');
-            document.querySelectorAll('.tox .tox-toolbar, .tox .tox-toolbar__overflow, .tox .tox-toolbar__primary').forEach((item) => item.style.backgroundColor = '#354152');
-            document.querySelectorAll('.tox .tox-tbtn--bespoke').forEach((item) => item.style.border = '1px solid #505f80');
-            document.querySelectorAll('.tox .tox-toolbar-overlord').forEach((item) => item.style.backgroundColor = '#505f80');
-            document.querySelectorAll('.tox .tox-statusbar').forEach((item) => item.style.backgroundColor = '#354152');
-            document.querySelectorAll('.tox-tinymce').forEach((item) => item.style.border = '2px solid #354152');
+            document.querySelectorAll('.tox:not(.tox-tinymce-inline) .tox-editor-header').forEach((item) => item.style.backgroundColor = '#262626');
+            document.querySelectorAll('.tox .tox-menubar').forEach((item) => item.style.backgroundColor = '#262626');
+            document.querySelectorAll('.tox .tox-toolbar, .tox .tox-toolbar__overflow, .tox .tox-toolbar__primary').forEach((item) => item.style.backgroundColor = '#262626');
+            document.querySelectorAll('.tox .tox-tbtn--bespoke').forEach((item) => item.style.border = '1px solid #404040');
+            document.querySelectorAll('.tox .tox-toolbar-overlord').forEach((item) => item.style.backgroundColor = '#404040');
+            document.querySelectorAll('.tox .tox-statusbar').forEach((item) => item.style.backgroundColor = '#262626');
+            document.querySelectorAll('.tox-tinymce').forEach((item) => item.style.border = '2px solid #404040');
         }
     }
 }
@@ -109,5 +109,72 @@ onBeforeUnmount(() =>
 
 .dark .tox .tox-menu {
     background-color: var(--editor-dark-bg)!important;
+}
+
+.dark .tox-tbtn__select-label {
+    background-color: var(--editor-dark-bg)!important;
+}
+
+.dark .tox-tbtn--select {
+    background-color: var(--editor-dark-bg)!important;
+}
+
+.dark .tox-collection__item--active {
+    @apply !tw-bg-primary;
+}
+
+.dark .tox-collection__item--active .tox-collection__item-label > p,
+.dark .tox-collection__item--active .tox-collection__item-label > h1,
+.dark .tox-collection__item--active .tox-collection__item-label > h2,
+.dark .tox-collection__item--active .tox-collection__item-label > h3,
+.dark .tox-collection__item--active .tox-collection__item-label > h4,
+.dark .tox-collection__item--active .tox-collection__item-label > h5,
+.dark .tox-collection__item--active .tox-collection__item-label > h6,
+.dark .tox-collection__item--active .tox-collection__item-label > pre
+{
+    @apply !tw-bg-primary;
+}
+
+.dark .tox-collection__item--enabled .tox-collection__item-label > p,
+.dark .tox-collection__item--enabled .tox-collection__item-label > h1,
+.dark .tox-collection__item--enabled .tox-collection__item-label > h2,
+.dark .tox-collection__item--enabled .tox-collection__item-label > h3,
+.dark .tox-collection__item--enabled .tox-collection__item-label > h4,
+.dark .tox-collection__item--enabled .tox-collection__item-label > h5,
+.dark .tox-collection__item--enabled .tox-collection__item-label > h6,
+.dark .tox-collection__item--enabled .tox-collection__item-label > pre {
+   background-color: transparent!important;;
+}
+
+.dark .tox-collection__item-label > p,
+.dark .tox-collection__item-label > h1,
+.dark .tox-collection__item-label > h2,
+.dark .tox-collection__item-label > h3,
+.dark .tox-collection__item-label > h4,
+.dark .tox-collection__item-label > h5,
+.dark .tox-collection__item-label > h6,
+.dark .tox-collection__item-label > pre
+{
+    background-color: var(--editor-dark-bg)!important;
+}
+
+.dark .tox-collection__item--active {
+    @apply !tw-bg-primary;
+}
+
+.dark .tox-collection__item--enabled:first-child {
+    @apply !tw-bg-primary;
+}
+
+.dark .tox-collection__item-label .tox-collection__item--active > p,
+.dark .tox-collection__item-label .tox-collection__item--active > h1,
+.dark .tox-collection__item-label .tox-collection__item--active > h2,
+.dark .tox-collection__item-label .tox-collection__item--active > h3,
+.dark .tox-collection__item-label .tox-collection__item--active > h4,
+.dark .tox-collection__item-label .tox-collection__item--active > h5,
+.dark .tox-collection__item-label .tox-collection__item--active > h6,
+.dark .tox-collection__item-label .tox-collection__item--active > pre
+{
+    @apply !tw-bg-primary;
 }
 </style>

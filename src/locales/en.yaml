@@ -300,6 +300,12 @@ system:
   no_items_now: No items at the moment.
   add_item: Add Item
   group: Group
+  disk: Disk
+  cpu_history: CPU History
+  ram_history: RAM History
+  disk_history: Disk History
+  last_10: last 10 days
+  live_check: Live Health Check
   toast:
     error: Error
     success: Success
@@ -851,7 +857,7 @@ task:
   scheduled_at: Scheduled at
   form:
     name: Enter name
-    settings: Enter your settings
+    settings: Enter your settings (JSON)
     action: Select action
     priority: Select priority
     priority_low: Low

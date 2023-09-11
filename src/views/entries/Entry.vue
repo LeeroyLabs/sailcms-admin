@@ -142,6 +142,8 @@ const loadBase = async () =>
         // Prepare all fields for use in entry
         initEntryFields();
     } else {
+        entry.value = await Entries.entry(route.params.id, route.params.name, SailCMS.getLocales());
+
         // Load all fields and make them reactive (create missing fields)
         initEntryFields();
     }

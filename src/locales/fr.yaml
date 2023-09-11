@@ -298,6 +298,12 @@ system:
   no_items_now: Aucun item pour le moment.
   add_item: Ajouter un item
   group: Groupe
+  disk: Disque
+  cpu_history: Historique CPU
+  ram_history: Historique RAM
+  disk_history: Historique Disque
+  last_10: Derniers 10 jours
+  live_check: Bilan de santé en direct
   toast:
     error: Erreur
     success: Succès
@@ -848,7 +854,7 @@ task:
   scheduled_at: Plannifié le
   form:
     name: Entrer un nom
-    settings: Entrer vos paramètres
+    settings: Entrer vos paramètres (JSON)
     action: Sélectioner une action
     priority: Sélectioner la priorité
     priority_low: Basse
