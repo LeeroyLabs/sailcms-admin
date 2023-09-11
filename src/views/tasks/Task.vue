@@ -44,9 +44,7 @@
                             class="tw-text-red-600 !tw-rounded-full"
                         />
                         <v-btn
-                            @click.prevent="
-                                handleAction(CANCEL, $t('task.cancel_msg'))
-                            "
+                            @click.prevent="handleAction(CANCEL, $t('task.cancel_msg'))"
                             density="comfortable"
                             color="red"
                             variant="tonal"
@@ -65,7 +63,7 @@
                                 : `${$t("task.scheduled_at")}: `
                         }}
 
-                        {{ format(task.scheduled_at * 1000, "yyyy/MM/dd") }}
+                        {{ format(task.scheduled_at * 1000, "dd-MM-yyyy") }}
                     </p>
                 </div>
             </div>
@@ -305,10 +303,14 @@ const loadTask = async () => {
 
 const createTask = async () => {
     let status = await form.value.validate();
+
     if (!taskInput.value.date.time) {
         status = false;
         errorDateTime.value = true;
     }
+
+    // TODO: VALIDATE JSON
+
     if (status) {
         const responseCreateTask = await Tasks.createTask(
             taskInput.value.name,
@@ -318,6 +320,7 @@ const createTask = async () => {
             Math.round(parseInt(taskInput.value.date.time, 10) / 1000000),
             JSON.stringify({ settings: taskInput.value.settings })
         );
+
         if (responseCreateTask) {
             router.push({ name: "Tasks" });
         }
@@ -326,6 +329,8 @@ const createTask = async () => {
 
 const updateTask = async () => {
     const status = await form.value.validate();
+
+    // TODO: VALIDATE JSON
 
     if (status && taskInput.value.date.time) {
         const responseUpdateTask = await Tasks.updateTask(
