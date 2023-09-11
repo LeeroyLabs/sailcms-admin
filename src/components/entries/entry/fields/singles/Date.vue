@@ -5,51 +5,105 @@
         :class="{'tw-border-neutral-400': $vuetify.theme.name === 'light', 'tw-border-neutral-500': $vuetify.theme.name === 'dark'}"
     >
         <input :placeholder="config.label[$i18n.locale]" :id="id" v-bind:value="(typeof value === 'object') ? value.date + sepChar + value.time : value" class="focus-visible:tw-ring-0 focus-visible:tw-outline-0 tw-h-full tw-w-full"/>
+        <input
+            :id="id"
+            :placeholder="placeholder"
+            v-bind:value="
+                typeof value === 'object'
+                    ? value.date + sepChar + value.time
+                    : value
+            "
+            class="focus-visible:tw-ring-0 focus-visible:tw-outline-0 tw-h-full tw-w-full tw-cursor-pointer"
+            :class="[
+                $vuetify.theme.name === 'light'
+                    ? {
+                          'placeholder:!tw-text-[#B00020] placeholder:!tw-opacity-100':
+                              error,
+                      }
+                    : {
+                          'placeholder:!tw-text-[#CF6679] placeholder:!tw-opacity-100':
+                              error,
+                      },
+                $vuetify.theme.name === 'light'
+                    ? 'placeholder:tw-text-black placeholder:tw-opacity-50'
+                    : 'placeholder:tw-text-white placeholder:tw-opacity-70',
+            ]"
+        />
+
+        <span
+            v-if="error"
+            class="tw-absolute -tw-bottom-6 tw-left-4 tw-text-xs tw-tracking-wide"
+            :class="
+                $vuetify.theme.name === 'light'
+                    ? 'tw-text-[#B00020]'
+                    : 'tw-text-[#CF6679]'
+            "
+        >
+            Required
+        </span>
     </div>
 </template>
 
 <script setup>
 import flatpickr from "flatpickr";
-import locales from "flatpickr/dist/l10n/index"
+import locales from "flatpickr/dist/l10n/index";
 
 import { nextTick, onMounted, ref, watch } from 'vue';
 import { useI18n } from "vue-i18n";
 import { useTheme } from "vuetify";
 import { v4 } from "uuid";
 
-const emitter = defineEmits(['change']);
+const emitter = defineEmits(["change"]);
 
-const sepChar = ' — ';
+const sepChar = " — ";
 
 const props = defineProps({
     value: {
         type: String,
-        default: ''
+        default: "",
     },
     showTime: {
         type: Boolean,
-        default: false
+        default: false,
     },
     config: {
         type: Object,
-        default: {type: '', label: '', name: '', validation: '', required: false, repeatable: false, config: null}
+        default: {
+            type: "",
+            label: "",
+            name: "",
+            validation: "",
+            required: false,
+            repeatable: false,
+            config: null,
+        },
     },
     index: {
         type: Number,
-        default: ''
+        default: "",
     },
     id: {
         type: String,
-        default: 'date_' + v4()
+        default: "date_" + v4(),
+    },
+    placeholder: {
+        type: String,
+        required: false,
+        default: "",
     },
     useTimestamp: {
         type: Boolean,
-        default: false
+        default: false,
     },
     minuteIncrement: {
         type: Number,
-        default: 5
-    }
+        default: 5,
+    },
+    error: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
 });
 
 const i18n = useI18n();
@@ -57,10 +111,9 @@ const theme = useTheme();
 const datepicker = ref(null);
 const dpid = ref(v4());
 
-const handleDateChange = (selectedDates, dateStr, instance) =>
-{
+const handleDateChange = (selectedDates, dateStr, instance) => {
     if (props.config.config.range) {
-        let dates = dateStr.split(' ');
+        let dates = dateStr.split(" ");
 
         // Range, wait til we are done
         if (dates.length === 1) {
@@ -68,28 +121,30 @@ const handleDateChange = (selectedDates, dateStr, instance) =>
         }
 
         if (props.useTimestamp) {
-            emitter('change', Math.floor(selectedDates.getTime() / 1000));
+            emitter("change", Math.floor(selectedDates.getTime() / 1000));
             return;
         }
 
         if (props.useTimestamp) {
-            const timestamps = selectedDates.map(d => Math.floor(d.getTime() / 1000));
-            emitter('change', timestamps);
+            const timestamps = selectedDates.map((d) =>
+                Math.floor(d.getTime() / 1000)
+            );
+            emitter("change", timestamps);
             return;
         }
 
-        emitter('change', [dates[0], dates[2]]);
+        emitter("change", [dates[0], dates[2]]);
         return;
     }
 
     if (props.showTime) {
         const [d, t] = dateStr.split(sepChar);
-        emitter('change', {date: d, time: t});
+        emitter("change", { date: d, time: t });
         return;
     }
 
-    emitter('change', dateStr);
-}
+    emitter("change", dateStr);
+};
 
 const initPicker = () =>
 {
@@ -102,38 +157,60 @@ const initPicker = () =>
         locale: locale,
         enableTime: props.showTime,
         minuteIncrement: props.minuteIncrement,
-        mode: (props.config.config.range) ? 'range' : 'single',
-        onChange: handleDateChange
+        mode: props.config.config.range ? "range" : "single",
+        minDate: props.config.config.minDate
+            ? props.config.config.minDate
+            : null,
+        onChange: handleDateChange,
     });
-}
+};
 
-onMounted(() =>
-{
-    if (theme.name.value === 'light') {
-        document.getElementById('calendar-theme').setAttribute('href', 'https://npmcdn.com/flatpickr@4.6.13/dist/themes/light.css');
+const validate = () => {};
+
+onMounted(() => {
+    if (theme.name.value === "light") {
+        document
+            .getElementById("calendar-theme")
+            .setAttribute(
+                "href",
+                "https://npmcdn.com/flatpickr@4.6.13/dist/themes/light.css"
+            );
     } else {
-        document.getElementById('calendar-theme').setAttribute('href', 'https://npmcdn.com/flatpickr@4.6.13/dist/themes/dark.css');
+        document
+            .getElementById("calendar-theme")
+            .setAttribute(
+                "href",
+                "https://npmcdn.com/flatpickr@4.6.13/dist/themes/dark.css"
+            );
     }
 
     nextTick(() => initPicker());
 });
 
-watch(theme.name, v =>
-{
-    if (v === 'light') {
-        document.getElementById('calendar-theme').setAttribute('href', 'https://npmcdn.com/flatpickr@4.6.13/dist/themes/light.css');
+watch(theme.name, (v) => {
+    if (v === "light") {
+        document
+            .getElementById("calendar-theme")
+            .setAttribute(
+                "href",
+                "https://npmcdn.com/flatpickr@4.6.13/dist/themes/light.css"
+            );
     } else {
-        document.getElementById('calendar-theme').setAttribute('href', 'https://npmcdn.com/flatpickr@4.6.13/dist/themes/dark.css');
+        document
+            .getElementById("calendar-theme")
+            .setAttribute(
+                "href",
+                "https://npmcdn.com/flatpickr@4.6.13/dist/themes/dark.css"
+            );
     }
 });
 
-const localize = (locale) =>
-{
+const localize = (locale) => {
     if (!datepicker.value) return;
     initPicker();
-}
+};
 
-watch(i18n.locale, v => localize(v));
+watch(i18n.locale, (v) => localize(v));
 </script>
 
 <style>
@@ -147,7 +224,10 @@ watch(i18n.locale, v => localize(v));
     @apply tw-rounded-t-md;
 }
 
-.dark .flatpickr-months .flatpickr-month, .dark .flatpickr-monthDropdown-months, .dark .flatpickr-weekdays, .dark .flatpickr-weekday {
+.dark .flatpickr-months .flatpickr-month,
+.dark .flatpickr-monthDropdown-months,
+.dark .flatpickr-weekdays,
+.dark .flatpickr-weekday {
     @apply tw-bg-[#111111];
 }
 
@@ -155,11 +235,15 @@ watch(i18n.locale, v => localize(v));
     @apply tw-border-t tw-border-neutral-700;
 }
 
-.flatpickr-calendar.arrowBottom:before, .flatpickr-calendar.arrowTop:before, .flatpickr-calendar.arrowBottom:after, .flatpickr-calendar.arrowTop:after {
+.flatpickr-calendar.arrowBottom:before,
+.flatpickr-calendar.arrowTop:before,
+.flatpickr-calendar.arrowBottom:after,
+.flatpickr-calendar.arrowTop:after {
     @apply !tw-hidden;
 }
 
-.flatpickr-day.selected.startRange + .endRange:not(:nth-child(7n+1)), .flatpickr-day.startRange.startRange + .endRange:not(:nth-child(7n+1)) {
+.flatpickr-day.selected.startRange + .endRange:not(:nth-child(7n + 1)),
+.flatpickr-day.startRange.startRange + .endRange:not(:nth-child(7n + 1)) {
     @apply !tw-shadow-calendar;
 }
 

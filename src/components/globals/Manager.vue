@@ -1,5 +1,8 @@
 <template>
-    <div class="tw-flex tw-flex-row tw-w-full tw-justify-between tw-items-center tw-mb-4" v-if="hasPermission('readwrite_entry_layout')">
+    <div
+        class="tw-flex tw-flex-row tw-w-full tw-justify-between tw-items-center tw-mb-4"
+        v-if="hasPermission('readwrite_entry_layout')"
+    >
         <div class="tw-flex tw-flex-row tw-items-center">
             <v-select
                 v-model="selectedAction"
@@ -16,20 +19,30 @@
             ></v-select>
 
             <v-btn
-                :class="{'tw-invisible tw-opacity-0': selectedAction === null, 'tw-opacity-100': selectedAction !== null}"
+                :class="{
+                    'tw-invisible tw-opacity-0': selectedAction === null,
+                    'tw-opacity-100': selectedAction !== null,
+                }"
                 class="!tw-hidden md:!tw-block tw-ml-2 tw-transition-opacity tw-duration-300"
                 color="primary"
                 size="small"
                 icon
+                :disabled="!selectedItems.length"
                 @click.prevent="performAction"
             >
-                <v-icon icon="mdi-chevron-right"/>
+                <v-icon icon="mdi-chevron-right" />
             </v-btn>
-            <v-progress-circular indeterminate size="x-small" width="2" class="tw-ml-2" :class="{'tw-invisible': !applyingAction}"/>
+            <v-progress-circular
+                indeterminate
+                size="x-small"
+                width="2"
+                class="tw-ml-2"
+                :class="{ 'tw-invisible': !applyingAction }"
+            />
         </div>
 
         <div class="tw-flex tw-flex-row tw-flex-grow tw-justify-end">
-            <slot name="extra"/>
+            <slot name="extra" />
         </div>
     </div>
     <div v-else></div>
@@ -38,10 +51,20 @@
         <thead>
             <tr>
                 <th class="!tw-min-w-[4px] !tw-max-w-[4px]">
-                    <v-checkbox @change="handleCheckAll" color="primary" value="checkall" hide-details></v-checkbox>
+                    <v-checkbox
+                        @change="handleCheckAll"
+                        color="primary"
+                        value="checkall"
+                        hide-details
+                    ></v-checkbox>
                 </th>
                 <template v-for="(column, idx) of columns">
-                    <th :class="{'lg:tw-w-[35%]': idx === 0, '!tw-text-center': column.centered}">
+                    <th
+                        :class="{
+                            'lg:tw-w-[35%]': idx === 0,
+                            '!tw-text-center': column.centered,
+                        }"
+                    >
                         {{ column.label }}
                     </th>
                 </template>
@@ -50,12 +73,19 @@
         <tbody>
             <tr v-for="(item, idx) in list" :key="item._id">
                 <td class="!tw-min-w-[4px] !tw-max-w-[4px]">
-                    <v-checkbox v-model="selectedItems" color="primary" :value="item" hide-details></v-checkbox>
+                    <v-checkbox
+                        v-model="selectedItems"
+                        color="primary"
+                        :value="item"
+                        hide-details
+                    />
                 </td>
-                <slot :row="item" :index="idx"/>
+                <slot :row="item" :index="idx" />
             </tr>
             <tr v-if="list.length === 0">
-                <td colspan="6" class="tw-text-center tw-font-medium">{{ no_items }}</td>
+                <td colspan="6" class="tw-text-center tw-font-medium">
+                    {{ no_items }}
+                </td>
             </tr>
         </tbody>
     </v-table>
@@ -74,20 +104,20 @@
             :title="$t('users.confirm')"
             :loading="isDeleting"
             :message="deleteMessage"
-            @cancel="showDeleteConfirm=false"
+            @cancel="showDeleteConfirm = false"
             @accept="confirmDelete"
         />
     </Transition>
 </template>
 
 <script setup>
-import { hasPermission } from '@/libs/tools';
-import { format } from 'date-fns';
-import DeleteConfirmation from '@/components/globals/DeleteConfirmation.vue';
-import { computed, ref } from 'vue';
-import { Entries } from '@/libs/graphql/lib/entries';
-import { useI18n } from 'vue-i18n';
-import { useAppStore } from '@/store/app';
+import { hasPermission } from "@/libs/tools";
+import { format } from "date-fns";
+import DeleteConfirmation from "@/components/globals/DeleteConfirmation.vue";
+import { computed, ref } from "vue";
+import { Entries } from "@/libs/graphql/lib/entries";
+import { useI18n } from "vue-i18n";
+import { useAppStore } from "@/store/app";
 
 const i18n = useI18n();
 const store = useAppStore();
@@ -95,47 +125,47 @@ const store = useAppStore();
 const props = defineProps({
     list: {
         type: Array,
-        default: []
+        default: [],
     },
     active: {
         type: Boolean,
-        default: false
+        default: false,
     },
     no_items: {
         type: String,
-        default: ''
+        default: "",
     },
     deleteCallback: {
         type: Function,
-        default: () => {}
+        default: () => {},
     },
     restoreCallback: {
         type: Function,
-        default: () => {}
+        default: () => {},
     },
     actionCallback: {
         type: Function,
-        default: (action) => {}
+        default: (action) => {},
     },
     columns: {
         type: Array,
-        default: []
+        default: [],
     },
     deleteMessage: {
         type: String,
-        default: ''
+        default: "",
     },
     index: {
         type: Number,
-        default: 0
+        default: 0,
     },
     overrideActions: {
         type: Array,
-        default: []
-    }
+        default: [],
+    },
 });
 
-const emitter = defineEmits(['confirmDelete']);
+const emitter = defineEmits(["confirmDelete"]);
 
 const applyingAction = ref(false);
 const showDeleteConfirm = ref(false);
@@ -143,39 +173,48 @@ const isDeleting = ref(false);
 const selectedItems = ref([]);
 const selectedAction = ref(null);
 
-const availableActions = computed(() =>
-{
+const availableActions = computed(() => {
     if (props.overrideActions.length > 0) {
         return props.overrideActions;
     }
 
-    if (props.active) return [{value: 'delete', title: props.active ? i18n.t('system.trash') : i18n.t('system.delete')}];
+    if (props.active)
+        return [
+            {
+                value: "delete",
+                title: props.active
+                    ? i18n.t("system.trash")
+                    : i18n.t("system.delete"),
+            },
+        ];
 
     return [
-        {value: 'restore', title: i18n.t('system.restore')},
-        {value: 'delete', title: props.active ? i18n.t('system.trash') : i18n.t('system.delete')}
+        { value: "restore", title: i18n.t("system.restore") },
+        {
+            value: "delete",
+            title: props.active
+                ? i18n.t("system.trash")
+                : i18n.t("system.delete"),
+        },
     ];
 });
 
-const handleCheckAll = (e) =>
-{
+const handleCheckAll = (e) => {
     if (e.target.checked) selectedItems.value = props.list;
     if (!e.target.checked) selectedItems.value = [];
-}
+};
 
-const performAction = async () =>
-{
-    if (selectedAction.value === 'delete') {
+const performAction = async () => {
+    if (selectedAction.value === "delete") {
         showDeleteConfirm.value = true;
-    } else if (selectedAction.value === 'restore') {
+    } else if (selectedAction.value === "restore") {
         await confirmRestore();
     } else {
-        props.actionCallback(selectedAction.value);
+        props.actionCallback(selectedAction.value, selectedItems.value);
     }
-}
+};
 
-const confirmDelete = async () =>
-{
+const confirmDelete = async () => {
     if (applyingAction.value) return;
 
     isDeleting.value = true;
@@ -187,14 +226,13 @@ const confirmDelete = async () =>
         list.push(field._id);
     }
 
-    await props.deleteCallback({list: list, active: props.active});
+    await props.deleteCallback({ list: list, active: props.active });
     isDeleting.value = false;
     showDeleteConfirm.value = false;
     applyingAction.value = false;
-}
+};
 
-const confirmRestore = async () =>
-{
+const confirmRestore = async () => {
     if (applyingAction.value) return;
 
     isDeleting.value = true;
@@ -206,15 +244,14 @@ const confirmRestore = async () =>
         list.push(field._id);
     }
 
-    await props.restoreCallback({list: list, active: props.active});
+    await props.restoreCallback({ list: list, active: props.active });
     isDeleting.value = false;
     applyingAction.value = false;
-}
+};
 </script>
-
 
 <style lang="postcss">
 .utable tr:hover td {
-    background-color: rgba(229, 231, 235, 0.20);
+    background-color: rgba(229, 231, 235, 0.2);
 }
 </style>

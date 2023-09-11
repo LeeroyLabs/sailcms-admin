@@ -1,25 +1,27 @@
 <template>
-    <div v-if="isReady">
-        <Teleport to="#actions">
-            <v-btn
-                v-if="hasPermission('readwrite_task')"
-                color="primary"
-                @click="$router.push({ name: 'Tasks' })"
+    <div
+        v-if="isReady"
+        class="tw-w-full md:tw-w-10/12 lg:tw-w-8/12 xl:tw-w-8/12 2xl:tw-w-7/12"
+    >
+        <div class="tw-flex tw-flex-col tw-gap-4">
+            <div
+                class="tw-flex tw-flex-col sm:tw-flex-row sm:tw-justify-between sm:tw-items-center"
             >
-                {{ $t("task.back") }}
-            </v-btn>
-        </Teleport>
-
-        <div class="tw-flex tw-flex-col tw-gap-8">
-            <div class="tw-flex tw-justify-between">
                 <div>
-                    <h3 class="tw-font-medium tw-text-xl">{{ task.name }}</h3>
-                    <span>ID: {{ task._id }}</span>
-                    <p>Priority: {{ task.priority }}</p>
+                    <h3 class="tw-font-medium tw-text-xl tw-mb-2">
+                        {{
+                            actionMode === CREATE
+                                ? $t("task.create_task")
+                                : $t("task.update_task")
+                        }}
+                    </h3>
+                    <span v-if="actionMode === UPDATE">ID: {{ task._id }}</span>
                 </div>
 
-                <div>
-                    <div class="tw-flex tw-gap-2 tw-justify-end">
+                <div v-if="actionMode === UPDATE" class="tw-flex tw-flex-col">
+                    <div
+                        class="tw-order-2 sm:tw-order-1 tw-flex tw-gap-2 tw-justify-end tw-mt-2 sm:tw-mt-0 sm:tw-mb-2"
+                    >
                         <v-btn
                             @click.prevent="
                                 handleAction(RETRY, $t('task.retry_msg'))
@@ -28,13 +30,7 @@
                             rounded
                             variant="text"
                             icon="mdi-reload"
-                        />
-                        <v-btn
-                            @click.prevent="selectedAction = RESCHEDULE"
-                            density="comfortable"
-                            rounded
-                            variant="text"
-                            icon="mdi-calendar-month-outline"
+                            class="!tw-rounded-full"
                         />
                         <v-btn
                             @click.prevent="
@@ -45,7 +41,7 @@
                             variant="tonal"
                             rounded
                             icon="mdi-stop-circle-outline"
-                            class="tw-text-red-600"
+                            class="tw-text-red-600 !tw-rounded-full"
                         />
                         <v-btn
                             @click.prevent="
@@ -56,34 +52,164 @@
                             variant="tonal"
                             rounded
                             icon="mdi-trash-can-outline"
-                            class="tw-text-red-600"
+                            class="tw-text-red-600 !tw-rounded-full"
                         />
                     </div>
-                    <p>
+                    <p
+                        v-if="actionMode === UPDATE"
+                        class="tw-order-1 sm:tw-order-2"
+                    >
                         {{
                             task.executed
-                                ? `Started at: ${task.executed_at}`
-                                : `Scheduled at: ${new Date(
-                                      task.scheduled_at * 1000
-                                  ).toLocaleDateString("en-US")}`
+                                ? `${$t("task.started_at")}: `
+                                : `${$t("task.scheduled_at")}: `
                         }}
+
+                        {{ format(task.scheduled_at * 1000, "yyyy/MM/dd") }}
                     </p>
                 </div>
             </div>
 
-            <div>
-                <h4 class="tw-font-medium tw-text-sm tw-mb-2">Config</h4>
+            <v-form
+                ref="form"
+                class="tw-flex tw-flex-col tw-gap-2 mb-6"
+                @submit.prevent
+                v-model="isFormValid"
+            >
                 <div
-                    class="task-config tw-h-[200px] tw-bg-[rgb(33,33,33)] tw-overflow-y-auto"
-                ></div>
-            </div>
+                    class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-x-4 tw-gap-y-4 md:tw-gap-y-0"
+                >
+                    <v-text-field
+                        color="primary"
+                        :label="$t('task.form.name')"
+                        variant="outlined"
+                        type="text"
+                        validate-on="blur"
+                        density="comfortable"
+                        :rules="[rules.required]"
+                        v-model="taskInput.name"
+                    />
 
-            <div>
-                <h4 class="tw-font-medium tw-text-sm tw-mb-2">Logs</h4>
+                    <DateTime
+                        :id="'date_time'"
+                        :value="taskInput.date.date ? taskInput.date : ''"
+                        :placeholder="$t('task.select_date')"
+                        :config="{
+                            type: 'text',
+                            validation: '',
+                            required: false,
+                            repeatable: false,
+                            config: {
+                                date_format: 'Y-m-d',
+                                time_format: 'H:i',
+                                minDate: Date.now(),
+                            },
+                        }"
+                        :minuteIncrement="15"
+                        :index="0"
+                        :showTime="true"
+                        :useTimestamp="true"
+                        :error="errorDateTime"
+                        @change="(event) => (taskInput.date = event)"
+                    />
+                </div>
+
                 <div
-                    class="task-config tw-h-[200px] tw-bg-[rgb(33,33,33)] tw-overflow-y-auto"
-                ></div>
-            </div>
+                    class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-x-4 tw-gap-y-4 md:tw-gap-y-0"
+                >
+                    <v-select
+                        :label="$t('task.form.action')"
+                        :items="['test:task-command']"
+                        variant="outlined"
+                        density="comfortable"
+                        single-line
+                        :rules="[rules.required]"
+                        v-model="taskInput.action"
+                    />
+                    <v-select
+                        :label="$t('task.form.priority')"
+                        :items="taskPriority"
+                        item-title="label"
+                        item-value="value"
+                        variant="outlined"
+                        density="comfortable"
+                        single-line
+                        :rules="[rules.required]"
+                        v-model="taskInput.priority"
+                    />
+                </div>
+
+                <div>
+                    <div
+                        class="tw-h-[150px]"
+                        :class="{
+                            'tw-text-gray-200': $vuetify.theme.name === 'light',
+                        }"
+                    >
+                        <v-textarea
+                            type="text"
+                            :label="$t('task.form.settings')"
+                            variant="solo"
+                            :rules="[rules.required]"
+                            validate-on="blur"
+                            bg-color="#212121"
+                            clearable
+                            v-model="taskInput.settings"
+                        />
+                    </div>
+                </div>
+
+                <div
+                    v-if="actionMode === UPDATE && task.logs"
+                    class="tw-mt-[22px]"
+                >
+                    <h4 class="tw-font-medium tw-text-sm tw-mb-2">Logs</h4>
+                    <div
+                        class="tw-h-[150px] tw-overflow-y-auto tw-p-5 tw-bg-darkbg tw-rounded"
+                        :class="{
+                            'tw-text-gray-200': $vuetify.theme.name === 'light',
+                        }"
+                    >
+                        <ul>
+                            <li
+                                v-for="log in Object.values(task.logs)"
+                                :key="log"
+                            >
+                                {{ log }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <v-checkbox
+                    label="Retriable"
+                    hide-details
+                    v-model="taskInput.retriable"
+                />
+
+                <div
+                    class="tw-self-center sm:tw-self-end tw-gap-x-3 tw-flex tw-flex-col sm:tw-flex-row tw-gap-2"
+                >
+                    <v-btn
+                        type="submit"
+                        :loading="isLoading"
+                        color="primary"
+                        @click="
+                            actionMode === CREATE ? createTask() : updateTask()
+                        "
+                    >
+                        {{
+                            actionMode === CREATE
+                                ? $t("task.save")
+                                : $t("task.update")
+                        }}
+                    </v-btn>
+
+                    <v-btn flat @click="showModal = true" color="text">
+                        {{ $t("task.cancel") }}
+                    </v-btn>
+                </div>
+            </v-form>
         </div>
 
         <Transition>
@@ -94,49 +220,68 @@
                 :title="$t('task.confirm')"
                 :loading="applyingAction"
                 :message="modalMessage"
-                @cancel="showModal = false"
+                @cancel="handleCancel"
                 @accept="applyAction"
             />
         </Transition>
-
-        <Transition>
-            <DatePicker
-                :show="selectedAction === RESCHEDULE"
-                @cancel="selectedAction = ''"
-                @selected="handleChangeTaskSchedule($event)"
-            />
-        </Transition>
     </div>
-
-    <Loader v-else />
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRouter, useRoute } from "vue-router";
 
-import { usePage } from "@/libs/page";
 import { Tasks } from "@/libs/graphql/lib/tasks";
-import { hasPermission } from "@/libs/tools";
+import { format } from "date-fns";
 
-import Loader from "@/components/globals/Loader.vue";
 import DeleteConfirmation from "@/components/globals/DeleteConfirmation.vue";
-import DatePicker from "@/components/globals/task/DatePicker.vue";
+import DateTime from "@/components/entries/entry/fields/singles/Date.vue";
 
-const page = usePage();
-const route = useRoute();
+const i18n = useI18n();
+const { t } = i18n;
 const router = useRouter();
+const route = useRoute();
 
-const isReady = ref(false);
+// Form
+const form = ref(null);
+const isFormValid = ref(false);
+const errorDateTime = ref(false);
+const rules = {
+    required: (value) => {
+        if (value) return true;
+        return i18n.t("task.errors.required");
+    },
+};
+
 const task = ref(null);
+const taskInput = ref({
+    name: "",
+    action: null,
+    priority: null,
+    retriable: false,
+    date: { date: "", time: "" },
+    settings: "",
+});
+const taskPriority = [
+    { label: t("task.form.priority_low"), value: 1 },
+    { label: t("task.form.priority_normal"), value: 2 },
+    { label: t("task.form.priority_high"), value: 3 },
+    { label: t("task.form.priority_urgent"), value: 4 },
+];
+
+const actionMode = ref("");
 const selectedAction = ref("");
 const applyingAction = ref(false);
+const isReady = ref(false);
+const isLoading = ref(false);
 const showModal = ref(false);
-const modalMessage = ref("");
+const modalMessage = ref(t("task.leave_msg"));
 
 // Constants
+const CREATE = "create";
+const UPDATE = "update";
 const RETRY = "retry";
-const RESCHEDULE = "reschedule";
 const STOP = "stop";
 const CANCEL = "cancel";
 
@@ -144,8 +289,56 @@ const loadTask = async () => {
     const responseLoadTask = await Tasks.task(route.params.id);
     if (responseLoadTask) {
         task.value = responseLoadTask;
+        taskInput.value.name = task.value.name;
+        taskInput.value.action = task.value.action;
+        taskInput.value.priority = task.value.priority;
+        taskInput.value.retriable = task.value.retriable;
+        taskInput.value.settings = JSON.parse(task.value.settings).settings;
+        taskInput.value.date = {
+            date: format(task.value.scheduled_at * 1000, "Y-MM-d"),
+            time: format(task.value.scheduled_at * 1000, "H:ii"),
+        };
         isReady.value = true;
-        console.log("TASK", task.value);
+    }
+};
+
+const createTask = async () => {
+    let status = await form.value.validate();
+    if (!taskInput.value.date.time) {
+        status = false;
+        errorDateTime.value = true;
+    }
+    if (status) {
+        const responseCreateTask = await Tasks.createTask(
+            taskInput.value.name,
+            taskInput.value.action,
+            taskInput.value.priority,
+            taskInput.value.retriable,
+            Math.round(parseInt(taskInput.value.date.time, 10) / 1000000),
+            JSON.stringify({ settings: taskInput.value.settings })
+        );
+        if (responseCreateTask) {
+            router.push({ name: "Tasks" });
+        }
+    }
+};
+
+const updateTask = async () => {
+    const status = await form.value.validate();
+
+    if (status && taskInput.value.date.time) {
+        const responseUpdateTask = await Tasks.updateTask(
+            task.value._id,
+            taskInput.value.name,
+            taskInput.value.action,
+            taskInput.value.priority,
+            taskInput.value.retriable,
+            Math.round(parseInt(taskInput.value.date.time, 10) / 1000000),
+            taskInput.value.settings
+        );
+        if (responseUpdateTask) {
+            router.push({ name: "Tasks" });
+        }
     }
 };
 
@@ -158,49 +351,25 @@ const handleAction = (action, message) => {
 
 const handleRetryTask = async () => {
     applyingAction.value = true;
-    const responseRetryTask = await Tasks.retryTask(task.value._id);
+    const responseRetryTask = await Tasks.retryTask([task.value._id]);
     if (responseRetryTask) {
-        showModal.value = false;
-        selectedAction.value = "";
-        modalMessage.value = "";
-        applyingAction.value = false;
-    }
-};
-
-const handleChangeTaskSchedule = async (newDate) => {
-    applyingAction.value = true;
-    const responseChangeTaskSchedule = await Tasks.changeTaskSchedule(
-        task.value._id,
-        newDate / 1000
-    );
-    if (responseChangeTaskSchedule) {
-        showModal.value = false;
-        selectedAction.value = "";
-        modalMessage.value = "";
-        loadTask();
-        applyingAction.value = false;
+        handleCancel();
     }
 };
 
 const handleStopTask = async () => {
     applyingAction.value = true;
-    const responseStopTask = await Tasks.stopTask(task.value._id);
+    const responseStopTask = await Tasks.stopTask([+task.value.pid]);
     if (responseStopTask) {
-        showModal.value = false;
-        selectedAction.value = "";
-        modalMessage.value = "";
-        applyingAction.value = false;
+        handleCancel();
     }
 };
 
 const handleCancelTask = async () => {
     applyingAction.value = true;
-    const responseCancelTask = await Tasks.cancelTask(task.value._id);
+    const responseCancelTask = await Tasks.cancelTask([task.value._id]);
     if (responseCancelTask) {
-        showModal.value = false;
-        selectedAction.value = "";
-        modalMessage.value = "";
-        applyingAction.value = false;
+        handleCancel();
         router.push({ name: "Tasks" });
     }
 };
@@ -216,16 +385,31 @@ const applyAction = async () => {
         case CANCEL:
             await handleCancelTask();
             break;
+        default:
+            router.push({ name: "Tasks" });
     }
 };
 
-// Setup page data
-const setupPage = (name = "") => {
-    page.setPageTitle(name);
+const handleCancel = () => {
+    showModal.value = false;
+    selectedAction.value = "";
+    modalMessage.value = t("task.leave_msg");
+    applyingAction.value = false;
 };
 
-setupPage();
-loadTask();
+watch(taskInput.value, (value) => {
+    if (value.date.time) {
+        errorDateTime.value = false;
+    }
+});
+
+if (route.params.id === "add") {
+    actionMode.value = CREATE;
+    isReady.value = true;
+} else {
+    actionMode.value = UPDATE;
+    loadTask();
+}
 </script>
 
 <style lang="scss" scoped></style>
