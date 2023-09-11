@@ -259,13 +259,33 @@ export class Misc
 
         let result = await client.query(gql`${query}`, {});
 
-        console.log(result.data);
-
         if (result.data) {
             return result.data.monitoringSample as MonitoringSample;
         }
 
         return null;
+    }
+
+    /**
+     *
+     * Get a ranged sample
+     *
+     * @param start
+     * @param end
+     *
+     */
+    public static async getRangeSample(start: number, end: number): Promise<MonitoringSample[]>
+    {
+        const client = new Client();
+        let query = MiscQueries.getRangeSample;
+
+        let result = await client.query(gql`${query}`, {start: start, end: end});
+
+        if (result.data) {
+            return result.data.getRangeSample as MonitoringSample[];
+        }
+
+        return [];
     }
 
     private static parseLocales(locales: string[]): string
