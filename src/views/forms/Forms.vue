@@ -13,8 +13,7 @@
             :active="0"
             :list="formsList"
             :overrideActions="actions"
-            :actionCallback="applyAction"
-            :deleteCallback="deleteEntries"
+            :deleteCallback="handleDeleteForm"
             :no_items="$t('forms.no_forms')"
             :columns="columns"
             :index="0"
@@ -93,14 +92,17 @@ const getForms = async () => {
 };
 
 // Actions
-const handleDeleteForm = async (forms) => {
-    const responseDeleteForm = await Forms.deleteForm(forms.map((f) => f._id));
+const handleDeleteForm = async (event) => {
+    console.log("EVENT", event);
+    const responseDeleteForm = await Forms.deleteForm(event.list);
     if (responseDeleteForm) {
         applyingAction.value = false;
+        getForms();
     }
 };
 
 const applyAction = async (action, items) => {
+    console.log("ITEMS", items);
     switch (action) {
         case DELETE:
             return handleDeleteForm(items);

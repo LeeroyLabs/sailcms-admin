@@ -1,6 +1,8 @@
 import { Client } from "./client";
 import FormsQueries from "../queries/forms";
 import gql from "graphql-tag";
+import { SortingOrder } from "@/libs/graphql/types/general";
+import { FormDate } from "@/libs/graphql/types/forms";
 
 export class Forms {
     /**
@@ -56,11 +58,52 @@ export class Forms {
 
     /**
      *
+     * getFormEntries
+     *
+     *
+     */
+    public static async getFormEntries(
+        form_handle: string,
+        page: number,
+        limit: number,
+        dateSearch: FormDate,
+        search: string,
+        sort: string,
+        order: SortingOrder
+    ) {
+        const client = new Client();
+        const query = FormsQueries.getFormEntries;
+
+        const result = await client.query(
+            gql`
+                ${query},
+            `,
+            {
+                form_handle,
+                page,
+                limit,
+                dateSearch,
+                search,
+                sort,
+                order,
+            },
+            false
+        );
+
+        if (result.data) {
+            return result.data.formEntries;
+        }
+
+        return null;
+    }
+
+    /**
+     *
      * deleteForm
      *
      *
      */
-    public static async deleteForm(id: string) {
+    public static async deleteForm(ids: string[]) {
         const client = new Client();
         const mutation = FormsQueries.deleteForm;
 
@@ -68,7 +111,7 @@ export class Forms {
             gql`
                 ${mutation},
             `,
-            { id }
+            { ids }
         );
 
         if (result.data) {
@@ -80,27 +123,34 @@ export class Forms {
 
     /**
      *
-     * createFormLayout
+     * createForm
      *
      *
      */
-    public static async createFormLayout(
+    public static async createForm(
+        handle: string,
         title: string,
-        schema: any,
-        slug: string
+        fields: string[],
+        settings?: {
+            title: string;
+            to: string;
+            cc: string[];
+            bcc: string[];
+            success_email_handle: string;
+        }
     ) {
         const client = new Client();
-        const mutation = FormsQueries.createFormLayout;
+        const mutation = FormsQueries.createForm;
 
         const result = await client.mutation(
             gql`
                 ${mutation},
             `,
-            { titles, schema, slug }
+            { handle, title, fields, settings }
         );
 
         if (result.data) {
-            return result.data.createFormLayout;
+            return result.data.createForm;
         }
 
         return null;

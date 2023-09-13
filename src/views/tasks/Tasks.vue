@@ -22,7 +22,6 @@
                 :list="tasks.list"
                 :overrideActions="actions"
                 :actionCallback="applyAction"
-                :deleteCallback="deleteEntries"
                 :no_items="$t('tasks.no_tasks')"
                 :columns="columns"
                 :index="0"

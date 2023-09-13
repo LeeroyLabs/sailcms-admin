@@ -31,14 +31,6 @@
                 <div
                     class="tw-flex-grow tw-flex tw-flex-row tw-justify-end tw-gap-x-2"
                 >
-                    <button @click.prevent="openFieldSettings(index)">
-                        <v-icon
-                            icon="mdi-cog"
-                            size="small"
-                            class="hover:tw-text-primary"
-                        />
-                    </button>
-
                     <button @click.prevent="removeField(element)">
                         <v-icon
                             icon="mdi-trash-can-outline"
@@ -52,15 +44,6 @@
                             >{{ $t("layout.delete_field") }}</v-tooltip
                         >
                     </button>
-
-                    <Transition>
-                        <FieldSettings
-                            v-if="showFieldSettings"
-                            :field="selectedFields[fieldSettingsCurrentField]"
-                            @close="showFieldSettings = false"
-                            @change="(e) => handleFieldChange(e)"
-                        />
-                    </Transition>
                 </div>
             </div>
             <div class="tw-relative tw-h-full">
@@ -179,7 +162,6 @@ import { deburr, lowerCase } from "lodash";
 import { onClickOutside } from "@vueuse/core";
 
 import ArrowUpBox from "@/components/globals/ArrowUpBox.vue";
-import FieldSettings from "@/components/entries/layout/FieldSettings.vue";
 
 const emitter = defineEmits(["update:usedFields"]);
 
@@ -200,8 +182,6 @@ const props = defineProps({
 
 const selectedFields = ref(props.usedFields);
 const searchFilter = ref("");
-const showFieldSettings = ref(false);
-const fieldSettingsCurrentField = ref(-1);
 
 const showAddBox = ref(false);
 const addbox = ref(null);
@@ -228,16 +208,6 @@ const isUsed = (key) => {
     let field = props.fields.find((f) => f.key === key);
     if (field) return field.used;
     return false;
-};
-
-const openFieldSettings = (index) => {
-    showFieldSettings.value = true;
-    fieldSettingsCurrentField.value = index;
-};
-
-const handleFieldChange = (value) => {
-    showFieldSettings.value = false;
-    selectedFields.value[fieldSettingsCurrentField.value].width = value;
 };
 
 const handleSorting = (event) => {

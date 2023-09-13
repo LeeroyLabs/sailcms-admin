@@ -880,4 +880,4 @@ forms:
 form:
   save: Enregistrer
   form_title: Titre
-  form_slug: Identifiant
+  form_handle: Identifiant
