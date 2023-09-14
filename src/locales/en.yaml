@@ -882,5 +882,6 @@ forms:
 
 form:
   save: Save
+  update: Update
   form_title: Title
   form_handle: Handle

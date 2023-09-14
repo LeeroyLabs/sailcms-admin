@@ -1,14 +1,14 @@
 <template>
     <div :id="tab.id" class="tw-relative">
         <div
+            ref="sortableContainer"
             class="sortable field-list tw-flex tw-flex-col tw-gap-3 sorting-parent tw-min-h-full tw-h-full"
             @end="handleSorting"
         >
             <div
                 v-for="(element, index) in selectedFields"
+                :key="index"
                 :id="element.key"
-                :data-width="element.width"
-                :data-fid="'field-' + element.key"
                 class="tw-border tw-py-2 tw-px-2 tw-flex tw-flex-row tw-items-center"
                 :class="{
                     'tw-bg-white hover:tw-bg-gray-100 tw-border-zinc-400':
@@ -180,6 +180,8 @@ const props = defineProps({
     },
 });
 
+const sortableContainer = ref(null);
+
 const selectedFields = ref(props.usedFields);
 const searchFilter = ref("");
 
@@ -191,13 +193,11 @@ onClickOutside(addbox, (e) => (showAddBox.value = false));
 
 const addToTab = (element) => {
     offsetBox.value = false;
-    element.used = true;
     const fields = [...selectedFields.value, element];
     emitter("update:usedFields", fields);
 };
 
 const removeField = (element) => {
-    element.used = false;
     selectedFields.value = selectedFields.value.filter(
         (f) => f.key !== element.key
     );
@@ -205,19 +205,30 @@ const removeField = (element) => {
 };
 
 const isUsed = (key) => {
-    let field = props.fields.find((f) => f.key === key);
-    if (field) return field.used;
+    const field = selectedFields.value.find((f) => f.key === key);
+    if (field) return true;
     return false;
 };
 
-const handleSorting = (event) => {
-    console.log("SORTING", event);
+const handleSorting = () => {
+    let fields = [];
+
+    for (const el of sortableContainer.value.childNodes) {
+        if (el.id !== undefined && el.id !== "" && el instanceof HTMLElement) {
+            fields = [
+                ...fields,
+                selectedFields.value.find((f) => f.key === el.id),
+            ];
+        }
+    }
+    emitter("update:usedFields", fields);
 };
 
 watch(
     () => props.usedFields,
     (newValue) => {
         selectedFields.value = newValue;
+        console.log("WATCH", selectedFields.value);
     },
     {
         deep: true,

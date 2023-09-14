@@ -2,8 +2,10 @@
     <div v-if="isReady">
         <BackButton :url="{ name: 'Forms' }" />
         <Teleport to="#actions">
-            <v-btn color="primary" @click="createForm">
-                {{ $t("form.save") }}
+            <v-btn color="primary" @click="applyAction">
+                {{
+                    actionMode === CREATE ? $t("form.save") : $t("form.update")
+                }}
             </v-btn>
         </Teleport>
 
@@ -96,11 +98,12 @@
                             >
                                 <v-expansion-panels>
                                     <v-expansion-panel
-                                        v-for="i in 3"
-                                        :key="i"
-                                        title="Item"
+                                        v-for="entry in formEntries"
+                                        :key="entry"
+                                        :title="entry.title"
                                         text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                                    />
+                                    >
+                                    </v-expansion-panel>
                                 </v-expansion-panels>
                             </div>
                         </div>
@@ -122,10 +125,12 @@
             </v-container>
         </section>
     </div>
+
+    <Loader v-else />
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter, useRoute } from "vue-router";
 
@@ -138,6 +143,7 @@ import { deburr, kebabCase } from "lodash";
 import TabBar from "@/components/globals/Tab.vue";
 import BackButton from "@/components/globals/BackButton.vue";
 import FieldSelector from "@/components/entries/entry/fields/FieldSelector.vue";
+import Loader from "@/components/globals/Loader.vue";
 
 const i18n = useI18n();
 const isReady = ref(false);
@@ -147,6 +153,7 @@ const route = useRoute();
 // Form + validations
 const form = ref(null);
 const formData = ref({
+    id: "",
     title: "",
     fields: [],
     action: "",
@@ -158,13 +165,14 @@ const rules = {
     required: (value) => !!value || i18n.t("user.errors.required"),
 };
 
+const fields = ref([]);
+const usedFields = ref([]);
+
+const tab = ref(0);
 const actionMode = ref("");
 const showAddBox = ref(false);
 const addbox = ref(null);
-
-const fields = ref([]);
-const usedFields = ref([]);
-const tab = ref(0);
+const pagination = ref();
 
 // Constants
 const CREATE = "create";
@@ -172,31 +180,18 @@ const UPDATE = "update";
 
 const loadFields = async () => {
     fields.value = await Entries.fields(SailCMS.getLocales());
-
-    fields.value = fields.value.map((f) => {
-        return {
-            ...f,
-            used: false,
-        };
-    });
-
-    isReady.value = true;
 };
 
-const createForm = async () => {
-    const status = await form.value.validate();
-    if (!status.valid) return;
-
-    const fields = usedFields.value.map((field) => field.key);
-    const response = await Forms.createForm(
-        formHandle.value,
-        formData.value.title,
-        fields,
-        formData.value.settings
-    );
-    if (response) {
-        console.log("RESPONSE", response);
-        router.push({ name: "Forms" });
+const getForm = async (handle) => {
+    const responseGetForm = await Forms.getForm(handle);
+    if (responseGetForm) {
+        formData.value.title = responseGetForm.title;
+        formData.value.id = responseGetForm._id;
+        usedFields.value = fields.value.filter((field) =>
+            responseGetForm.fields.includes(field.key)
+        );
+        getFormEntries();
+        isReady.value = true;
     }
 };
 
@@ -217,19 +212,82 @@ const getFormEntries = async () => {
         currentOrder.value
     );
     if (response) {
-        formEntries.value = response;
+        formEntries.value = response.list;
+        formEntries.value = formEntries.value.map((entry) => {
+            return {
+                ...entry,
+                content: entry.content.reduce((accumulator, currentItem) => {
+                    const groupKey = currentItem.key;
+                    accumulator[groupKey] = !accumulator[groupKey]
+                        ? {}
+                        : accumulator[groupKey];
+                    accumulator[groupKey] = currentItem.value;
+                    return accumulator;
+                }, {}),
+            };
+        });
+        pagination.value = response.pagination;
+        console.log("ENTRIES", formEntries.value);
     }
+};
+
+const createForm = async () => {
+    const status = await form.value.validate();
+    if (!status.valid) return;
+
+    const fields = usedFields.value.map((field) => field.key);
+    const response = await Forms.createForm(
+        formHandle.value,
+        formData.value.title,
+        fields,
+        formData.value.settings
+    );
+    if (response) {
+        router.push({ name: "Forms" });
+    }
+};
+
+const updateForm = async () => {
+    const status = await form.value.validate();
+    if (!status.valid) return;
+
+    const fields = usedFields.value.map((field) => field.key);
+    const response = await Forms.updateForm(
+        formData.value.id,
+        formHandle.value,
+        formData.value.title,
+        fields,
+        formData.value.settings
+    );
+    if (response) {
+        router.push({ name: "Forms" });
+    }
+};
+
+const applyAction = () => {
+    return actionMode.value === CREATE ? createForm() : updateForm();
 };
 
 onClickOutside(addbox, (e) => (showAddBox.value = false));
 
 if (route.params.id === "add") {
     actionMode.value = CREATE;
-    loadFields();
+    try {
+        loadFields().then((result) => {
+            isReady.value = true;
+        });
+    } catch (error) {
+        console.log(error);
+    }
 } else {
     actionMode.value = UPDATE;
-    loadFields();
-    getFormEntries();
+    try {
+        loadFields().then((result) => {
+            getForm(route.params.id);
+        });
+    } catch (error) {
+        console.log(error);
+    }
 }
 </script>
 

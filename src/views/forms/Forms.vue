@@ -27,7 +27,7 @@
                                 $vuetify.theme.name !== 'light',
                         }"
                         :to="{
-                            name: 'Task',
+                            name: 'Form',
                             params: { id: row._id },
                         }"
                     >
@@ -93,7 +93,6 @@ const getForms = async () => {
 
 // Actions
 const handleDeleteForm = async (event) => {
-    console.log("EVENT", event);
     const responseDeleteForm = await Forms.deleteForm(event.list);
     if (responseDeleteForm) {
         applyingAction.value = false;
@@ -101,15 +100,14 @@ const handleDeleteForm = async (event) => {
     }
 };
 
-const applyAction = async (action, items) => {
-    console.log("ITEMS", items);
+/* const applyAction = async (action, items) => {
     switch (action) {
         case DELETE:
             return handleDeleteForm(items);
         default:
             router.push({ name: "Forms" });
     }
-};
+}; */
 
 getForms();
 </script>

@@ -2,7 +2,7 @@ import { Client } from "./client";
 import FormsQueries from "../queries/forms";
 import gql from "graphql-tag";
 import { SortingOrder } from "@/libs/graphql/types/general";
-import { FormDate } from "@/libs/graphql/types/forms";
+import { FormDate, FormSettingsInput } from "@/libs/graphql/types/forms";
 
 export class Forms {
     /**
@@ -12,7 +12,7 @@ export class Forms {
      * @param handle
      *
      */
-    public static async getForm(handle: string) {
+    public static async getForm(id: string) {
         const client = new Client();
         const query = FormsQueries.getForm;
 
@@ -20,7 +20,7 @@ export class Forms {
             gql`
                 ${query},
             `,
-            { handle },
+            { id },
             false
         );
 
@@ -99,30 +99,6 @@ export class Forms {
 
     /**
      *
-     * deleteForm
-     *
-     *
-     */
-    public static async deleteForm(ids: string[]) {
-        const client = new Client();
-        const mutation = FormsQueries.deleteForm;
-
-        const result = await client.mutation(
-            gql`
-                ${mutation},
-            `,
-            { ids }
-        );
-
-        if (result.data) {
-            return result.data.deleteForm;
-        }
-
-        return null;
-    }
-
-    /**
-     *
      * createForm
      *
      *
@@ -131,13 +107,7 @@ export class Forms {
         handle: string,
         title: string,
         fields: string[],
-        settings?: {
-            title: string;
-            to: string;
-            cc: string[];
-            bcc: string[];
-            success_email_handle: string;
-        }
+        settings?: FormSettingsInput
     ) {
         const client = new Client();
         const mutation = FormsQueries.createForm;
@@ -151,6 +121,60 @@ export class Forms {
 
         if (result.data) {
             return result.data.createForm;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * updateForm
+     *
+     *
+     */
+    public static async updateForm(
+        id: string,
+        handle: string,
+        title: string,
+        fields: string[],
+        settings?: FormSettingsInput
+    ) {
+        const client = new Client();
+        const mutation = FormsQueries.updateForm;
+
+        const result = await client.mutation(
+            gql`
+                ${mutation},
+            `,
+            { id, handle, title, fields, settings }
+        );
+
+        if (result.data) {
+            return result.data.updateForm;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * deleteForm
+     *
+     *
+     */
+    public static async deleteForm(ids: string[]) {
+        const client = new Client();
+        const mutation = FormsQueries.deleteForm;
+
+        const result = await client.mutation(
+            gql`
+                    ${mutation},
+                `,
+            { ids }
+        );
+
+        if (result.data) {
+            return result.data.deleteForm;
         }
 
         return null;

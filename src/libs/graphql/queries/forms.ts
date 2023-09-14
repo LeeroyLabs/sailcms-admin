@@ -1,10 +1,11 @@
 export default {
     getForm: `
-        query form($handle: String) {
-            form(handle: $handle) {
+        query form($id: ID!) {
+            form(id: $id) {
                 _id
                 title
                 handle
+                fields
                 settings {
                     to
                     cc
@@ -20,6 +21,7 @@ export default {
                 _id
                 title
                 handle
+                fields
                 settings {
                     to
                     cc
@@ -32,17 +34,29 @@ export default {
     getFormEntries: `
         query formEntries($form_handle: String!, $page: Int!, $limit: Int!, $dateSearch: FormDate, $search: String, $sort: String, $order: SortingOrder) {
             formEntries(form_handle: $form_handle, page: $page, limit: $limit, dateSearch: $dateSearch, search: $search, sort: $sort, order: $order) {
-                form_handle
-                locale
-                title
-                template
-                dates {
-                    created
-                    updated
-                    deleted
+                pagination {
+                    current
+                    totalPages
+                    total
                 }
-                content
-                site_id
+                list {
+                    _id
+                    form_handle
+                    locale
+                    title
+                    template
+                    dates {
+                        created
+                        updated
+                        deleted
+                    }
+                    content {
+                        key
+                        value
+                    }
+                    site_id
+                    viewed
+                }
             }
         }
     `,
@@ -52,8 +66,8 @@ export default {
         }
     `,
     updateForm: `
-        mutation updateForm($id: ID!, $handle: String!, $title: String!, $form_layout_id: ID, $settings: FormSettingsInput) {
-            updateForm(id: $id, handle: $handle, title: $title, form_layout_id: $form_layout_id, settings: $settings)
+        mutation updateForm($id: ID!, $handle: String!, $title: String!, $fields: [String!]!, $settings: FormSettingsInput) {
+            updateForm(id: $id, handle: $handle, title: $title, fields: $fields, settings: $settings)
         }
     `,
     deleteForm: `

@@ -879,5 +879,6 @@ forms:
 
 form:
   save: Enregistrer
+  update: Modifier
   form_title: Titre
   form_handle: Identifiant
