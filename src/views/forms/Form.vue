@@ -15,7 +15,9 @@
             <v-container class="tw-m-0" :fluid="true">
                 <v-row>
                     <v-col cols="12" xs="12" md="9">
-                        <div class="tw-h-[80vh] tw-flex tw-flex-col">
+                        <div
+                            class="tw-h-[80vh] tw-max-h-[80vh] tw-overflow-auto tw-flex tw-flex-col"
+                        >
                             <TabBar
                                 :tabs="[
                                     $t('forms.tabs.structure'),
@@ -46,7 +48,7 @@
                                             color="primary"
                                             density="comfortable"
                                             :rules="[rules.required]"
-                                            class="tw-mb-2"
+                                            class="tw-mb-2 tw-w-2/4"
                                             :class="{
                                                 'tw-bg-white':
                                                     $vuetify.theme.name ===
@@ -65,8 +67,7 @@
                                             variant="outlined"
                                             color="primary"
                                             density="comfortable"
-                                            :rules="[rules.required]"
-                                            class="tw-mb-2"
+                                            class="tw-mb-2 tw-w-2/4"
                                             :class="{
                                                 'tw-bg-white':
                                                     $vuetify.theme.name ===
@@ -100,25 +101,64 @@
                                     <v-expansion-panel
                                         v-for="entry in formEntries"
                                         :key="entry"
-                                        :title="entry.title"
+                                        :title="
+                                            new Date(
+                                                entry.dates.created * 1000
+                                            ).toLocaleString('fr-FR', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric',
+                                                hour: 'numeric',
+                                            })
+                                        "
                                         text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                                     >
                                     </v-expansion-panel>
+                                    <span v-if="!formEntries.length">
+                                        {{ $t("form.no_forms") }}
+                                    </span>
                                 </v-expansion-panels>
                             </div>
                         </div>
                     </v-col>
 
                     <v-col cols="12" xs="12" md="3">
-                        <v-card class="tw-p-4">
+                        <v-card class="tw-max-h-[80vh] tw-overflow-auto tw-p-4">
                             <v-radio-group
-                                label="Radio group label"
                                 v-model="formData.action"
+                                label="ACTIONS"
+                                class="tw-pl-0"
                             >
                                 <v-radio label="Mail" value="1"></v-radio>
                                 <v-radio label="DB" value="2"></v-radio>
                                 <v-radio label="Both" value="3"></v-radio>
                             </v-radio-group>
+
+                            <v-form
+                                ref="formActions"
+                                autocomplete="off"
+                                v-if="
+                                    formData.action && formData.action !== '2'
+                                "
+                            >
+                                <v-text-field
+                                    v-for="action in formActionInputs"
+                                    v-model="action.value"
+                                    :label="action.label"
+                                    variant="outlined"
+                                    color="primary"
+                                    density="comfortable"
+                                    :hint="action.hint"
+                                    :rules="action.validations"
+                                    class="tw-mb-2"
+                                    :class="{
+                                        'tw-bg-white':
+                                            $vuetify.theme.name === 'light',
+                                        'tw-bg-darkbg':
+                                            $vuetify.theme.name === 'dark',
+                                    }"
+                                />
+                            </v-form>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -139,6 +179,8 @@ import { Forms } from "@/libs/graphql/lib/forms";
 import { SailCMS } from "@/libs/graphql";
 import { onClickOutside } from "@vueuse/core";
 import { deburr, kebabCase } from "lodash";
+import Joi from "joi";
+import { tlds } from "@hapi/tlds";
 
 import TabBar from "@/components/globals/Tab.vue";
 import BackButton from "@/components/globals/BackButton.vue";
@@ -146,12 +188,14 @@ import FieldSelector from "@/components/entries/entry/fields/FieldSelector.vue";
 import Loader from "@/components/globals/Loader.vue";
 
 const i18n = useI18n();
+const { t } = useI18n();
 const isReady = ref(false);
 const router = useRouter();
 const route = useRoute();
 
 // Form + validations
 const form = ref(null);
+const formActions = ref(null);
 const formData = ref({
     id: "",
     title: "",
@@ -161,9 +205,55 @@ const formData = ref({
 });
 const formHandle = computed(() => kebabCase(deburr(formData.value.title)));
 const formEntries = ref([]);
+
+const schema = Joi.object({
+    email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: tlds } }),
+});
 const rules = {
-    required: (value) => !!value || i18n.t("user.errors.required"),
+    required: (value) =>
+        (!!value && !!value.length) || t("user.errors.required"),
+    isEmail: (value) => {
+        if (!value || !value.length) return;
+        const emails = value.split(",").map((email) => email.trim());
+        const validatedEmails = emails.map((email) => {
+            const result = schema.validate({ email: email });
+            return !result.error ? true : false;
+        });
+        return !validatedEmails.includes(false) || t("user.errors.email");
+    },
 };
+const formActionInputs = ref({
+    to: {
+        label: `${t("form.settings.to")} *`,
+        value: "",
+        validations: [rules.required, rules.isEmail],
+        hint: "",
+    },
+    cc: {
+        label: `${t("form.settings.cc")} *`,
+        value: [],
+        validations: [rules.isEmail],
+        hint: t("form.settings.cc_hint"),
+    },
+    bcc: {
+        label: `${t("form.settings.bcc")} *`,
+        value: [],
+        validations: [rules.isEmail],
+        hint: t("form.settings.cc_hint"),
+    },
+    success_email_handle: {
+        label: t("form.settings.success_email_handle"),
+        value: "",
+        validations: [],
+        hint: "",
+    },
+    entry_title: {
+        label: t("form.settings.entry_title"),
+        value: "",
+        validations: [],
+        hint: "",
+    },
+});
 
 const fields = ref([]);
 const usedFields = ref([]);
@@ -233,22 +323,39 @@ const getFormEntries = async () => {
 
 const createForm = async () => {
     const status = await form.value.validate();
+    if (formActions.value) {
+        const statusActions = await formActions.value.validate();
+        if (!statusActions.valid) return;
+    }
+
     if (!status.valid) return;
 
     const fields = usedFields.value.map((field) => field.key);
-    const response = await Forms.createForm(
+    const actionsObject = {};
+    Object.entries(formActionInputs.value).forEach(
+        (entry) => (actionsObject[entry[0]] = entry[1].value)
+    );
+    console.log("TEST", actionsObject);
+
+    /*     const response = await Forms.createForm(
         formHandle.value,
         formData.value.title,
         fields,
-        formData.value.settings
+        formActions.value ? { to: formActionInputs.value } : null
     );
     if (response) {
         router.push({ name: "Forms" });
-    }
+    } */
 };
 
 const updateForm = async () => {
     const status = await form.value.validate();
+    if (formActions.value) {
+        const statusActions = await formActions.value.validate();
+        console.log("STATUS", statusActions);
+        if (!statusActions.valid) return;
+    }
+
     if (!status.valid) return;
 
     const fields = usedFields.value.map((field) => field.key);

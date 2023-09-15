@@ -882,3 +882,11 @@ form:
   update: Modifier
   form_title: Titre
   form_handle: Identifiant
+  no_forms: Aucun formulaire pour le moment.
+  settings:
+    to: À
+    cc: Cc
+    cc_hint: Séparer les emails par une virgule
+    bcc: Bcc
+    success_email_handle: Identifiant pour succès de l'envoi
+    entry_title: Titre de l'entrée

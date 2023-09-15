@@ -885,3 +885,11 @@ form:
   update: Update
   form_title: Title
   form_handle: Handle
+  no_forms: No forms at the moment.
+  settings:
+    to: To
+    cc: Cc
+    cc_hint: Separate emails with commas
+    bcc: Bcc
+    success_email_handle: Success email handle
+    entry_title: Entry title
