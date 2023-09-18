@@ -11,6 +11,8 @@ export default {
                     cc
                     bcc
                     success_email_handle
+                    action
+                    entry_title
                 }
             }
         }
@@ -27,6 +29,8 @@ export default {
                     cc
                     bcc
                     success_email_handle
+                    action
+                    entry_title
                 }
             }
         }
@@ -73,6 +77,16 @@ export default {
     deleteForm: `
         mutation deleteForm($ids: [ID!]!) {
             deleteForm(ids: $ids)
+        }
+    `,
+    viewedFormEntry: `
+        mutation viewedFormEntry($id: ID!, $form_handle: String!) {
+            viewedFormEntry(id: $id, form_handle: $form_handle)
+        }
+    `,
+    deleteFormEntry: `
+        mutation deleteFormEntry($ids: [ID!]!, $form_handle: String!) {
+            deleteFormEntry(ids: $ids, form_handle: $form_handle)
         }
     `,
 };

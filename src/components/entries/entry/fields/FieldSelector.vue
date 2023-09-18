@@ -1,5 +1,5 @@
 <template>
-    <div :id="tab.id" class="tw-relative">
+    <div class="tw-relative">
         <div
             ref="sortableContainer"
             class="sortable field-list tw-flex tw-flex-col tw-gap-3 sorting-parent tw-min-h-full tw-h-full"
@@ -41,8 +41,9 @@
                             activator="parent"
                             location="bottom"
                             :open-delay="750"
-                            >{{ $t("layout.delete_field") }}</v-tooltip
                         >
+                            {{ $t("layout.delete_field") }}
+                        </v-tooltip>
                     </button>
                 </div>
             </div>
@@ -60,8 +61,9 @@
                         variant="flat"
                         color="primary"
                         class="tw-w-full"
-                        >{{ $t("layout.add_field") }}</v-btn
                     >
+                        {{ $t("layout.add_field") }}
+                    </v-btn>
                 </template>
 
                 <!-- Big + button -->
@@ -228,7 +230,6 @@ watch(
     () => props.usedFields,
     (newValue) => {
         selectedFields.value = newValue;
-        console.log("WATCH", selectedFields.value);
     },
     {
         deep: true,

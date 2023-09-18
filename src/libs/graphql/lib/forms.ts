@@ -60,6 +60,14 @@ export class Forms {
      *
      * getFormEntries
      *
+     * @param form_handle
+     * @param page
+     * @param limit
+     * @param dateSearch
+     * @param search
+     * @param sort
+     * @param order
+     *
      *
      */
     public static async getFormEntries(
@@ -101,6 +109,11 @@ export class Forms {
      *
      * createForm
      *
+     * @param handle
+     * @param title
+     * @param fields
+     * @param settings
+     *
      *
      */
     public static async createForm(
@@ -129,6 +142,12 @@ export class Forms {
     /**
      *
      * updateForm
+     *
+     * @param id
+     * @param handle
+     * @param title
+     * @param fields
+     * @param settings
      *
      *
      */
@@ -160,6 +179,8 @@ export class Forms {
      *
      * deleteForm
      *
+     * @param ids
+     *
      *
      */
     public static async deleteForm(ids: string[]) {
@@ -175,6 +196,60 @@ export class Forms {
 
         if (result.data) {
             return result.data.deleteForm;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * viewedFormEntry
+     *
+     * @param id
+     * @param form_handle
+     *
+     *
+     */
+    public static async viewedFormEntry(id: string, form_handle: string) {
+        const client = new Client();
+        const mutation = FormsQueries.viewedFormEntry;
+
+        const result = await client.mutation(
+            gql`
+                    ${mutation},
+                `,
+            { id, form_handle }
+        );
+
+        if (result.data) {
+            return result.data.viewedFormEntry;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * deleteFormEntry
+     *
+     * @param ids
+     * @param form_handle
+     *
+     *
+     */
+    public static async deleteFormEntry(ids: string[], form_handle: string) {
+        const client = new Client();
+        const mutation = FormsQueries.deleteFormEntry;
+
+        const result = await client.mutation(
+            gql`
+                    ${mutation},
+                `,
+            { ids, form_handle }
+        );
+
+        if (result.data) {
+            return result.data.deleteFormEntry;
         }
 
         return null;

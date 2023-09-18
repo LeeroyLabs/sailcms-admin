@@ -886,6 +886,8 @@ form:
   form_title: Title
   form_handle: Handle
   no_forms: No entries at the moment.
+  new_entries: New entries
+  archives: Archives
   actions:
     mail: "Mail"
     database: "Database"
@@ -897,3 +899,6 @@ form:
     bcc: Bcc
     success_email_handle: Success email handle
     entry_title: Entry title
+  modal:
+    archive_message: Are you sure you want to move this entry into the archives?
+    delete_message: Are you sure you want to delete this entry?

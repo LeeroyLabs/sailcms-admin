@@ -883,6 +883,8 @@ form:
   form_title: Titre
   form_handle: Identifiant
   no_forms: Aucunes entrées pour le moment.
+  new_entries: Nouvelles entrées
+  archives: Archives
   actions:
     mail: "Courriel"
     database: "Base de données"
@@ -894,3 +896,6 @@ form:
     bcc: Bcc
     success_email_handle: Identifiant pour succès de l'envoi
     entry_title: Titre de l'entrée
+  modal:
+    archive_message: Etes-vous certains de vouloir déplacer cette entrée dans les archives ?
+    delete_message: Etes-vous certains de vouloir supprimer cette entrée ?

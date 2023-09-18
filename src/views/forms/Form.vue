@@ -97,9 +97,36 @@
                                         $vuetify.theme.name === 'dark',
                                 }"
                             >
+                                <div
+                                    class="tw-flex tw-gap-4 tw-justify-center tw-mb-4"
+                                >
+                                    <span
+                                        class="tw-cursor-pointer"
+                                        :class="
+                                            tabEntries === 0
+                                                ? 'tw-opacity-100'
+                                                : 'tw-opacity-50'
+                                        "
+                                        @click="tabEntries = 0"
+                                    >
+                                        {{ $t("form.new_entries") }}
+                                    </span>
+                                    <span
+                                        class="tw-cursor-pointer"
+                                        :class="
+                                            tabEntries === 1
+                                                ? 'tw-opacity-100'
+                                                : 'tw-opacity-50'
+                                        "
+                                        @click="tabEntries = 1"
+                                    >
+                                        {{ $t("form.archives") }}
+                                    </span>
+                                </div>
+
                                 <v-expansion-panels>
                                     <v-expansion-panel
-                                        v-for="entry in formEntries"
+                                        v-for="entry in filteredFormEntries"
                                         :key="entry"
                                         :title="
                                             new Date(
@@ -113,25 +140,56 @@
                                             })
                                         "
                                     >
-                                        <v-expansion-panel-text>
+                                        <v-expansion-panel-text
+                                            class="tw-relative tw-pr-[75px]"
+                                        >
                                             <div
-                                                class="tw-flex tw-gap-x-4 tw-gap-y-2 tw-flex-wrap"
+                                                class="tw-flex tw-gap-x-4 tw-gap-y-2 tw-justify-between tw-flex-wrap"
                                             >
                                                 <template
-                                                    v-for="content in Object.entries(
-                                                        entry.content
-                                                    )"
-                                                    :key="content[0]"
+                                                    v-for="content in entry.content"
+                                                    :key="content.key"
                                                 >
-                                                    <span>
-                                                        {{ content[0] }}:
-                                                        {{ content[1] }}
+                                                    <span
+                                                        class="tw-basis-2/5 md:tw-whitespace-nowrap"
+                                                    >
+                                                        {{ content.key }}:
+                                                        {{ content.value }}
                                                     </span>
                                                 </template>
                                             </div>
+
+                                            <div
+                                                class="tw-flex tw-gap-2 tw-absolute tw-top-[10px] tw-right-6"
+                                            >
+                                                <v-icon
+                                                    v-if="!entry.viewed"
+                                                    icon="mdi-eye-plus-outline"
+                                                    size="small"
+                                                    class="tw-cursor-pointer"
+                                                    @click="
+                                                        selectAction(
+                                                            entry,
+                                                            ARCHIVE
+                                                        )
+                                                    "
+                                                />
+                                                <v-icon
+                                                    icon="mdi-trash-can-outline"
+                                                    size="small"
+                                                    class="tw-cursor-pointer hover:tw-text-red-500"
+                                                    @click="
+                                                        selectAction(
+                                                            entry,
+                                                            DELETE
+                                                        )
+                                                    "
+                                                />
+                                            </div>
                                         </v-expansion-panel-text>
                                     </v-expansion-panel>
-                                    <span v-if="!formEntries.length">
+
+                                    <span v-if="!filteredFormEntries.length">
                                         {{ $t("form.no_forms") }}
                                     </span>
                                 </v-expansion-panels>
@@ -196,6 +254,19 @@
     </div>
 
     <Loader v-else />
+
+    <Transition>
+        <DeleteConfirmation
+            v-if="showDeleteConfirm"
+            :show="true"
+            :overall="true"
+            :title="$t('users.confirm')"
+            :loading="isProcessing"
+            :message="modalMessage"
+            @cancel="showDeleteConfirm = false"
+            @accept="applyAction"
+        />
+    </Transition>
 </template>
 
 <script setup>
@@ -206,8 +277,7 @@ import { useRouter, useRoute } from "vue-router";
 import { Entries } from "@/libs/graphql/lib/entries";
 import { Forms } from "@/libs/graphql/lib/forms";
 import { SailCMS } from "@/libs/graphql";
-import { onClickOutside } from "@vueuse/core";
-import { deburr, kebabCase } from "lodash";
+import { deburr, kebabCase, capitalize, defaultTo } from "lodash";
 import Joi from "joi";
 import { tlds } from "@hapi/tlds";
 
@@ -215,6 +285,7 @@ import TabBar from "@/components/globals/Tab.vue";
 import BackButton from "@/components/globals/BackButton.vue";
 import FieldSelector from "@/components/entries/entry/fields/FieldSelector.vue";
 import Loader from "@/components/globals/Loader.vue";
+import DeleteConfirmation from "@/components/globals/DeleteConfirmation.vue";
 
 const { t } = useI18n();
 const isReady = ref(false);
@@ -224,6 +295,8 @@ const route = useRoute();
 // Constants
 const CREATE = "create";
 const UPDATE = "update";
+const DELETE = "delete";
+const ARCHIVE = "archive";
 const MAIL = "Mail";
 const DATABASE = "Database";
 const BOTH = "Both";
@@ -239,6 +312,12 @@ const formData = ref({
 });
 const formHandle = computed(() => kebabCase(deburr(formData.value.title)));
 const formEntries = ref([]);
+const filteredFormEntries = computed(() =>
+    formEntries.value.filter((f) =>
+        tabEntries.value === 0 ? !f.viewed : f.viewed
+    )
+);
+const selectedFormEntries = ref(null);
 
 const schema = Joi.object({
     email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: tlds } }),
@@ -295,10 +374,12 @@ const fields = ref([]);
 const usedFields = ref([]);
 
 const tab = ref(0);
+const tabEntries = ref(0);
 const actionMode = ref("");
-const showAddBox = ref(false);
-const addbox = ref(null);
 const pagination = ref();
+const showDeleteConfirm = ref(false);
+const isProcessing = ref(false);
+const modalMessage = ref();
 
 const loadFields = async () => {
     fields.value = await Entries.fields(SailCMS.getLocales());
@@ -312,6 +393,8 @@ const getForm = async (handle) => {
         usedFields.value = fields.value.filter((field) =>
             responseGetForm.fields.includes(field.key)
         );
+
+        formData.value.action = capitalize(responseGetForm.settings.action);
         Object.entries(formActionInputs.value).forEach((entry) => {
             if (entry[0] === "cc" || entry[0] === "bcc") {
                 formActionInputs.value[entry[0]].value =
@@ -344,21 +427,7 @@ const getFormEntries = async () => {
     );
     if (response) {
         formEntries.value = response.list;
-        formEntries.value = formEntries.value.map((entry) => {
-            return {
-                ...entry,
-                content: entry.content.reduce((accumulator, currentItem) => {
-                    const groupKey = currentItem.key;
-                    accumulator[groupKey] = !accumulator[groupKey]
-                        ? {}
-                        : accumulator[groupKey];
-                    accumulator[groupKey] = currentItem.value;
-                    return accumulator;
-                }, {}),
-            };
-        });
         pagination.value = response.pagination;
-        console.log("ENTRIES", formEntries.value);
     }
 };
 
@@ -426,11 +495,62 @@ const updateForm = async () => {
     }
 };
 
-const applyAction = () => {
-    return actionMode.value === CREATE ? createForm() : updateForm();
+const selectAction = (entry, action) => {
+    selectedFormEntries.value = entry;
+    actionMode.value = action;
+    modalMessage.value =
+        actionMode.value === ARCHIVE
+            ? t("form.modal.archive_message")
+            : t("form.modal.delete_message");
+    showDeleteConfirm.value = true;
 };
 
-onClickOutside(addbox, (e) => (showAddBox.value = false));
+const applyAction = () => {
+    switch (actionMode.value) {
+        case CREATE:
+            createForm();
+            break;
+        case UPDATE:
+            updateForm();
+            break;
+        case ARCHIVE:
+            viewedFormEntry();
+            break;
+        case DELETE:
+            deleteFormEntry();
+            break;
+        default:
+            return;
+    }
+};
+
+const viewedFormEntry = async () => {
+    const response = await Forms.viewedFormEntry(
+        selectedFormEntries.value._id,
+        formHandle.value
+    );
+    if (response) {
+        getFormEntries();
+        selectedFormEntries.value = null;
+        actionMode.value = "";
+        modalMessage.value = "";
+        showDeleteConfirm.value = false;
+    }
+};
+
+const deleteFormEntry = async () => {
+    const response = await Forms.deleteFormEntry(
+        [selectedFormEntries.value._id],
+        formHandle.value
+    );
+    if (response) {
+        getFormEntries();
+        selectedFormEntries.value = null;
+        actionMode.value = "";
+        modalMessage.value = "";
+        showDeleteConfirm.value = false;
+    }
+};
 
 if (route.params.id === "add") {
     actionMode.value = CREATE;
