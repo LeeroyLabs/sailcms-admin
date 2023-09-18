@@ -882,7 +882,7 @@ form:
   update: Modifier
   form_title: Titre
   form_handle: Identifiant
-  no_forms: Aucun formulaire pour le moment.
+  no_forms: Aucunes entrées pour le moment.
   settings:
     to: À
     cc: Cc

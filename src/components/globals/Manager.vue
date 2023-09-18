@@ -211,6 +211,7 @@ const performAction = async () => {
         await confirmRestore();
     } else {
         props.actionCallback(selectedAction.value, selectedItems.value);
+        selectedAction.value = null;
     }
 };
 
@@ -229,6 +230,7 @@ const confirmDelete = async () => {
     await props.deleteCallback({ list: list, active: props.active });
     isDeleting.value = false;
     showDeleteConfirm.value = false;
+    selectedAction.value = null;
     applyingAction.value = false;
 };
 
@@ -246,6 +248,7 @@ const confirmRestore = async () => {
 
     await props.restoreCallback({ list: list, active: props.active });
     isDeleting.value = false;
+    selectedAction.value = null;
     applyingAction.value = false;
 };
 </script>

@@ -28,7 +28,7 @@
                             />
 
                             <div
-                                v-if="tab === 0"
+                                v-show="tab === 0"
                                 class="tw-flex-grow tw-p-6 tw-rounded-b"
                                 :class="{
                                     'tw-bg-white':
@@ -88,7 +88,7 @@
                             </div>
 
                             <div
-                                v-else
+                                v-show="tab === 1"
                                 class="tw-flex-grow tw-p-6 tw-rounded-b"
                                 :class="{
                                     'tw-bg-white':
@@ -109,6 +109,7 @@
                                                 month: '2-digit',
                                                 year: 'numeric',
                                                 hour: 'numeric',
+                                                minute: 'numeric',
                                             })
                                         "
                                         text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
@@ -331,28 +332,37 @@ const createForm = async () => {
     if (!status.valid) return;
 
     const fields = usedFields.value.map((field) => field.key);
-    const actionsObject = {};
-    Object.entries(formActionInputs.value).forEach(
-        (entry) => (actionsObject[entry[0]] = entry[1].value)
-    );
-    console.log("TEST", actionsObject);
 
-    /*     const response = await Forms.createForm(
+    const settingsObject = {};
+    if (formData.value.action && formData.value.action !== "2") {
+        Object.entries(formActionInputs.value).forEach((entry) => {
+            if (entry[0] === "cc" || entry[0] === "bcc") {
+                settingsObject[entry[0]] = entry[1].value.length
+                    ? entry[1].value.split(",").map((email) => email.trim())
+                    : [];
+            } else {
+                settingsObject[entry[0]] = entry[1].value;
+            }
+        });
+    }
+
+    const response = await Forms.createForm(
         formHandle.value,
         formData.value.title,
         fields,
-        formActions.value ? { to: formActionInputs.value } : null
+        formData.value.action && formData.value.action !== "2"
+            ? settingsObject
+            : null
     );
     if (response) {
         router.push({ name: "Forms" });
-    } */
+    }
 };
 
 const updateForm = async () => {
     const status = await form.value.validate();
     if (formActions.value) {
         const statusActions = await formActions.value.validate();
-        console.log("STATUS", statusActions);
         if (!statusActions.valid) return;
     }
 

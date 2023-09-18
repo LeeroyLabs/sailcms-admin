@@ -74,8 +74,8 @@ const actions = ref([
 ]);
 
 const columns = ref([
-    { label: i18n.t("forms.columns.title"), centered: false },
-    { label: i18n.t("forms.columns.handle"), centered: false },
+    { label: t("forms.columns.title"), centered: false },
+    { label: t("forms.columns.handle"), centered: false },
 ]);
 
 // Pagination handling
