@@ -16,7 +16,7 @@
                 <v-row>
                     <v-col cols="12" xs="12" md="9">
                         <div
-                            class="tw-h-[80vh] tw-max-h-[80vh] tw-overflow-auto tw-flex tw-flex-col"
+                            class="md:tw-h-[80vh] md:tw-max-h-[80vh] tw-overflow-auto tw-flex tw-flex-col"
                         >
                             <TabBar
                                 :tabs="[
@@ -112,8 +112,24 @@
                                                 minute: 'numeric',
                                             })
                                         "
-                                        text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                                     >
+                                        <v-expansion-panel-text>
+                                            <div
+                                                class="tw-flex tw-gap-x-4 tw-gap-y-2 tw-flex-wrap"
+                                            >
+                                                <template
+                                                    v-for="content in Object.entries(
+                                                        entry.content
+                                                    )"
+                                                    :key="content[0]"
+                                                >
+                                                    <span>
+                                                        {{ content[0] }}:
+                                                        {{ content[1] }}
+                                                    </span>
+                                                </template>
+                                            </div>
+                                        </v-expansion-panel-text>
                                     </v-expansion-panel>
                                     <span v-if="!formEntries.length">
                                         {{ $t("form.no_forms") }}
@@ -124,7 +140,9 @@
                     </v-col>
 
                     <v-col cols="12" xs="12" md="3">
-                        <v-card class="tw-max-h-[80vh] tw-overflow-auto tw-p-4">
+                        <v-card
+                            class="md:tw-max-h-[80vh] tw-overflow-auto tw-p-4"
+                        >
                             <v-radio-group
                                 v-model="formData.action"
                                 label="ACTIONS"
