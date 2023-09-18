@@ -886,6 +886,10 @@ form:
   form_title: Title
   form_handle: Handle
   no_forms: No entries at the moment.
+  actions:
+    mail: "Mail"
+    database: "Database"
+    both: "Both"
   settings:
     to: To
     cc: Cc

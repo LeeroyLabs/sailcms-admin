@@ -883,6 +883,10 @@ form:
   form_title: Titre
   form_handle: Identifiant
   no_forms: Aucunes entrées pour le moment.
+  actions:
+    mail: "Courriel"
+    database: "Base de données"
+    both: "Les deux"
   settings:
     to: À
     cc: Cc

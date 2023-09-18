@@ -130,16 +130,26 @@
                                 label="ACTIONS"
                                 class="tw-pl-0"
                             >
-                                <v-radio label="Mail" value="1"></v-radio>
-                                <v-radio label="DB" value="2"></v-radio>
-                                <v-radio label="Both" value="3"></v-radio>
+                                <v-radio
+                                    :label="$t('form.actions.mail')"
+                                    :value="MAIL"
+                                />
+                                <v-radio
+                                    :label="$t('form.actions.database')"
+                                    :value="DATABASE"
+                                />
+                                <v-radio
+                                    :label="$t('form.actions.both')"
+                                    :value="BOTH"
+                                />
                             </v-radio-group>
 
                             <v-form
                                 ref="formActions"
                                 autocomplete="off"
                                 v-if="
-                                    formData.action && formData.action !== '2'
+                                    formData.action &&
+                                    formData.action !== DATABASE
                                 "
                             >
                                 <v-text-field
@@ -188,11 +198,17 @@ import BackButton from "@/components/globals/BackButton.vue";
 import FieldSelector from "@/components/entries/entry/fields/FieldSelector.vue";
 import Loader from "@/components/globals/Loader.vue";
 
-const i18n = useI18n();
 const { t } = useI18n();
 const isReady = ref(false);
 const router = useRouter();
 const route = useRoute();
+
+// Constants
+const CREATE = "create";
+const UPDATE = "update";
+const MAIL = "Mail";
+const DATABASE = "Database";
+const BOTH = "Both";
 
 // Form + validations
 const form = ref(null);
@@ -201,8 +217,7 @@ const formData = ref({
     id: "",
     title: "",
     fields: [],
-    action: "",
-    settings: null,
+    action: MAIL,
 });
 const formHandle = computed(() => kebabCase(deburr(formData.value.title)));
 const formEntries = ref([]);
@@ -210,6 +225,7 @@ const formEntries = ref([]);
 const schema = Joi.object({
     email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: tlds } }),
 });
+
 const rules = {
     required: (value) =>
         (!!value && !!value.length) || t("user.errors.required"),
@@ -223,6 +239,7 @@ const rules = {
         return !validatedEmails.includes(false) || t("user.errors.email");
     },
 };
+
 const formActionInputs = ref({
     to: {
         label: `${t("form.settings.to")} *`,
@@ -232,13 +249,13 @@ const formActionInputs = ref({
     },
     cc: {
         label: `${t("form.settings.cc")} *`,
-        value: [],
+        value: "",
         validations: [rules.isEmail],
         hint: t("form.settings.cc_hint"),
     },
     bcc: {
         label: `${t("form.settings.bcc")} *`,
-        value: [],
+        value: "",
         validations: [rules.isEmail],
         hint: t("form.settings.cc_hint"),
     },
@@ -265,10 +282,6 @@ const showAddBox = ref(false);
 const addbox = ref(null);
 const pagination = ref();
 
-// Constants
-const CREATE = "create";
-const UPDATE = "update";
-
 const loadFields = async () => {
     fields.value = await Entries.fields(SailCMS.getLocales());
 };
@@ -281,6 +294,15 @@ const getForm = async (handle) => {
         usedFields.value = fields.value.filter((field) =>
             responseGetForm.fields.includes(field.key)
         );
+        Object.entries(formActionInputs.value).forEach((entry) => {
+            if (entry[0] === "cc" || entry[0] === "bcc") {
+                formActionInputs.value[entry[0]].value =
+                    responseGetForm.settings[entry[0]].join(", ");
+            } else {
+                formActionInputs.value[entry[0]].value =
+                    responseGetForm.settings[entry[0]];
+            }
+        });
         getFormEntries();
         isReady.value = true;
     }
@@ -322,6 +344,23 @@ const getFormEntries = async () => {
     }
 };
 
+const createSettingsObject = () => {
+    const settingsObject = {};
+    Object.entries(formActionInputs.value).forEach((entry) => {
+        if (entry[0] === "cc" || entry[0] === "bcc") {
+            settingsObject[entry[0]] =
+                formData.value.action !== DATABASE && entry[1].value.length
+                    ? entry[1].value.split(",").map((email) => email.trim())
+                    : [];
+        } else {
+            settingsObject[entry[0]] =
+                formData.value.action !== DATABASE ? entry[1].value : "";
+        }
+    });
+    settingsObject.action = formData.value.action.toUpperCase();
+    return settingsObject;
+};
+
 const createForm = async () => {
     const status = await form.value.validate();
     if (formActions.value) {
@@ -332,27 +371,13 @@ const createForm = async () => {
     if (!status.valid) return;
 
     const fields = usedFields.value.map((field) => field.key);
-
-    const settingsObject = {};
-    if (formData.value.action && formData.value.action !== "2") {
-        Object.entries(formActionInputs.value).forEach((entry) => {
-            if (entry[0] === "cc" || entry[0] === "bcc") {
-                settingsObject[entry[0]] = entry[1].value.length
-                    ? entry[1].value.split(",").map((email) => email.trim())
-                    : [];
-            } else {
-                settingsObject[entry[0]] = entry[1].value;
-            }
-        });
-    }
+    const settings = createSettingsObject();
 
     const response = await Forms.createForm(
         formHandle.value,
         formData.value.title,
         fields,
-        formData.value.action && formData.value.action !== "2"
-            ? settingsObject
-            : null
+        settings
     );
     if (response) {
         router.push({ name: "Forms" });
@@ -369,12 +394,14 @@ const updateForm = async () => {
     if (!status.valid) return;
 
     const fields = usedFields.value.map((field) => field.key);
+    const settings = createSettingsObject();
+
     const response = await Forms.updateForm(
         formData.value.id,
         formHandle.value,
         formData.value.title,
         fields,
-        formData.value.settings
+        settings
     );
     if (response) {
         router.push({ name: "Forms" });
