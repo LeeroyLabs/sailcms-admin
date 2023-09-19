@@ -1,46 +1,61 @@
 <template>
-    <div :id="'popup_' + emptyAddButton" class="box" :class="{'tw-bg-white': $vuetify.theme.name === 'light', 'tw-bg-darkbg': $vuetify.theme.name === 'dark'}">
+    <div
+        :id="'popup_' + emptyAddButton"
+        class="box"
+        :class="{
+            'tw-bg-white': $vuetify.theme.name === 'light',
+            'tw-bg-darkbg': $vuetify.theme.name === 'dark',
+        }"
+    >
         <!-- Arrow -->
-        <div class="arrow after:tw-border-t after:tw-border-l" :class="{ 'after:tw-border-neutral-400 after:tw-bg-white': $vuetify.theme.name === 'light', 'after:tw-border-gray-300 after:tw-bg-darkbg': $vuetify.theme.name === 'dark'}"></div>
-        <div><slot name="extra"/></div>
+        <div
+            class="arrow after:tw-border-t after:tw-border-l"
+            :class="{
+                'after:tw-border-neutral-400 after:tw-bg-white':
+                    $vuetify.theme.name === 'light',
+                'after:tw-border-gray-300 after:tw-bg-darkbg':
+                    $vuetify.theme.name === 'dark',
+            }"
+        ></div>
+        <div><slot name="extra" /></div>
         <div class="tw-block tw-w-full tw-max-h-[200px] tw-overflow-y-auto">
-            <slot name="default"/>
+            <slot name="default" />
         </div>
     </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted } from "vue";
 
 const props = defineProps({
     offset: {
         type: Boolean,
-        default: false
+        default: false,
     },
     emptyAddButton: {
         type: String,
-        default: ''
-    }
+        default: "",
+    },
 });
 
-const setPosition = () =>
-{
+const setPosition = () => {
     let el = document.getElementById(props.emptyAddButton);
 
     if (el) {
         let rect = el.getBoundingClientRect();
-        document.getElementById('popup_' + props.emptyAddButton).style.top = rect.bottom + 10 + 'px';
+        document.getElementById("popup_" + props.emptyAddButton).style.top =
+            rect.bottom + 10 + "px";
     }
-}
+};
 
 onMounted(() => setPosition());
 const reposition = () => setPosition();
-defineExpose({reposition});
+defineExpose({ reposition });
 </script>
 
 <style>
 .arrow::after {
-    content: '';
+    content: "";
     height: 10px;
     width: 10px;
     position: absolute;

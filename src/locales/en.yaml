@@ -866,3 +866,39 @@ task:
     priority_urgent: Urgent
   errors:
     required: Required
+
+forms:
+  title: Forms
+  tabs:
+    structure: Structure
+    data: Data
+  no_forms: No forms at the moment.
+  add_form: Add form
+  actions:
+    delete: Delete
+  columns:
+    title: Title
+    handle: Handle
+
+form:
+  save: Save
+  update: Update
+  form_title: Title
+  form_handle: Handle
+  no_forms: No entries at the moment.
+  new_entries: New entries
+  archives: Archives
+  actions:
+    mail: "Mail"
+    database: "Database"
+    both: "Both"
+  settings:
+    to: To
+    cc: Cc
+    cc_hint: Separate emails with commas
+    bcc: Bcc
+    success_email_handle: Success email handle
+    entry_title: Entry title
+  modal:
+    archive_message: Are you sure you want to move this entry into the archives?
+    delete_message: Are you sure you want to delete this entry?
