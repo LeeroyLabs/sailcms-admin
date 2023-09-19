@@ -277,7 +277,7 @@ import { useRouter, useRoute } from "vue-router";
 import { Entries } from "@/libs/graphql/lib/entries";
 import { Forms } from "@/libs/graphql/lib/forms";
 import { SailCMS } from "@/libs/graphql";
-import { deburr, kebabCase, capitalize, defaultTo } from "lodash";
+import { deburr, kebabCase, capitalize } from "lodash";
 import Joi from "joi";
 import { tlds } from "@hapi/tlds";
 
