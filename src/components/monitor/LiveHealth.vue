@@ -98,7 +98,7 @@ const setupDisk = () =>
 {
     let color = '#238f06';
 
-    if (props.data.disk.percent >= 45 && result.disk.percent < 85) {
+    if (props.data.disk.percent >= 45 && props.data.disk.percent < 85) {
         color = '#ffc600';
     } else if (props.data.disk.percent >= 85) {
         color = '#cb1111';
