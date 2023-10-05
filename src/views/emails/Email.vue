@@ -220,11 +220,13 @@ const loadTemplates = async () =>
 
 const loadEmail = async () =>
 {
+    await loadTemplates();
     currentEmail.value = await Emails.email(route.params.id, SailCMS.getLocales());
 
     //fields.value = currentEmail.value.fields;
+
     let tpl = availableTemplates.value.find(tpl => tpl.title === currentEmail.value.template);
-    selectedTemplate.value = tpl.value;
+    selectedTemplate.value = tpl.value ?? '';
 
     page.setPageTitle(currentEmail.value.name);
     isReady.value = true;
@@ -307,10 +309,9 @@ const destroyPreview = async () =>
     }, 800);
 }
 
-loadTemplates();
-
 if (route.params.id === 'add') {
     page.setPageTitle('email.add');
+    loadTemplates();
 } else {
     loadEmail();
 }
