@@ -63,9 +63,8 @@ export const navigationItems = computed(() => {
     const sysItems = [];
     for (let navKey of Object.keys(SailCMS.getNavigation())) {
         if (SailCMS.getNavigation()[navKey]) {
-            switch (navKey)
-            {
-                case 'users':
+            switch (navKey) {
+                case "users":
                     sysItems.push({
                         icon: "mdi-account-outline",
                         to: { name: "Users" },
@@ -75,7 +74,7 @@ export const navigationItems = computed(() => {
                     });
                     break;
 
-                case 'roles':
+                case "roles":
                     sysItems.push({
                         icon: "mdi-account-tie-hat-outline",
                         to: { name: "Roles" },
@@ -85,7 +84,7 @@ export const navigationItems = computed(() => {
                     });
                     break;
 
-                case 'types':
+                case "types":
                     sysItems.push({
                         icon: "mdi-shape-plus-outline",
                         to: { name: "EntryTypes" },
@@ -95,7 +94,7 @@ export const navigationItems = computed(() => {
                     });
                     break;
 
-                case 'fields':
+                case "fields":
                     sysItems.push({
                         icon: "mdi-form-textbox",
                         to: { name: "EntryFields" },
@@ -105,7 +104,7 @@ export const navigationItems = computed(() => {
                     });
                     break;
 
-                case 'layouts':
+                case "layouts":
                     sysItems.push({
                         icon: "mdi-order-alphabetical-ascending",
                         to: { name: "EntryLayouts" },
@@ -115,7 +114,7 @@ export const navigationItems = computed(() => {
                     });
                     break;
 
-                case 'tasks':
+                case "tasks":
                     sysItems.push({
                         icon: "mdi-calendar-check-outline",
                         to: { name: "Tasks" },
@@ -125,7 +124,7 @@ export const navigationItems = computed(() => {
                     });
                     break;
 
-                case 'logs':
+                case "logs":
                     sysItems.push({
                         icon: "mdi-console",
                         to: { name: "Logs" },
@@ -156,7 +155,7 @@ export const navigationItems = computed(() => {
             permission: "any",
         },
         {
-            icon: "mdi-shape-outline",
+            icon: "mdi-form-select",
             to: { name: "Forms" },
             parent: "",
             text: i18n.global.t("forms.title"),
@@ -164,6 +163,7 @@ export const navigationItems = computed(() => {
         },
         {
             icon: "mdi-cloud-search-outline",
+            to: { name: "Seo" },
             parent: "",
             text: "SEO",
             permission: "any",

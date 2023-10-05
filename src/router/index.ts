@@ -11,6 +11,7 @@ import { hasPermission } from "@/libs/tools";
 import { emailRoutes } from "@/router/emails";
 import { tasksRoutes } from "@/router/tasks";
 import { formsRoutes } from "@/router/forms";
+import { seoRoutes } from "@/router/seo";
 
 const routes = [
     ...publicRoutes,
@@ -22,6 +23,7 @@ const routes = [
     ...emailRoutes,
     ...tasksRoutes,
     ...formsRoutes,
+    ...seoRoutes,
 ];
 
 function routerInit() {
