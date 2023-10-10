@@ -899,3 +899,17 @@ form:
   modal:
     archive_message: Etes-vous certains de vouloir déplacer cette entrée dans les archives ?
     delete_message: Etes-vous certains de vouloir supprimer cette entrée ?
+
+seo:
+  tabs:
+    general: "Général"
+    content: "Contenu"
+    settings: "Paramètres"
+    tracking: "Suivi"
+  subTabs:
+    appearance: "Apparance"
+    social_media: "Média sociaux"
+    robots: "Robots"
+    site_map: "Plan du Site"
+  before: "Avant"
+  after: "Après"

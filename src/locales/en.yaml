@@ -902,3 +902,17 @@ form:
   modal:
     archive_message: Are you sure you want to move this entry into the archives?
     delete_message: Are you sure you want to delete this entry?
+
+seo:
+  tabs:
+    general: "General"
+    content: "Content"
+    settings: "Settings"
+    tracking: "Tracking"
+  subTabs:
+    appearance: "Appearance"
+    social_media: "Social Media"
+    robots: "Robots"
+    site_map: "Site Map"
+  before: "Before"
+  after: "After"
