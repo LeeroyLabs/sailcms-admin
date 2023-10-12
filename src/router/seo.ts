@@ -6,7 +6,18 @@ export const seoRoutes = [
             import(/* webpackChunkName: "seo" */ "@/views/seo/Seo.vue"),
         meta: {
             guarded: true,
-            permission: "readwrite_category",
+            permission: "any",
+            layout: "private",
+        },
+    },
+    {
+        path: "/seo/:slug",
+        name: "SeoEntry",
+        component: () =>
+            import(/* webpackChunkName: "seo" */ "@/views/seo/SeoEntry.vue"),
+        meta: {
+            guarded: true,
+            permission: "any",
             layout: "private",
         },
     },
