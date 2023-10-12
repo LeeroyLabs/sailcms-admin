@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="isReady">
         <section class="tw-mt-6 tw-mb-4">
             <v-container class="tw-m-0 tw-p-0" :fluid="true">
                 <TabBar
@@ -151,12 +151,8 @@
                                             </p>
 
                                             <div
-                                                class="tw-rounded tw-min-h-[150px] tw-cursor-text tw-px-4 tw-py-2 hover:tw-outline-1 hover:tw-outline-white"
-                                                :class="
-                                                    keywordsInput.focused
-                                                        ? '!tw-outline-2 tw-outline-solid tw-outline-white'
-                                                        : 'tw-outline-1 tw-outline-solid tw-outline-white/[.50]'
-                                                "
+                                                class="tw-rounded tw-min-h-[150px] tw-cursor-text tw-px-4 tw-py-2 tw-outline"
+                                                :class="inputClasses"
                                                 @click="keywordsInput.focus()"
                                             >
                                                 <v-list
@@ -199,6 +195,20 @@
                                                         />
                                                     </v-list-item>
                                                 </v-list>
+                                            </div>
+                                            <div class="tw-h-5">
+                                                <span
+                                                    v-if="keywordError"
+                                                    :class="
+                                                        $vuetify.theme.name ===
+                                                        'dark'
+                                                            ? 'tw-text-[#CF6679]'
+                                                            : 'tw-text-[#B00020]'
+                                                    "
+                                                >
+                                                    This keyword is already in
+                                                    the list
+                                                </span>
                                             </div>
                                         </v-card-text>
                                     </v-card>
@@ -548,11 +558,14 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useTheme } from "vuetify";
 import TabBar from "@/components/globals/Tab.vue";
 
 const { t } = useI18n();
+const vuetifyTheme = useTheme();
+const isReady = ref(true);
 const activeTab = ref(0);
 const tabs = [
     {
@@ -582,20 +595,60 @@ const tabs = [
     },
 ];
 const tab = ref(tabs[activeTab.value].subTabs[0]);
+
 const keyword = ref("");
 const selectedKeywords = ref([]);
+const keywordError = ref(false);
+const isFocused = computed(
+    () => keywordsInput.value && keywordsInput.value.focused
+);
+const inputClasses = computed(() => {
+    if (
+        isFocused.value &&
+        keywordError.value &&
+        vuetifyTheme.global.name.value === "dark"
+    ) {
+        return "tw-outline-2 tw-outline-[#CF6679]";
+    } else if (
+        isFocused.value &&
+        keywordError.value &&
+        vuetifyTheme.global.name.value === "light"
+    ) {
+        return "tw-outline-2 tw-outline-[#B00020]";
+    } else if (isFocused.value && vuetifyTheme.global.name.value === "dark") {
+        return "tw-outline-2 tw-outline-white";
+    } else if (isFocused.value && vuetifyTheme.global.name.value === "light") {
+        return "tw-outline-2 tw-outline-black";
+    } else if (
+        keywordError.value &&
+        vuetifyTheme.global.name.value === "dark"
+    ) {
+        return "tw-outline-[#CF6679]";
+    } else if (
+        keywordError.value &&
+        vuetifyTheme.global.name.value === "light"
+    ) {
+        return "tw-outline-[#B00020]";
+    } else if (vuetifyTheme.global.name.value === "dark") {
+        return "tw-outline-1 tw-outline-white/[.50] hover:tw-outline-white";
+    } else {
+        return "tw-outline-1 tw-outline-black/[.30] hover:tw-outline-black";
+    }
+});
 
 // Template refs
 const keywordsInput = ref(null);
 
-const createChip = (event) => {
-    if (
-        keyword.value !== "" &&
-        !selectedKeywords.value.includes(keyword.value)
-    ) {
+const createChip = () => {
+    if (keyword.value !== "") {
         const trimmedKeyword = keyword.value.match(/[\w\s]+/g);
+        if (selectedKeywords.value.includes(trimmedKeyword[0])) {
+            keywordError.value = true;
+            return;
+        }
         selectedKeywords.value.push(trimmedKeyword[0]);
         keyword.value = "";
+        keywordError.value = false;
         keywordsInput.value.focus();
     }
 };
