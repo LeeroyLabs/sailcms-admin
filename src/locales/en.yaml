@@ -902,3 +902,19 @@ form:
   modal:
     archive_message: Are you sure you want to move this entry into the archives?
     delete_message: Are you sure you want to delete this entry?
+
+serp:
+  robots_warning: Cannot show preview because robots are not allowed to index this entry. Please change your robots settings to allow indexation.
+  no_description: No description
+
+entryseo:
+  date_explain: If set, this will tell search engines to not index this page after this date.
+  search: Search
+  previews: Social & Search Previews
+  maxchars: Max 250 characters
+  info: Information
+  robots: Robots
+  sitemap: Sitemap
+  no_image: No Image Selected
+  frequency: Update Frequency
+  priority: Priority

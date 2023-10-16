@@ -35,6 +35,7 @@ export type EntryStructure = {
     parent: string,
     site_id: string;
     alternates?: any;
+    seo: any;
 }
 
 export type EntryType = {

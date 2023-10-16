@@ -25,6 +25,7 @@ export async function registerPlugins(app: App)
     const url = window.location.origin + '/conf.json';
 
     window.baseURL = '';
+    window.publicURL = '';
 
     try {
         let response = await fetch(url);
@@ -36,6 +37,7 @@ export async function registerPlugins(app: App)
             SailCMS.setConfig(json.sailcms_url, tokenStr, json.locales, json.base_url, json.site_id, json.navigation);
 
             window.baseURL = json.base_url;
+            window.publicURL = json.public_url;
 
             // Call the basic settings from server (type data mostly)
             const types = await Entries.entryTypes(json.locales);

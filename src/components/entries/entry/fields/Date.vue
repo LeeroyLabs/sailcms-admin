@@ -48,6 +48,7 @@
                                     :index="index"
                                     :key="'date_' + index"
                                     @change="(e) => (arrayValue[idx] = e)"
+                                    :show-floating-label="showFloatingLabel"
                                 />
                                 <v-btn
                                     @click.prevent="
@@ -79,6 +80,7 @@
                 :id="'date_' + index + '_single'"
                 :key="'date_' + index"
                 @change="(e) => $emit('update:modelValue', e)"
+                :show-floating-label="showFloatingLabel"
             />
         </template>
     </div>
@@ -107,6 +109,10 @@ const props = defineProps({
             config: null,
             width: "full",
         },
+    },
+    showFloatingLabel: {
+        type: Boolean,
+        default: false
     },
     type: {
         type: String,

@@ -8,6 +8,7 @@
                      <p>{{ entry.slug || $t('entry.na') }}</p>
                  </div>
                  <div class="tw-mt-4">
+                     TODO: MAKE ARROW ANIMATED ON ROTATE
                      <Search v-model="entry.parent" :type="entry.entry_type" @change="(e) => $emit('parentChange', e)" />
                  </div>
                  <div class="tw-mt-4">
@@ -115,7 +116,7 @@ const template = ref(props.entry.template || props.entry.entry_type || 'default'
 }
 
 .panelinfo > div h2 {
-    @apply tw-font-medium tw-text-neutral-600;
+    @apply tw-font-medium tw-text-neutral-500;
 }
 
 .panelinfo > div p {
