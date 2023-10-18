@@ -37,6 +37,7 @@
                                     :index="index"
                                     :key="'date_' + index"
                                     @change="(e) => arrayValue[idx] = e"
+                                    :show-floating-label="showFloatingLabel"
                                 />
                                 <v-btn @click.prevent="(e) => arrayValue.splice(idx, 1)" class="!tw-h-[48px]" variant="tonal" color="red"><v-icon icon="mdi-trash-can-outline" /></v-btn>
                             </div>
@@ -56,6 +57,7 @@
                 :id="'date_' + index + id"
                 :key="'date_' + index"
                 @change="(e) => $emit('update:modelValue', e)"
+                :show-floating-label="showFloatingLabel"
             />
         </template>
     </div>
@@ -91,6 +93,10 @@ const props = defineProps({
     id: {
         type: String,
         default: '_single'
+    },
+    showFloatingLabel: {
+        type: Boolean,
+        default: false
     }
 });
 

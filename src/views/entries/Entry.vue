@@ -47,7 +47,7 @@
                                 'tw-bg-white': $vuetify.theme.name === 'light', 'tw-bg-darkbg': $vuetify.theme.name === 'dark'
                             }"
                         >
-                            SEO!
+                            <EntrySeo :entry="entry" :entryType="entryType" @change="(seo) => entry.seo = seo"/>
                         </div>
                     </template>
                 </div>
@@ -217,12 +217,17 @@ const saveEntry = async () =>
             categories: [],
             content: saveableEntryState.content,
             parent: parent,
+            seo: entry.value.seo,
             site_id: SailCMS.getSiteId()
         };
 
         let result = await Entries.createEntry(opts);
 
-        console.log(result);
+        if (result !== '') {
+            // Set new ID to update afterwards
+            entry.value._id = result;
+        }
+
         isSaving.value = false;
     }
 }

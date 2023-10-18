@@ -4,31 +4,12 @@
         class="dp tw-h-[50px] tw-rounded-md tw-border tw-py-2 tw-px-3 focus-within:!tw-px-[11px] focus-within:tw-border-primary focus-within:tw-border-[2px] tw-relative group"
         :class="{'tw-border-neutral-400': $vuetify.theme.name === 'light', 'tw-border-neutral-500': $vuetify.theme.name === 'dark'}"
     >
+        <template v-if="config.label !== undefined && innerValueSet && showFloatingLabel">
+            <div class="tw-text-xs tw-absolute tw-top-[-8px] tw-px-1 tw-text-primary" :class="{'tw-bg-white': $vuetify.theme.name === 'light', 'tw-bg-neutral-900': $vuetify.theme.name === 'dark'}">{{ config.label[$i18n.locale] }}</div>
+        </template>
+
         <input :placeholder="config.label[$i18n.locale]" :id="id" v-bind:value="(typeof value === 'object') ? value.date + sepChar + value.time : value" class="focus-visible:tw-ring-0 focus-visible:tw-outline-0 tw-h-full tw-w-full"/>
-        <input
-            :id="id"
-            :placeholder="placeholder"
-            v-bind:value="
-                typeof value === 'object'
-                    ? value.date + sepChar + value.time
-                    : value
-            "
-            class="focus-visible:tw-ring-0 focus-visible:tw-outline-0 tw-h-full tw-w-full tw-cursor-pointer"
-            :class="[
-                $vuetify.theme.name === 'light'
-                    ? {
-                          'placeholder:!tw-text-[#B00020] placeholder:!tw-opacity-100':
-                              error,
-                      }
-                    : {
-                          'placeholder:!tw-text-[#CF6679] placeholder:!tw-opacity-100':
-                              error,
-                      },
-                $vuetify.theme.name === 'light'
-                    ? 'placeholder:tw-text-black placeholder:tw-opacity-50'
-                    : 'placeholder:tw-text-white placeholder:tw-opacity-70',
-            ]"
-        />
+
 
         <span
             v-if="error"
@@ -65,6 +46,10 @@ const props = defineProps({
     showTime: {
         type: Boolean,
         default: false,
+    },
+    showFloatingLabel: {
+        type: Boolean,
+        default: false
     },
     config: {
         type: Object,
@@ -110,6 +95,11 @@ const i18n = useI18n();
 const theme = useTheme();
 const datepicker = ref(null);
 const dpid = ref(v4());
+const innerValueSet = ref(false);
+
+if (props.value !== undefined && props.value !== null && props.value !== '') {
+    innerValueSet.value = true;
+}
 
 const handleDateChange = (selectedDates, dateStr, instance) => {
     if (props.config.config.range) {
@@ -143,6 +133,7 @@ const handleDateChange = (selectedDates, dateStr, instance) => {
         return;
     }
 
+    innerValueSet.value = true;
     emitter("change", dateStr);
 };
 

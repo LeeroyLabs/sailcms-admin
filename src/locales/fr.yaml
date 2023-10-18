@@ -930,3 +930,19 @@ seo:
     priority: "Priorité"
     frequency: "Fréquence"
     no_entries: "Aucunes entrées pour le moment."
+
+serp:
+  robots_warning: Un aperçu ne peut être affiché parce que vos paramètres de robots ne permettent pas l'indexation de cette entrée. Veuillez changer vos paramètres pour permettre l'indexation.
+  no_description: Aucune description
+
+entryseo:
+  date_explain: Si rempli, cette date sera transmise au moteurs de recherche pour arrêter l'indexation de cette page à cette date.
+  search: Recherche
+  previews: Prévisualisation Sociale & Recherche
+  maxchars: Max 250 caractères
+  info: Informations
+  robots: Robots
+  sitemap: Plan du site
+  no_image: Aucune image sélectionnée
+  frequency: Fréquence de mise à jour
+  priority: Priorité

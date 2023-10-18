@@ -545,15 +545,18 @@ export class Entries
      * @param opts
      *
      */
-    public static async createEntry(opts: EntryStructure): Promise<boolean>
+    public static async createEntry(opts: EntryStructure): Promise<string>
     {
         const client = new Client();
         let query = EntryQueries.createEntry;
 
-        //6502 = error HTML script found
-
         let result = await client.mutation(gql`${query}`, opts);
-        return !!(result.data && result.data.createEntry !== null);
+
+        if (result.data && result.data.createEntry.errors.length === 0) {
+            return result.data.createEntry.entry._id;
+        }
+
+        return '';
     }
 
     private static parseLocales(locales: string[]): string

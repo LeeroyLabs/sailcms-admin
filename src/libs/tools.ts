@@ -84,6 +84,7 @@ declare global {
         hasPermission: Function;
         isAdmin: Function;
         baseURL: String;
+        publicURL: String;
     }
 }
 
