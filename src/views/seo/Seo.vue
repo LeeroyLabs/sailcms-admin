@@ -196,26 +196,6 @@
                                     </div>
                                 </v-window-item>
                                 <v-window-item
-                                    :value="$t('seo.subTabs.social_media')"
-                                >
-                                    <div
-                                        class="tw-flex tw-flex-col tw-gap-4 tw-px-2"
-                                    >
-                                        <p>
-                                            Morbi nec metus. Suspendisse
-                                            faucibus, nunc et pellentesque
-                                            egestas, lacus ante convallis
-                                            tellus, vitae iaculis lacus elit id
-                                            tortor. Sed mollis, eros et ultrices
-                                            tempus, mauris ipsum aliquam libero,
-                                            non adipiscing dolor urna a orci.
-                                            Curabitur ligula sapien, tincidunt
-                                            non, euismod vitae, posuere
-                                            imperdiet, leo. Nunc sed turpis.
-                                        </p>
-                                    </div>
-                                </v-window-item>
-                                <v-window-item
                                     :value="$t('seo.subTabs.robots')"
                                 >
                                     <div
@@ -251,48 +231,8 @@
                                         </div>
                                     </div>
                                 </v-window-item>
-                            </v-window>
-
-                            <!-- Content -->
-                            <div v-else-if="activeTab === 1">
-                                <Manager
-                                    :active="0"
-                                    :list="entryTypes"
-                                    :overrideActions="actions"
-                                    :actionCallback="applyAction"
-                                    :deleteCallback="handleDeleteNavigation"
-                                    :no_items="$t('seo.columns.no_entries')"
-                                    :columns="columns"
-                                    :index="0"
-                                >
-                                    <template v-slot="{ row }">
-                                        <td>
-                                            <router-link
-                                                class="hover:tw-text-primary hover:tw-underline"
-                                                :class="{
-                                                    'hover:tw-text-white':
-                                                        $vuetify.theme.name !==
-                                                        'light',
-                                                }"
-                                                :to="{
-                                                    name: 'SeoEntry',
-                                                    params: { slug: row.value },
-                                                }"
-                                            >
-                                                {{ row.title }}
-                                            </router-link>
-                                        </td>
-                                        <td>
-                                            {{ row }}
-                                        </td>
-                                    </template>
-                                </Manager>
-                            </div>
-
-                            <!-- Settings -->
-                            <v-window v-model="tab" v-else-if="activeTab === 2">
                                 <v-window-item
-                                    :value="$t('seo.subTabs.site_map')"
+                                    :value="$t('seo.subTabs.sitemap')"
                                 >
                                     <div
                                         class="tw-flex tw-flex-col tw-gap-4 tw-px-2"
@@ -316,73 +256,23 @@
                                                 label="on"
                                             />
                                         </div>
-                                        <div
-                                            class="tw-flex tw-flex-col tw-gap-4"
-                                        >
-                                            <h2
-                                                class="tw-font-medium tw-text-xl"
-                                            >
-                                                Change Frequency
-                                            </h2>
-                                            <p>
-                                                How frequently the page is
-                                                likely to change. This value
-                                                provides general information to
-                                                search engines and may not
-                                                correlate exactly to how often
-                                                they crawl the page.
-                                            </p>
-                                            <v-select
-                                                label="Select"
-                                                :items="[
-                                                    'Always',
-                                                    'Hourly',
-                                                    'Daily',
-                                                    'Weekly',
-                                                    'Monthly',
-                                                    'Yearly',
-                                                    'Never',
-                                                ]"
-                                                variant="outlined"
-                                            />
-                                        </div>
-                                        <div
-                                            class="tw-flex tw-flex-col tw-gap-4"
-                                        >
-                                            <h2
-                                                class="tw-font-medium tw-text-xl"
-                                            >
-                                                Priority
-                                            </h2>
-                                            <p>
-                                                The priority of this URL
-                                                relative to other URLs on your
-                                                site. This value does not affect
-                                                how your pages are compared to
-                                                pages on other sites. It only
-                                                lets the search engines know
-                                                which pages you deem most
-                                                important for the crawlers.
-                                            </p>
-                                            <v-select
-                                                label="Select"
-                                                :items="[
-                                                    '1.0',
-                                                    '0.9',
-                                                    '0.8',
-                                                    '0.7',
-                                                    '0.6',
-                                                    '0.5',
-                                                    '0.4',
-                                                    '0.3',
-                                                    '0.2',
-                                                    '0.1',
-                                                ]"
-                                                variant="outlined"
-                                            />
-                                        </div>
                                     </div>
                                 </v-window-item>
+                            </v-window>
+
+                            <!-- Social Media -->
+                            <v-window v-model="tab" v-else-if="activeTab === 1">
+                                <v-window-item value=""> </v-window-item>
+                            </v-window>
+
+                            <!-- Preview -->
+                            <v-window v-model="tab" v-else-if="activeTab === 2">
+                                <v-window-item value=""> </v-window-item>
+                            </v-window>
+
+                            <!-- Redirection -->
+                            <v-window v-model="tab" v-else-if="activeTab === 3">
+                                <v-window-item value=""> </v-window-item>
                             </v-window>
 
                             <!-- Tracking -->
@@ -424,13 +314,10 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTheme } from "vuetify";
-import { Entries } from "@/libs/graphql/lib/entries";
-import { SailCMS } from "@/libs/graphql";
 import TabBar from "@/components/globals/Tab.vue";
-import Manager from "@/components/globals/Manager.vue";
 
 const { t } = useI18n();
 const vuetifyTheme = useTheme();
@@ -445,17 +332,25 @@ const tabs = [
         tab: t("seo.tabs.general"),
         subTabs: [
             t("seo.subTabs.appearance"),
-            t("seo.subTabs.social_media"),
             t("seo.subTabs.robots"),
+            t("seo.subTabs.sitemap"),
         ],
     },
     {
-        tab: t("seo.tabs.content"),
+        tab: t("seo.tabs.socials"),
+        subTabs: [
+            t("seo.subTabs.facebook"),
+            t("seo.subTabs.twitter"),
+            t("seo.subTabs.linkedin"),
+        ],
+    },
+    {
+        tab: t("seo.tabs.preview"),
         subTabs: [],
     },
     {
-        tab: t("seo.tabs.settings"),
-        subTabs: [t("seo.subTabs.site_map")],
+        tab: t("seo.tabs.redirection"),
+        subTabs: [],
     },
     {
         tab: t("seo.tabs.tracking"),
@@ -463,19 +358,6 @@ const tabs = [
     },
 ];
 const tab = ref(tabs[activeTab.value].subTabs[0]);
-
-const columns = ref([
-    { label: t("seo.columns.title"), centered: false },
-    { label: t("seo.columns.entries"), centered: false },
-    { label: t("seo.columns.type"), centered: false },
-    { label: t("seo.columns.title"), centered: false },
-    { label: t("seo.columns.description"), centered: false },
-    { label: t("seo.columns.image"), centered: false },
-    { label: t("seo.columns.robots"), centered: false },
-    { label: t("seo.columns.sitemap"), centered: false },
-    { label: t("seo.columns.priority"), centered: false },
-    { label: t("seo.columns.frequency"), centered: false },
-]);
 
 const keyword = ref("");
 const selectedKeywords = ref([]);
@@ -517,20 +399,6 @@ const inputClasses = computed(() => {
         return "tw-outline-1 tw-outline-black/[.30] hover:tw-outline-black";
     }
 });
-
-const entryTypes = ref([]);
-
-const loadTypes = async () => {
-    const types = await Entries.entryTypes(SailCMS.getLocales());
-
-    for (let type of types) {
-        entryTypes.value.push({ value: type.handle, title: type.title });
-    }
-
-    nextTick(() => (isReady.value = true));
-};
-
-loadTypes();
 
 const createChip = () => {
     if (keyword.value !== "") {

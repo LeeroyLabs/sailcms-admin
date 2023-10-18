@@ -903,15 +903,19 @@ form:
 seo:
   tabs:
     general: "Général"
-    content: "Contenu"
-    settings: "Paramètres"
+    socials: "Médias sociaux"
+    redirection: "Redirection"
+    preview: "Aperçu"
     tracking: "Suivi"
   subTabs:
     appearance: "Apparance"
     social_media: "Média sociaux"
     google: "Google"
+    facebook: "Facebook"
+    twitter: "Twitter"
+    linkedin: "LinkedIn"
     robots: "Robots"
-    site_map: "Plan du Site"
+    sitemap: "Plan du Site"
   before: "Avant"
   after: "Après"
   columns:

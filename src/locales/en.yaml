@@ -906,15 +906,19 @@ form:
 seo:
   tabs:
     general: "General"
-    content: "Content"
-    settings: "Settings"
+    socials: "Social Media"
+    redirection: "Redirection"
+    preview: "Preview"
     tracking: "Tracking"
   subTabs:
     appearance: "Appearance"
     social_media: "Social Media"
     google: "Google"
+    facebook: "Facebook"
+    twitter: "Twitter"
+    linkedin: "LinkedIn"
     robots: "Robots"
-    site_map: "Sitemap"
+    sitemap: "Sitemap"
   before: "Before"
   after: "After"
   columns:
