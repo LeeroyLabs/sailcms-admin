@@ -10,15 +10,4 @@ export const seoRoutes = [
             layout: "private",
         },
     },
-    {
-        path: "/seo/:slug",
-        name: "SeoEntry",
-        component: () =>
-            import(/* webpackChunkName: "seo" */ "@/views/seo/SeoEntry.vue"),
-        meta: {
-            guarded: true,
-            permission: "any",
-            layout: "private",
-        },
-    },
 ];

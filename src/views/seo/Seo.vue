@@ -10,13 +10,13 @@
 
                 <v-card
                     flat
-                    class="tw-h-[80vh] tw-overflow-auto"
+                    class="tw-h-[80vh]"
                     :class="[
                         { 'tw-rounded-tl-none': activeTab === 0 },
                         { 'tw-rounded-tr-none': activeTab === 3 },
                     ]"
                 >
-                    <v-row class="tw-p-4">
+                    <v-row class="tw-p-4 tw-h-full">
                         <v-col
                             cols="12"
                             xs="12"
@@ -25,7 +25,9 @@
                         >
                             <v-tabs
                                 v-model="tab"
-                                direction="vertical"
+                                :direction="
+                                    isLargeScreen ? 'vertical' : 'horizontal'
+                                "
                                 color="primary"
                             >
                                 <v-tab
@@ -42,6 +44,7 @@
                             cols="12"
                             xs="12"
                             :md="tabs[activeTab].subTabs.length ? 9 : 12"
+                            class="tw-h-full tw-overflow-auto"
                         >
                             <!-- General -->
                             <v-window v-model="tab" v-if="activeTab === 0">
@@ -141,7 +144,7 @@
 
                                         <div
                                             class="tw-rounded tw-min-h-[150px] tw-cursor-text tw-px-4 tw-py-2 tw-outline"
-                                            :class="inputClasses"
+                                            :class="keywordClasses"
                                             @click="keywordsInput.focus()"
                                         >
                                             <v-list
@@ -262,7 +265,97 @@
 
                             <!-- Social Media -->
                             <v-window v-model="tab" v-else-if="activeTab === 1">
-                                <v-window-item value=""> </v-window-item>
+                                <v-window-item
+                                    v-for="social in tabs[1].components"
+                                    :key="social.name"
+                                    :value="social.name"
+                                    class="tw-flex tw-flex-col tw-justify-center tw-h-full tw-gap-4 tw-px-2"
+                                >
+                                    <h2 class="tw-font-medium tw-text-xl">
+                                        SEO Preview
+                                    </h2>
+
+                                    <div
+                                        class="tw-w-full tw-flex tw-justify-center tw-items-center tw-rounded tw-p-6"
+                                        :class="{
+                                            'tw-bg-white':
+                                                $vuetify.theme.name === 'light',
+                                            'tw-bg-zinc-900 tw-border tw-border-neutral-500':
+                                                $vuetify.theme.name === 'dark',
+                                        }"
+                                    >
+                                        <component
+                                            :is="social.component.value"
+                                            :title="socialsData.title"
+                                            :description="
+                                                socialsData.description
+                                            "
+                                            :image="selectedURL"
+                                        />
+                                    </div>
+
+                                    <h2 class="tw-font-medium tw-text-xl">
+                                        {{ social.name }} OpenGraph Title Source
+                                    </h2>
+                                    <v-text-field
+                                        label="Label"
+                                        variant="outlined"
+                                        v-model="socialsData.title"
+                                    />
+
+                                    <h2 class="tw-font-medium tw-text-xl">
+                                        {{ social.name }} OpenGraph Image Source
+                                    </h2>
+                                    <v-select
+                                        label="Select"
+                                        :items="[
+                                            $t('seo.before'),
+                                            $t('seo.after'),
+                                        ]"
+                                        density="comfortable"
+                                        class="tw-max-h-[72px]"
+                                    />
+
+                                    <div
+                                        class="tw-flex tw-flex-row tw-gap-x-2 tw-items-center tw-mt-[-10px]"
+                                    >
+                                        <div
+                                            id="seo_image"
+                                            class="tw-group tw-w-20 tw-h-20 tw-rounded-md tw-bg-neutral-400 tw-relative tw-mx-auto md:tw-mx-0 tw-bg-center tw-bg-cover"
+                                            :style="'background-image: url();'"
+                                        >
+                                            <div
+                                                @click="() => (showAM = true)"
+                                                class="tw-cursor-pointer tw-absolute tw-rounded-md tw-h-full tw-w-full tw-bg-black/50 tw-hidden group-hover:tw-flex tw-flex-row tw-items-center tw-justify-center"
+                                            >
+                                                <v-icon
+                                                    icon="mdi-camera"
+                                                    color="white"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <template
+                                                v-if="selectedFile !== ''"
+                                            >
+                                                {{ selectedFile }}
+                                            </template>
+                                            <template v-else>
+                                                {{ $t("entryseo.no_image") }}
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <h2 class="tw-font-medium tw-text-xl">
+                                        {{ social.name }} OpenGraph Image
+                                        Description Source
+                                    </h2>
+                                    <v-text-field
+                                        label="Label"
+                                        variant="outlined"
+                                        v-model="socialsData.description"
+                                    />
+                                </v-window-item>
                             </v-window>
 
                             <!-- Preview -->
@@ -311,17 +404,35 @@
             </v-container>
         </section>
     </div>
+
+    <Transition>
+        <AssetManager
+            v-if="showAM"
+            :multi="false"
+            :cropping="cropping"
+            @close="showAM = false"
+            @selected="handleSelectedAsset"
+        />
+    </Transition>
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, shallowRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTheme } from "vuetify";
+import { useMediaQuery } from "@vueuse/core";
+
 import TabBar from "@/components/globals/Tab.vue";
+import AssetManager from "@/components/globals/AssetManager.vue";
+import SERP from "@/components/globals/previews/serp.vue";
+import FacebookPreview from "@/components/globals/previews/FacebookPreview.vue";
+import LinkedinPreview from "@/components/globals/previews/LinkedinPreview.vue";
+import TwitterPreview from "@/components/globals/previews/TwitterPreview.vue";
 
 const { t } = useI18n();
 const vuetifyTheme = useTheme();
 const isReady = ref(true);
+const isLargeScreen = useMediaQuery("(min-width: 960px)");
 
 // Template refs
 const keywordsInput = ref(null);
@@ -343,6 +454,20 @@ const tabs = [
             t("seo.subTabs.twitter"),
             t("seo.subTabs.linkedin"),
         ],
+        components: [
+            {
+                name: t("seo.subTabs.facebook"),
+                component: shallowRef(FacebookPreview),
+            },
+            {
+                name: t("seo.subTabs.twitter"),
+                component: shallowRef(TwitterPreview),
+            },
+            {
+                name: t("seo.subTabs.linkedin"),
+                component: shallowRef(LinkedinPreview),
+            },
+        ],
     },
     {
         tab: t("seo.tabs.preview"),
@@ -359,14 +484,52 @@ const tabs = [
 ];
 const tab = ref(tabs[activeTab.value].subTabs[0]);
 
+const socialsData = ref({
+    title: "",
+    description: "",
+    image: "",
+    default_image: "",
+});
+
 const keyword = ref("");
 const selectedKeywords = ref([]);
 const keywordError = ref(false);
+const selectedFile = ref("");
+const selectedURL = ref("");
 
+// Asset Manager
+const showAM = ref(false);
+const cropping = {
+    name: "avatar",
+    ratio: 0,
+    min: {
+        width: 200,
+        height: 200,
+    },
+    max: {
+        width: 800,
+        height: 800,
+    },
+    lockedType: "circle",
+};
+
+const handleSelectedAsset = (e) => {
+    socialsData.value.default_image = e[0]._id;
+
+    const transform = e[0].transforms.find((t) => t.transform === "thumbnail");
+    document.getElementById("seo_image").style.backgroundImage =
+        "url(" + transform.url + ")";
+
+    selectedURL.value = e[0].url;
+    selectedFile.value = e[0].name;
+    showAM.value = false;
+};
+
+// Computed
 const isFocused = computed(
     () => keywordsInput.value && keywordsInput.value.focused
 );
-const inputClasses = computed(() => {
+const keywordClasses = computed(() => {
     if (
         isFocused.value &&
         keywordError.value &&
