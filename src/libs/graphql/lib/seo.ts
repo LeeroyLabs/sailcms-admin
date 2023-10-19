@@ -198,4 +198,31 @@ export class Seo {
 
         return null;
     }
+
+    /**
+     *
+     * deleteRedirection
+     *
+     * @param ids
+     *
+     */
+    public static async deleteRedirection(
+        ids: string[]
+    ): Promise<boolean | null> {
+        const client = new Client();
+        const mutation = SeoQueries.deleteRedirection;
+
+        const result = await client.mutation(
+            gql`
+                ${mutation},
+            `,
+            { ids }
+        );
+
+        if (result.data) {
+            return result.data.deleteRedirection;
+        }
+
+        return null;
+    }
 }

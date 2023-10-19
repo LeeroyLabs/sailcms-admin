@@ -118,8 +118,8 @@ export default {
         }
     `,
     deleteRedirection: `
-        mutation deleteRedirection ($id: ID!) {
-            deleteRedirection (id: $id)
+        mutation deleteRedirection ($ids: [ID!]!) {
+            deleteRedirection (ids: $ids)
         }
     `,
 };

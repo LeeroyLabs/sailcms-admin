@@ -18,16 +18,16 @@
             <v-container class="tw-m-0 tw-p-0" :fluid="true">
                 <TabBar
                     :tabs="tabs.map((t) => t.tab)"
-                    :active="activeTab"
-                    @change="(e) => (activeTab = e)"
+                    :active="activeTabIndex"
+                    @change="(e) => (activeTabIndex = e)"
                 />
 
                 <v-card
                     flat
                     class="tw-h-[80vh]"
                     :class="[
-                        { 'tw-rounded-tl-none': activeTab === 0 },
-                        { 'tw-rounded-tr-none': activeTab === 3 },
+                        { 'tw-rounded-tl-none': activeTabIndex === 0 },
+                        { 'tw-rounded-tr-none': activeTabIndex === 3 },
                     ]"
                 >
                     <v-row class="tw-p-4 tw-h-full">
@@ -35,17 +35,17 @@
                             cols="12"
                             xs="12"
                             md="3"
-                            v-if="tabs[activeTab].subTabs.length"
+                            v-if="tabs[activeTabIndex].subTabs.length"
                         >
                             <v-tabs
-                                v-model="tab"
+                                v-model="selectedTab"
                                 :direction="
                                     isLargeScreen ? 'vertical' : 'horizontal'
                                 "
                                 color="primary"
                             >
                                 <v-tab
-                                    v-for="item in tabs[activeTab].subTabs"
+                                    v-for="item in tabs[activeTabIndex].subTabs"
                                     :key="item"
                                     :value="item"
                                 >
@@ -57,11 +57,16 @@
                         <v-col
                             cols="12"
                             xs="12"
-                            :md="tabs[activeTab].subTabs.length ? '9' : '12'"
+                            :md="
+                                tabs[activeTabIndex].subTabs.length ? '9' : '12'
+                            "
                             class="tw-h-full tw-overflow-auto"
                         >
                             <!-- General -->
-                            <v-window v-model="tab" v-if="activeTab === 0">
+                            <v-window
+                                v-model="selectedTab"
+                                v-if="activeTabIndex === 0"
+                            >
                                 <v-window-item
                                     :value="$t('seo.subTabs.appearance')"
                                 >
@@ -280,7 +285,10 @@
                             </v-window>
 
                             <!-- Social Media -->
-                            <v-window v-model="tab" v-else-if="activeTab === 1">
+                            <v-window
+                                v-model="selectedTab"
+                                v-else-if="activeTabIndex === 1"
+                            >
                                 <v-window-item
                                     :value="t('seo.subTabs.general')"
                                     class="tw-flex tw-flex-col tw-justify-center tw-h-full tw-gap-4 tw-px-2"
@@ -437,11 +445,11 @@
 
                             <!-- Redirection -->
                             <Manager
-                                v-else-if="activeTab === 2"
+                                v-else-if="activeTabIndex === 2"
                                 :active="0"
                                 :list="redirections.list"
                                 :overrideActions="actions"
-                                :deleteCallback="handleDeleteForm"
+                                :deleteCallback="handleDeleteRedirection"
                                 :no_items="$t('seo.columns.no_redirections')"
                                 :columns="columns"
                                 :index="0"
@@ -497,7 +505,7 @@
                             </Manager>
 
                             <!-- Tracking -->
-                            <v-window v-model="tab" v-else>
+                            <v-window v-model="selectedTab" v-else>
                                 <v-window-item
                                     :value="$t('seo.subTabs.google')"
                                 >
@@ -572,7 +580,6 @@ const isLargeScreen = useMediaQuery("(min-width: 960px)");
 // Template ref
 const keywordsInput = ref(null);
 
-const activeTab = ref(0);
 const tabs = [
     {
         tab: t("seo.tabs.general"),
@@ -614,8 +621,17 @@ const tabs = [
         subTabs: [t("seo.subTabs.google")],
     },
 ];
-const tab = ref(tabs[activeTab.value].subTabs[0]);
+const activeTabIndex = ref(0);
+const selectedTab = ref(tabs[activeTabIndex.value].subTabs[0]);
 
+const keyword = ref("");
+const selectedKeywords = ref([]);
+const keywordError = ref(false);
+
+const selectedFile = ref("");
+const selectedURL = ref("");
+
+// Social Media
 const socialsData = ref({
     general: {
         title: "",
@@ -643,13 +659,7 @@ const socialsData = ref({
     },
 });
 
-const keyword = ref("");
-const selectedKeywords = ref([]);
-const keywordError = ref(false);
-
 // Asset Manager
-const selectedFile = ref("");
-const selectedURL = ref("");
 const showAM = ref(false);
 const cropping = {
     name: "avatar",
@@ -665,17 +675,24 @@ const cropping = {
     lockedType: "circle",
 };
 
-const handleSelectedAsset = (e) => {
-    socialsData.value[tab.value].default_image = e[0]._id;
+const actions = ref([
+    {
+        value: "delete",
+        title: t("forms.actions.delete"),
+    },
+]);
 
-    const transform = e[0].transforms.find((t) => t.transform === "thumbnail");
-    document.getElementById("seo_image").style.backgroundImage =
-        "url(" + transform.url + ")";
-
-    selectedURL.value = e[0].url;
-    selectedFile.value = e[0].name;
-    showAM.value = false;
-};
+// Redirections
+const redirections = ref([]);
+const currentPage = ref(1);
+const pagination = ref({ total: 0, current: 0, totalPages: 0 });
+const columns = ref([
+    { label: t("seo.columns.url"), centered: false },
+    { label: t("seo.columns.redirect_url"), centered: false },
+    { label: t("seo.columns.redirect_type"), centered: false },
+    { label: t("seo.columns.hit_count"), centered: false },
+    { label: t("seo.columns.last_attempt"), centered: false },
+]);
 
 // Computed
 const isFocused = computed(
@@ -735,17 +752,25 @@ const deleteChip = (keyword) => {
     );
 };
 
-// Redirections
-const redirections = ref([]);
-const currentPage = ref(1);
-const pagination = ref({ total: 0, current: 0, totalPages: 0 });
-const columns = ref([
-    { label: t("seo.columns.url"), centered: false },
-    { label: t("seo.columns.redirect_url"), centered: false },
-    { label: t("seo.columns.redirect_type"), centered: false },
-    { label: t("seo.columns.hit_count"), centered: false },
-    { label: t("seo.columns.last_attempt"), centered: false },
-]);
+const handleDeleteRedirection = async (event) => {
+    const response = await Seo.deleteRedirection(event.list);
+    if (response) {
+        //applyingAction.value = false;
+        getRedirections(1, 25, "", "url", "ASC");
+    }
+};
+
+const handleSelectedAsset = (e) => {
+    socialsData.value[selectedTab.value].default_image = e[0]._id;
+
+    const transform = e[0].transforms.find((t) => t.transform === "thumbnail");
+    document.getElementById("seo_image").style.backgroundImage =
+        "url(" + transform.url + ")";
+
+    selectedURL.value = e[0].url;
+    selectedFile.value = e[0].name;
+    showAM.value = false;
+};
 
 const getRedirections = async (page, limit, search, sort, order) => {
     const result = await Seo.getRedirections(page, limit, search, sort, order);
@@ -755,7 +780,10 @@ const getRedirections = async (page, limit, search, sort, order) => {
     }
 };
 
-watch(activeTab, () => (tab.value = tabs[activeTab.value].subTabs[0]));
+watch(
+    activeTabIndex,
+    () => (selectedTab.value = tabs[activeTabIndex.value].subTabs[0])
+);
 
 onMounted(() => {
     getRedirections(1, 25, "", "url", "ASC");
