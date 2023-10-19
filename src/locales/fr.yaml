@@ -919,17 +919,12 @@ seo:
   before: "Avant"
   after: "Après"
   columns:
-    name: "Nom"
-    entries: "Entrées"
-    type: "Type"
-    title: "Titre"
-    description: "Description"
-    image: "Image"
-    robots: "Robots"
-    sitemap: "Plan du site"
-    priority: "Priorité"
-    frequency: "Fréquence"
-    no_entries: "Aucunes entrées pour le moment."
+    url: "URL source"
+    redirect_url: "URL de redirection"
+    redirect_type: "Type de redirection"
+    hit_count: "Nombre d'échecs"
+    last_attempt: "Dernière tentative"
+    no_redirections: Aucunes redirections pour le moment.
 
 serp:
   robots_warning: Un aperçu ne peut être affiché parce que vos paramètres de robots ne permettent pas l'indexation de cette entrée. Veuillez changer vos paramètres pour permettre l'indexation.

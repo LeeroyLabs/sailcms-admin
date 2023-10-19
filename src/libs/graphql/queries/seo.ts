@@ -63,6 +63,28 @@ export default {
             }
         }
     `,
+    getBrokenLinks: `
+        query getBrokenLinks($page: Int!, $limit: Int!, $search: String, $sort: String, $order: SortingOrder) {
+            getBrokenLinks(
+                page: $page
+                limit: $limit
+                search: $search
+                sort: $sort
+                order: $order
+            ) {
+                pagination {
+                    current
+                    totalPages
+                    total
+                }
+                list {
+                    url
+                    hit_count
+                    last_attempt
+                }
+            }
+        }
+    `,
     generateSitemap: `
         mutation generateSitemap($template: String!) {
             generateSitemap(template: $template)

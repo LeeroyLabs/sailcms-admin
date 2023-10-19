@@ -922,17 +922,12 @@ seo:
   before: "Before"
   after: "After"
   columns:
-    name: "Name"
-    entries: "Entries"
-    type: "Type"
-    title: "Title"
-    description: "Description"
-    image: "Image"
-    robots: "Robots"
-    sitemap: "Sitemap"
-    priority: "Priority"
-    frequency: "Frequency"
-    no_entries: "No entries at the moment."
+    url: "Source URL"
+    redirect_url: "Redirect URL"
+    redirect_type: "Redirect Type"
+    hit_count: "Hit Count"
+    last_attempt: "Last Attempt"
+    no_redirections: "No redirections at the moment."
 
 serp:
   robots_warning: Cannot show preview because robots are not allowed to index this entry. Please change your robots settings to allow indexation.

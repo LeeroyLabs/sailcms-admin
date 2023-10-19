@@ -285,7 +285,7 @@
                                         }"
                                     >
                                         <component
-                                            :is="social.component.value"
+                                            :is="social.component"
                                             :title="socialsData.title"
                                             :description="
                                                 socialsData.description
@@ -364,9 +364,50 @@
                             </v-window>
 
                             <!-- Redirection -->
-                            <v-window v-model="tab" v-else-if="activeTab === 3">
-                                <v-window-item value=""> </v-window-item>
-                            </v-window>
+                            <Manager
+                                v-else-if="activeTab === 3"
+                                :active="0"
+                                :list="brokenLinks.list"
+                                :overrideActions="actions"
+                                :deleteCallback="handleDeleteForm"
+                                :no_items="$t('seo.columns.no_redirections')"
+                                :columns="columns"
+                                :index="0"
+                            >
+                                <template v-slot="{ row }">
+                                    <td>
+                                        {{ row.url }}
+                                    </td>
+                                    <td>
+                                        {{ row.redirect_url }}
+                                    </td>
+                                    <td>
+                                        {{ row.redirect_type }}
+                                    </td>
+                                    <td>
+                                        {{ row.hit_count }}
+                                    </td>
+                                    <td>
+                                        {{
+                                            format(
+                                                row.last_attempt * 1000,
+                                                "dd-MM-yyyy"
+                                            )
+                                        }}
+                                    </td>
+                                </template>
+                                <template #footer="{ index }">
+                                    <v-pagination
+                                        v-model="currentPage[index - 1]"
+                                        class="tw-mt-6"
+                                        density="comfortable"
+                                        :rounded="true"
+                                        :length="
+                                            redirections.pagination.totalPages
+                                        "
+                                    />
+                                </template>
+                            </Manager>
 
                             <!-- Tracking -->
                             <v-window v-model="tab" v-else>
@@ -417,13 +458,17 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, shallowRef } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTheme } from "vuetify";
 import { useMediaQuery } from "@vueuse/core";
 
+import { Seo } from "@/libs/graphql/lib/seo.ts";
+import { format } from "date-fns";
+
 import TabBar from "@/components/globals/Tab.vue";
 import AssetManager from "@/components/globals/AssetManager.vue";
+import Manager from "@/components/globals/Manager.vue";
 import SERP from "@/components/globals/previews/serp.vue";
 import FacebookPreview from "@/components/globals/previews/FacebookPreview.vue";
 import LinkedinPreview from "@/components/globals/previews/LinkedinPreview.vue";
@@ -457,15 +502,15 @@ const tabs = [
         components: [
             {
                 name: t("seo.subTabs.facebook"),
-                component: shallowRef(FacebookPreview),
+                component: FacebookPreview,
             },
             {
                 name: t("seo.subTabs.twitter"),
-                component: shallowRef(TwitterPreview),
+                component: TwitterPreview,
             },
             {
                 name: t("seo.subTabs.linkedin"),
-                component: shallowRef(LinkedinPreview),
+                component: LinkedinPreview,
             },
         ],
     },
@@ -496,6 +541,8 @@ const selectedKeywords = ref([]);
 const keywordError = ref(false);
 const selectedFile = ref("");
 const selectedURL = ref("");
+const brokenLinks = ref([]);
+const redirections = ref([]);
 
 // Asset Manager
 const showAM = ref(false);
@@ -583,7 +630,36 @@ const deleteChip = (keyword) => {
     );
 };
 
+// Redirection
+const currentPage = ref(1);
+const pagination = ref({ total: 0, current: 0, totalPages: 0 });
+const columns = ref([
+    { label: t("seo.columns.url"), centered: false },
+    { label: t("seo.columns.redirect_url"), centered: false },
+    { label: t("seo.columns.redirect_type"), centered: false },
+    { label: t("seo.columns.hit_count"), centered: false },
+    { label: t("seo.columns.last_attempt"), centered: false },
+]);
+
+const getBrokenLinks = async (page, limit, search, sort, order) => {
+    const result = await Seo.getBrokenLinks(page, limit, search, sort, order);
+    if (result) {
+        brokenLinks.value = result;
+    }
+};
+
+const getRedirections = async (page, limit, search, sort, order) => {
+    const result = await Seo.getRedirections(page, limit, search, sort, order);
+    if (result) {
+        redirections.value = result;
+    }
+};
+
 watch(activeTab, () => (tab.value = tabs[activeTab.value].subTabs[0]));
+
+onMounted(() => {
+    getRedirections(1, 25, "", "name", "ASC");
+});
 </script>
 
 <style lang="scss" scoped>
