@@ -46,3 +46,8 @@ export interface BrokenLinkListing {
     pagination: Pagination;
     list: BrokenLink[];
 }
+
+export enum RedirectType {
+    PERMANENT = "PERMANENT",
+    TEMPORARY = "TEMPORARY",
+}

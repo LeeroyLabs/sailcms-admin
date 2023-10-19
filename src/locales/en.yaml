@@ -919,8 +919,6 @@ seo:
     linkedin: "LinkedIn"
     robots: "Robots"
     sitemap: "Sitemap"
-  before: "Before"
-  after: "After"
   columns:
     url: "Source URL"
     redirect_url: "Redirect URL"
@@ -928,6 +926,16 @@ seo:
     hit_count: "Hit Count"
     last_attempt: "Last Attempt"
     no_redirections: "No redirections at the moment."
+  before: "Before"
+  after: "After"
+  add_redirection: "Add redirection"
+
+seoRedirection:
+  url: "url"
+  redirect_url: "Redirect URL"
+  redirect_type: "Redirect Type"
+  permanent: "Permanent"
+  temporary: "Temporary"
 
 serp:
   robots_warning: Cannot show preview because robots are not allowed to index this entry. Please change your robots settings to allow indexation.

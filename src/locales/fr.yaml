@@ -916,8 +916,6 @@ seo:
     linkedin: "LinkedIn"
     robots: "Robots"
     sitemap: "Plan du Site"
-  before: "Avant"
-  after: "Après"
   columns:
     url: "URL source"
     redirect_url: "URL de redirection"
@@ -925,6 +923,16 @@ seo:
     hit_count: "Nombre d'échecs"
     last_attempt: "Dernière tentative"
     no_redirections: Aucunes redirections pour le moment.
+  before: "Avant"
+  after: "Après"
+  add_redirection: "Ajouter une redirection"
+
+seoRedirection:
+  url: "url"
+  redirect_url: "URL de redirection"
+  redirect_type: "Type de redirection"
+  permanent: "Permanent"
+  temporary: "Temporaire"
 
 serp:
   robots_warning: Un aperçu ne peut être affiché parce que vos paramètres de robots ne permettent pas l'indexation de cette entrée. Veuillez changer vos paramètres pour permettre l'indexation.

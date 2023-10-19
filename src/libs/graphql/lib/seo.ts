@@ -4,6 +4,7 @@ import type {
     SeoSettingsInput,
     BrokenLinkListing,
     Redirection,
+    RedirectType,
 } from "../types/seo";
 import { SortingOrder } from "@/libs/graphql/types/general";
 import gql from "graphql-tag";
@@ -101,6 +102,37 @@ export class Seo {
 
         if (result.data) {
             return result.data.getRedirections;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * createRedirection
+     *
+     * @param url
+     * @param redirect_url
+     * @param redirect_type
+     *
+     */
+    public static async createRedirection(
+        url: string,
+        redirect_url: string,
+        redirect_type: RedirectType
+    ): Promise<boolean | null> {
+        const client = new Client();
+        const mutation = SeoQueries.createRedirection;
+
+        const result = await client.mutation(
+            gql`
+                ${mutation},
+            `,
+            { url, redirect_url, redirect_type }
+        );
+
+        if (result.data) {
+            return result.data.createRedirection;
         }
 
         return null;

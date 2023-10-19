@@ -1,5 +1,19 @@
 <template>
     <div v-if="isReady">
+        <Teleport to="#actions">
+            <v-btn
+                color="primary"
+                @click="
+                    $router.push({
+                        name: 'SeoRedirection',
+                        params: { id: 'add' },
+                    })
+                "
+            >
+                {{ $t("seo.add_redirection") }}
+            </v-btn>
+        </Teleport>
+
         <section class="tw-mt-6 tw-mb-4">
             <v-container class="tw-m-0 tw-p-0" :fluid="true">
                 <TabBar
@@ -367,7 +381,7 @@
                             <Manager
                                 v-else-if="activeTab === 3"
                                 :active="0"
-                                :list="brokenLinks.list"
+                                :list="redirections.list"
                                 :overrideActions="actions"
                                 :deleteCallback="handleDeleteForm"
                                 :no_items="$t('seo.columns.no_redirections')"
@@ -446,6 +460,8 @@
         </section>
     </div>
 
+    <Loader v-else />
+
     <Transition>
         <AssetManager
             v-if="showAM"
@@ -473,6 +489,7 @@ import SERP from "@/components/globals/previews/serp.vue";
 import FacebookPreview from "@/components/globals/previews/FacebookPreview.vue";
 import LinkedinPreview from "@/components/globals/previews/LinkedinPreview.vue";
 import TwitterPreview from "@/components/globals/previews/TwitterPreview.vue";
+import Loader from "@/components/globals/Loader.vue";
 
 const { t } = useI18n();
 const vuetifyTheme = useTheme();
@@ -539,12 +556,10 @@ const socialsData = ref({
 const keyword = ref("");
 const selectedKeywords = ref([]);
 const keywordError = ref(false);
-const selectedFile = ref("");
-const selectedURL = ref("");
-const brokenLinks = ref([]);
-const redirections = ref([]);
 
 // Asset Manager
+const selectedFile = ref("");
+const selectedURL = ref("");
 const showAM = ref(false);
 const cropping = {
     name: "avatar",
@@ -630,7 +645,8 @@ const deleteChip = (keyword) => {
     );
 };
 
-// Redirection
+// Redirections
+const redirections = ref([]);
 const currentPage = ref(1);
 const pagination = ref({ total: 0, current: 0, totalPages: 0 });
 const columns = ref([
@@ -640,13 +656,6 @@ const columns = ref([
     { label: t("seo.columns.hit_count"), centered: false },
     { label: t("seo.columns.last_attempt"), centered: false },
 ]);
-
-const getBrokenLinks = async (page, limit, search, sort, order) => {
-    const result = await Seo.getBrokenLinks(page, limit, search, sort, order);
-    if (result) {
-        brokenLinks.value = result;
-    }
-};
 
 const getRedirections = async (page, limit, search, sort, order) => {
     const result = await Seo.getRedirections(page, limit, search, sort, order);
@@ -658,7 +667,7 @@ const getRedirections = async (page, limit, search, sort, order) => {
 watch(activeTab, () => (tab.value = tabs[activeTab.value].subTabs[0]));
 
 onMounted(() => {
-    getRedirections(1, 25, "", "name", "ASC");
+    getRedirections(1, 25, "", "url", "ASC");
 });
 </script>
 
