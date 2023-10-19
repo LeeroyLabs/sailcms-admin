@@ -62,7 +62,7 @@
                 <div class="tw-ml-6 tw-gap-x-3 tw-flex">
                     <v-btn
                         :loading="isLoading"
-                        @click.prevent="createRedirection"
+                        @click.prevent="applyAction"
                         color="primary"
                     >
                         <template v-if="isAdding">
@@ -112,14 +112,29 @@ const rules = {
         (value && value.length > 0) || t("user.errors.at_least_one"),
 };
 
-// template refs
+// template ref
 const redirectionForm = ref(null);
 
+// Constants
+const CREATE = "create";
+const UPDATE = "update";
+
+const actionMode = ref(CREATE);
 const newRedirection = ref({
     url: "",
     redirectUrl: "",
     redirectType: null,
 });
+
+const getRedirection = async (id) => {
+    const response = await Seo.getRedirection(id);
+    if (response) {
+        newRedirection.value.url = response.url;
+        newRedirection.value.redirectUrl = response.redirect_url;
+        newRedirection.value.redirectType = response.redirect_type;
+        isReady.value = true;
+    }
+};
 
 const createRedirection = async () => {
     const status = await redirectionForm.value.validate();
@@ -133,8 +148,29 @@ const createRedirection = async () => {
     if (response) router.push({ name: "Seo" });
 };
 
+const updateRedirection = async (id) => {
+    const response = await Seo.updateRedirection(
+        id,
+        newRedirection.value.url,
+        newRedirection.value.redirectUrl,
+        newRedirection.value.redirectType
+    );
+    if (response) {
+        if (response) router.push({ name: "Seo" });
+    }
+};
+
+const applyAction = () =>
+    actionMode.value === CREATE
+        ? createRedirection()
+        : updateRedirection(route.params.id);
+
 if (route.params.id === "add") {
     isReady.value = true;
+    actionMode.value = CREATE;
+} else {
+    actionMode.value = UPDATE;
+    getRedirection(route.params.id);
 }
 </script>
 

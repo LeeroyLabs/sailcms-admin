@@ -57,7 +57,7 @@
                         <v-col
                             cols="12"
                             xs="12"
-                            :md="tabs[activeTab].subTabs.length ? 9 : 12"
+                            :md="tabs[activeTab].subTabs.length ? '9' : '12'"
                             class="tw-h-full tw-overflow-auto"
                         >
                             <!-- General -->
@@ -99,8 +99,10 @@
                                                 <v-select
                                                     label="Select"
                                                     :items="[
-                                                        $t('seo.before'),
-                                                        $t('seo.after'),
+                                                        $t(
+                                                            'seo.options.before'
+                                                        ),
+                                                        $t('seo.options.after'),
                                                     ]"
                                                     density="comfortable"
                                                     class="tw-max-h-[72px]"
@@ -280,6 +282,53 @@
                             <!-- Social Media -->
                             <v-window v-model="tab" v-else-if="activeTab === 1">
                                 <v-window-item
+                                    :value="t('seo.subTabs.general')"
+                                    class="tw-flex tw-flex-col tw-justify-center tw-h-full tw-gap-4 tw-px-2"
+                                >
+                                    <h2 class="tw-font-medium tw-text-xl">
+                                        SEO Preview
+                                    </h2>
+
+                                    <div
+                                        class="tw-w-full tw-flex tw-justify-center tw-items-center tw-rounded tw-p-6 lg:tw-min-h-[405px]"
+                                        :class="{
+                                            'tw-bg-white':
+                                                $vuetify.theme.name === 'light',
+                                            'tw-bg-zinc-900 tw-border tw-border-neutral-500':
+                                                $vuetify.theme.name === 'dark',
+                                        }"
+                                    >
+                                        <SERP
+                                            title="Title"
+                                            urlPrefix="entryType.url_prefix[$i18n.locale]"
+                                            description="Description"
+                                            url="Your url"
+                                            :robotsAllowed="true"
+                                        />
+                                    </div>
+
+                                    <h2 class="tw-font-medium tw-text-xl">
+                                        SEO Title Source
+                                    </h2>
+                                    <v-text-field
+                                        label="Label"
+                                        variant="outlined"
+                                        v-model="socialsData.general.title"
+                                    />
+
+                                    <h2 class="tw-font-medium tw-text-xl">
+                                        SEO Title Description
+                                    </h2>
+                                    <v-text-field
+                                        label="Label"
+                                        variant="outlined"
+                                        v-model="
+                                            socialsData.general.description
+                                        "
+                                    />
+                                </v-window-item>
+
+                                <v-window-item
                                     v-for="social in tabs[1].components"
                                     :key="social.name"
                                     :value="social.name"
@@ -290,7 +339,7 @@
                                     </h2>
 
                                     <div
-                                        class="tw-w-full tw-flex tw-justify-center tw-items-center tw-rounded tw-p-6"
+                                        class="tw-w-full tw-flex tw-justify-center tw-items-center tw-rounded tw-p-6 lg:tw-min-h-[405px]"
                                         :class="{
                                             'tw-bg-white':
                                                 $vuetify.theme.name === 'light',
@@ -300,9 +349,15 @@
                                     >
                                         <component
                                             :is="social.component"
-                                            :title="socialsData.title"
+                                            :title="
+                                                socialsData[
+                                                    social.name.toLowerCase()
+                                                ].title
+                                            "
                                             :description="
-                                                socialsData.description
+                                                socialsData[
+                                                    social.name.toLowerCase()
+                                                ].description
                                             "
                                             :image="selectedURL"
                                         />
@@ -314,7 +369,11 @@
                                     <v-text-field
                                         label="Label"
                                         variant="outlined"
-                                        v-model="socialsData.title"
+                                        v-model="
+                                            socialsData[
+                                                social.name.toLowerCase()
+                                            ].title
+                                        "
                                     />
 
                                     <h2 class="tw-font-medium tw-text-xl">
@@ -323,8 +382,8 @@
                                     <v-select
                                         label="Select"
                                         :items="[
-                                            $t('seo.before'),
-                                            $t('seo.after'),
+                                            $t('seo.options.custom_image'),
+                                            $t('seo.options.custom_url'),
                                         ]"
                                         density="comfortable"
                                         class="tw-max-h-[72px]"
@@ -367,19 +426,18 @@
                                     <v-text-field
                                         label="Label"
                                         variant="outlined"
-                                        v-model="socialsData.description"
+                                        v-model="
+                                            socialsData[
+                                                social.name.toLowerCase()
+                                            ].description
+                                        "
                                     />
                                 </v-window-item>
                             </v-window>
 
-                            <!-- Preview -->
-                            <v-window v-model="tab" v-else-if="activeTab === 2">
-                                <v-window-item value=""> </v-window-item>
-                            </v-window>
-
                             <!-- Redirection -->
                             <Manager
-                                v-else-if="activeTab === 3"
+                                v-else-if="activeTab === 2"
                                 :active="0"
                                 :list="redirections.list"
                                 :overrideActions="actions"
@@ -390,7 +448,20 @@
                             >
                                 <template v-slot="{ row }">
                                     <td>
-                                        {{ row.url }}
+                                        <router-link
+                                            class="hover:tw-text-primary hover:tw-underline"
+                                            :class="{
+                                                'hover:tw-text-white':
+                                                    $vuetify.theme.name !==
+                                                    'light',
+                                            }"
+                                            :to="{
+                                                name: 'SeoRedirection',
+                                                params: { id: row._id },
+                                            }"
+                                        >
+                                            {{ row.url }}
+                                        </router-link>
                                     </td>
                                     <td>
                                         {{ row.redirect_url }}
@@ -403,10 +474,12 @@
                                     </td>
                                     <td>
                                         {{
-                                            format(
-                                                row.last_attempt * 1000,
-                                                "dd-MM-yyyy"
-                                            )
+                                            row.last_attempt === 0
+                                                ? "-"
+                                                : format(
+                                                      row.last_attempt * 1000,
+                                                      "dd-MM-yyyy"
+                                                  )
                                         }}
                                     </td>
                                 </template>
@@ -493,10 +566,10 @@ import Loader from "@/components/globals/Loader.vue";
 
 const { t } = useI18n();
 const vuetifyTheme = useTheme();
-const isReady = ref(true);
+const isReady = ref(false);
 const isLargeScreen = useMediaQuery("(min-width: 960px)");
 
-// Template refs
+// Template ref
 const keywordsInput = ref(null);
 
 const activeTab = ref(0);
@@ -512,6 +585,7 @@ const tabs = [
     {
         tab: t("seo.tabs.socials"),
         subTabs: [
+            t("seo.subTabs.general"),
             t("seo.subTabs.facebook"),
             t("seo.subTabs.twitter"),
             t("seo.subTabs.linkedin"),
@@ -532,10 +606,6 @@ const tabs = [
         ],
     },
     {
-        tab: t("seo.tabs.preview"),
-        subTabs: [],
-    },
-    {
         tab: t("seo.tabs.redirection"),
         subTabs: [],
     },
@@ -547,10 +617,30 @@ const tabs = [
 const tab = ref(tabs[activeTab.value].subTabs[0]);
 
 const socialsData = ref({
-    title: "",
-    description: "",
-    image: "",
-    default_image: "",
+    general: {
+        title: "",
+        description: "",
+        image: "",
+        default_image: "",
+    },
+    facebook: {
+        title: "",
+        description: "",
+        image: "",
+        default_image: "",
+    },
+    twitter: {
+        title: "",
+        description: "",
+        image: "",
+        default_image: "",
+    },
+    linkedIn: {
+        title: "",
+        description: "",
+        image: "",
+        default_image: "",
+    },
 });
 
 const keyword = ref("");
@@ -576,7 +666,7 @@ const cropping = {
 };
 
 const handleSelectedAsset = (e) => {
-    socialsData.value.default_image = e[0]._id;
+    socialsData.value[tab.value].default_image = e[0]._id;
 
     const transform = e[0].transforms.find((t) => t.transform === "thumbnail");
     document.getElementById("seo_image").style.backgroundImage =
@@ -661,6 +751,7 @@ const getRedirections = async (page, limit, search, sort, order) => {
     const result = await Seo.getRedirections(page, limit, search, sort, order);
     if (result) {
         redirections.value = result;
+        isReady.value = true;
     }
 };
 

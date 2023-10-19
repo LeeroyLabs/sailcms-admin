@@ -31,6 +31,7 @@ export default {
     getRedirection: `
         query getRedirection($id: ID!) {
             getRedirection(id: $id) {
+                _id
                 url
                 redirect_url
                 redirect_type
@@ -54,6 +55,7 @@ export default {
                     total
                 }
                 list {
+                    _id
                     url
                     redirect_url
                     redirect_type

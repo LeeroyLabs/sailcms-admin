@@ -906,11 +906,11 @@ form:
 seo:
   tabs:
     general: "General"
-    socials: "Social Media"
+    socials: "Preview / Social Media"
     redirection: "Redirection"
-    preview: "Preview"
     tracking: "Tracking"
   subTabs:
+    general: "General"
     appearance: "Appearance"
     social_media: "Social Media"
     google: "Google"
@@ -926,8 +926,11 @@ seo:
     hit_count: "Hit Count"
     last_attempt: "Last Attempt"
     no_redirections: "No redirections at the moment."
-  before: "Before"
-  after: "After"
+  options:
+    before: "Before"
+    after: "After"
+    custom_image: "Custom Image"
+    custom_url: "Custom URL"
   add_redirection: "Add redirection"
 
 seoRedirection:

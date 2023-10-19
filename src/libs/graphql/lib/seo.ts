@@ -73,6 +73,34 @@ export class Seo {
 
     /**
      *
+     * getRedirection
+     *
+     * @param id
+     *
+     */
+    public static async getRedirection(
+        id: string
+    ): Promise<Redirection | null> {
+        const client = new Client();
+        const query = SeoQueries.getRedirection;
+
+        const result = await client.query(
+            gql`
+                ${query},
+            `,
+            { id },
+            false
+        );
+
+        if (result.data) {
+            return result.data.getRedirection;
+        }
+
+        return null;
+    }
+
+    /**
+     *
      * getRedirections
      *
      * @param page
@@ -133,6 +161,39 @@ export class Seo {
 
         if (result.data) {
             return result.data.createRedirection;
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * updateRedirection
+     *
+     * @param id
+     * @param url
+     * @param redirect_url
+     * @param redirect_type
+     *
+     */
+    public static async updateRedirection(
+        id: string,
+        url: string,
+        redirect_url: string,
+        redirect_type: RedirectType
+    ): Promise<boolean | null> {
+        const client = new Client();
+        const mutation = SeoQueries.updateRedirection;
+
+        const result = await client.mutation(
+            gql`
+                ${mutation},
+            `,
+            { id, url, redirect_url, redirect_type }
+        );
+
+        if (result.data) {
+            return result.data.updateRedirection;
         }
 
         return null;
