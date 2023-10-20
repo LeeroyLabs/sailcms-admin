@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!isLoading">
+    <div v-if="isReady">
         <BackButton :url="{ name: 'Navigations' }" />
 
         <section
@@ -14,13 +14,16 @@
                                 class="tw-flex tw-flex-col tw-gap-4"
                                 @submit.prevent
                             >
-                                <div>
-                                    <h3
-                                        class="tw-font-medium tw-text-xl tw-mb-2"
-                                    >
-                                        {{ navigation?.title }}
-                                    </h3>
-                                </div>
+                                <v-text-field
+                                    color="primary"
+                                    :label="$t('navigation.form.title')"
+                                    variant="outlined"
+                                    type="text"
+                                    density="comfortable"
+                                    :hide-details="true"
+                                    disabled
+                                    v-model="navigationTitle"
+                                />
 
                                 <v-text-field
                                     color="primary"
@@ -165,7 +168,7 @@
 
 <script setup>
 // Vue
-import { ref, inject, onMounted, watch, nextTick } from "vue";
+import { ref, inject, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/store/app";
 import { useRoute } from "vue-router";
@@ -182,10 +185,11 @@ import BackButton from "@/components/globals/BackButton.vue";
 const store = useAppStore();
 const i18n = useI18n();
 const route = useRoute();
-const isLoading = ref(true);
+const isReady = ref(false);
 const siteId = ref(SailCMS.getSiteId());
 
 const navigation = ref();
+const navigationTitle = ref("");
 const navStructure = ref([]);
 const selectedNavItem = ref(null);
 const navigationsKey = ref(0);
@@ -247,17 +251,16 @@ const handleUpdateList = async (structure) => {
 
 // Get the details of the navigation
 const getNavigationDetails = async (slug) => {
-    isLoading.value = true;
     const responseNavigationDetails = await Navigations.navigationDetails(slug);
     if (responseNavigationDetails) {
         navigation.value = responseNavigationDetails;
+        navigationTitle.value = navigation.value.title;
         navStructure.value = navigation.value.structure;
 
         formattedNavItems.value = formatNavItems(navigation.value.structure);
         flattenFormattedNavItems.value = [];
         flatFormattedNavItems(formattedNavItems.value);
         navigationsKey.value += 1;
-        isLoading.value = false;
     }
 };
 
@@ -369,11 +372,9 @@ const updateActionSelected = async (item) => {
     else if (selectedNavItem.value.is_entry) navItemType.value = IS_ENTRY;
     else navItemType.value = IS_CATEGORY;
 
-    nextTick(() => {
-        navItemStructure.value.label = selectedNavItem.value.label;
-        navItemStructure.value.url = selectedNavItem.value.url;
-        navItemStructure.value.entry_id = navItemTypeEntry.value?._id || "";
-    });
+    navItemStructure.value.label = selectedNavItem.value.label;
+    navItemStructure.value.url = selectedNavItem.value.url;
+    navItemStructure.value.entry_id = selectedNavItem.value.entry_id;
 
     await navFormRef.value.validate();
 };
@@ -381,13 +382,23 @@ const updateActionSelected = async (item) => {
 // Cancel
 const handleCancel = () => {
     selectedNavItem.value = null;
+    navItemStructure.value = {
+        label: "",
+        url: "",
+        is_entry: false,
+        is_category: false,
+        entry_id: "",
+        external: false,
+        children: [],
+    };
     navItemTypeEntry.value = null;
     selectedAction.value = CREATE_ACTION;
     sortedNavItems.value = null;
-    if (navFormRef.value) {
-        navFormRef.value.reset();
-        navFormRef.value.resetValidation();
-    }
+
+    navFormRef.value.reset();
+    navFormRef.value.resetValidation();
+
+    navigationTitle.value = navigation.value.title;
 };
 
 // Watch the type of item (external, entry or category)
@@ -423,8 +434,6 @@ watch(navItemType, (newValueType) => {
             navItemStructure.value.is_entry = false;
             navItemStructure.value.is_category = false;
     }
-    navItemStructure.value.entry_id = "";
-    navItemStructure.value.url = "";
 });
 
 // Check which entry is associated with the item & update navItemStructure (id, url)
@@ -433,6 +442,24 @@ watch(navItemTypeEntry, (newValue) => {
     if (navItemTypeEntry.value) {
         navItemStructure.value.entry_id = navItemTypeEntry.value._id;
         navItemStructure.value.url = navItemTypeEntry.value.slug;
+    }
+});
+
+// Update navItemTypeEntry when clicking on item
+watch(selectedNavItem, (newValue) => {
+    selectedNavItem.value = newValue;
+
+    if (selectedNavItem.value && selectedNavItem.value.is_category) {
+        navItemTypeEntry.value =
+            formattedCategories.value.find(
+                (cat) => cat._id === selectedNavItem.value?.entry_id
+            ) || null;
+    }
+    if (selectedNavItem.value && selectedNavItem.value.is_entry) {
+        navItemTypeEntry.value =
+            entriesList.value.find(
+                (entry) => entry._id === selectedNavItem.value?.entry_id
+            ) || null;
     }
 });
 
@@ -470,7 +497,6 @@ const categoryFullTree = async (parent_id, site_id) => {
         categoriesList.value = responseCategoryFullTree;
         formattedCategories.value = [];
         formatCategoriesList(categoriesList.value);
-        isLoading.value = false;
     }
 };
 
@@ -509,10 +535,14 @@ const setupPage = () => {
     document.title = i18n.t("navigations.title") + " — SailCMS";
 };
 
-onMounted(() => {
-    getNavigationDetails(route.params.slug);
+onMounted(async () => {
     setupPage();
-    categoryFullTree("", siteId.value);
+
+    const results = await Promise.allSettled([
+        getNavigationDetails(route.params.slug),
+        categoryFullTree("", siteId.value),
+    ]);
+    if (results) isReady.value = true;
 });
 </script>
 
