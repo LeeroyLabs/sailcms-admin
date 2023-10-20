@@ -7,19 +7,19 @@
                 <v-row>
                     <v-col cols="12" xs="12" md="3">
                         <div class="tw-flex tw-flex-col tw-gap-4">
-                            <h3 class="tw-font-medium tw-text-xl">
-                                {{
-                                    !selectedCategory
-                                        ? $t("categories.form.title_add")
-                                        : $t("categories.form.title_edit")
-                                }}
-                            </h3>
-                            <v-form ref="categoryForm" @submit.prevent v-model="isFormValid" class="tw-flex tw-flex-col tw-gap-4">
+                            <v-form
+                                ref="categoryForm"
+                                @submit.prevent
+                                v-model="isFormValid"
+                                class="tw-flex tw-flex-col tw-gap-4"
+                            >
                                 <v-text-field
                                     v-for="locale in siteLocales"
                                     :key="locale"
                                     color="primary"
-                                    :label="$t(`categories.form.name.${locale}`)"
+                                    :label="
+                                        $t(`categories.form.name.${locale}`)
+                                    "
                                     variant="outlined"
                                     type="text"
                                     :clearable="true"
@@ -44,7 +44,9 @@
                                     :hide-details="true"
                                 />
 
-                                <div class="tw-flex tw-items-center tw-gap-x-2 tw-flex-wrap">
+                                <div
+                                    class="tw-flex tw-items-center tw-gap-x-2 tw-flex-wrap"
+                                >
                                     <v-btn
                                         v-if="!selectedCategory"
                                         @click="
@@ -58,17 +60,29 @@
                                         color="primary"
                                         density="default"
                                     >
-                                        {{ $t("categories.form.add_category_btn") }}
+                                        {{
+                                            $t(
+                                                "categories.form.add_category_btn"
+                                            )
+                                        }}
                                     </v-btn>
 
                                     <v-btn
                                         v-if="selectedCategory"
-                                        @click="handleUpdateCategory(selectedCategory)"
+                                        @click="
+                                            handleUpdateCategory(
+                                                selectedCategory
+                                            )
+                                        "
                                         type="submit"
                                         density="default"
                                         color="primary"
                                     >
-                                        {{ $t("categories.form.edit_category_btn") }}
+                                        {{
+                                            $t(
+                                                "categories.form.edit_category_btn"
+                                            )
+                                        }}
                                     </v-btn>
 
                                     <v-btn
