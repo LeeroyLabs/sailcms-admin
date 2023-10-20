@@ -1,13 +1,6 @@
 <template>
     <div v-if="!isLoading">
-        <Teleport to="#actions">
-            <v-btn
-                @click="$router.push({ name: 'Navigations' })"
-                color="primary"
-            >
-                {{ $t("navigation.back") }}
-            </v-btn>
-        </Teleport>
+        <BackButton :url="{ name: 'Navigations' }" />
 
         <section
             class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between"
@@ -27,18 +20,6 @@
                                     >
                                         {{ navigation?.title }}
                                     </h3>
-
-                                    <p>
-                                        {{
-                                            !selectedNavItem
-                                                ? $t(
-                                                      "navigation.form.title_add"
-                                                  )
-                                                : $t(
-                                                      "navigation.form.title_edit"
-                                                  )
-                                        }}
-                                    </p>
                                 </div>
 
                                 <v-text-field
@@ -51,7 +32,6 @@
                                     :hide-details="true"
                                     :rules="[navFormValidations.required]"
                                     v-model="navItemStructure.label"
-                                    validate-on="submit"
                                 />
 
                                 <v-select
@@ -66,7 +46,6 @@
                                     ]"
                                     :rules="[navFormValidations.required]"
                                     v-model="navItemType"
-                                    validate-on="submit"
                                 />
 
                                 <v-autocomplete
@@ -94,7 +73,6 @@
                                     variant="outlined"
                                     density="comfortable"
                                     :rules="[navFormValidations.required]"
-                                    validate-on="submit"
                                 />
 
                                 <v-text-field
@@ -113,7 +91,6 @@
                                     "
                                     v-model="navItemStructure.url"
                                     :disabled="navItemType !== IS_EXTERNAL_URL"
-                                    validate-on="submit"
                                 />
 
                                 <div
@@ -200,6 +177,7 @@ import { v4 as uuidv4 } from "uuid";
 // Components
 import Loader from "@/components/globals/Loader.vue";
 import NestedDraggable from "@/components/globals/nestedDraggable/NestedDraggable.vue";
+import BackButton from "@/components/globals/BackButton.vue";
 
 const store = useAppStore();
 const i18n = useI18n();
@@ -335,68 +313,55 @@ const setNavItemsStructure = (dataList) => {
 // CREATE
 // Create a navigation item
 const handleCreateNavigationItem = async () => {
-    if (navFormRef.value) {
-        await navFormRef.value.validate();
-    }
-    if (
-        navFormRef.value &&
-        navFormRef.value.errors &&
-        !navFormRef.value.errors.length
-    ) {
-        const newItem = {
-            ...navItemStructure.value,
-            _id: uuidv4(),
-        };
+    const status = await navFormRef.value.validate();
+    if (!status.valid) return;
 
-        formattedNavItems.value = [newItem, ...formattedNavItems.value];
-        flattenFormattedNavItems.value = [];
-        flatFormattedNavItems(formattedNavItems.value);
-        handleUpdateNavigation();
-    }
+    const newItem = {
+        ...navItemStructure.value,
+        _id: uuidv4(),
+    };
+
+    formattedNavItems.value = [newItem, ...formattedNavItems.value];
+    flattenFormattedNavItems.value = [];
+    flatFormattedNavItems(formattedNavItems.value);
+    handleUpdateNavigation();
 };
 
 // UPDATE
 // Update a navigation
 const handleUpdateNavigation = async () => {
-    if (navFormRef.value && selectedAction.value === UPDATE_ACTION) {
-        await navFormRef.value.validate();
+    if (selectedAction.value === UPDATE_ACTION) {
+        const status = await navFormRef.value.validate();
+        if (!status.valid) return;
+
+        flattenFormattedNavItems.value = flattenFormattedNavItems.value.map(
+            (item) => {
+                if (item._id === selectedNavItem.value?._id)
+                    return { ...navItemStructure.value, _id: item._id };
+                return item;
+            }
+        );
     }
 
-    if (
-        navFormRef.value &&
-        navFormRef.value.errors &&
-        !navFormRef.value.errors.length
-    ) {
-        if (selectedAction.value === UPDATE_ACTION) {
-            flattenFormattedNavItems.value = flattenFormattedNavItems.value.map(
-                (item) => {
-                    if (item._id === selectedNavItem.value?._id)
-                        return { ...navItemStructure.value, _id: item._id };
-                    return item;
-                }
-            );
-        }
+    navStructure.value = setNavItemsStructure(
+        sortedNavItems.value ?? formattedNavItems.value
+    );
 
-        navStructure.value = setNavItemsStructure(
-            sortedNavItems.value ?? formattedNavItems.value
-        );
-
-        const responseUpdateCategory = await Navigations.updateNavigation({
-            id: navigation.value?._id,
-            title: navigation.value?.title,
-            slug: navigation.value?.slug,
-            structure: navStructure.value,
-            locale: i18n.locale.value,
-        });
-        if (responseUpdateCategory) {
-            getNavigationDetails(navigation.value.slug);
-            handleCancel();
-        }
+    const responseUpdateCategory = await Navigations.updateNavigation({
+        id: navigation.value?._id,
+        title: navigation.value?.title,
+        slug: navigation.value?.slug,
+        structure: navStructure.value,
+        locale: i18n.locale.value,
+    });
+    if (responseUpdateCategory) {
+        getNavigationDetails(navigation.value.slug);
+        handleCancel();
     }
 };
 
 // Update action selected before updating the navigation
-const updateActionSelected = (item) => {
+const updateActionSelected = async (item) => {
     selectedAction.value = UPDATE_ACTION;
     selectedNavItem.value = item;
 
@@ -409,6 +374,8 @@ const updateActionSelected = (item) => {
         navItemStructure.value.url = selectedNavItem.value.url;
         navItemStructure.value.entry_id = navItemTypeEntry.value?._id || "";
     });
+
+    await navFormRef.value.validate();
 };
 
 // Cancel
