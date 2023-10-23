@@ -206,6 +206,9 @@ const UPDATE_ACTION = "update";
 const UPDATE_LIST_ACTION = "update-list";
 const DELETE_ACTION = "delete";
 
+// Template Refs
+const navFormRef = ref(null);
+
 // Form & Validations
 const navItemStructure = ref({
     label: "",
@@ -223,9 +226,6 @@ const navFormValidations = {
 };
 
 const selectedAction = ref(CREATE_ACTION);
-
-// Template Refs
-const navFormRef = ref(null);
 
 // Emits
 const emitter = inject("emitter");

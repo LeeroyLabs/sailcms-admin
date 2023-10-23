@@ -18,7 +18,8 @@
             }"
         >
             <div
-                class="tw-flex tw-flex-row tw-justify-between tw-items-center tw-py-0.5"
+                class="tw-flex tw-flex-row tw-justify-between tw-items-center tw-py-0.5 tw-cursor-pointer"
+                @click.prevent="updateItem(item)"
             >
                 <div class="tw-flex tw-flex-row tw-items-center">
                     <v-icon
@@ -29,7 +30,6 @@
                     <a
                         href="#"
                         class="tw-mr-1 hover:tw-text-primary tw-text-left"
-                        @click.prevent="updateItem(item)"
                     >
                         {{ displayedOption(item) }}
                     </a>

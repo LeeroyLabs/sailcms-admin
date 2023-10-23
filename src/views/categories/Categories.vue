@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!isLoading">
+    <div v-if="isReady">
         <section
             class="tw-mt-6 tw-mb-4 tw-flex tw-flex-col-reverse md:tw-flex-row tw-justify-between"
         >
@@ -10,7 +10,6 @@
                             <v-form
                                 ref="categoryForm"
                                 @submit.prevent
-                                v-model="isFormValid"
                                 class="tw-flex tw-flex-col tw-gap-4"
                             >
                                 <v-text-field
@@ -22,22 +21,19 @@
                                     "
                                     variant="outlined"
                                     type="text"
-                                    :clearable="true"
                                     density="comfortable"
                                     required
                                     :rules="categoryNameRules"
                                     :hide-details="true"
                                     v-model="categoryNameInput[locale]"
-                                    @click:clear="handleCancel"
                                 >
                                 </v-text-field>
 
                                 <v-select
-                                    :clearable="true"
                                     :label="$t('categories.form.select_parent')"
                                     variant="outlined"
                                     density="comfortable"
-                                    :items="flattendCategoriesList"
+                                    :items="flattenCategoriesList"
                                     v-model="selectedParentId"
                                     item-title="name"
                                     item-value="id"
@@ -141,29 +137,24 @@ import NestedDraggable from "@/components/globals/nestedDraggable/NestedDraggabl
 
 const store = useAppStore();
 const i18n = useI18n();
-const isLoading = ref(true);
+const isReady = ref(false);
 const siteId = ref(SailCMS.getSiteId());
 const siteLocales = ref(SailCMS.getLocales());
-
-const categoriesList = ref([]);
-const categoriesListKey = ref(0);
-const selectedCategory = ref(null);
-const flattendCategoriesList = ref([]);
-const sortedCategories = ref([]);
-const selectedParentId = ref(null);
 
 // Template refs
 const categoryForm = ref();
 
+const categoriesList = ref([]);
+const categoriesListKey = ref(0);
+const selectedCategory = ref(null);
+const selectedParentId = ref(null);
+const flattenCategoriesList = ref([]);
+const sortedCategories = ref([]);
+
 // Search & Validations
-const isFormValid = ref(false);
 const categoryNameInput = ref({ en: "", fr: "" });
-const categoryNameRules = [
-    (value) => {
-        if (value) return true;
-        return "Name is requred.";
-    },
-];
+const categoryNameRules = [(value) => !!value || "Name is required"];
+
 // Reset form
 const reset = () => {
     if (categoryForm.value) categoryForm.value.reset();
@@ -174,9 +165,12 @@ const emitter = inject("emitter");
 emitter.on("delete-item", (data) => handleDeleteCategory(data.item));
 emitter.on("update-item", (item) => {
     selectedCategory.value = item;
-    selectedParentId.value = item.parent_id;
+    selectedParentId.value = item.parent_id || null;
     categoryNameInput.value = item.name;
-    flattendCategoriesList.value = flattendCategoriesList.value.filter(
+
+    flattenCategoriesList.value = [];
+    flatCategoriesList(categoriesList.value);
+    flattenCategoriesList.value = flattenCategoriesList.value.filter(
         (el) => el.id !== selectedCategory?.value?._id
     );
 });
@@ -194,10 +188,10 @@ const categoryFullTree = async (parent_id, site_id) => {
     );
     if (responseCategoryFullTree) {
         categoriesList.value = responseCategoryFullTree;
-        flattendCategoriesList.value = [];
+        flattenCategoriesList.value = [];
         flatCategoriesList(categoriesList.value);
-        isLoading.value = false;
         categoriesListKey.value++;
+        isReady.value = true;
     }
 };
 
@@ -214,8 +208,8 @@ const flatCategoriesList = (categoriesList) => {
         };
     });
 
-    flattendCategoriesList.value = [
-        ...flattendCategoriesList.value,
+    flattenCategoriesList.value = [
+        ...flattenCategoriesList.value,
         ...formattedList,
     ].sort((a, b) => a.name.localeCompare(b.name));
 };
@@ -232,33 +226,35 @@ const formatSortedCategories = (categoriesList, parent) => {
 
 // Add a category
 const handleAddCategory = async (name, parent_id, site_id) => {
-    if (isFormValid.value) {
-        const responseAddCategory = await Categories.createCategory(
-            name,
-            parent_id,
-            site_id
-        );
-        if (responseAddCategory) {
-            categoryFullTree("", siteId.value);
-            handleCancel();
-        }
+    const status = await categoryForm.value.validate();
+    if (!status.valid) return;
+
+    const responseAddCategory = await Categories.createCategory(
+        name,
+        parent_id,
+        site_id
+    );
+    if (responseAddCategory) {
+        categoryFullTree("", siteId.value);
+        handleCancel();
     }
 };
 
 // Update a category
 const handleUpdateCategory = async (item) => {
-    if (isFormValid.value) {
-        isLoading.value = true;
-        const responseUpdateCategory = await Categories.updateCategory(
-            item._id,
-            categoryNameInput.value,
-            selectedParentId.value || ""
-        );
-        if (responseUpdateCategory) {
-            categoryFullTree("", siteId.value);
-            handleCancel();
-            isLoading.value = false;
-        }
+    const status = await categoryForm.value.validate();
+    if (!status.valid) return;
+
+    isReady.value = false;
+    const responseUpdateCategory = await Categories.updateCategory(
+        item._id,
+        categoryNameInput.value,
+        selectedParentId.value || ""
+    );
+    if (responseUpdateCategory) {
+        categoryFullTree("", siteId.value);
+        handleCancel();
+        isReady.value = true;
     }
 };
 
@@ -268,8 +264,6 @@ const updateCategoryOrders = async (sortedCategories) => {
         sortedCategories,
         siteId.value
     );
-    if (responseUpdateCategoryOrders) {
-    }
 };
 
 // Delete a category
@@ -285,7 +279,6 @@ const handleCancel = () => {
     categoryNameInput.value = { en: "", fr: "" };
     selectedCategory.value = null;
     selectedParentId.value = null;
-    isFormValid.value = false;
     reset();
 };
 
@@ -307,7 +300,7 @@ const setupPage = () => {
 
 watch(i18n.locale, () => {
     categoriesListKey.value++;
-    flattendCategoriesList.value = [];
+    flattenCategoriesList.value = [];
     flatCategoriesList(categoriesList.value);
 });
 
