@@ -918,3 +918,5 @@ entryseo:
   no_image: No Image Selected
   frequency: Update Frequency
   priority: Priority
+  priorities:
+    xhigh: Extremely High

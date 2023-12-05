@@ -1,81 +1,91 @@
 <template>
-    <div v-if="isReady" class="tw-p-6 tw-w-full tw-ml-0">
+    <div v-if="isReady" class="tw-w-full">
         <BackButton :url="{name: 'EntryTypes'}"/>
 
-        <v-form ref="form" class="tw-flex-grow">
-            <div class="tw-mt-6 md:tw-mt-0">
-                <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-x-4 tw-mb-4 tw-gap-y-4 md:tw-gap-y-0">
-                    <v-text-field
-                        color="primary"
-                        :label="$t('entry_types.type_title')"
-                        variant="outlined"
-                        type="text"
-                        :rules="[rules.required]"
-                        validate-on="blur"
-                        v-model="currentType.title"
-                        density="comfortable"
-                    />
-                    <v-text-field
-                        color="primary"
-                        :label="$t('entry_types.handle')"
-                        variant="outlined"
-                        type="text"
-                        :rules="[rules.required]"
-                        validate-on="blur"
-                        v-model="currentType.handle"
-                        density="comfortable"
-                        @keydown="formatValue"
-                        :readonly="!isAdding"
-                    />
-
-                    <v-text-field
-                        v-for="(locale, key) in SailCMS.getLocales()"
-                        :key="key"
-                        color="primary"
-                        :label="$t('entry_types.prefix', {locale: locale})"
-                        variant="outlined"
-                        type="text"
-                        v-model="currentType.url_prefix[key].data"
-                        density="comfortable"
-                        @keydown="formatValue"
-                    >
-                        <template v-slot:details>{{ $t('entry_types.leave_blank') }}</template>
-                    </v-text-field>
-
-                    <div class="tw-col-span-2 tw-mt-2">
-                        <v-select
-                            :label="$t('fields.layout')"
+        <v-card class="tw-p-4 tw-overflow-auto">
+            <v-form ref="form" class="tw-flex-grow">
+                <div class="tw-mt-6 md:tw-mt-0">
+                    <h2 class="tw-font-medium tw-mb-4">Information</h2>
+                    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-x-4 tw-mb-4 tw-gap-y-4 md:tw-gap-y-0">
+                        <v-text-field
+                            color="primary"
+                            :label="$t('entry_types.type_title')"
                             variant="outlined"
+                            type="text"
+                            :rules="[rules.required]"
+                            validate-on="blur"
+                            v-model="currentType.title"
                             density="comfortable"
-                            :items="layouts"
-                            v-model="currentType.entry_layout_id"
-                            item-title="title"
-                            item-value="_id"
-                            :hide-details="true"
+                        />
+                        <v-text-field
+                            color="primary"
+                            :label="$t('entry_types.handle')"
+                            variant="outlined"
+                            type="text"
+                            :rules="[rules.required]"
+                            validate-on="blur"
+                            v-model="currentType.handle"
+                            density="comfortable"
+                            @keydown="formatValue"
+                            :readonly="!isAdding"
+                        />
+
+                        <v-text-field
+                            v-for="(locale, key) in SailCMS.getLocales()"
+                            :key="key"
+                            color="primary"
+                            :label="$t('entry_types.prefix', {locale: locale})"
+                            variant="outlined"
+                            type="text"
+                            v-model="currentType.url_prefix[key].data"
+                            density="comfortable"
+                            @keydown="formatValue"
+                        >
+                            <template v-slot:details>{{ $t('entry_types.leave_blank') }}</template>
+                        </v-text-field>
+
+                        <div class="tw-col-span-2 tw-mt-2">
+                            <v-select
+                                :label="$t('fields.layout')"
+                                variant="outlined"
+                                density="comfortable"
+                                :items="layouts"
+                                v-model="currentType.entry_layout_id"
+                                item-title="title"
+                                item-value="_id"
+                                :hide-details="true"
+                            />
+                        </div>
+
+                        <div class="tw-col-span-2 tw-mt-6">
+                            <div>
+                                <h2 class="tw-font-medium tw-mb-2">SEO</h2>
+                                <EntrySeo :show-preview="false" :is-entry-type="true"/>
+                            </div>
+                        </div>
+
+                        <v-switch
+                            v-model="currentType.use_categories"
+                            :label="$t('entry_types.use_categories')"
+                            color="primary"
+                            :value="true"
+                            hide-details
+                            class="tw-flex-grow"
                         />
                     </div>
-
-                    <v-switch
-                        v-model="currentType.use_categories"
-                        :label="$t('entry_types.use_categories')"
+                    <v-btn
+                        :loading="isSaving"
+                        @click.prevent="saveType"
+                        variant="flat"
                         color="primary"
-                        :value="true"
-                        hide-details
-                        class="tw-flex-grow"
-                    />
+                        class="tw-mr-2"
+                    >
+                        {{ (isAdding) ? $t('system.add') : $t('system.save') }}
+                    </v-btn>
+                    <v-btn @click.prevent="cancelSave" variant="flat">{{ $t('system.cancel') }}</v-btn>
                 </div>
-                <v-btn
-                    :loading="isSaving"
-                    @click.prevent="saveType"
-                    variant="flat"
-                    color="primary"
-                    class="tw-mr-2"
-                >
-                    {{ (isAdding) ? $t('system.add') : $t('system.save') }}
-                </v-btn>
-                <v-btn @click.prevent="cancelSave" variant="flat">{{ $t('system.cancel') }}</v-btn>
-            </div>
-        </v-form>
+            </v-form>
+        </v-card>
     </div>
     <Loader v-else/>
 </template>
@@ -91,6 +101,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { Entries } from '@/libs/graphql/lib/entries';
 import { hasPermission } from '@/libs/tools';
 import BackButton from '@/components/globals/BackButton.vue';
+import EntrySeo from '@/components/entries/entry/EntrySeo.vue';
 
 const isReady = ref(false);
 const isAdding = ref(true);

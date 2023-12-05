@@ -91,6 +91,7 @@ import { deburr, kebabCase } from 'lodash';
 import { AvailableFields } from '@/components/entries/entry/fields/Fields';
 import { usePage } from '@/libs/page';
 import { GridMaker } from '@/libs/gridmaker';
+import EntrySeo from '@/components/entries/entry/EntrySeo.vue';
 
 // Use
 const i18n = useI18n();

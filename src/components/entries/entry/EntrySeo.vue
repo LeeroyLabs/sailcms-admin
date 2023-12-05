@@ -2,7 +2,18 @@
     <div v-if="ready" class="tw-flex tw-flex-col tw-gap-y-6">
 
         <div class="tw-flex tw-flex-row tw-w-full">
-            <v-tabs v-model="tab" direction="vertical" color="primary" class="tw-rounded-l-lg tw-w-[170px]" :class="{'tw-bg-gray-200': $vuetify.theme.name === 'light', 'tw-bg-neutral-800 tw-border tw-border-neutral-500': $vuetify.theme.name === 'dark'}">
+            <v-tabs
+                v-model="tab"
+                direction="vertical"
+                color="primary"
+                class="tw-rounded-l-lg tw-w-[170px]"
+                :class="{
+                    'tw-bg-gray-200 tw-border-neutral-400': $vuetify.theme.name === 'light',
+                    'tw-bg-neutral-800 tw-border tw-border-neutral-500': $vuetify.theme.name === 'dark',
+                    'tw-border': alwaysShowBorders,
+                    '!tw-bg-gray-300': alwaysShowBorders && $vuetify.theme.name === 'light'
+                }"
+            >
                 <v-tab value="info">
                     <v-icon :start="true">
                         mdi-information-outline
@@ -23,7 +34,15 @@
                 </v-tab>
             </v-tabs>
 
-            <v-window v-model="tab" class="tw-w-full tw-p-4 tw-min-h-[300px] tw-max-h-[300px] tw-rounded-r-lg" :class="{'tw-bg-white': $vuetify.theme.name === 'light', 'tw-bg-zinc-900 tw-border tw-border-neutral-500': $vuetify.theme.name === 'dark'}">
+            <v-window
+                v-model="tab"
+                class="tw-w-full tw-p-4 tw-min-h-[300px] tw-max-h-[300px] tw-rounded-r-lg"
+                :class="{
+                    'tw-bg-white tw-border-neutral-400 tw-border-l-0': $vuetify.theme.name === 'light',
+                    'tw-bg-zinc-900 tw-border tw-border-neutral-500': $vuetify.theme.name === 'dark',
+                    'tw-border': alwaysShowBorders
+                }"
+            >
                 <v-window-item value="info">
                     <div class="tw-flex tw-flex-col tw-gap-y-4">
                         <v-text-field
@@ -126,7 +145,7 @@
             </v-window>
         </div>
 
-        <div>
+        <div v-if="showPreview">
             <h2 class="tw-text-neutral-500 tw-font-medium tw-text-lg tw-mb-2">{{ $t('entryseo.previews') }}</h2>
 
             <div class="tw-flex tw-flex-row tw-w-full">
@@ -209,6 +228,18 @@ const props = defineProps({
     entryType: {
         type: Object,
         default: null
+    },
+    showPreview: {
+        type: Boolean,
+        default: true
+    },
+    isEntryType: {
+        type: Boolean,
+        default: false
+    },
+    alwaysShowBorders: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -238,7 +269,7 @@ const frequencies = ref([
 ]);
 
 const priorities = ref([
-    {value: '1.0', title: 'Extremely High'},
+    {value: '1.0', title: i18n.t('entryseo.priorities.xhigh')},
     {value: '0.8', title: 'High'},
     {value: '0.5', title: 'Regular'},
     {value: '0.3', title: 'Low'},
@@ -282,7 +313,15 @@ const dtConfig = {
 
 const loadEntrySeo = async () =>
 {
-    if (props.entry._id === '') {
+    if (props.showPreview) {
+        if (props.entry._id==='') {
+            ready.value = true;
+            return;
+        }
+    }
+
+    if (props.isEntryType) {
+        console.log("entry type code");
         ready.value = true;
         return;
     }
