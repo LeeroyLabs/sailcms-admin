@@ -2,7 +2,7 @@ login:
   sign_in: Sign In
   email: Email address
   password: Password
-  forgot: Forgot password
+  forgot: Forgot password?
   errors:
     required: Required.
     invalid_email: Invalid email.

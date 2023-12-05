@@ -1,28 +1,26 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-    content: [
-        './index.html',
-        './src/**/*.{js,ts,jsx,tsx,vue}'
-    ],
-    prefix: 'tw-',
-    theme: {
-        fontFamily: {
-            'body': ['Radio Canada', 'Sans-Serif']
-        },
-        extend: {
-            colors: {
-                primary: '#52688F',
-                secondary: '#7391C8',
-                lightdark: '#252525',
-                darkbg: '#212121',
-                darkest: '#111111'
-            },
-            boxShadow: {
-                'calendar': '-10px 0 0 #52688F !important'
-            }
-        }
-    },
-    plugins: [
-    ]
-};
+import { join } from 'path'
+import { SailCMSTheme } from './theme/main.js';
 
+import forms from '@tailwindcss/forms';
+import typography from '@tailwindcss/typography';
+import { skeleton } from '@skeletonlabs/tw-plugin';
+
+/** @type {import('tailwindcss').Config} */
+export default {
+	darkMode: 'class',
+	content: ['./src/**/*.{html,js,svelte,ts}', join(require.resolve('@skeletonlabs/skeleton'), '../**/*.{html,js,svelte,ts}')],
+	theme: {
+		extend: {},
+	},
+	plugins: [
+		forms,
+		typography,
+		skeleton({
+			themes: {
+				custom: [
+					SailCMSTheme
+				]
+			},
+		}),
+	],
+};

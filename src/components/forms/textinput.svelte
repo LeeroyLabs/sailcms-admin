@@ -1,0 +1,5 @@
+<script>
+    // TODO MAKE TEXT (EMAIL, PASSWORD, TEXT, NUMBER)
+    // TODO VALIDATION BUILT IN
+
+</script>

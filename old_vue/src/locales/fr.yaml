@@ -2,7 +2,7 @@ login:
   sign_in: Connexion
   email: Adresse courriel
   password: Mot de passe
-  forgot: Mot de passe oublié
+  forgot: Mot de passe oublié ?
   errors:
     required: Requis.
     invalid_email: Courriel invalide.

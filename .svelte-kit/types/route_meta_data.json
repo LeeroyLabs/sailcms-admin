@@ -1,0 +1,13 @@
+{
+	"/(public)": [
+		"src/routes/(public)/+layout.js",
+		"src/routes/(public)/+layout.js"
+	],
+	"/(app)": [
+		"src/routes/(app)/+layout.js"
+	],
+	"/": [],
+	"/(app)/dashboard": [
+		"src/routes/(app)/+layout.js"
+	]
+}
