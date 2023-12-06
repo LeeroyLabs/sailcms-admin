@@ -1,5 +1,5 @@
 {
-    "sailcms_url": "https://sailcms.dev.test/graphql",
+    "sailcms_url": "https://sail.dev.test/graphql",
     "public_url": "https://www.leeroy.ca",
     "base_url": "/admin",
     "site_id": "default",

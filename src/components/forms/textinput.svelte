@@ -2,4 +2,115 @@
     // TODO MAKE TEXT (EMAIL, PASSWORD, TEXT, NUMBER)
     // TODO VALIDATION BUILT IN
 
+    import { _ } from 'svelte-i18n';
+    import { v4 } from 'uuid';
+    import { createEventDispatcher } from 'svelte';
+    import { Icon } from '@steeze-ui/svelte-icon';
+    import { ErrorOutline } from '@steeze-ui/material-design-icons';
+    import { Validation } from '$lib/helpers/validation.js';
+    import { debug } from '$lib/helpers/debugger.js';
+
+    // Props
+    export let value = '';
+    export let placeholder = '';
+    export let disabled = false;
+    export let type = 'text';
+    export let id = v4();
+    export let autocomplete = false;
+    export let readonly = false;
+    export let validation = [];
+    export let css = '';
+    export let blockCss = '';
+    export let isValid = true;
+
+    // Special Exports
+    export { css as class };
+    export { blockCss as blockClass };
+
+    // Internals
+    let hasError = false
+
+    const dispatcher = createEventDispatcher();
+
+    export const validate = () =>
+    {
+        if (validation.length === 0) {
+            hasError = false;
+            isValid = true;
+            return;
+        }
+
+        // Assume it's good, then find a reason to make it bad
+        isValid = true;
+
+        debug('info', 'Validation', validation);
+
+        for (let rule of validation) {
+            const result = Validation.validate(value, rule);
+            if (!result) isValid = false;
+        }
+
+        if (!isValid) hasError = true;
+        if (isValid) hasError = false;
+    }
+
+    export const handleKeypress = (e) =>
+    {
+        if (e.keyCode === 13) dispatcher('return');
+    }
 </script>
+
+<svelte:options accessors/>
+<div class="relative">
+    {#if type === 'text'}
+        <input
+            class="input {css} {hasError ? '!border-error-500' : ''}"
+            type="text"
+            readonly={readonly}
+            autocomplete="{(autocomplete) ? '' : 'one-time-code'}"
+            bind:value={value}
+            placeholder={$_(placeholder)}
+            on:blur={validate}
+            on:keypress={handleKeypress}
+        />
+    {:else if type === 'password'}
+        <input
+            class="input {css} {hasError ? '!border-error-500' : ''}"
+            type="password"
+            readonly={readonly}
+            autocomplete="{(autocomplete) ? '' : 'one-time-code'}"
+            bind:value={value}
+            placeholder={$_(placeholder)}
+            on:blur={validate}
+            on:keypress={handleKeypress}
+        />
+    {:else if type === 'number'}
+        <input
+            class="input {css} {hasError ? '!border-error-500' : ''}"
+            type="number"
+            readonly={readonly}
+            autocomplete="{(autocomplete) ? '' : 'one-time-code'}"
+            bind:value={value}
+            placeholder={$_(placeholder)}
+            on:blur={validate}
+            on:keypress={handleKeypress}
+        />
+    {:else if type === 'email'}
+        <input
+            class="input {css} {hasError ? '!border-error-500' : ''}"
+            type="email"
+            readonly={readonly}
+            autocomplete="{(autocomplete) ? '' : 'one-time-code'}"
+            bind:value={value}
+            placeholder={$_(placeholder)}
+            on:blur={validate}
+            on:keypress={handleKeypress}
+        />
+    {/if}
+
+    {#if hasError}
+        <div class="text-error-500 h-6 w-6 absolute top-2 right-2">
+            <Icon src={ErrorOutline}/>
+        </div>
+    {/if}
+</div>

@@ -8,6 +8,35 @@ login:
     invalid_email: Courriel invalide.
     bad_credentials: Informations invalides.
 
+systembar:
+  main:
+    about: À Propos SailCMS
+    logout: Déconnecter
+  dashboard: Tableau de Bord
+  entries: Entrées
+  cms: Gestion de Contenus
+  user_management: Gestion Utilisateurs
+  form_management: Gestion Formulaires
+  utilities: Utilitaires
+  content:
+    categories: Catégories
+    navigations: Navigations
+    content_types: Types de Contenus
+    layouts: Mises en Page
+    fields: Champs
+  users:
+    groups: Groupes
+    roles: Ròles
+    users: Utilisateurs
+  utils:
+    email_template: Gabarits Courriels
+    email_test: Test Courriels
+    tasks: Tâches d'Arrière-plan
+    extensions: Extensions
+    hosting: Informations Serveur
+    logs: Journaux
+    bookmarks: Favoris
+
 forgot:
   reset: Réinitialiser
   success: Si un compte a été trouvé, un courriel a été envoyé.

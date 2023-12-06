@@ -1,51 +1,45 @@
 <script>
-    import { LoginController } from '@/controllers/login.js';
+    import { LoginController } from '$lib/controllers/login.js';
     import { _, locale } from 'svelte-i18n';
     import { Message } from '@stores/message.js';
-    import { LightSwitch } from '@skeletonlabs/skeleton';
-    import { ProgressBar } from '@skeletonlabs/skeleton';
-    import { authenticationGuard } from '$lib/helpers/guard.js';
+    import { LightSwitch, ProgressBar, ProgressRadial } from '@skeletonlabs/skeleton';
+    import TextInput from '@components/forms/textinput.svelte';
+    import { AppStore } from '@stores/app.js';
 
-    // Force move to dashboard if already logged in
-    const credentialCheck = authenticationGuard();
-
-    let emailAddress = '';
-    let password = '';
-    let mfaCode = '';
-
-    let showVerification = false;
+    let emailField, passwordField;
+    let isLoading = false;
 
     const switchLocale = () =>
     {
         locale.set(($locale === 'fr') ? 'en' : 'fr');
-        localStorage.setItem('sailcms_locale', $locale);
+        localStorage.setItem(import.meta.env.VITE_SAILCMS_LOCALE_TOKEN, $locale);
     }
 
-    // let emailField, passwordField;
-    // let isLoading = false;
-    //
-    // let showVerification = false;
-    //
-    // const submitForm = async () =>
-    // {
-    //     if (isLoading) return;
-    //     isLoading = true;
-    //
-    //     const result = await LoginController.performLogin({email: emailField, password: passwordField});
-    //     isLoading = false;
-    //
-    //     if (result.error) {
-    //         // Show error Message
-    //         Message.set({show: true, message: 'login.error_message', type: 'error', ttl: 15000});
-    //         return;
-    //     }
-    //
-    //     // Nothing to do, nothing happened
-    //     if (result.invalid) return;
-    //
-    //     // Redirect
-    //     window.location = '/dashboard';
-    // }
+    const submitForm = async () =>
+    {
+        if (isLoading) return;
+        isLoading = true;
+
+        const result = await LoginController.performLogin({email: emailField, password: passwordField});
+
+        console.log(result);
+
+        if (!result.error) {
+            const user = await LoginController.getUserFromAuthentication(result.data);
+
+            if (user) {
+                AppStore.setCurrentUser(user);
+                AppStore.setLoginState(true);
+                localStorage.setItem(import.meta.env.VITE_SAILCMS_TOKEN, user.auth_token);
+                isLoading = false;
+
+                window.location.href = $AppStore.baseURL + '/dashboard';
+            }
+        } else {
+            // Show error Message
+            Message.set({show: true, message: 'login.errors.bad_credentials', type: 'error', ttl: 15000});
+        }
+    }
 </script>
 
 <div class="loginbar">
@@ -57,17 +51,23 @@
         SAILCMS
     </div>
 
-    {#await credentialCheck}
+    {#await $AppStore.guardCheck}
         <div class="w-full px-28 mt-5">
             <ProgressBar meter="bg-primary-600" />
         </div>
     {:then data}
         <div class="w-full px-14 flex flex-col gap-y-4">
-            <input class="input" type="text" autocomplete="one-time-code" placeholder={$_('login.email')} />
-            <input class="input" type="password" autocomplete="one-time-code" placeholder={$_('login.password')} />
+            <TextInput placeholder="login.email" validation={['required', 'email']} bind:this={emailField} />
+            <TextInput placeholder="login.password" validation={['required']} type="password" bind:this={passwordField} on:return={submitForm} />
 
             <div class="flex flex-row justify-between items-start">
-                <button type="button" class="btn variant-filled-primary">{$_('login.sign_in')}</button>
+                <button type="button" class="btn variant-filled-primary flex flex-col" on:click={submitForm}>
+                    {#if isLoading}
+                        <ProgressRadial width="w-6" />
+                    {:else}
+                        {$_('login.sign_in')}
+                    {/if}
+                </button>
                 <a href="/forgot-password" class="text-xs">{$_('login.forgot') }</a>
             </div>
         </div>
@@ -76,58 +76,6 @@
     <div class="fixed bottom-4 right-4">
         <div class="flex flex-row text-xs mt-2">version 3.0.0</div>
     </div>
-
-    {#if !showVerification}
-        <div class="mt-12 w-full flex flex-col gap-y-4">
-<!--            <TextField-->
-<!--                    type="email"-->
-<!--                    validation={['required', 'email']}-->
-<!--                    placeholder="general.email"-->
-<!--                    autofill={false}-->
-<!--                    bind:value={emailAddress}-->
-<!--                    bind:this={emailField}-->
-<!--                    on:return={submitForm}-->
-<!--            />-->
-
-<!--            <TextField-->
-<!--                    type="password"-->
-<!--                    validation={['required']}-->
-<!--                    placeholder="general.password"-->
-<!--                    autofill={false}-->
-<!--                    bind:value={password}-->
-<!--                    bind:this={passwordField}-->
-<!--                    on:return={submitForm}-->
-<!--            />-->
-
-<!--            <div class="flex flex-row justify-between items-center">-->
-<!--                <Button loading={isLoading} icon={DownhillSkiing} on:click={submitForm} label="login.connect"/>-->
-
-<!--                <a-->
-<!--                        href="/forgot-password"-->
-<!--                        data-sveltekit-preload-data="hover"-->
-<!--                        class="text-sm text-skin-base hover:text-skin-muted">-->
-<!--                    {$_('login.forgot_password')}-->
-<!--                </a>-->
-<!--            </div>-->
-
-        </div>
-    {:else}
-        <div class="mt-12 w-full flex flex-col gap-y-4">
-            <span class="text-sm text-center">{$_('general.verify_explain')}</span>
-            <div class="w-full">
-<!--                <TextField-->
-<!--                        type="text"-->
-<!--                        validation={['required']}-->
-<!--                        bind:value={mfaCode}-->
-<!--                        placeholder="general.verification_code"-->
-<!--                        autofill={false}-->
-<!--                />-->
-            </div>
-            <div>
-                BUTTON
-            </div>
-        </div>
-    {/if}
 </div>
 
 <style lang="scss">

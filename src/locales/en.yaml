@@ -8,6 +8,35 @@ login:
     invalid_email: Invalid email.
     bad_credentials: Invalid credentials.
 
+systembar:
+  main:
+    about: About SailCMS
+    logout: Logout
+  dashboard: Dashboard
+  entries: Entries
+  cms: Content Management
+  user_management: User Management
+  form_management: Form Management
+  utilities: Utilities
+  content:
+    categories: Categories
+    navigations: Navigations
+    content_types: Content Types
+    layouts: Layouts
+    fields: Fields
+  users:
+    groups: Groups
+    roles: Roles
+    users: Users
+  utils:
+    email_template: Email Templates
+    email_test: Email Test
+    tasks: Background Tasks
+    extensions: Extensions
+    hosting: Hosting Information
+    logs: Application Logs
+    bookmarks: Bookmarks
+
 forgot:
   reset: Reset password
   success: If an account was found, an email was sent to start the process.

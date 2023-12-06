@@ -2,11 +2,14 @@
     import '@/app.scss';
     import { initLocale } from '$lib/helpers/i18n.js';
     import Messages from '@components/structure/message.svelte';
-    // import Spinner from '@/ui/utils/spinner.svelte';
 
     // Initialize Skeleton Stores
     import { initializeStores } from '@skeletonlabs/skeleton';
+    import { loadJSON } from '$lib/helpers/boot.js';
     initializeStores();
+
+    // Load JSON file
+    loadJSON(true);
 
     // Initialize Locale
     initLocale();
@@ -24,7 +27,7 @@
 
 <style lang="scss">
     .bg-container {
-        @apply h-screen bg-cover bg-[left_top_-400px] bg-no-repeat relative bg-white flex flex-col;
+        @apply h-screen bg-cover bg-[left_top_-200px] bg-no-repeat relative bg-white flex flex-col;
     }
 
     .bg-dimmer {
