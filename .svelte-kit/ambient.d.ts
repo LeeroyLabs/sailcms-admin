@@ -28,10 +28,10 @@
 declare module '$env/static/private' {
 	export const VITE_SAILCMS_TOKEN: string;
 	export const VITE_SAILCMS_LOCALE_TOKEN: string;
+	export const VITE_SAILCMS_THEME_TOKEN: string;
 	export const VITE_DEBUG: string;
 	export const npm_package_devDependencies__tailwindcss_typography: string;
 	export const MANPATH: string;
-	export const npm_package_devDependencies_libphonenumber_js: string;
 	export const TERM_PROGRAM: string;
 	export const NODE: string;
 	export const INIT_CWD: string;
@@ -41,7 +41,6 @@ declare module '$env/static/private' {
 	export const SHELL: string;
 	export const npm_package_devDependencies_vite: string;
 	export const npm_package_devDependencies_svelte_easy_crop: string;
-	export const npm_package_devDependencies_magic_snowflakes: string;
 	export const HOMEBREW_REPOSITORY: string;
 	export const TMPDIR: string;
 	export const npm_package_devDependencies_vite_plugin_tailwind_purgecss: string;
@@ -78,6 +77,7 @@ declare module '$env/static/private' {
 	export const npm_config_argv: string;
 	export const npm_package_devDependencies_uuid: string;
 	export const _: string;
+	export const LaunchInstanceID: string;
 	export const npm_config_engine_strict: string;
 	export const __CFBundleIdentifier: string;
 	export const npm_package_devDependencies_tippy_js: string;
@@ -103,6 +103,7 @@ declare module '$env/static/private' {
 	export const npm_package_version: string;
 	export const npm_package_devDependencies_svelte_check: string;
 	export const npm_package_devDependencies_autoprefixer: string;
+	export const npm_package_devDependencies__steeze_ui_lucide_icons: string;
 	export const SHLVL: string;
 	export const HOME: string;
 	export const COLORFGBG: string;
@@ -122,6 +123,7 @@ declare module '$env/static/private' {
 	export const npm_package_devDependencies_date_fns_tz: string;
 	export const PREFIX: string;
 	export const npm_lifecycle_script: string;
+	export const npm_package_devDependencies__steeze_ui_heroicons: string;
 	export const npm_config_version_git_sign: string;
 	export const npm_config_ignore_scripts: string;
 	export const npm_config_user_agent: string;
@@ -132,7 +134,7 @@ declare module '$env/static/private' {
 	export const npm_package_devDependencies__apollo_client: string;
 	export const npm_config_init_version: string;
 	export const npm_config_ignore_optional: string;
-	export const npm_package_devDependencies_svelte_portal: string;
+	export const SECURITYSESSIONID: string;
 	export const npm_package_scripts_check: string;
 	export const COLORTERM: string;
 	export const npm_node_execpath: string;
@@ -169,10 +171,10 @@ declare module '$env/dynamic/private' {
 	export const env: {
 		VITE_SAILCMS_TOKEN: string;
 		VITE_SAILCMS_LOCALE_TOKEN: string;
+		VITE_SAILCMS_THEME_TOKEN: string;
 		VITE_DEBUG: string;
 		npm_package_devDependencies__tailwindcss_typography: string;
 		MANPATH: string;
-		npm_package_devDependencies_libphonenumber_js: string;
 		TERM_PROGRAM: string;
 		NODE: string;
 		INIT_CWD: string;
@@ -182,7 +184,6 @@ declare module '$env/dynamic/private' {
 		SHELL: string;
 		npm_package_devDependencies_vite: string;
 		npm_package_devDependencies_svelte_easy_crop: string;
-		npm_package_devDependencies_magic_snowflakes: string;
 		HOMEBREW_REPOSITORY: string;
 		TMPDIR: string;
 		npm_package_devDependencies_vite_plugin_tailwind_purgecss: string;
@@ -219,6 +220,7 @@ declare module '$env/dynamic/private' {
 		npm_config_argv: string;
 		npm_package_devDependencies_uuid: string;
 		_: string;
+		LaunchInstanceID: string;
 		npm_config_engine_strict: string;
 		__CFBundleIdentifier: string;
 		npm_package_devDependencies_tippy_js: string;
@@ -244,6 +246,7 @@ declare module '$env/dynamic/private' {
 		npm_package_version: string;
 		npm_package_devDependencies_svelte_check: string;
 		npm_package_devDependencies_autoprefixer: string;
+		npm_package_devDependencies__steeze_ui_lucide_icons: string;
 		SHLVL: string;
 		HOME: string;
 		COLORFGBG: string;
@@ -263,6 +266,7 @@ declare module '$env/dynamic/private' {
 		npm_package_devDependencies_date_fns_tz: string;
 		PREFIX: string;
 		npm_lifecycle_script: string;
+		npm_package_devDependencies__steeze_ui_heroicons: string;
 		npm_config_version_git_sign: string;
 		npm_config_ignore_scripts: string;
 		npm_config_user_agent: string;
@@ -273,7 +277,7 @@ declare module '$env/dynamic/private' {
 		npm_package_devDependencies__apollo_client: string;
 		npm_config_init_version: string;
 		npm_config_ignore_optional: string;
-		npm_package_devDependencies_svelte_portal: string;
+		SECURITYSESSIONID: string;
 		npm_package_scripts_check: string;
 		COLORTERM: string;
 		npm_node_execpath: string;

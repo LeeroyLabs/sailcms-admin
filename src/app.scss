@@ -15,6 +15,10 @@
 @tailwind utilities;
 @tailwind variants;
 
+::-webkit-scrollbar-track {
+	background-color: transparent!important;
+}
+
 html,
 body {
 	@apply h-full overflow-hidden;
@@ -27,4 +31,8 @@ body {
 
 .btn {
 	@apply rounded-md;
+}
+
+.table {
+	@apply bg-surface-50;
 }

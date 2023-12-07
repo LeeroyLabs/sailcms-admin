@@ -11,6 +11,7 @@ login:
 systembar:
   main:
     about: À Propos SailCMS
+    settings: Réglages
     logout: Déconnecter
   dashboard: Tableau de Bord
   entries: Entrées
@@ -18,6 +19,7 @@ systembar:
   user_management: Gestion Utilisateurs
   form_management: Gestion Formulaires
   utilities: Utilitaires
+  forms: Formulaires
   content:
     categories: Catégories
     navigations: Navigations
@@ -33,7 +35,7 @@ systembar:
     email_test: Test Courriels
     tasks: Tâches d'Arrière-plan
     extensions: Extensions
-    hosting: Informations Serveur
+    hosting: État Serveur
     logs: Journaux
     bookmarks: Favoris
 
@@ -297,9 +299,12 @@ email:
 
 system:
   settings: Réglages
-  entry_types: Types
+  entry_types: Types d'entrées
   entry_layouts: Mises en page
   entry_fields: Champs
+  email_test: Test Courriel
+  server_status: État Serveur
+  app_logs: Journaux Applicatifs
   back: Retour
   yes: Oui
   no: Non
@@ -946,3 +951,7 @@ entryseo:
   priority: Priorité
   priorities:
     xhigh: Très Élevé
+
+bookmarks:
+  add: Ajouter un signet
+  remove: Retirer le signet

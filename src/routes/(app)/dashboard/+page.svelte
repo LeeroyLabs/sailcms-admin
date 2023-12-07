@@ -1,5 +1,5 @@
 <script>
-    import Portal from "svelte-portal";
+    import PageHead from '@components/structure/pagehead.svelte';
     import { AppStore } from '@stores/app.js';
 
     AppStore.setBreadcrumbs([
@@ -12,6 +12,16 @@
 <svelte:head>
     <title>Entries - SailCMS</title>
 </svelte:head>
-<Portal target="#pageActions">
-    BUTTON HERE
-</Portal>
+
+<PageHead>
+    <svelte:fragment slot="title">
+        Page Tile
+    </svelte:fragment>
+    <svelte:fragment slot="actions">
+        BUTTON HERE
+    </svelte:fragment>
+</PageHead>
+
+HELLO<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/>wefwewef<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>fefwefefwe

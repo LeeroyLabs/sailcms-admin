@@ -2,9 +2,12 @@
     import { LoginController } from '$lib/controllers/login.js';
     import { _, locale } from 'svelte-i18n';
     import { Message } from '@stores/message.js';
-    import { LightSwitch, ProgressBar, ProgressRadial } from '@skeletonlabs/skeleton';
+    import { ProgressBar, ProgressRadial } from '@skeletonlabs/skeleton';
     import TextInput from '@components/forms/textinput.svelte';
     import { AppStore } from '@stores/app.js';
+    import { switchTheme } from '$lib/helpers/theme.js';
+    import { DarkMode, LightMode } from '@steeze-ui/material-design-icons';
+    import { Icon } from '@steeze-ui/svelte-icon';
 
     let emailField, passwordField;
     let isLoading = false;
@@ -21,8 +24,6 @@
         isLoading = true;
 
         const result = await LoginController.performLogin({email: emailField, password: passwordField});
-
-        console.log(result);
 
         if (!result.error) {
             const user = await LoginController.getUserFromAuthentication(result.data);
@@ -43,12 +44,14 @@
 </script>
 
 <div class="loginbar">
-    <div class="fixed top-6 right-4 flex flex-row gap-x-4">
+    <div class="fixed top-6 right-4 flex flex-row gap-x-4 items-center">
         <button on:click={switchLocale}>{#if $locale === 'fr'}EN{:else}FR{/if}</button>
-        <LightSwitch/>
+        <button on:click={() => switchTheme()} class="text-black dark:text-surface-100 hover:text-primary-500 dark:hover:text-primary-500">
+            <Icon src={($AppStore.theme === 'light') ? DarkMode: LightMode} size="20"/>
+        </button>
     </div>
     <div class="text-4xl py-6">
-        SAILCMS
+        <img class="w-20 rounded-md mx-auto transition-all m-4" src="https://mir-s3-cdn-cf.behance.net/user/276/7530587.53f253b5e501a.jpg" alt="">
     </div>
 
     {#await $AppStore.guardCheck}

@@ -25,7 +25,7 @@ export function authenticationGuard(isPublic)
             return;
         }
 
-        if (!isPublic) {
+        if (token === '' && !isPublic) {
             window.location.href = get(AppStore).baseURL + '/';
             resolve(false);
             return;

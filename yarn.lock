@@ -456,6 +456,16 @@
   resolved "https://registry.npmjs.org/@skeletonlabs/tw-plugin/-/tw-plugin-0.2.4.tgz"
   integrity sha512-DmOFMV6jhhvnub/TANB62nJJqxfMBby5Kxwe/Mn3DTxHuJLZj8B47Ta2K5sl/or2B8MaMfny8ocvPAzd6lrMtQ==
 
+"@steeze-ui/heroicons@^2.2.3":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@steeze-ui/heroicons/-/heroicons-2.2.3.tgz#202c8581f13ba9cf4b06bad757dc7771de47b3d3"
+  integrity sha512-bv4YK375U9TDS50SmJ5VdFy2UmMhgKbJCCbo6IUU3qs2luEj2VX6sQoDy96j8AIKttxMd62ih1j0lZj7CTjIfA==
+
+"@steeze-ui/lucide-icons@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@steeze-ui/lucide-icons/-/lucide-icons-1.2.0.tgz#4786c5704c87cc3e0d1a0cfc6020ceaacef07d9d"
+  integrity sha512-EHanG7TVXRh9hc0c7OGXgfcTGN3A8jnswH8vtS4ex27XDZxm2TT9u7ns5oNrDafvto6eYlDhNSlppgGQ56qlOA==
+
 "@steeze-ui/material-design-icons@^1.1.2":
   version "1.1.2"
   resolved "https://registry.npmjs.org/@steeze-ui/material-design-icons/-/material-design-icons-1.1.2.tgz"
@@ -1223,11 +1233,6 @@ kleur@^4.1.5:
   resolved "https://registry.npmjs.org/kleur/-/kleur-4.1.5.tgz"
   integrity sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==
 
-libphonenumber-js@^1.10.49:
-  version "1.10.51"
-  resolved "https://registry.npmjs.org/libphonenumber-js/-/libphonenumber-js-1.10.51.tgz"
-  integrity sha512-vY2I+rQwrDQzoPds0JeTEpeWzbUJgqoV0O4v31PauHBb/e+1KCXKylHcDnBMgJZ9fH9mErsEbROJY3Z3JtqEmg==
-
 lilconfig@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/lilconfig/-/lilconfig-2.1.0.tgz"
@@ -1281,11 +1286,6 @@ lru-queue@^0.1.0:
   integrity sha512-BpdYkt9EvGl8OfWHDQPISVpcl5xZthb+XPsbELj5AQXxIC8IriDZIQYjBJPEm5rS420sjZ0TLEzRcq5KdBhYrQ==
   dependencies:
     es5-ext "~0.10.2"
-
-magic-snowflakes@^6.1.0:
-  version "6.2.1"
-  resolved "https://registry.npmjs.org/magic-snowflakes/-/magic-snowflakes-6.2.1.tgz"
-  integrity sha512-AoCiZ8mklhxkGHrwGUcKvEi7zUDq0fH813iex98+MJcuPcDP9wtTEChKZJUW1GN1fUx2Fnel6XDpAGwEQjdMtw==
 
 magic-string@^0.27.0:
   version "0.27.0"
@@ -1761,11 +1761,6 @@ svelte-i18n@^4.0.0:
     intl-messageformat "^10.5.3"
     sade "^1.8.1"
     tiny-glob "^0.2.9"
-
-svelte-portal@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/svelte-portal/-/svelte-portal-2.2.0.tgz#794bdd7626e88a7023cd0ff3832c547af827deaf"
-  integrity sha512-jhtZWtD6cUE2nMw46dJ5VXWYiqnER+JH+V/BmNBQ5fNP/YdsJCpJi+DemUy9msklqGb0f+wLhJPBtKHLWQvzjg==
 
 svelte-preprocess@^5.1.0:
   version "5.1.1"

@@ -26,6 +26,12 @@ export default {
                 validated
                 locale
                 highest_level
+                bookmarks {
+                    name {
+                        #locales#
+                    }
+                    url
+                }
                 #meta#
             }
         }
@@ -86,6 +92,12 @@ export default {
                 validated
                 locale
                 highest_level
+                bookmarks {
+                    name {
+                        #locales#
+                    }
+                    url
+                }
                 #meta#
             }
         }

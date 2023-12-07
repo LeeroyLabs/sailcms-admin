@@ -7,13 +7,13 @@
     <ol class="breadcrumb">
         {#each $AppStore.breadcrumbs as crumb, index}
             {#if index > 0}
-                <li class="crumb-separator" aria-hidden="true">&rsaquo;</li>
+                <li class="crumb-separator !mx-2" aria-hidden="true">&rsaquo;</li>
             {/if}
 
             {#if crumb.active}
-                <li class="crumb font-bold">{$_(crumb.label)}</li>
+                <li class="crumb !mx-0 font-bold">{$_(crumb.label)}</li>
             {:else}
-                <li class="crumb"><a class="anchor" href="/elements/breadcrumbs">{$_(crumb.label)}</a></li>
+                <li class="crumb !mx-0"><a class="anchor" href={crumb.url}>{$_(crumb.label)}</a></li>
             {/if}
         {/each}
     </ol>

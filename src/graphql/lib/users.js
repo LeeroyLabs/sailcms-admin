@@ -37,9 +37,10 @@ export class Users
      *
      * @param token
      * @param meta
+     * @param locales
      *
      */
-    static async getFromAuthentication(token, meta = "")
+    static async getFromAuthentication(token, meta = "", locales = ['en', 'fr'])
     {
         const client = new Client();
         let query = UserQueries.verifyAuthentication;
@@ -51,6 +52,8 @@ export class Users
         } else {
             query = query.replace("#meta", "");
         }
+
+        query = query.replace('#locales#', Users.parseLocales(locales));
 
         let result = await client.query(gql`${query}`, { token: token });
 
@@ -140,9 +143,10 @@ export class Users
      * Log user in only with the access token
      *
      * @param meta
+     * @param locales
      *
      */
-    static async userWithToken(meta = "")
+    static async userWithToken(meta = "", locales = ['en', 'fr'])
     {
         const client = new Client();
         let query = UserQueries.userWithToken;
@@ -153,10 +157,12 @@ export class Users
             query = query.replace("#meta", "");
         }
 
+        query = query.replace('#locales#', Users.parseLocales(locales));
+
         let result = await client.query(gql`${query}`, {});
 
         if (result.data && result.data.userWithToken) {
-            return result.data.userWithToken | null;
+            return result.data.userWithToken || null;
         }
 
         return null;
@@ -399,5 +405,16 @@ export class Users
         }
 
         return false;
+    }
+
+    static parseLocales(locales)
+    {
+        let out = ``;
+
+        for (let locale of locales) {
+            out += `${locale}\n`;
+        }
+
+        return out;
     }
 }

@@ -37,6 +37,7 @@ export async function loadJSON(isPublic)
             // Fetch Custom Navigation elements
             AppStore.setNavigationElements(await Misc.navigationElements(SailCMS.getLocales()))
             AppStore.setSettingsElements(await Misc.settingsElements(SailCMS.getLocales()));
+            AppStore.setAppState(true);
         } catch (e) {
             console.log(e);
             console.error(`SailCMS: Cannot load json from ${url}, please make sure the json is valid.`);

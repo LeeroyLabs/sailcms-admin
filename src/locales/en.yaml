@@ -11,6 +11,7 @@ login:
 systembar:
   main:
     about: About SailCMS
+    settings: Settings
     logout: Logout
   dashboard: Dashboard
   entries: Entries
@@ -18,6 +19,7 @@ systembar:
   user_management: User Management
   form_management: Form Management
   utilities: Utilities
+  forms: Forms
   content:
     categories: Categories
     navigations: Navigations
@@ -33,7 +35,7 @@ systembar:
     email_test: Email Test
     tasks: Background Tasks
     extensions: Extensions
-    hosting: Hosting Information
+    hosting: Server Status
     logs: Application Logs
     bookmarks: Bookmarks
 
@@ -299,9 +301,12 @@ email:
 
 system:
   settings: Settings
-  entry_types: Types
+  entry_types: Entry Types
   entry_layouts: Layouts
   entry_fields: Fields
+  email_test: Email Test
+  server_status: Server Status
+  app_logs: Application Logs
   back: Back
   yes: Yes
   no: No
@@ -949,3 +954,7 @@ entryseo:
   priority: Priority
   priorities:
     xhigh: Extremely High
+
+bookmarks:
+  add: Bookmark
+  remove: Remove Bookmark

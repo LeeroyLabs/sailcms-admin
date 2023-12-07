@@ -1,14 +1,14 @@
 <script>
     import { fade } from 'svelte/transition';
-    import { LightSwitch } from '@skeletonlabs/skeleton';
     import { clickOutside } from '@/directives/clickout.js';
     import { cubicInOut } from 'svelte/easing';
     import { Icon } from '@steeze-ui/svelte-icon'
-    import { Article } from '@steeze-ui/material-design-icons';
+    import { Article, LightMode, DarkMode } from '@steeze-ui/material-design-icons';
     import { locale } from 'svelte-i18n';
     import { AppStore } from '@stores/app.js';
     import { _ } from 'svelte-i18n';
     import { systembarNavigation } from '$lib/systembar.js';
+    import { switchTheme } from '$lib/helpers/theme.js';
 
     let navigationKey = '';
 
@@ -98,7 +98,10 @@
         <button on:click={switchLocale} class="system-button text-[16px]">
             {($locale === 'en') ? 'FR' : 'EN'}
         </button>
-        <LightSwitch bgLight="bg-surface-100" height="h-[24px]" />
+        <button on:click={() => switchTheme()} class="text-black dark:text-surface-100 hover:text-primary-500 dark:hover:text-primary-500">
+            <Icon src={($AppStore.theme === 'light') ? DarkMode: LightMode} size="20"/>
+        </button>
+<!--        <LightSwitch bgLight="bg-surface-100" height="h-[24px]" />-->
     </div>
 </div>
 
@@ -114,7 +117,7 @@
 
     .menubox {
         @apply font-normal absolute top-[43px] rounded-md bg-white border border-neutral-300;
-        @apply dark:bg-surface-700 dark:text-surface-100 dark:border-surface-500;
+        @apply dark:bg-surface-700 dark:text-surface-100 dark:border-surface-400;
 
         a:first-child {
             @apply rounded-t-md;

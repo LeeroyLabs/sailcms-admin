@@ -5,6 +5,7 @@ const store = () =>
 {
     let store = {
         theme: 'light',
+        OSMode: false,
         currentTitle: '',
         breadcrumbs: [],
         graphQLURL: '',
@@ -28,7 +29,8 @@ const store = () =>
             folders: [],
             config: { maxSize: 0, blacklist: [] }
         },
-        guardCheck: null
+        guardCheck: null,
+        appReady: false
     };
 
     const { subscribe, set, update} = writable(store);
@@ -56,6 +58,8 @@ const store = () =>
         setCurrentUser: (user) => setKeyValue('currentUser', user),
         setLoginState: (state) => setKeyValue('isLoggedIn', state),
         setGuardCheck: (guard) => setKeyValue('guardCheck', guard),
+        setTheme: (theme) => setKeyValue('theme', theme),
+        setAppState: (state) => setKeyValue('appReady', state),
         setSettingsElements: (elements) =>
         {
             update((store) =>
@@ -234,6 +238,22 @@ const store = () =>
             }
 
             return found || null;
+        },
+        addBookmark: (url, name) =>
+        {
+            update((store) =>
+            {
+                store.currentUser.bookmarks = [...store.currentUser.bookmarks, {url, name}];
+                return store;
+            });
+        },
+        removeBookmark: (url) =>
+        {
+            update((store) =>
+            {
+                store.currentUser.bookmarks = store.currentUser.bookmarks.filter(b => b.url !== url);
+                return store;
+            });
         }
     }
 

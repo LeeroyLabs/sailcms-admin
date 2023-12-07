@@ -9,5 +9,11 @@
 	"/": [],
 	"/(app)/dashboard": [
 		"src/routes/(app)/+layout.js"
+	],
+	"/(app)/settings": [
+		"src/routes/(app)/+layout.js"
+	],
+	"/(app)/settings/layouts": [
+		"src/routes/(app)/+layout.js"
 	]
 }

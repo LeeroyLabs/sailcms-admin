@@ -223,5 +223,15 @@ export default {
                 }
             }
         }
+    `,
+    addBookmark: `
+        mutation addBookmark($user_id: ID!, $url: String!, $name: LocaleFieldInput!) {
+            addBookmark(user_id: $user_id, url: $url, name: $name)
+        }
+    `,
+    removeBookmark: `
+        mutation removeBookmark($user_id: ID!, $url: String!) {
+            removeBookmark(user_id: $user_id, url: $url)
+        }
     `
 }

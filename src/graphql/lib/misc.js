@@ -285,6 +285,43 @@ export class Misc
         return [];
     }
 
+    /**
+     *
+     * Add a bookmark
+     *
+     * @param id
+     * @param url
+     * @param name
+     *
+     */
+    static async addBookmark(id, url, name)
+    {
+        const client = new Client();
+        let query = MiscQueries.addBookmark;
+
+        let result = await client.mutation(gql`${query}`, { user_id: id, url: url, name: name });
+
+        if (result.data) {
+            return result.data.addBookmark;
+        }
+
+        return false;
+    }
+
+    static async removeBookmark(id, url)
+    {
+        const client = new Client();
+        let query = MiscQueries.removeBookmark;
+
+        let result = await client.mutation(gql`${query}`, { user_id: id, url: url });
+
+        if (result.data) {
+            return result.data.removeBookmark;
+        }
+
+        return false;
+    }
+
     static parseLocales(locales)
     {
         let out = ``;

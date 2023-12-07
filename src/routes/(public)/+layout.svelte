@@ -2,10 +2,14 @@
     import '@/app.scss';
     import { initLocale } from '$lib/helpers/i18n.js';
     import Messages from '@components/structure/message.svelte';
-
-    // Initialize Skeleton Stores
+    import { setThemeFromPreferences } from '$lib/helpers/theme.js';
     import { initializeStores } from '@skeletonlabs/skeleton';
     import { loadJSON } from '$lib/helpers/boot.js';
+
+    // Set theme
+    setThemeFromPreferences();
+
+    // Initialize Skeleton Stores
     initializeStores();
 
     // Load JSON file

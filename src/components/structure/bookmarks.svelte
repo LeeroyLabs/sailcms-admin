@@ -1,22 +1,40 @@
 <script>
+    import { fade } from 'svelte/transition';
+    import { clickOutside } from '@directives/clickout.js';
+    import ArrowPopup from '@components/utils/arrowpopup.svelte';
+    import { Bookmarks } from '@steeze-ui/material-design-icons';
+    import { Icon } from '@steeze-ui/svelte-icon';
+    import { AppStore } from '@stores/app.js';
+    import { locale } from 'svelte-i18n';
+
+    export let show = false;
 </script>
 
-<div class="bookmark-bar">
-    <a href="">Bookmark 1</a>
-    <a href="">Bookmark 2</a>
-    <a href="">Bookmark 3</a>
-    <a href="">Bookmark 4</a>
-    <a href="">Bookmark 5</a>
-    <a href="">Bookmark 6</a>
+<div class="flex items-center">
+    <button class="hover:text-primary-500" on:click={() => show = !show}>
+        <Icon src={Bookmarks} size="22"/>
+    </button>
+
+    {#if show}
+        <div in:fade={{duration: 250}} out:fade={{duration: 250}} use:clickOutside on:click_outside={() => show = false}>
+            <ArrowPopup arrowPosition="left" position="min-w-[150px] top-[38px] left-[-10px]">
+                <div class="flex flex-col bookmarks">
+                    {#each $AppStore.currentUser.bookmarks as bm}
+                    <a href="">{bm.name[$locale]}</a>
+                    {:else}
+                        <div class="text-center mx-8 text-surface-500 dark:text-surface-400">No bookmarks yet.</div>
+                    {/each}
+                </div>
+            </ArrowPopup>
+        </div>
+{/if}
 </div>
 
 <style lang="scss">
-    .bookmark-bar {
-        @apply bg-gray-100 dark:bg-surface-500 px-4 py-1.5 border-b border-surface-300 dark:border-neutral-900;
-        @apply flex flex-row gap-x-4;
-
+    .bookmarks {
         a {
-            @apply hover:text-primary-500;
+            @apply hover:bg-primary-500 rounded-md px-2 py-1;
+            @apply dark:hover:text-black;
         }
     }
 </style>
