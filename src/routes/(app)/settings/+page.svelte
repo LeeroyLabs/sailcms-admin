@@ -4,6 +4,8 @@
     import { _, locale } from 'svelte-i18n';
     import { AppStore } from '@stores/app.js';
     import * as Icons from '@steeze-ui/lucide-icons';
+    import { hasPermission } from '$lib/helpers/permissions.js';
+    import { goto } from '$app/navigation';
 
     // Breadcrumb
     AppStore.setBreadcrumbs([
@@ -11,8 +13,11 @@
         {url: '/settings', label: 'system.settings', active: true}
     ]);
 
+    if (!hasPermission('any')) {
+        goto('/settings');
+    }
+
     let isReady = false;
-    let others = [];
 </script>
 
 <svelte:head>
@@ -26,73 +31,97 @@
 </PageHead>
 
 <div class="flex flex-col gap-y-4">
+    {#if hasPermission('read_group') || hasPermission('read_role') || hasPermission('admin')}
     <section class="card p-4">
         <h2 class="text-xl mb-6">{$_('system.system')}</h2>
         <div class="flex flex-row gap-x-4">
-            <a href="/settings/groups" class="sysbtn">
-                <Icon src={Icons.Users2} size="60" theme="outlined" />
-                {$_('usergroups.title')}
-            </a>
+            {#if hasPermission('read_group')}
+                <a href="/settings/groups" class="sysbtn">
+                    <Icon src={Icons.Users2} size="60" theme="outlined" />
+                    {$_('usergroups.title')}
+                </a>
+            {/if}
 
-            <a href="/settings/roles" class="sysbtn">
-                <Icon src={Icons.ShieldCheck} size="60" theme="outlined" />
-                {$_('roles.title')}
-            </a>
+            {#if hasPermission('read_role')}
+                <a href="/settings/roles" class="sysbtn">
+                    <Icon src={Icons.ShieldCheck} size="60" theme="outlined" />
+                    {$_('roles.title')}
+                </a>
+            {/if}
 
-            <a href="/settings/email-templates" class="sysbtn">
-                <Icon src={Icons.Mail} size="60" theme="outlined" />
-                {$_('system.email_templates')}
-            </a>
+            {#if hasPermission('readwrite_admin')}
+                <a href="/settings/email-templates" class="sysbtn">
+                    <Icon src={Icons.Mail} size="60" theme="outlined" />
+                    {$_('system.email_templates')}
+                </a>
+            {/if}
         </div>
     </section>
+    {/if}
 
     <section class="card p-4">
         <h2 class="text-xl mb-6">{$_('system.content')}</h2>
         <div class="flex flex-row gap-x-4">
-            <a href="/settings/entry-types" class="sysbtn">
-                <Icon src={Icons.Shapes} size="60" theme="outlined" />
-                {$_('system.entry_types')}
-            </a>
+            {#if hasPermission('read_entry_type')}
+                <a href="/settings/entry-types" class="sysbtn">
+                    <Icon src={Icons.Shapes} size="60" theme="outlined" />
+                    {$_('system.entry_types')}
+                </a>
+                {/if}
 
-            <a href="/settings/fields" class="sysbtn">
-                <Icon src={Icons.FormInput} size="60" theme="outlined" />
-                {$_('system.entry_fields')}
-            </a>
+            {#if hasPermission('read_entry_fields')}
+                <a href="/settings/fields" class="sysbtn">
+                    <Icon src={Icons.FormInput} size="60" theme="outlined" />
+                    {$_('system.entry_fields')}
+                </a>
+            {/if}
 
-            <a href="/settings/layouts" class="sysbtn">
-                <Icon src={Icons.LayoutDashboard} size="60" theme="outlined" />
-                {$_('system.entry_layouts')}
-            </a>
+            {#if hasPermission('read_entry_layout')}
+                <a href="/settings/layouts" class="sysbtn">
+                    <Icon src={Icons.LayoutDashboard} size="60" theme="outlined" />
+                    {$_('system.entry_layouts')}
+                </a>
+            {/if}
         </div>
     </section>
 
     <section class="card p-4">
         <h2 class="text-xl mb-6">{$_('system.utilities')}</h2>
         <div class="flex flex-row gap-x-4">
+            {#if hasPermission('readwrite_admin')}
             <a href="/settings/extensions" class="sysbtn">
                 <Icon src={Icons.Plug} size="60" theme="outlined" />
                 Extensions
             </a>
+            {/if}
 
-            <a href="/settings/tasks" class="sysbtn">
-                <Icon src={Icons.CalendarCheck} size="60" theme="outlined" />
-                {$_('system.tasks')}
-            </a>
+            {#if hasPermission('read_task')}
+                <a href="/settings/tasks" class="sysbtn">
+                    <Icon src={Icons.CalendarCheck} size="60" theme="outlined" />
+                    {$_('system.tasks')}
+                </a>
+            {/if}
 
-            <a href="/settings/email-test" class="sysbtn">
-                <Icon src={Icons.Send} size="60" />
-                {$_('system.email_test')}
-            </a>
+            {#if hasPermission('readwrite_admin')}
+                <a href="/settings/email-test" class="sysbtn">
+                    <Icon src={Icons.Send} size="60" />
+                    {$_('system.email_test')}
+                </a>
+            {/if}
 
-            <a href="/settings/server-status" class="sysbtn">
-                <Icon src={Icons.ServerCog} size="60" theme="outlined" />
-                {$_('system.server_status')}
-            </a>
+            {#if hasPermission('readwrite_admin')}
+                <a href="/settings/server-status" class="sysbtn">
+                    <Icon src={Icons.ServerCog} size="60" theme="outlined" />
+                    {$_('system.server_status')}
+                </a>
+            {/if}
 
-            <a href="/settings/logs" class="sysbtn">
-                <Icon src={Icons.ScrollText} size="60" theme="outlined" />
-                {$_('system.app_logs')}
-            </a>
+            {#if hasPermission('readwrite_admin')}
+                <a href="/settings/logs" class="sysbtn">
+                    <Icon src={Icons.ScrollText} size="60" theme="outlined" />
+                    {$_('system.app_logs')}
+                </a>
+            {/if}
         </div>
     </section>
 

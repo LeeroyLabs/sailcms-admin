@@ -320,6 +320,7 @@ system:
   other: Other
   set: Set
   trash: Trash
+  bulk: Bulk Actions
   active: Active
   restore: Restore
   system: System

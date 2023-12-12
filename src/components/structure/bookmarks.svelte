@@ -27,14 +27,22 @@
                 </div>
             </ArrowPopup>
         </div>
-{/if}
+    {/if}
 </div>
 
 <style lang="scss">
     .bookmarks {
         a {
-            @apply hover:bg-primary-500 rounded-md px-2 py-1;
+            @apply hover:bg-primary-500 px-4 py-2;
             @apply dark:hover:text-black;
+        }
+
+        a:first-child {
+            @apply rounded-t;
+        }
+
+        a:last-child {
+            @apply rounded-b;
         }
     }
 </style>

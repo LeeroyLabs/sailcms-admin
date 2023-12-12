@@ -1,90 +1,103 @@
 <script>
     import { AppStore } from '@stores/app.js';
-    import { tableMapperValues, Table, TabGroup, Tab } from '@skeletonlabs/skeleton';
+    import { TabGroup, Tab, ProgressBar } from '@skeletonlabs/skeleton';
     import PageHead from '@components/structure/pagehead.svelte';
     import { Icon } from '@steeze-ui/svelte-icon';
     import { Plus } from '@steeze-ui/heroicons';
     import { _ } from 'svelte-i18n';
+    import TableNew from '@components/utils/table.svelte';
+    import { LayoutsController } from '$lib/controllers/layouts.js';
+    import { linkTo } from '$lib/helpers/navigation.js';
+    import ListTop from '@components/utils/listtop.svelte';
 
     // Breadcrumb
     AppStore.setBreadcrumbs([
         {url: '/dashboard', label: 'systembar.dashboard', active: false},
         {url: '/settings', label: 'system.settings', active: false},
-        {url: '/settings/layouts', label: 'system.entry_layouts', active: true}
+        {url: '/settings/layouts', label: 'layouts.title', active: true}
     ]);
 
     let activeTab = 0;
-
-    const sourceData = [
-        { name: 'Name', weight: 1.0079, symbol: 'H' },
-        { name: 'Create By', weight: 4.0026, symbol: 'He' },
-        { name: 'Last Updated On', weight: 6.941, symbol: 'Li' },
-        { name: 'Used By', weight: 9.0122, symbol: 'Be' },
-        { name: 'Record Count', weight: 10.811, symbol: 'B' },
-    ];
-
-    const tableSimple = {
-        // A list of heading labels.
-        head: ['Name', 'Created By', 'Last Update', 'Used By', 'Record Count'],
-        // The data visibly shown in your table body UI.
-        body: tableMapperValues(sourceData, ['name', 'symbol', 'weight']),
-        // Optional: The data returned when interactive is enabled and a row is clicked.
-        meta: tableMapperValues(sourceData, ['name', 'symbol', 'weight'])
-    };
+    let optionSelectedActive = '';
+    let optionSelectedTrash = '';
+    let isReady = false;
+    let cols = [];
 
     const bookmarkData = {
         url: '/settings/layouts',
-        name: {
-            fr: 'Mises en page',
-            en: 'Layouts'
-        }
+        name: { fr: 'Mises en page', en: 'Entry Layouts' }
     }
+
+    const actionList = [
+        {value: '', label: 'system.bulk'},
+        {value: 'trash', label: 'system.trash'}
+    ];
+
+    const actionListTrash = [
+        {value: '', label: 'system.bulk'},
+        {value: 'restore', label: 'system.restore'}
+    ];
+
+    let rows = [];
+    let trashRows = [];
+
+    let selectedRowsActive = [];
+    let selectedRowsTrash = [];
 
     const init = async () =>
     {
-        console.log($AppStore);
+        let result = await LayoutsController.listing();
+        rows = result.rows;
+        trashRows = result.trash;
+        cols = result.columns;
+        isReady = true;
     }
 
     init();
 </script>
 
 <svelte:head>
-    <title>{$_('system.entry_layouts')} - SailCMS</title>
+    <title>{$_('layouts.title')} - SailCMS</title>
 </svelte:head>
 
+{#if isReady}
 <PageHead bookmarkable={true} bookmark={bookmarkData}>
     <svelte:fragment slot="title">
-        Layouts
+        {$_('layouts.title')}
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        <button class="btn variant-filled-primary">
+        <button on:click={() => linkTo(`/settings/layouts/new`)} class="btn variant-filled-primary">
             <span><Icon src={Plus} size="20"/></span>
             <span>Add Layout</span>
         </button>
     </svelte:fragment>
 </PageHead>
 
-<div class="card p-4">
+<div class="card !bg-gray-100 dark:!bg-surface-700 p-4">
     <TabGroup active="border-b-2 border-primary-500">
         <Tab bind:group={activeTab} name="tab1" value={0}><span>Active</span></Tab>
         <Tab bind:group={activeTab} name="tab2" value={1}>Trash</Tab>
 
         <svelte:fragment slot="panel">
             <div class="{activeTab === 0 ? '' : 'hidden'}">
-                <div class="table-wrapper">
-                    <Table interactive={true} source={tableSimple} />
-                </div>
+                <ListTop bind:actionSelected={optionSelectedActive} actions={actionList}/>
+                <TableNew columns={cols} rows={rows} emptyRows="layouts.no_layout" bind:selectedList={selectedRowsActive}/>
             </div>
 
             <div class="{activeTab === 1 ? '' : 'hidden'}">
-                (tab panel 2 contents)
+                <div class="table-wrapper">
+                    <ListTop bind:actionSelected={optionSelectedTrash} actions={actionListTrash}/>
+                    <TableNew columns={cols} rows={trashRows} emptyRows="layouts.no_layout" bind:selectedList={selectedRowsTrash}/>
+                </div>
             </div>
         </svelte:fragment>
     </TabGroup>
 </div>
+{:else}
+    <div class="flex flex-col justify-center items-center h-full px-64">
+        <ProgressBar meter="bg-primary-500" />
+    </div>
+{/if}
 
 <style lang="scss">
-    .table-wrapper {
-        @apply rounded-lg border border-surface-300 dark:border-surface-600;
-    }
 </style>

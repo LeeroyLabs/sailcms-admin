@@ -41,6 +41,6 @@
     }
 
     .popup-wrapper {
-        @apply bg-white dark:bg-surface-800 w-full p-4 rounded-md relative z-[998];
+        @apply bg-white dark:bg-surface-800 w-full rounded-md relative z-[998];
     }
 </style>

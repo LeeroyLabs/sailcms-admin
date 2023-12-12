@@ -6,6 +6,12 @@
 
 @font-face {
 	font-family: "San Francisco";
+	font-weight: 600;
+	src: url("https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-semibold-webfont.woff");
+}
+
+@font-face {
+	font-family: "San Francisco";
 	font-weight: 800;
 	src: url("https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-bold-webfont.woff");
 }
@@ -35,4 +41,8 @@ body {
 
 .table {
 	@apply bg-surface-50;
+}
+
+.link {
+	@apply font-semibold hover:text-primary-500;
 }

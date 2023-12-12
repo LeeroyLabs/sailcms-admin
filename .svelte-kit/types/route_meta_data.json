@@ -15,5 +15,9 @@
 	],
 	"/(app)/settings/layouts": [
 		"src/routes/(app)/+layout.js"
+	],
+	"/(app)/settings/layouts/[id]": [
+		"src/routes/(app)/settings/layouts/[id]/+page.js",
+		"src/routes/(app)/+layout.js"
 	]
 }
