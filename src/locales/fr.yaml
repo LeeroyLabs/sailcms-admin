@@ -218,6 +218,7 @@ layouts:
   active: Actives
   trashed: Supprimées
   add: Ajouter une Mise en page
+  confirm: Confirmation
   confirm_delete: Êtes-vous certain de vouloir supprimer cette mise en page ?
   confirm_delete_many: Êtes-vous certain de vouloir supprimer ces mises en page ?
   delete_success: Mise en page supprimée avec succès !
@@ -236,6 +237,7 @@ layouts:
 layout:
   add: Nouvelle Mise en page
   edit: Mises en page
+  add_start: Ajouter un champ pour commencer
   untitled: Sans titre
   name: Nom
   add_tab: Ajouter un onglet
@@ -256,6 +258,14 @@ layout:
   mobile:
     wait: Attendez!
     explain: Les mises en page ne peuvent être administrer sur un téléphone. Veuillez utiliser une tablet ou plus grand. Nous recommandons un portable ou ordinateur de bureau.
+  editor:
+    move_up: Déplacer vers le haut
+    move_down: Déplacer vers le bas
+    width: Largeur du champ
+    third: 33% de l'espace
+    half: 50% de l'espace
+    full: 100% de l'espace
+    delete: Supprimer le champ
 
 emails:
   title: Courriels
@@ -311,6 +321,7 @@ system:
   select: Sélectionner
   search: Recherche
   cancel: Annuler
+  ok: OK
   add: Ajouter
   save: Sauvegarder
   save_exit: Sauvegarder & Quitter

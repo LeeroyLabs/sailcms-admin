@@ -4,7 +4,6 @@
     import * as Icons from '@steeze-ui/lucide-icons';
     import {
         Article,
-        Settings,
         Group,
         Widgets,
         Menu,
@@ -15,6 +14,7 @@
     import { AppStore } from '@stores/app.js';
     import { _, locale } from 'svelte-i18n';
     import { isSectionActive } from '$lib/helpers/navigation.js';
+    import { Cog } from '@steeze-ui/lucide-icons';
 
     let entriesMenuState = false;
 </script>
@@ -88,7 +88,7 @@
                             </a>
                         {/each}
                         <a href="/settings" class="{isSectionActive('/settings') ? 'active' : ''}">
-                            <Icon src={Settings} size="24"/>
+                            <Icon src={Cog} size="24"/>
                             {$_('systembar.main.settings')}
                         </a>
                     </div>

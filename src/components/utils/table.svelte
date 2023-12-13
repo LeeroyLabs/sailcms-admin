@@ -11,7 +11,7 @@
     const id = v4();
     let queryAllState = false;
 
-    const handleClick = (row, idx) => linkTo(row.link);
+    const handleClick = (row) => linkTo(row.link);
 
     const selectRow = (row, idx) =>
     {
@@ -62,7 +62,7 @@
         </thead>
         <tbody class="tablebody">
             {#each rows as row, ridx}
-                <tr on:click={() => handleClick(row, ridx)} class="{row.hasLink ? 'has-link' : ''}">
+                <tr on:click={() => handleClick(row)} class="{row.hasLink ? 'has-link' : ''}">
                     {#if row.check}
                         <td class="text-center"><input type="checkbox" id="row_{ridx}" class="chk children" value={row.id} on:click|stopPropagation={() => selectRow(row, ridx)} /></td>
                     {/if}

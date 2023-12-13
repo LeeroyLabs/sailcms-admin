@@ -1,8 +1,22 @@
 <script>
+    import { v4 } from 'uuid';
+    import { clickOutside } from '@directives/clickout.js';
+    import { createEventDispatcher } from 'svelte';
+
     export let arrowPosition = 'left';
     export let position = 'top-[50px] left-[-10px]';
+    export let id = v4();
+    export let hideOnClickOutside = false;
+
+    let css = '';
+    export { css as class };
+
+    let inline = '';
+    export { inline as style };
 
     let positionClasses = '';
+
+    const dispatch = createEventDispatcher();
 
     switch (arrowPosition)
     {
@@ -19,9 +33,16 @@
             positionClasses = 'before:right-[10px] before:top-[-8px]';
             break;
     }
+
+    const hidePopup = () =>
+    {
+        if (hideOnClickOutside) {
+            dispatch('hide');
+        }
+    }
 </script>
 
-<div class="popup arrow-top {position} {positionClasses}">
+<div {id} use:clickOutside on:click_outside={hidePopup} class="popup arrow-top {css !== '' ? css : position} {positionClasses}" style={inline}>
     <div class="popup-wrapper">
         <slot/>
     </div>
