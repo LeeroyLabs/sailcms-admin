@@ -112,8 +112,8 @@ export default {
         }
     `,
     createEntryLayout: `
-        mutation createEntryLayout($titles: LocaleFieldInput!, $schema: [EntryLayoutTabInput!]!, $slug: String) {
-            createEntryLayout(titles: $titles, schema: $schema, slug: $slug) {
+        mutation createEntryLayout($title: String!, $schema: [EntryLayoutTabInput!]!, $slug: String!) {
+            createEntryLayout(title: $title, schema: $schema, slug: $slug) {
                 _id
             }
         }

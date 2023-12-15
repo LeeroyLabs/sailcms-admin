@@ -38,6 +38,16 @@
         dispatch('set', size);
     }
 
+    const move = (direction) =>
+    {
+        dispatch('move', {id: field.id, direction});
+    }
+
+    const remove = () =>
+    {
+        dispatch('remove', field.id);
+    }
+
     onMount(() =>
     {
         setTimeout(() => tippy('.button'), 100);
@@ -50,10 +60,10 @@
 <div class="field relative {field.width} bg-gray-100 dark:bg-surface-600">
     <div>{fieldName(field.id, fields)}</div>
     <div class="flex flex-row items-center justify-end gap-x-2">
-        <button class="size-button button" data-tippy-content={$_('layout.editor.move_up')}>
+        <button on:click={() => move('up')} class="size-button button" data-tippy-content={$_('layout.editor.move_up')}>
             <Icon src={ArrowBigUpDash} size="24"/>
         </button>
-        <button class="size-button button" data-tippy-content={$_('layout.editor.move_down')}>
+        <button on:click={() => move('down')} class="size-button button" data-tippy-content={$_('layout.editor.move_down')}>
             <Icon src={ArrowBigDownDash} size="24"/>
         </button>
 
@@ -61,6 +71,7 @@
             <Icon src={Ruler} size="24"/>
         </button>
         <button
+            on:click={remove}
             class="hover:text-error-500 button"
             data-tippy-delay="[250,0]"
             data-tippy-content={$_('layout.editor.delete')}

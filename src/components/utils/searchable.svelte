@@ -11,6 +11,17 @@
 
     const dispatch = createEventDispatcher();
 
+    // $: showingFields = (fields) =>
+    // {
+    //     console.log("CHANGED");
+    // }
+
+    export const updateFields = (fieldsUpdate) =>
+    {
+        fields = fieldsUpdate;
+        showingFields = fieldsUpdate;
+    }
+
     const search = (text) =>
     {
         showingFields = [];

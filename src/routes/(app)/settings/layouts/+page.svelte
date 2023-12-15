@@ -28,7 +28,6 @@
     let selectedRowsActive = [];
     let selectedRowsTrash = [];
     let isSoftDeleting = false;
-    let isRestoring = false;
     let isDeleting = false;
     let confirmId = -1;
 
@@ -145,7 +144,6 @@
         </svelte:fragment>
     </TabGroup>
 
-    <!-- TODO: Trash Model -->
     <Modal title="layouts.confirm" show={confirmId === 2} on:close={() => confirmId = -1}>
         <svelte:fragment slot="content">
             {#if optionSelectedActive.length === 1}

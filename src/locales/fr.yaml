@@ -241,8 +241,10 @@ layout:
   untitled: Sans titre
   name: Nom
   add_tab: Ajouter un onglet
+  edit_tab: Modifier l'onglet
   add_field: Ajouter un champ
   delete_field: Supprimer ce champ
+  confirm_delete: Êtes-vous certains de vouloir supprimer cet onglet ?
   tabname: Nom du champ
   select_tabname: Choisir un nom pour cet onglet
   layout_name: Nom de la mise en page

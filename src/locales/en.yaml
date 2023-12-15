@@ -242,9 +242,11 @@ layout:
   field_key: The key is used in your code to get the value of this field.
   untitled: Untitled
   name: Name
-  add_tab: Add tab
+  add_tab: Add Tab
+  edit_tab: Edit Tab
   add_field: Add Field
   delete_field: Delete Field
+  confirm_delete: Are you sure you want to delete this tab?
   tabname: Tab name
   select_tabname: Select a name for this tab
   layout_name: Layout name

@@ -18,7 +18,7 @@
 
 {#if show}
     <div in:fade={{duration: 250}} out:fade={{duration: 250}} class="fixed inset-0 bg-black/60 flex flex-col justify-center items-center">
-        <div class="bg-surface-700 rounded-md min-w-[300px] max-w-11/12 md:max-w-8/12 lg:max-w-6/12 border border-surface-700">
+        <div class="bg-surface-800 rounded-md min-w-[300px] max-w-11/12 md:max-w-8/12 lg:max-w-6/12 border border-surface-700">
             <header class="flex flex-row p-4 bg-surface-900 rounded-t-md">
                 <h2 class="flex-grow font-medium">
                     {$_(title)}

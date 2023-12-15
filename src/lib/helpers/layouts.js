@@ -8,3 +8,10 @@ export function fieldName(id, fields)
 
     return '';
 }
+
+export function moveItem(array, from, to)
+{
+    let f = array.splice(from, 1)[0];
+    array.splice(to, 0, f);
+    return array;
+}
