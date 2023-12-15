@@ -2,14 +2,13 @@
     import { AppStore } from '@stores/app.js';
     import { TabGroup, Tab, ProgressBar, ProgressRadial } from '@skeletonlabs/skeleton';
     import PageHead from '@components/structure/pagehead.svelte';
-    import TableNew from '@components/utils/table.svelte';
+    import Table from '@components/utils/table.svelte';
     import ListTop from '@components/utils/listtop.svelte';
     import Modal from '@components/utils/modal.svelte';
     import { Icon } from '@steeze-ui/svelte-icon';
     import { Plus } from '@steeze-ui/lucide-icons';
     import { _ } from 'svelte-i18n';
     import { LayoutsController } from '$lib/controllers/layouts.js';
-    import { linkTo } from '$lib/helpers/navigation.js';
 
     // Breadcrumb
     AppStore.setBreadcrumbs([
@@ -67,14 +66,11 @@
 
         if (confirmId === 3) {
             // Restore Layout
-            isRestoring = true;
             let result = await LayoutsController.restore(selectedRowsTrash);
 
             rows = result.rows;
             trashRows = result.trash;
             cols = result.columns;
-
-            isRestoring = false;
         }
     }
 
@@ -109,10 +105,10 @@
         {$_('layouts.title')}
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        <button on:click={() => linkTo(`/settings/layouts/new`)} class="btn variant-filled-primary">
+        <a href={`${$AppStore.baseURL}/settings/layouts/new`} class="btn variant-filled-primary">
             <span><Icon src={Plus} size="20"/></span>
             <span>{$_('layouts.add')}</span>
-        </button>
+        </a>
     </svelte:fragment>
 </PageHead>
 
@@ -129,7 +125,7 @@
                     actions={actionList}
                     on:selected={handleActionSelection}
                 />
-                <TableNew columns={cols} rows={rows} emptyRows="layouts.no_layout" bind:selectedList={selectedRowsActive}/>
+                <Table columns={cols} rows={rows} emptyRows="layouts.no_layout" bind:selectedList={selectedRowsActive}/>
             </div>
 
             <!-- Trashed -->
@@ -139,7 +135,7 @@
                     actions={actionListTrash}
                     on:selected={handleActionSelection}
                 />
-                <TableNew columns={cols} rows={trashRows} emptyRows="layouts.no_layout" bind:selectedList={selectedRowsTrash}/>
+                <Table columns={cols} rows={trashRows} emptyRows="layouts.no_layout" bind:selectedList={selectedRowsTrash}/>
             </div>
         </svelte:fragment>
     </TabGroup>

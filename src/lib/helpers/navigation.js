@@ -9,6 +9,8 @@ export function isSectionActive(url)
 
 export function linkTo(url)
 {
-    preloadCode([get(AppStore).baseURL + url]);
-    goto(get(AppStore).baseURL + url);
+    preloadCode(get(AppStore).baseURL + url).then(() =>
+    {
+        goto(get(AppStore).baseURL + url);
+    });
 }

@@ -14,7 +14,7 @@
 
 <div class="flex flex-row gap-x-2 my-4 items-center">
     <div class="w-[250px]">
-        <select bind:value={actionSelected} class="select !bg-surface-50 dark:!bg-surface-600 dark:!border-surface-900 !rounded-md">
+        <select bind:value={actionSelected} class="select !bg-white dark:!bg-surface-600 dark:!border-surface-900 !rounded-md">
             {#each actions as action}
                 <option value={action.value}>{$_(action.label)}</option>
             {/each}

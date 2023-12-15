@@ -9,35 +9,6 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-		"moduleResolution": "bundler",
-		"paths": {
-			"$lib": [
-				"./src/lib"
-			],
-			"$lib/*": [
-				"./src/lib/*"
-			],
-			"@components/*": [
-				"./src/components/*"
-			],
-			"@directives/*": [
-				"./src/directives/*"
-			],
-			"@graphql/*": [
-				"./src/graphql/*"
-			],
-			"@helpers/*": [
-				"./src/helpers/*"
-			],
-			"@stores/*": [
-				"./src/stores/*"
-			],
-			"@data/*": [
-				"./src/data/*"
-			],
-			"@/*": [
-				"./src/*"
-			]
-		}
+		"moduleResolution": "bundler"
 	}
 }

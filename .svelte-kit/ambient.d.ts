@@ -88,6 +88,7 @@ declare module '$env/static/private' {
 	export const npm_package_scripts_preview: string;
 	export const npm_lifecycle_event: string;
 	export const LANG: string;
+	export const npm_package_devDependencies__sveltejs_vite_plugin_svelte: string;
 	export const npm_package_devDependencies__skeletonlabs_skeleton: string;
 	export const npm_package_name: string;
 	export const ITERM_PROFILE: string;
@@ -160,6 +161,8 @@ declare module '$env/static/public' {
  * 
  * This module cannot be imported into client-side code.
  * 
+ * Dynamic environment variables cannot be used during prerendering.
+ * 
  * ```ts
  * import { env } from '$env/dynamic/private';
  * console.log(env.DEPLOYMENT_SPECIFIC_VARIABLE);
@@ -231,6 +234,7 @@ declare module '$env/dynamic/private' {
 		npm_package_scripts_preview: string;
 		npm_lifecycle_event: string;
 		LANG: string;
+		npm_package_devDependencies__sveltejs_vite_plugin_svelte: string;
 		npm_package_devDependencies__skeletonlabs_skeleton: string;
 		npm_package_name: string;
 		ITERM_PROFILE: string;
@@ -292,6 +296,8 @@ declare module '$env/dynamic/private' {
  * Similar to [`$env/dynamic/private`](https://kit.svelte.dev/docs/modules#$env-dynamic-private), but only includes variables that begin with [`config.kit.env.publicPrefix`](https://kit.svelte.dev/docs/configuration#env) (which defaults to `PUBLIC_`), and can therefore safely be exposed to client-side code.
  * 
  * Note that public dynamic environment variables must all be sent from the server to the client, causing larger network requests — when possible, use `$env/static/public` instead.
+ * 
+ * Dynamic environment variables cannot be used during prerendering.
  * 
  * ```ts
  * import { env } from '$env/dynamic/public';

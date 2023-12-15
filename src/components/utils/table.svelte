@@ -91,7 +91,7 @@
 
     .tablebody {
         tr {
-            @apply bg-surface-50 dark:bg-surface-500;
+            @apply bg-white dark:bg-surface-500;
 
             td {
                 @apply px-3 py-3;
@@ -103,7 +103,7 @@
         }
 
         tr:nth-child(even) {
-            @apply dark:bg-surface-700 bg-surface-200 hover:bg-surface-300 hover:dark:text-surface-50;
+            @apply dark:bg-surface-700 bg-surface-50 hover:bg-surface-300 hover:dark:text-surface-50;
         }
 
         tr:last-child {
