@@ -13,6 +13,13 @@
 	"/(app)/settings": [
 		"src/routes/(app)/+layout.js"
 	],
+	"/(app)/settings/fields": [
+		"src/routes/(app)/+layout.js"
+	],
+	"/(app)/settings/fields/[id]": [
+		"src/routes/(app)/settings/fields/[id]/+page.js",
+		"src/routes/(app)/+layout.js"
+	],
 	"/(app)/settings/layouts": [
 		"src/routes/(app)/+layout.js"
 	],

@@ -19,9 +19,9 @@
     let entriesMenuState = false;
 </script>
 
-<aside class="xl:flex">
-    <div class="print:hidden flex flex-col w-[250px]">
-        <div class="print:hidden flex flex-col h-0 flex-1 bg-gray-800">
+<aside class="flex">
+    <div class="flex flex-col w-[250px]">
+        <div class="flex flex-col h-0 flex-1 bg-gray-800">
             <div class="flex items-center flex-shrink-0 px-4 mt-8">
                 <img class="w-24 rounded-md mx-auto transition-all" src="https://mir-s3-cdn-cf.behance.net/user/276/7530587.53f253b5e501a.jpg" alt="">
             </div>

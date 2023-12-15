@@ -37,6 +37,38 @@ export class LayoutsController
         return fields;
     }
 
+    static async loadLayout(id, fields)
+    {
+        let layout = await Entries.entryLayout(id, SailCMS.getLocales());
+        let usedFields = [];
+        let schema = [];
+
+        if (!layout) return { layouts: null, fields: null};
+
+        for (let tab of layout.schema) {
+            usedFields = [...usedFields, ...tab.fields.map(f => f._id)];
+
+            const _fields = tab.fields.map(f => {
+                return {id: f._id, width: f.width};
+            });
+
+            schema = [...schema, {
+                label: tab.label,
+                fields: _fields
+            }];
+        }
+
+        for (let field of fields) {
+            if (usedFields.includes(field._id)) {
+                field.used = true;
+            }
+        }
+
+        layout.schema = schema;
+
+        return { layout, fields };
+    }
+
     static handleSelection(ids, action)
     {
         if (ids.length === 0) return -1;

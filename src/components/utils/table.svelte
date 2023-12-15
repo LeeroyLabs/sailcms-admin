@@ -2,6 +2,8 @@
     import { _ } from 'svelte-i18n';
     import { linkTo } from '$lib/helpers/navigation.js';
     import { v4 } from 'uuid';
+    import { Icon } from '@steeze-ui/svelte-icon';
+    import { Check, X } from '@steeze-ui/lucide-icons';
 
     export let columns = [];
     export let rows = [];1
@@ -68,7 +70,19 @@
                     {/if}
 
                     {#each row.data as col, cidx}
-                        <td class="{col.options.center ? 'text-center' : ''}">{@html col.data}</td>
+                        {#if col.options.boolean}
+                            <td>
+                                <div class="{col.options.center ? 'flex flex-row justify-center' : ''} {(col.data) ? 'text-green-500' : 'text-red-500'}">
+                                    {#if col.data === true}
+                                        <Icon src={Check} size="22"/>
+                                    {:else}
+                                        <Icon src={X} size="22"/>
+                                    {/if}
+                                </div>
+                            </td>
+                        {:else}
+                            <td class="{col.options.center ? 'text-center' : ''}">{@html col.data}</td>
+                        {/if}
                     {/each}
                 </tr>
             {:else}

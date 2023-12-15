@@ -8,7 +8,7 @@
     import PageHead from '@components/structure/pagehead.svelte';
     import Searchable from '@components/utils/searchable.svelte';
     import LayoutItem from '@components/entries/layoutitem.svelte';
-    import { ProgressRadial, Tab, TabGroup } from '@skeletonlabs/skeleton';
+    import { ProgressBar, ProgressRadial, Tab, TabGroup } from '@skeletonlabs/skeleton';
     import { LayoutsController } from '$lib/controllers/layouts.js';
     import Modal from '@components/utils/modal.svelte';
     import { Entries } from '@graphql/lib/entries.js';
@@ -42,17 +42,37 @@
         isAdding = true;
     }
 
-    // Breadcrumb
-    AppStore.setBreadcrumbs([
+    let breadcrumb = [
         {url: '/dashboard', label: 'systembar.dashboard', active: false},
         {url: '/settings', label: 'system.settings', active: false},
-        {url: '/settings/layouts', label: 'layouts.title', active: false},
-        {url: '', label: title, active: true}
-    ]);
+        {url: '/settings/layouts', label: 'layouts.title', active: false}
+    ];
 
     const init = async () =>
     {
         fields = await LayoutsController.loadFields();
+
+        if (!isAdding) {
+            // Load Layout data
+            let layoutData = await LayoutsController.loadLayout(data.id, fields);
+
+            if (layoutData.layout) {
+                layoutName = layoutData.layout.title;
+                tabs = layoutData.layout.schema;
+
+                // Update the fields to set those who are used
+                fields = layoutData.fields;
+
+                title = layoutData.layout.title;
+                breadcrumb = [...breadcrumb, {url: '', label: layoutData.layout.title, active: true}];
+            }
+        } else {
+            breadcrumb = [...breadcrumb, {url: '', label: title, active: true}];
+        }
+
+        // Breadcrumb
+        AppStore.setBreadcrumbs(breadcrumb);
+
         isReady = true;
     }
 
@@ -165,17 +185,25 @@
     const saveLayout = async () =>
     {
         if (layoutName === '') return;
+        if (isSaving) return;
+
+        isSaving = true;
+        const slug = deburr(kebabCase(layoutName));
+        let status = false;
 
         if (isAdding) {
-            const slug = deburr(kebabCase(layoutName));
-            const status = await Entries.createEntryLayout(layoutName, tabs, slug);
-
-            if (status) {
-                Message.set({show: true, message: 'layout.save_success', type: 'success', ttl: 15000});
-                linkTo('/settings/layouts');
-            }
+            status = await Entries.createEntryLayout(layoutName, tabs, slug);
         } else {
+            status = await Entries.updateEntryLayout(data.id, layoutName, tabs, slug);
+        }
 
+        isSaving = false;
+
+        if (status) {
+            Message.set({show: true, message: 'layout.save_success', type: 'success', ttl: 15000});
+            linkTo('/settings/layouts');
+        } else {
+            Message.set({show: true, message: 'layout.save_error', type: 'error', ttl: 15000});
         }
     }
 
@@ -284,6 +312,10 @@
             </button>
         </svelte:fragment>
     </Modal>
+{:else}
+    <div class="flex flex-col justify-center items-center h-full px-64">
+        <ProgressBar meter="bg-primary-500" />
+    </div>
 {/if}
 
 <style lang="scss">

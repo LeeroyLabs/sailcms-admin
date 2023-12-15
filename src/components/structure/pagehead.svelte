@@ -47,7 +47,7 @@
     <div class="flex flex-row items-center justify-end gap-x-2">
         {#if bookmarkable}
             {#if bookmarked}
-                <button on:click={removePage} class="text-success-500 hover:text-success-400 bm">
+                <button on:click={removePage} class="text-green-500 hover:text-success-400 bm">
                     <Icon src={BookmarkAdded} size="38"/>
                 </button>
             {:else}

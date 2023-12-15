@@ -11,6 +11,7 @@ export function tableMap(row, keys, opts)
         let opt = {center: false, check: false};
 
         // Center Value
+        if (opts.booleans !== undefined && opts.booleans.includes(i)) opt.boolean = true;
         if (opts.center && opts.center.includes(i)) opt.center = true;
 
         obj.push({data: row[v], options: opt});
