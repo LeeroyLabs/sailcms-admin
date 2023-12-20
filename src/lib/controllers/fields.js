@@ -32,8 +32,6 @@ export class FieldsController
         const fields = await Entries.fields(SailCMS.getLocales());
         const keys = ['name', 'key', 'type', 'repeatable', 'required'];
 
-        console.log(fields);
-
         for (let field of fields) {
             let obj = {
                 name: field.name,

@@ -1,9 +1,12 @@
 <script>
+    import { _ } from 'svelte-i18n';
     import { clickOutside } from '@directives/clickout.js';
-    import { deburr, lowerCase } from 'lodash';
     import { createEventDispatcher } from 'svelte';
+    import { searchable } from '$lib/helpers/text.js';
 
     export let fields = [];
+    export let hidePlaceholder = false;
+    export let placeholder = '';
 
     let showingFields = fields;
     let text = '';
@@ -27,8 +30,8 @@
         showingFields = [];
 
         for (let field of fields) {
-            let fname = deburr(lowerCase(field.name));
-            let stext = deburr(lowerCase(text));
+            let fname = searchable(field.name);
+            let stext = searchable(text);
 
             if (fname.includes(stext)) {
                 showingFields = [...showingFields, field];
@@ -49,7 +52,7 @@
     <input
         type="text"
         class="input"
-        placeholder="Search for field"
+        placeholder={hidePlaceholder ? '' : $_(placeholder)}
         on:focus={() => isFocused = true}
         on:keyup={(e) => search(e.target.value)}
     />

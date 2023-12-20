@@ -218,6 +218,7 @@ layouts:
   active: Actives
   trashed: Supprimées
   add: Ajouter une Mise en page
+  search_fields: Recherche de champs
   confirm: Confirmation
   confirm_delete: Êtes-vous certain de vouloir supprimer cette mise en page ?
   confirm_delete_many: Êtes-vous certain de vouloir supprimer ces mises en page ?
@@ -426,6 +427,7 @@ fields:
   field_name: Nom
   field_key: Clée
   search: Recherche
+  confirm: Confirmation
   key_explain: Cette clée est utilisée pour identifier ce champ dans une entrée.
   crop_key_explain: Cette clée est utilisée pour identifier le recadrage dans une entrée. la clée du champ utilisée si laissé vide.
   ratio_explain: Le ratio est une valeur comme 4:3 ou 16:9 en décimal. 16:9 est la valeur par défaut.
@@ -434,6 +436,8 @@ fields:
   repeatable: Répétable
   required: Requis
   label: Libellé
+  type: Type
+  type_ph: Choisir un type de champ
   select_error: Valeur déjà utlisée.
   matrix_error: Impossible d'ajouter deux fois le même champ dans la même matrice.
   confirm_delete: Êtes-vous certain de vouloir supprimer ce champ ?

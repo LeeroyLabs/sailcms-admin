@@ -95,10 +95,6 @@
     init();
 </script>
 
-<svelte:head>
-    <title>{$_('layouts.title')} - SailCMS</title>
-</svelte:head>
-
 {#if isReady}
 <PageHead bookmarkable={true} bookmark={bookmarkData}>
     <svelte:fragment slot="title">

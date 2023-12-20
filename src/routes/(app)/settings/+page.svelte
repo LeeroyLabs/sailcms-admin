@@ -20,10 +20,6 @@
     let isReady = false;
 </script>
 
-<svelte:head>
-    <title>{$_('system.settings')} - SailCMS</title>
-</svelte:head>
-
 <PageHead>
     <svelte:fragment slot="title">
         {$_('system.settings')}

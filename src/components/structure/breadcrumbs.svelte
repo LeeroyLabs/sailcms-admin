@@ -3,6 +3,10 @@
     import { _ } from 'svelte-i18n';
 </script>
 
+<svelte:head>
+    <title>{$_($AppStore.breadcrumbs[$AppStore.breadcrumbs.length - 1]?.label)} - SailCMS</title>
+</svelte:head>
+
 {#if $AppStore.breadcrumbs.length > 1}
     <ol class="breadcrumb">
         {#each $AppStore.breadcrumbs as crumb, index}

@@ -32,7 +32,7 @@ body {
 }
 
 .input {
-	@apply rounded-md bg-white dark:border-surface-800;
+	@apply rounded-md bg-white dark:border-surface-800 dark:bg-surface-600 focus:dark:border-primary-500;
 }
 
 .btn {

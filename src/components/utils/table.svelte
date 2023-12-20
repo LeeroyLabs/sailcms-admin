@@ -9,11 +9,17 @@
     export let rows = [];1
     export let emptyRows = 'system.no_data_for_now';
     export let selectedList = [];
+    export let isAllowed = true;
 
     const id = v4();
     let queryAllState = false;
 
-    const handleClick = (row) => linkTo(row.link);
+    const handleClick = (row) =>
+    {
+        if (isAllowed) {
+            linkTo(row.link);
+        }
+    }
 
     const selectRow = (row, idx) =>
     {
@@ -54,9 +60,11 @@
         <thead class="bg-surface-200 dark:bg-surface-800 border-b border-surface-300 dark:border-surface-400 tablehead">
             {#each columns as column, index}
                 {#if column.title === 'check'}
-                    <th class="py-3 px-2 text-center w-[44px]">
-                        <input id={id} type="checkbox" class="chk" on:click={toggleAll} />
-                    </th>
+                    {#if isAllowed}
+                        <th class="py-3 px-2 text-center w-[44px]">
+                            <input id={id} type="checkbox" class="chk" on:click={toggleAll} />
+                        </th>
+                    {/if}
                 {:else}
                     <th class="py-3 px-2 text-left {column.css} {column.center ? 'text-center' : ''}">{$_(column.title)}</th>
                  {/if}
@@ -64,8 +72,8 @@
         </thead>
         <tbody class="tablebody">
             {#each rows as row, ridx}
-                <tr on:click={() => handleClick(row)} class="{row.hasLink ? 'has-link' : ''}">
-                    {#if row.check}
+                <tr on:click={() => handleClick(row)} class="{row.hasLink && isAllowed ? 'has-link' : ''}">
+                    {#if row.check && isAllowed}
                         <td class="text-center"><input type="checkbox" id="row_{ridx}" class="chk children" value={row.id} on:click|stopPropagation={() => selectRow(row, ridx)} /></td>
                     {/if}
 

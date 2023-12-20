@@ -9,6 +9,11 @@
     import { Plus } from '@steeze-ui/lucide-icons';
     import { _ } from 'svelte-i18n';
     import { FieldsController } from '$lib/controllers/fields.js';
+    import { searchable } from '$lib/helpers/text.js';
+    import { Entries } from '@graphql/lib/entries.js';
+    import { hasPermission } from '$lib/helpers/permissions.js';
+    import { Message } from '@stores/message.js';
+    import { linkTo } from '$lib/helpers/navigation.js';
 
     let isReady = false;
     let fields = [];
@@ -16,6 +21,11 @@
     let selectedRows = [];
     let cols = [];
     let rows = [];
+    let displayedRows = [];
+    let showConfirm = false;
+    let isDeleting = false;
+
+    const isAllowed = hasPermission('readwrite_entry_fields');
 
     // Breadcrumb
     AppStore.setBreadcrumbs([
@@ -39,39 +49,56 @@
         const data = await FieldsController.loadList();
 
         rows = data.rows;
+        displayedRows = rows;
         cols = data.columns;
         isReady = true;
     }
 
-    const handleActionSelection = async (e) =>
+    const handleActionSelection = (e) => showConfirm = true;
+
+    const deleteSelections = async () =>
     {
-        // if (activeTab === 0) {
-        //     confirmId = LayoutsController.handleSelection(selectedRowsActive, e.detail);
-        // } else {
-        //     confirmId = LayoutsController.handleSelection(selectedRowsTrash, e.detail);
-        // }
-        //
-        // if (confirmId === 3) {
-        //     // Restore Layout
-        //     let result = await LayoutsController.restore(selectedRowsTrash);
-        //
-        //     rows = result.rows;
-        //     trashRows = result.trash;
-        //     cols = result.columns;
-        // }
+        isDeleting = true;
+        const result = await Entries.deleteEntryFields(selectedRows);
+
+        if (result) {
+            await init();
+            isDeleting = false;
+            showConfirm = false;
+
+            let msg = 'fields.delete_success_many';
+
+            if (selectedRows.length === 1) {
+                msg = 'fields.delete_success';
+            }
+
+            Message.set({show: true, message: msg, type: 'success', ttl: 15000});
+            selectedRows = [];
+        } else {
+            isDeleting = false;
+            showConfirm = false;
+
+            let msg = 'fields.delete_error_many';
+
+            if (selectedRows.length === 1) {
+                msg = 'fields.delete_error';
+            }
+
+            Message.set({show: true, message: msg, type: 'error', ttl: 15000});
+        }
     }
 
-    const deleteSelections = () =>
+    const searchFields = async (e) =>
     {
-
+        displayedRows = rows.filter(r => {
+            return searchable(r.data[0].data).includes(searchable(e.detail));
+        });
     }
+
+    const clearSearch = () => displayedRows = rows;
 
     init();
 </script>
-
-<svelte:head>
-    <title>{$_('fields.title')} - SailCMS</title>
-</svelte:head>
 
 {#if isReady}
     <PageHead bookmarkable={true} bookmark={bookmarkData}>
@@ -79,10 +106,12 @@
             {$_('fields.title')}
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <a href={`${$AppStore.baseURL}/settings/fields/new`} class="btn variant-filled-primary">
-                <span><Icon src={Plus} size="20"/></span>
-                <span>{$_('layouts.add')}</span>
-            </a>
+            {#if isAllowed}
+                <a href={`${$AppStore.baseURL}/settings/fields/new`} class="btn variant-filled-primary">
+                    <span><Icon src={Plus} size="20"/></span>
+                    <span>{$_('layouts.add')}</span>
+                </a>
+            {/if}
         </svelte:fragment>
     </PageHead>
 
@@ -92,29 +121,32 @@
             bind:actionSelected={optionSelected}
             actions={actionList}
             on:selected={handleActionSelection}
+            on:search={searchFields}
+            on:clear={clearSearch}
+            isAllowed={isAllowed}
         />
-        <Table columns={cols} rows={rows} emptyRows="fields.no_fields" bind:selectedList={selectedRows}/>
+        <Table isAllowed={isAllowed} columns={cols} rows={displayedRows} emptyRows="fields.no_fields" bind:selectedList={selectedRows}/>
 
         <!-- Delete Confirmation model -->
-<!--        <Modal title="layouts.confirm" show={confirmId === 1}>-->
-<!--            <svelte:fragment slot="content">-->
-<!--                {#if optionSelectedActive.length === 1}-->
-<!--                    {$_('layouts.confirm_delete')}-->
-<!--                {:else}-->
-<!--                    {$_('layouts.confirm_delete_many')}-->
-<!--                {/if}-->
-<!--            </svelte:fragment>-->
-<!--            <svelte:fragment slot="buttons">-->
-<!--                <button on:click={() => confirmId = -1} class="btn ">{$_('system.cancel')}</button>-->
-<!--                <button on:click={deleteSelections} class="btn variant-filled-error">-->
-<!--                    {#if !isDeleting}-->
-<!--                        {$_('system.yes')}-->
-<!--                    {:else}-->
-<!--                        <ProgressRadial fill="fill-primary" width="w-5" />-->
-<!--                    {/if}-->
-<!--                </button>-->
-<!--            </svelte:fragment>-->
-<!--        </Modal>-->
+        <Modal title="fields.confirm" show={showConfirm}>
+            <svelte:fragment slot="content">
+                {#if selectedRows.length === 1}
+                    {$_('fields.confirm_delete')}
+                {:else}
+                    {$_('fields.confirm_delete_many')}
+                {/if}
+            </svelte:fragment>
+            <svelte:fragment slot="buttons">
+                <button on:click={() => showConfirm = false} class="btn ">{$_('system.cancel')}</button>
+                <button on:click={deleteSelections} class="btn variant-filled-error">
+                    {#if !isDeleting}
+                        {$_('system.yes')}
+                    {:else}
+                        <ProgressRadial fill="fill-primary" width="w-5" />
+                    {/if}
+                </button>
+            </svelte:fragment>
+        </Modal>
     </div>
 {:else}
     <div class="flex flex-col justify-center items-center h-full px-64">

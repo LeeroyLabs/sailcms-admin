@@ -210,10 +210,6 @@
     init();
 </script>
 
-<svelte:head>
-    <title>{$_(title)} - SailCMS</title>
-</svelte:head>
-
 {#if isReady}
     <PageHead bookmarkable={false}>
         <svelte:fragment slot="title">
@@ -232,7 +228,7 @@
     </PageHead>
 
     <div class="card !bg-gray-100 dark:!bg-surface-700 p-4 flex flex-col gap-y-4 relative">
-        <input bind:value={layoutName} type="text" class="input dark:!bg-surface-600" placeholder="Name of this layout" />
+        <input bind:value={layoutName} type="text" class="input" placeholder="Name of this layout" />
 
         <TabGroup active="border-b-2 border-primary-500" regionList="relative">
             {#each tabs as tab, idx}
@@ -249,7 +245,7 @@
                 <div class="tab-editor mt-[-1.02rem]">
                     <div class="flex flex-row justify-between items-center">
                         <div class="w-4/12">
-                            <Searchable bind:this={searchField} bind:fields={fields} on:selected={(e) => addField(e.detail)}/>
+                            <Searchable placeholder="layouts.search_fields" bind:this={searchField} bind:fields={fields} on:selected={(e) => addField(e.detail)}/>
                         </div>
                         <div class="flex flex-row gap-x-2">
                             <button on:click={openEditTab} class="btn variant-filled-primary flex flex-row items-center gap-x-2">
