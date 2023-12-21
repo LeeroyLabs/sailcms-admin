@@ -466,8 +466,8 @@ fields:
     email: Courriel
     phone: Téléphone
     creditcard: Carte de crédit
-    asset_file: Fichier
-    asset_image: Image
+    file_asset: Fichier
+    image_asset: Image
     url: URL
     domain: Domaine
     directory: Chemin dossier

@@ -1,14 +1,11 @@
 <script>
-    // TODO MAKE TEXT (EMAIL, PASSWORD, TEXT, NUMBER)
-    // TODO VALIDATION BUILT IN
-
     import { _ } from 'svelte-i18n';
     import { v4 } from 'uuid';
     import { createEventDispatcher } from 'svelte';
     import { Icon } from '@steeze-ui/svelte-icon';
     import { ErrorOutline } from '@steeze-ui/material-design-icons';
     import { Validation } from '$lib/helpers/validation.js';
-    import { debug } from '$lib/helpers/debugger.js';
+    import { searchable } from '$lib/helpers/text.js';
 
     // Props
     export let value = '';
@@ -22,6 +19,7 @@
     export let css = '';
     export let blockCss = '';
     export let isValid = true;
+    export let slugFormat = false;
 
     // Special Exports
     export { css as class };
@@ -34,6 +32,10 @@
 
     export const validate = () =>
     {
+        if (slugFormat) {
+            value = searchable(value, true);
+        }
+
         if (validation.length === 0) {
             hasError = false;
             isValid = true;
@@ -42,8 +44,6 @@
 
         // Assume it's good, then find a reason to make it bad
         isValid = true;
-
-        debug('info', 'Validation', validation);
 
         for (let rule of validation) {
             const result = Validation.validate(value, rule);
@@ -61,10 +61,10 @@
 </script>
 
 <svelte:options accessors/>
-<div class="relative">
+<div class="relative {blockCss}">
     {#if type === 'text'}
         <input
-            class="input {css} {hasError ? '!border-error-500' : ''}"
+            class="input {css} {hasError ? 'is-error !border-error-500' : ''}"
             type="text"
             readonly={readonly}
             autocomplete="{(autocomplete) ? '' : 'one-time-code'}"
@@ -75,7 +75,7 @@
         />
     {:else if type === 'password'}
         <input
-            class="input {css} {hasError ? '!border-error-500' : ''}"
+            class="input {css} {hasError ? 'is-error !border-error-500' : ''}"
             type="password"
             readonly={readonly}
             autocomplete="{(autocomplete) ? '' : 'one-time-code'}"
@@ -86,7 +86,7 @@
         />
     {:else if type === 'number'}
         <input
-            class="input {css} {hasError ? '!border-error-500' : ''}"
+            class="input {css} {hasError ? 'is-error !border-error-500' : ''}"
             type="number"
             readonly={readonly}
             autocomplete="{(autocomplete) ? '' : 'one-time-code'}"
@@ -97,7 +97,7 @@
         />
     {:else if type === 'email'}
         <input
-            class="input {css} {hasError ? '!border-error-500' : ''}"
+            class="input {css} {hasError ? 'is-error !border-error-500' : ''}"
             type="email"
             readonly={readonly}
             autocomplete="{(autocomplete) ? '' : 'one-time-code'}"

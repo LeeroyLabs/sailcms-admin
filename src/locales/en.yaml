@@ -468,8 +468,8 @@ fields:
     email: Email
     phone: Phone
     creditcard: Credit Card
-    asset_file: File Asset
-    asset_image: Image Asset
+    file_asset: File Asset
+    image_asset: Image Asset
     url: URL
     domain: Domain
     directory: Directory Path
@@ -554,7 +554,7 @@ fields:
     select_label: Label
     multi: Allow multiple selections
     add_choice: Add Choice
-    no_choices: No Choices yet.
+    no_choices: No choices yet.
     entry_type: Entry type
     date_format: "Date format (ex: d-m-Y)"
     time_format: "Time format (ex: H:i:s)"

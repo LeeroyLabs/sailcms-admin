@@ -1,121 +1,123 @@
-import { sortBy } from "lodash";
-import { _ } from 'svelte-i18n';
-// import TextField from "@/components/entries/fields/types/Text.vue";
-// import TextArea from "@/components/entries/fields/types/Textarea.vue";
-// import Empty from "@/components/entries/fields/types/Empty.vue";
-// import Phone from "@/components/entries/fields/types/Phone.vue";
-// import AssetFile from "@/components/entries/fields/types/AssetFile.vue";
-// import Asset from "@/components/entries/fields/types/Asset.vue";
-// import Select from "@/components/entries/fields/types/Select.vue";
-// import Entry from "@/components/entries/fields/types/Entry.vue";
-// import Date from "@/components/entries/fields/types/Date.vue";
-// import Matrix from "@/components/entries/fields/types/Matrix.vue";
+import TextField from '@/components/fieldtypes/text.svelte';
+import TextArea from '@/components/fieldtypes/textarea.svelte';
+import Empty from '@/components/fieldtypes/empty.svelte';
+import AssetFile from '@/components/fieldtypes/file.svelte';
+import AssetImage from '@/components/fieldtypes/image.svelte';
+import Select from '@/components/fieldtypes/select.svelte';
 
-export const availableTypes = sortBy([
+export const availableTypes = [
     {
         value: 'text',
-        //component: TextField,
+        component: TextField,
         hideRepeat: false,
         title: 'fields.types.text',
         description: 'fields.descriptions.text'
     },
     {
         value: 'textarea',
-       // component: TextArea,
+        component: TextArea,
         hideRepeat: false,
         title: 'fields.types.textarea',
         description: 'fields.descriptions.textarea'
     },
     {
         value: 'html',
-       // component: Empty,
+        component: Empty,
         hideRepeat: false,
         title: 'fields.types.html',
         description: 'fields.descriptions.html'
     },
     {
+        value: 'email',
+        component: Empty,
+        hideRepeat: false,
+        title: 'fields.types.email',
+        description: 'fields.descriptions.email'
+    },
+    {
+        value: 'asset_image',
+        component: AssetImage,
+        hideRepeat: false,
+        title: 'fields.types.image_asset',
+        description: 'fields.descriptions.asset_image'
+    },
+    {
+        value: 'asset_file',
+        component: AssetFile,
+        hideRepeat: false,
+        title: 'fields.types.file_asset',
+        description: 'fields.descriptions.asset_file'
+    },
+    {
+        value: 'select',
+        component: Select,
+        hideRepeat: true,
+        title: 'fields.types.select',
+        description: 'fields.descriptions.select'
+    },
+    {
+        value: 'matrix',
+        //    component: Matrix,
+        hideRepeat: true,
+        hideRequired: true,
+        title: 'fields.types.matrix',
+        description: 'fields.descriptions.matrix'
+    },
+    {
         value: 'numeric',
-       // component: TextField,
+        component: TextField,
         hideRepeat: false,
         title: 'fields.types.numeric',
         description: 'fields.descriptions.numeric'
     },
     {
         value: 'integer',
-       // component: TextField,
+        component: TextField,
         hideRepeat: false,
         title: 'fields.types.integer',
         description: 'fields.descriptions.integer'
     },
     {
         value: 'float',
-      //  component: TextField,
+        component: TextField,
         hideRepeat: false,
         title: 'fields.types.float',
         description: 'fields.descriptions.float'
     },
     {
         value: 'password',
-        //component: TextField,
+        component: TextField,
         hideRepeat: false,
         title: 'fields.types.password',
         description: 'fields.descriptions.password'
     },
     {
-        value: 'email',
-       // component: Empty,
-        hideRepeat: false,
-        title: 'fields.types.email',
-        description: 'fields.descriptions.email'
-    },
-    {
-        value: 'phone',
-       // component: Phone,
-        hideRepeat: true,
-        title: 'fields.types.phone',
-        description: 'fields.descriptions.phone'
-    },
-    {
-        value: 'asset_file',
-       // component: AssetFile,
-        hideRepeat: false,
-        title: 'fields.types.asset_file',
-        description: 'fields.descriptions.asset_file'
-    },
-    {
-        value: 'asset_image',
-       // component: Asset,
-        hideRepeat: false,
-        title: 'fields.types.asset_image',
-        description: 'fields.descriptions.asset_image'
-    },
-    {
         value: 'url',
-     //   component: Empty,
+        component: Empty,
         hideRepeat: false,
         title: 'fields.types.url',
         description: 'fields.descriptions.url'
     },
     {
         value: 'domain',
-     //   component: Empty,
+        component: Empty,
         hideRepeat: false,
         title: 'fields.types.domain',
         description: 'fields.descriptions.domain'
     },
     {
         value: 'ip',
-     //   component: Empty,
+        component: Empty,
         hideRepeat: false,
         title: 'fields.types.ip',
         description: 'fields.descriptions.ip'
     },
     {
-        value: 'select',
-     //   component: Select,
+        value: 'phone',
+        // component: Phone,
         hideRepeat: true,
-        title: 'fields.types.select',
-        description: 'fields.descriptions.select'
+        title: 'fields.types.phone',
+        description: 'fields.descriptions.phone'
     },
     {
         value: 'entry',
@@ -127,7 +129,7 @@ export const availableTypes = sortBy([
     },
     {
         value: 'switch',
-     //   component: Empty,
+        component: Empty,
         hideRepeat: true,
         hideRequired: true,
         hideExplain: true,
@@ -136,7 +138,7 @@ export const availableTypes = sortBy([
     },
     {
         value: 'hex',
-     //   component: Empty,
+        component: Empty,
         hideRepeat: false,
         title: 'fields.types.hex',
         description: 'fields.descriptions.hex'
@@ -150,7 +152,7 @@ export const availableTypes = sortBy([
     },
     {
         value: 'country',
-     //   component: Empty,
+        component: Empty,
         hideRepeat: false,
         title: 'fields.types.country',
         description: 'fields.descriptions.country'
@@ -171,14 +173,14 @@ export const availableTypes = sortBy([
     },
     {
         value: 'year',
-     //   component: Empty,
+        component: Empty,
         hideRepeat: false,
         title: 'fields.types.year',
         description: 'fields.descriptions.year'
     },
     {
         value: 'checkbox',
-    //    component: Select,
+        component: Select,
         hideRepeat: true,
         hideExplain: true,
         title: 'fields.types.checkbox',
@@ -186,7 +188,7 @@ export const availableTypes = sortBy([
     },
     {
         value: 'radio',
-    //    component: Select,
+        component: Select,
         hideRepeat: true,
         hideRequired: true,
         hideExplain: true,
@@ -195,17 +197,9 @@ export const availableTypes = sortBy([
     },
     {
         value: 'id',
-    //    component: Empty,
+        component: Empty,
         hideRepeat: false,
         title: 'fields.types.id',
         description: 'fields.descriptions.id'
-    },
-    {
-        value: 'matrix',
-    //    component: Matrix,
-        hideRepeat: true,
-        hideRequired: true,
-        title: 'fields.types.matrix',
-        description: 'fields.descriptions.matrix'
     }
-], ['title']);
+];

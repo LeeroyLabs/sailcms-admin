@@ -1,5 +1,6 @@
 <script>
     import { _ } from 'svelte-i18n';
+    import { createEventDispatcher } from 'svelte';
     import { clickOutside } from '@directives/clickout.js';
     import { searchable } from '$lib/helpers/text.js';
     import SearchField from '@components/utils/searchfield.svelte';
@@ -15,6 +16,8 @@
     let isFocused = false;
     let searchField;
     const sid = v4();
+
+    const dispatch = createEventDispatcher();
 
     if (value !== '') {
         let type = types.find(t => t.value === value);
@@ -54,6 +57,7 @@
             valueDisplay = type.title;
             isFocused = false;
             searchField.clearSearch();
+            dispatch('change', type);
         }
     }
 
@@ -81,10 +85,10 @@
         </div>
         <div class="typelist flex flex-col flex-grow overflow-y-auto">
             {#each showingTypes as field, idx}
-                <a href="javascript:void(0);" on:click={() => selectField(field.value)} class="flex flex-col">
+                <button on:click={() => selectField(field.value)} role="option" aria-selected="false" class="flex flex-col">
                     <span class="text-lg">{$_(field.title)}</span>
                     <small>{$_(field.description)}</small>
-                </a>
+                </button>
             {/each}
         </div>
     </div>
@@ -98,7 +102,7 @@
     }
 
     .typelist {
-        a {
+        button {
             @apply py-2 px-4 hover:bg-primary-500 hover:text-black;
         }
     }

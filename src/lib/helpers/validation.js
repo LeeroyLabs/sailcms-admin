@@ -8,7 +8,7 @@ export class Validation
         switch (rule)
         {
             case 'required':
-                return (value.trim() !== '');
+                return (isNaN(value) && value.trim() !== '' || value > 0);
 
             case 'email':
                 const schema = Joi.object({
