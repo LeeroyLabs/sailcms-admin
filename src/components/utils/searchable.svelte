@@ -7,10 +7,12 @@
     export let fields = [];
     export let hidePlaceholder = false;
     export let placeholder = '';
+    export let showSelection = false;
 
     let showingFields = fields;
     let text = '';
     let isFocused = false;
+    let searchValue = '';
 
     const dispatch = createEventDispatcher();
 
@@ -23,6 +25,13 @@
     {
         fields = fieldsUpdate;
         showingFields = fieldsUpdate;
+    }
+
+    export const clear = () =>
+    {
+        text = '';
+        search('');
+        searchValue = '';
     }
 
     const search = (text) =>
@@ -45,6 +54,10 @@
         text = '';
         search('');
         isFocused = false;
+
+        if (showSelection) {
+            searchValue = showingFields.find(f => f._id === id)?.name;
+        }
     }
 </script>
 
@@ -52,6 +65,7 @@
     <input
         type="text"
         class="input"
+        bind:value={searchValue}
         placeholder={hidePlaceholder ? '' : $_(placeholder)}
         on:focus={() => isFocused = true}
         on:keyup={(e) => search(e.target.value)}

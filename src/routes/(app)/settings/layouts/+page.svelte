@@ -10,13 +10,6 @@
     import { _ } from 'svelte-i18n';
     import { LayoutsController } from '$lib/controllers/layouts.js';
 
-    // Breadcrumb
-    AppStore.setBreadcrumbs([
-        {url: '/dashboard', label: 'systembar.dashboard', active: false},
-        {url: '/settings', label: 'system.settings', active: false},
-        {url: '/settings/layouts', label: 'layouts.title', active: true}
-    ]);
-
     let activeTab = 0;
     let optionSelectedActive = '';
     let optionSelectedTrash = '';
@@ -89,7 +82,7 @@
 
     const deleteSelections = () =>
     {
-
+        // TODO: FINISH THIS
     }
 
     init();

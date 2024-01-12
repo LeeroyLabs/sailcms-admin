@@ -15,10 +15,10 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@apollo/client@^3.8.7":
-  version "3.8.8"
-  resolved "https://registry.npmjs.org/@apollo/client/-/client-3.8.8.tgz"
-  integrity sha512-omjd9ryGDkadZrKW6l5ktUAdS4SNaFOccYQ4ZST0HLW83y8kQaSZOCTNlpkoBUK8cv6qP8+AxOKwLm2ho8qQ+Q==
+"@apollo/client@^3.8.9":
+  version "3.8.9"
+  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.8.9.tgz#0e4ac133eb04c63e618138c1ebf273d9f110a4d0"
+  integrity sha512-IcQDFEEPc9+PEQsxhxQvsoQ04BRarOzi/Ila5PcniRSDeKJWgY22dnp6+V1i1fWXRDVd1ybdvze4sFESDVQUCQ==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.1"
     "@wry/equality" "^0.5.6"
@@ -403,10 +403,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@polka/url@^1.0.0-next.20":
-  version "1.0.0-next.23"
-  resolved "https://registry.npmjs.org/@polka/url/-/url-1.0.0-next.23.tgz"
-  integrity sha512-C16M+IYz0rgRhWZdCmK+h58JMv8vijAA61gmz2rspCSwKwzBebpdcsiUmwrtJRdphuY30i6BSLEOP8ppbNLyLg==
+"@polka/url@^1.0.0-next.24":
+  version "1.0.0-next.24"
+  resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.24.tgz#58601079e11784d20f82d0585865bb42305c4df3"
+  integrity sha512-2LuNTFBIO0m7kKIQvvPHN6UE63VjpmL9rnEEaOOaiSPbZK+zUOYIzBAWcED+3XYzhYsd/0mD57VdxAEqqV52CQ==
 
 "@popperjs/core@^2.9.0":
   version "2.11.8"
@@ -536,33 +536,34 @@
   resolved "https://registry.npmjs.org/@steeze-ui/svelte-icon/-/svelte-icon-1.5.0.tgz"
   integrity sha512-Y0S7Qk2kO6byzOlD5SQGbOF2ZaKXJgfTkH78QUPcq579wiWMQJ5H14zL4XwtsPJ0DfkoL5qa3WaIdYkWb9A6AA==
 
-"@sveltejs/adapter-auto@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@sveltejs/adapter-auto/-/adapter-auto-3.0.0.tgz#5de8116e0ae8b6d3c7c30dafcdf6ad9d4764cf9f"
-  integrity sha512-UNWSs/rOReBRfI/xFwSO2WYF1a7PT74SrWOHJmSNLY3Lq+zbH0uuvnlP+TmrTUBvOTkou3WJDjL6lK3n6aOUgQ==
+"@sveltejs/adapter-auto@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@sveltejs/adapter-auto/-/adapter-auto-3.1.0.tgz#d0a76030573d3f42376dac2ac1abf1d0ccad7cff"
+  integrity sha512-igS5hqCwdiXWb8NoWzThKCVQQj9tKgUkbTtzfxBPgSLOyFjkiGNDX0SgCoY2QIUWBqOkfGTOqGlrW5Ynw9oUvw==
   dependencies:
     import-meta-resolve "^4.0.0"
 
-"@sveltejs/adapter-static@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@sveltejs/adapter-static/-/adapter-static-3.0.0.tgz#64cdb196a44852463753575ad49665ac9de059c1"
-  integrity sha512-nNsm8XChhJgQdeVegdXU+EnpznSUlsIjlLJa9SNmvSVN3rcPtB2BAnGuS/EWCtgPLkVcy9V2kW5knronqmF+KQ==
+"@sveltejs/adapter-static@3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@sveltejs/adapter-static/-/adapter-static-3.0.1.tgz#64c36020435d7b1eacd362b2d027fefda5ec2e44"
+  integrity sha512-6lMvf7xYEJ+oGeR5L8DFJJrowkefTK6ZgA4JiMqoClMkKq0s6yvsd3FZfCFvX1fQ0tpCD7fkuRVHsnUVgsHyNg==
 
-"@sveltejs/kit@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@sveltejs/kit/-/kit-2.0.0.tgz#9cbaed71542e4fc34f96a232d3000a9d6ec40afd"
-  integrity sha512-/GFxvit+q7PztRbgGTFXhVB6jvb0fZSeWuz5f4siQ2r/5BVhxYh7++Bw3/ZUjiOuyoZFiNBmOPcRNQbkzEce0g==
+"@sveltejs/kit@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/@sveltejs/kit/-/kit-2.3.2.tgz#d49b147481200908b85f5938e80908a1bd55a590"
+  integrity sha512-AzGWV1TyUSkBuciy06E5NegXndIEgTthDtllv80qynEJFh8bZD62ZxLajiQLOsKGqRDilEQyshDARQxjIqiaqg==
   dependencies:
     "@types/cookie" "^0.6.0"
     cookie "^0.6.0"
     devalue "^4.3.2"
     esm-env "^1.0.0"
+    import-meta-resolve "^4.0.0"
     kleur "^4.1.5"
     magic-string "^0.30.5"
-    mrmime "^1.0.1"
+    mrmime "^2.0.0"
     sade "^1.8.1"
     set-cookie-parser "^2.6.0"
-    sirv "^2.0.3"
+    sirv "^2.0.4"
     tiny-glob "^0.2.9"
 
 "@sveltejs/vite-plugin-svelte-inspector@^2.0.0-next.0 || ^2.0.0":
@@ -858,6 +859,11 @@ date-fns@^2.30.0:
   dependencies:
     "@babel/runtime" "^7.21.0"
 
+date-picker-svelte@^2.10.1:
+  version "2.10.1"
+  resolved "https://registry.yarnpkg.com/date-picker-svelte/-/date-picker-svelte-2.10.1.tgz#21cb431ad2a53fd799536fa3ddceed4dfe71a039"
+  integrity sha512-z4cJ33hngSCPlxc1ERVOgRBJHQXwghJMNtQBT0Q2d3Z9IHGmoIYpViS5s9oRbivs4+TDHkIBmqd/8Ldu9xEYhw==
+
 debug@^4.3.4:
   version "4.3.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
@@ -894,11 +900,6 @@ dlv@^1.1.3:
   version "1.1.3"
   resolved "https://registry.npmjs.org/dlv/-/dlv-1.1.3.tgz"
   integrity sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==
-
-dompurify@^2.3.1:
-  version "2.4.7"
-  resolved "https://registry.npmjs.org/dompurify/-/dompurify-2.4.7.tgz"
-  integrity sha512-kxxKlPEDa6Nc5WJi+qRgPbOAbgTpSULL+vI3NUXsZMlkJxTqYI9wg5ZTay2sFrdZRWHPWNi+EdAhcJf81WtoMQ==
 
 electron-to-chromium@^1.4.601:
   version "1.4.601"
@@ -1432,10 +1433,10 @@ mri@^1.1.0:
   resolved "https://registry.npmjs.org/mri/-/mri-1.2.0.tgz"
   integrity sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==
 
-mrmime@^1.0.0, mrmime@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/mrmime/-/mrmime-1.0.1.tgz"
-  integrity sha512-hzzEagAgDyoU1Q6yg5uI+AorQgdvMCur3FcKf7NhMKWsaYg+RnbTyHRa/9IlLF9rf455MOCtcqqrQQ83pPP7Uw==
+mrmime@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/mrmime/-/mrmime-2.0.0.tgz#151082a6e06e59a9a39b46b3e14d5cfe92b3abb4"
+  integrity sha512-eu38+hdgojoyq63s+yTpN4XMBdt5l8HhMhc4VKLO9KM5caLIBvUm4thi7fFaxyTmCKeNnXZ5pAlBwCUnhA09uw==
 
 ms@2.1.2:
   version "2.1.2"
@@ -1747,13 +1748,13 @@ set-cookie-parser@^2.6.0:
   resolved "https://registry.npmjs.org/set-cookie-parser/-/set-cookie-parser-2.6.0.tgz"
   integrity sha512-RVnVQxTXuerk653XfuliOxBP81Sf0+qfQE73LIYKcyMYHG94AuH0kgrQpRDuTZnSmjpysHmzxJXKNfa6PjFhyQ==
 
-sirv@^2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/sirv/-/sirv-2.0.3.tgz#ca5868b87205a74bef62a469ed0296abceccd446"
-  integrity sha512-O9jm9BsID1P+0HOi81VpXPoDxYP374pkOLzACAoyUQ/3OUVndNpsz6wMnY2z+yOxzbllCKZrM+9QrWsv4THnyA==
+sirv@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/sirv/-/sirv-2.0.4.tgz#5dd9a725c578e34e449f332703eb2a74e46a29b0"
+  integrity sha512-94Bdh3cC2PKrbgSOUqTiGPWVZeSiXfKOVZNJniWoqrWrRkB1CJzBU3NEbiTsPcYy1lDsANA/THzS+9WBiy5nfQ==
   dependencies:
-    "@polka/url" "^1.0.0-next.20"
-    mrmime "^1.0.0"
+    "@polka/url" "^1.0.0-next.24"
+    mrmime "^2.0.0"
     totalist "^3.0.0"
 
 sorcery@^0.11.0:
@@ -1765,6 +1766,11 @@ sorcery@^0.11.0:
     buffer-crc32 "^0.2.5"
     minimist "^1.2.0"
     sander "^0.5.0"
+
+sortablejs@^1.15.1:
+  version "1.15.1"
+  resolved "https://registry.yarnpkg.com/sortablejs/-/sortablejs-1.15.1.tgz#9a35f52cdff449fb42ea8ecf222f3468d76e0a47"
+  integrity sha512-P5Cjvb0UG1ZVNiDPj/n4V+DinttXG6K8n7vM/HQf0C25K3YKQTQY6fsr/sEGsJGpQ9exmPxluHxKBc0mLKU1lQ==
 
 "source-map-js@>=0.6.2 <2.0.0", source-map-js@^1.0.1, source-map-js@^1.0.2:
   version "1.0.2"
@@ -1868,10 +1874,10 @@ symbol-observable@^4.0.0:
   resolved "https://registry.npmjs.org/symbol-observable/-/symbol-observable-4.0.0.tgz"
   integrity sha512-b19dMThMV4HVFynSAM1++gBHAbk2Tc/osgLIBZMKsyqh34jb2e8Os7T6ZW/Bt3pJFdBTd2JwAnAAEQV7rSNvcQ==
 
-tailwindcss@3.3.5:
-  version "3.3.5"
-  resolved "https://registry.npmjs.org/tailwindcss/-/tailwindcss-3.3.5.tgz"
-  integrity sha512-5SEZU4J7pxZgSkv7FP1zY8i2TIAOooNZ1e/OGtxIEv6GltpoiXUqWvLy89+a10qYTB1N5Ifkuw9lqQkN9sscvA==
+tailwindcss@3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.4.1.tgz#f512ca5d1dd4c9503c7d3d28a968f1ad8f5c839d"
+  integrity sha512-qAYmXRfk3ENzuPBakNK0SRrUDipP8NQnEY6772uDhflcQz5EhRdD7JNZxyrFHVQNCwULPBn6FNPp9brpO7ctcA==
   dependencies:
     "@alloc/quick-lru" "^5.2.0"
     arg "^5.0.2"
@@ -1967,33 +1973,6 @@ tslib@^2.1.0, tslib@^2.3.0, tslib@^2.4.0:
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.6.2.tgz"
   integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==
 
-tui-calendar@^1.15.3:
-  version "1.15.3"
-  resolved "https://registry.npmjs.org/tui-calendar/-/tui-calendar-1.15.3.tgz"
-  integrity sha512-S+QxtSPunLUNIX/eHoHcBB9XlPVT15Wh6ItR62n5K/Gq3WeSQdyhdbsuZJYV9z75bgJbFzp6x32v2yEPm6iWrg==
-  dependencies:
-    dompurify "^2.3.1"
-    tui-code-snippet "^1.5.0"
-    tui-date-picker "^4.3.0"
-    tui-time-picker "^2.1.4"
-
-tui-code-snippet@^1.5.0:
-  version "1.5.2"
-  resolved "https://registry.npmjs.org/tui-code-snippet/-/tui-code-snippet-1.5.2.tgz"
-  integrity sha512-6UqTlQaaC1KLcmC0HAoq5dtl1G4Fib+R+NC7pmaV7kiIlZ7JqKhUmnOoGRcreAyzd81UTK/vCvhrw9QJskpCFQ==
-
-tui-date-picker@^4.3.0:
-  version "4.3.3"
-  resolved "https://registry.npmjs.org/tui-date-picker/-/tui-date-picker-4.3.3.tgz"
-  integrity sha512-/2YoLnj5c1e+Ag1ZZYOgzEs2o0v7Ol7c5UAnBj438zGlkwkMxyH0HwP2pVqqIYX05WE7K0+6nTWVMybS8otBgw==
-  dependencies:
-    tui-time-picker "^2.1.6"
-
-tui-time-picker@^2.1.4, tui-time-picker@^2.1.6:
-  version "2.1.6"
-  resolved "https://registry.npmjs.org/tui-time-picker/-/tui-time-picker-2.1.6.tgz"
-  integrity sha512-4Jmo3wjGS+Ii4/qQgt5DaFEohHpB3U6BzWeTODVVFHD9sx3NOsbomY9K0xMobSLODi+tQEH7wfOtNU0IJmcQ6Q==
-
 type@^1.0.1:
   version "1.2.0"
   resolved "https://registry.npmjs.org/type/-/type-1.2.0.tgz"
@@ -2032,18 +2011,18 @@ vanillajs-datepicker@^1.3.4:
   resolved "https://registry.npmjs.org/vanillajs-datepicker/-/vanillajs-datepicker-1.3.4.tgz"
   integrity sha512-waOyp2Ay+K1VA/B5cNlFgSNzFR9efCVKaoyMyNEAhAwmKLzMB9nCJs6Vqmo6HuHWA98VEHXbgz5thZ7hH/uohA==
 
-vite-plugin-tailwind-purgecss@0.1.4:
-  version "0.1.4"
-  resolved "https://registry.npmjs.org/vite-plugin-tailwind-purgecss/-/vite-plugin-tailwind-purgecss-0.1.4.tgz"
-  integrity sha512-iL43Amym6/TWKHcHwCjQl2LLLKhil7WQH7oMtDSOCzINFuKS3STaQrI5SDCl+waqheezv9WmI2gNuIWY+o5hsA==
+vite-plugin-tailwind-purgecss@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/vite-plugin-tailwind-purgecss/-/vite-plugin-tailwind-purgecss-0.2.0.tgz#f4fb2345823fbc49ae48a7b76d23953eb02f0cc1"
+  integrity sha512-6Q+SaalUd0t3BOIIiCQPlbZQuYARVgjoC78X+fLbQJqIEy/9fC58aQgHMgi+CmYfVfZmJToA8YiLueSGEo2mng==
   dependencies:
     estree-walker "^3.0.3"
     purgecss "6.0.0-alpha.0"
 
-vite@^5.0.9:
-  version "5.0.9"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-5.0.9.tgz#2ac49a37b5accba29d945fcee9a0b7b862423cd4"
-  integrity sha512-wVqMd5kp28QWGgfYPDfrj771VyHTJ4UDlCteLH7bJDGDEamaz5hV8IX6h1brSGgnnyf9lI2RnzXq/JmD0c2wwg==
+vite@^5.0.11:
+  version "5.0.11"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-5.0.11.tgz#31562e41e004cb68e1d51f5d2c641ab313b289e4"
+  integrity sha512-XBMnDjZcNAw/G1gEiskiM1v6yzM4GE5aMGvhWTlHAYYhxb7S3/V1s3m2LDHa8Vh6yIWYYB0iJwsEaS523c4oYA==
   dependencies:
     esbuild "^0.19.3"
     postcss "^8.4.32"

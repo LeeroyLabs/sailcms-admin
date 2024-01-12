@@ -52,6 +52,8 @@
     {
         fields = await LayoutsController.loadFields();
 
+        // TODO: MOVE TO CONTROLLER
+
         if (!isAdding) {
             // Load Layout data
             let layoutData = await LayoutsController.loadLayout(data.id, fields);

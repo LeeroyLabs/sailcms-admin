@@ -64,8 +64,11 @@
 <div class="relative {blockCss}">
     {#if type === 'text'}
         <input
-            class="input {css} {hasError ? 'is-error !border-error-500' : ''}"
+            class="input validation {css} {hasError ? 'is-error !border-error-500' : ''}"
             type="text"
+            data-validation={validation}
+            data-validate={validation.length > 0}
+            data-error-id="validation-error-{id}"
             readonly={readonly}
             autocomplete="{(autocomplete) ? '' : 'one-time-code'}"
             bind:value={value}
@@ -75,9 +78,12 @@
         />
     {:else if type === 'password'}
         <input
-            class="input {css} {hasError ? 'is-error !border-error-500' : ''}"
+            class="input validation {css} {hasError ? 'is-error !border-error-500' : ''}"
             type="password"
             readonly={readonly}
+            data-validation={validation}
+            data-validate={validation.length > 0}
+            data-error-id="validation-error-{id}"
             autocomplete="{(autocomplete) ? '' : 'one-time-code'}"
             bind:value={value}
             placeholder={$_(placeholder)}
@@ -86,9 +92,12 @@
         />
     {:else if type === 'number'}
         <input
-            class="input {css} {hasError ? 'is-error !border-error-500' : ''}"
+            class="input validation {css} {hasError ? 'is-error !border-error-500' : ''}"
             type="number"
             readonly={readonly}
+            data-validation={validation}
+            data-validate={validation.length > 0}
+            data-error-id="validation-error-{id}"
             autocomplete="{(autocomplete) ? '' : 'one-time-code'}"
             bind:value={value}
             placeholder={$_(placeholder)}
@@ -97,9 +106,12 @@
         />
     {:else if type === 'email'}
         <input
-            class="input {css} {hasError ? 'is-error !border-error-500' : ''}"
+            class="input validation {css} {hasError ? 'is-error !border-error-500' : ''}"
             type="email"
             readonly={readonly}
+            data-validation={validation}
+            data-validate={validation.length > 0}
+            data-error-id="validation-error-{id}"
             autocomplete="{(autocomplete) ? '' : 'one-time-code'}"
             bind:value={value}
             placeholder={$_(placeholder)}
@@ -108,9 +120,7 @@
         />
     {/if}
 
-    {#if hasError}
-        <div class="text-error-500 h-6 w-6 absolute top-2 right-2">
-            <Icon src={ErrorOutline}/>
-        </div>
-    {/if}
+    <div id="validation-error-{id}" class="text-error-500 h-6 w-6 absolute top-2 right-2 {hasError ? '' : 'invisible'}">
+        <Icon src={ErrorOutline}/>
+    </div>
 </div>
