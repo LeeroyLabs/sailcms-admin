@@ -4,6 +4,10 @@ import Empty from '@/components/fieldtypes/empty.svelte';
 import AssetFile from '@/components/fieldtypes/file.svelte';
 import AssetImage from '@/components/fieldtypes/image.svelte';
 import Select from '@/components/fieldtypes/select.svelte';
+import Phone from '@/components/fieldtypes/phone.svelte';
+import Entry from '@/components/fieldtypes/entry.svelte';
+import Date from '@/components/fieldtypes/date.svelte';
+import Matrix from '@/components/fieldtypes/matrix.svelte';
 
 export const availableTypes = [
     {
@@ -57,7 +61,7 @@ export const availableTypes = [
     },
     {
         value: 'matrix',
-        //    component: Matrix,
+        component: Matrix,
         hideRepeat: true,
         hideRequired: true,
         title: 'fields.types.matrix',
@@ -114,14 +118,14 @@ export const availableTypes = [
     },
     {
         value: 'phone',
-        // component: Phone,
+        component: Phone,
         hideRepeat: true,
         title: 'fields.types.phone',
         description: 'fields.descriptions.phone'
     },
     {
         value: 'entry',
-     //   component: Entry,
+        component: Entry,
         hideRepeat: true,
         hideExplain: true,
         title: 'fields.types.entry',
@@ -145,7 +149,7 @@ export const availableTypes = [
     },
     {
         value: 'postal',
-    //    component: Phone,
+        component: Phone,
         hideRepeat: false,
         title: 'fields.types.postal',
         description: 'fields.descriptions.postal'
@@ -159,14 +163,14 @@ export const availableTypes = [
     },
     {
         value: 'date',
-    //    component: Date,
+        component: Date,
         hideRepeat: false,
         title: 'fields.types.date',
         description: 'fields.descriptions.date'
     },
     {
         value: 'datetime',
-    //    component: Date,
+        component: Date,
         hideRepeat: false,
         title: 'fields.types.datetime',
         description: 'fields.descriptions.datetime'

@@ -449,6 +449,7 @@ fields:
   layout: Mise en page
   repeatable_title: Titre du groupe
   minus_one_for_max_limit: Entrer -1 pour aucune limite
+  value_exists: Vous ne pouvez ajouter deux fois la même valeur
   columns:
     name: Nom
     key: Clée
@@ -553,8 +554,11 @@ fields:
     add_choice: Ajouter le choix
     no_choices: Aucun choix pour le moment.
     entry_type: Type d'entrée
+    date_format: "Format date (ex: dd-MM-yyyy)"
+    time_format: "Format temps (ex: HH:mm:ss)"
     add_field: Ajouter le champ
     no_fields: Aucun champ pour le moment.
+    add_field_ph: Rechercher un champ
     field: Champ
     range: Utiliser une plage
   errors:

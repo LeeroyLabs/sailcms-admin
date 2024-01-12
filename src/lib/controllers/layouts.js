@@ -4,6 +4,7 @@ import { SailCMS } from '@graphql/index.js';
 import { format } from 'date-fns';
 import { tableMap } from '$lib/helpers/table.js';
 import { linkTo } from '$lib/helpers/navigation.js';
+import { AppStore } from '@stores/app.js';
 
 const cols = [
     {title: 'check', center: true, css: 'w-[44px]'},
@@ -93,6 +94,12 @@ export class LayoutsController
 
     static async loadData()
     {
+        AppStore.setBreadcrumbs([
+            {url: '/dashboard', label: 'systembar.dashboard', active: false},
+            {url: '/settings', label: 'system.settings', active: false},
+            {url: '/settings/layouts', label: 'layouts.title', active: true}
+        ]);
+
         let rows = [];
         let trashRows = [];
 

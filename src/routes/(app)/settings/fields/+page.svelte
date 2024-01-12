@@ -15,6 +15,8 @@
     import { Message } from '@stores/message.js';
     import { linkTo } from '$lib/helpers/navigation.js';
 
+    // TODO: REWORK FOR USE OF CONTROLLER
+
     let isReady = false;
     let fields = [];
     let optionSelected = '';

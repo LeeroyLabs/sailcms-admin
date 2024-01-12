@@ -53,7 +53,6 @@ declare module '$env/static/private' {
 	export const npm_package_private: string;
 	export const npm_config_registry: string;
 	export const ZSH: string;
-	export const npm_package_devDependencies_tui_calendar: string;
 	export const npm_package_readmeFilename: string;
 	export const USER: string;
 	export const npm_package_description: string;
@@ -76,6 +75,8 @@ declare module '$env/static/private' {
 	export const PATH: string;
 	export const npm_config_argv: string;
 	export const npm_package_devDependencies_uuid: string;
+	export const npm_package_devDependencies_sortablejs: string;
+	export const npm_package_devDependencies_date_picker_svelte: string;
 	export const _: string;
 	export const LaunchInstanceID: string;
 	export const npm_config_engine_strict: string;
@@ -136,6 +137,7 @@ declare module '$env/static/private' {
 	export const npm_config_init_version: string;
 	export const npm_config_ignore_optional: string;
 	export const SECURITYSESSIONID: string;
+	export const SQLITE_EXEMPT_PATH_FROM_VNODE_GUARDS: string;
 	export const npm_package_scripts_check: string;
 	export const COLORTERM: string;
 	export const npm_node_execpath: string;
@@ -157,7 +159,7 @@ declare module '$env/static/public' {
 }
 
 /**
- * This module provides access to runtime environment variables, as defined by the platform you're running on. For example if you're using [`adapter-node`](https://github.com/sveltejs/kit/tree/master/packages/adapter-node) (or running [`vite preview`](https://kit.svelte.dev/docs/cli)), this is equivalent to `process.env`. This module only includes variables that _do not_ begin with [`config.kit.env.publicPrefix`](https://kit.svelte.dev/docs/configuration#env) _and do_ start with [`config.kit.env.privatePrefix`](https://kit.svelte.dev/docs/configuration#env) (if configured).
+ * This module provides access to runtime environment variables, as defined by the platform you're running on. For example if you're using [`adapter-node`](https://github.com/sveltejs/kit/tree/main/packages/adapter-node) (or running [`vite preview`](https://kit.svelte.dev/docs/cli)), this is equivalent to `process.env`. This module only includes variables that _do not_ begin with [`config.kit.env.publicPrefix`](https://kit.svelte.dev/docs/configuration#env) _and do_ start with [`config.kit.env.privatePrefix`](https://kit.svelte.dev/docs/configuration#env) (if configured).
  * 
  * This module cannot be imported into client-side code.
  * 
@@ -199,7 +201,6 @@ declare module '$env/dynamic/private' {
 		npm_package_private: string;
 		npm_config_registry: string;
 		ZSH: string;
-		npm_package_devDependencies_tui_calendar: string;
 		npm_package_readmeFilename: string;
 		USER: string;
 		npm_package_description: string;
@@ -222,6 +223,8 @@ declare module '$env/dynamic/private' {
 		PATH: string;
 		npm_config_argv: string;
 		npm_package_devDependencies_uuid: string;
+		npm_package_devDependencies_sortablejs: string;
+		npm_package_devDependencies_date_picker_svelte: string;
 		_: string;
 		LaunchInstanceID: string;
 		npm_config_engine_strict: string;
@@ -282,6 +285,7 @@ declare module '$env/dynamic/private' {
 		npm_config_init_version: string;
 		npm_config_ignore_optional: string;
 		SECURITYSESSIONID: string;
+		SQLITE_EXEMPT_PATH_FROM_VNODE_GUARDS: string;
 		npm_package_scripts_check: string;
 		COLORTERM: string;
 		npm_node_execpath: string;

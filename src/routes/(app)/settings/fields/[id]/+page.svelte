@@ -5,27 +5,33 @@
     import { Save } from '@steeze-ui/lucide-icons';
     import PageHead from '@components/structure/pagehead.svelte';
     import FieldTypeSearch from '@components/utils/typesearch.svelte';
-    import TextField from '@components/fieldtypes/text.svelte';
-    import Select from '@components//fieldtypes/select.svelte';
     import TextInput from '@components/forms/textinput.svelte';
     import Form from '@components//forms/form.svelte';
     import { SailCMS } from '@graphql/index.js';
     import { availableTypes } from '$lib/sources/availabletypes.js';
+    import { ProgressRadial, SlideToggle } from '@skeletonlabs/skeleton';
+    import { Entries } from '@graphql/lib/entries.js';
+    import { Message } from '@stores/message.js';
+    import { goto } from '$app/navigation';
+    import { FieldsController } from '$lib/controllers/fields.js';
 
     export let data;
     let isReady = true;
 
     let pageForm;
-    let title = 'fields.new';
+    let title;
     let searchField;
     let fields = [];
-    let selectedType = 'select';
-    let selectedComponent = Select; //TextField;
+    let selectedType = '';
+    let selectedComponent = null;
     let keyAllowEdit = false;
+    let isSaving = false;
 
     // Fields
     let nameField, keyField;
     let labelFields = {};
+
+    let currentConfig = {hideRepeat: true, hideExplain: false, hideRequired: true};
 
     // Field Structure
     let fieldObject = {
@@ -34,49 +40,75 @@
         label: {fr: '', en: ''},
         placeholder: {fr: '', en: ''},
         explain: {fr: '', en: ''},
-        type: 'text',
-        validation: 'text',
+        type: '',
+        validation: '',
         repeatable: false,
         required: false,
         config: {},
         searchable: false
     };
 
-    let breadcrumb = [
-        {url: '/dashboard', label: 'systembar.dashboard', active: false},
-        {url: '/settings', label: 'system.settings', active: false},
-        {url: '/settings/fields', label: 'fields.title', active: false}
-    ];
-
     const init = async () =>
     {
-        if (data.id === 'new') {
-            keyAllowEdit = true;
-            breadcrumb = [...breadcrumb, {url: '', label: $_(title), active: true}];
-            AppStore.setBreadcrumbs(breadcrumb);
-        } else {
+        const info = await FieldsController.fieldInit(data);
+        keyAllowEdit = info.keyAllowEdit;
+        title = info.title;
 
-        }
+        // Set only if set
+        if (info.field) fieldObject = info.field;
     }
 
     const loadComponent = (e) =>
     {
         // Reset Config object
         fieldObject.config = {};
-        selectedComponent = e.detail.component;
+        fieldObject.type = e.detail.value;
+        selectedComponent = false;
+
+        currentConfig = e.detail;
+
+        // This is required for the same component to be reset (ex: Date vs DateTime)
+        setTimeout(() => selectedComponent = e.detail.component, 25);
+    }
+
+    const saveField = async () =>
+    {
+        if (isSaving) return;
+
+        let valid = pageForm.validate();
+        let result;
+
+        if (fieldObject.type === '') {
+            valid = false;
+        }
+
+        if (valid) {
+            isSaving = true;
+
+            if (data.id === 'new') {
+                result = await Entries.createEntryField(fieldObject);
+            }
+
+            isSaving = false;
+
+            if (result) {
+                Message.set({show: true, message: 'fields.toast.success', type: 'success', ttl: 2500});
+                await goto($AppStore.baseURL + '/settings/fields');
+            } else {
+                Message.set({show: true, message: 'fields.toast.error', type: 'error', ttl: 2500});
+            }
+        } else {
+            console.log('here');
+        }
     }
 
     $: {
         console.log(fieldObject);
-
-        if (pageForm) {
-            pageForm.validate();
-        }
     }
 
     init();
 
-    // TODO: CONFIG VIEWS, REPEAT/REQUIRED, SAVE, LOAD, UPDATE
+    // TODO: SAVE, LOAD, UPDATE
 </script>
 
 {#if isReady}
@@ -85,8 +117,12 @@
             {$_(title)}
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <a href="javascript:void(0);" class="btn variant-filled-primary">
-                <span><Icon src={Save} size="20"/></span>
+            <a href="javascript:void(0);" on:click={saveField} class="btn variant-filled-primary">
+                {#if isSaving}
+                    <span><ProgressRadial width="w-4"/></span>
+                {:else}
+                    <span><Icon src={Save} size="20"/></span>
+                {/if}
                 <span>{$_('system.save')}</span>
             </a>
         </svelte:fragment>
@@ -101,7 +137,7 @@
                 </div>
                 <div>
                     <label>{$_('fields.field_key')} <span class="text-red-500">*</span>:</label>
-                    <TextInput type="text" bind:value={fieldObject.key} bind:this={keyField} validation={['required']} slugFormat={true} disabled={!keyAllowEdit} />
+                    <TextInput type="text" bind:value={fieldObject.key} bind:this={keyField} validation={['required']} slugFormat={true} readonly={!keyAllowEdit} />
                     <small class="text-right block">{$_('fields.key_explain')}</small>
                 </div>
             </div>
@@ -124,14 +160,16 @@
                 {/each}
             </div>
 
-            <div class="grid gap-4 grid-cols-2 mb-6">
-                {#each SailCMS.getLocales() as locale, idx}
-                    <div class="{SailCMS.getLocales().length % 2 !== 0 && idx+1 === SailCMS.getLocales().length ? 'col-span-2' : ''}">
-                        <label>{$_('fields.explain') + ' (' + locale + ')'}:</label>
-                        <TextInput type="text" bind:value={fieldObject.explain[locale]} bind:this={labelFields[locale]} />
-                    </div>
-                {/each}
-            </div>
+            {#if !currentConfig.hideExplain}
+                <div class="grid gap-4 grid-cols-2 mb-6">
+                    {#each SailCMS.getLocales() as locale, idx}
+                        <div class="{SailCMS.getLocales().length % 2 !== 0 && idx+1 === SailCMS.getLocales().length ? 'col-span-2' : ''}">
+                            <label>{$_('fields.explain') + ' (' + locale + ')'}:</label>
+                            <TextInput type="text" bind:value={fieldObject.explain[locale]} bind:this={labelFields[locale]} />
+                        </div>
+                    {/each}
+                </div>
+            {/if}
 
             <div>
                 <label>{$_('fields.type')} <span class="text-red-500">*</span>:</label>
@@ -149,6 +187,30 @@
                     <svelte:component this={selectedComponent} type={selectedType} bind:config={fieldObject.config} />
                 </div>
             {/if}
+
+            <div class="{(!currentConfig.hideRepeat || !currentConfig.hideRepeat) ? 'mt-6' : ''} flex flex-row gap-x-6">
+                {#if !currentConfig.hideRepeat}
+                    <SlideToggle
+                        name="slider-label"
+                        background="bg-surface-200 dark:bg-surface-400"
+                        active="bg-primary-500"
+                        bind:checked={fieldObject.repeatable}
+                    >
+                        {$_('fields.repeatable')}
+                    </SlideToggle>
+                {/if}
+
+                {#if !currentConfig.hideRepeat}
+                    <SlideToggle
+                        name="slider-label"
+                        background="bg-surface-200 dark:bg-surface-400"
+                        active="bg-primary-500"
+                        bind:checked={fieldObject.required}
+                    >
+                        {$_('fields.required')}
+                    </SlideToggle>
+                {/if}
+            </div>
         </Form>
     </div>
 {/if}

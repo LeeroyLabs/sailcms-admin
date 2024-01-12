@@ -451,6 +451,7 @@ fields:
   layout: Layout
   repeatable_title: Group Title
   minus_one_for_max_limit: Enter -1 not limit
+  value_exists: You cannot add the same value twice
   columns:
     name: Name
     key: Handle
@@ -556,10 +557,11 @@ fields:
     add_choice: Add Choice
     no_choices: No choices yet.
     entry_type: Entry type
-    date_format: "Date format (ex: d-m-Y)"
-    time_format: "Time format (ex: H:i:s)"
+    date_format: "Date format (ex: dd-MM-yyyy)"
+    time_format: "Time format (ex: HH:mm:ss)"
     add_field: Add field
     no_fields: No fields yet.
+    add_field_ph: Search for field
     field: Field
     range: Use Range
   errors:
