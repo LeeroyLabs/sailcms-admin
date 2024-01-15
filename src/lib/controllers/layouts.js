@@ -15,6 +15,12 @@ const cols = [
     {title: 'layouts.columns.num_records', center: true, css: ''},
 ];
 
+let breadcrumb = [
+    {url: '/dashboard', label: 'systembar.dashboard', active: false},
+    {url: '/settings', label: 'system.settings', active: false},
+    {url: '/settings/layouts', label: 'layouts.title', active: false}
+];
+
 export class LayoutsController
 {
     static async listing()
@@ -25,6 +31,42 @@ export class LayoutsController
         }
 
         return LayoutsController.loadData(cols);
+    }
+
+    static async initLayout(isAdding, id)
+    {
+        let fields = await LayoutsController.loadFields();
+        let layoutName = '';
+        let tabs = [];
+        let title = '';
+
+        if (!isAdding) {
+            // Load Layout data
+            let layoutData = await LayoutsController.loadLayout(id, fields);
+
+            if (layoutData.layout) {
+                layoutName = layoutData.layout.title;
+                tabs = layoutData.layout.schema;
+
+                // Update the fields to set those who are used
+                fields = layoutData.fields;
+
+                title = layoutData.layout.title;
+                breadcrumb = [...breadcrumb, {url: '', label: layoutData.layout.title, active: true}];
+            }
+        } else {
+            breadcrumb = [...breadcrumb, {url: '', label: title, active: true}];
+        }
+
+        // Breadcrumb
+        AppStore.setBreadcrumbs(breadcrumb);
+
+        return {
+            title: title,
+            fields: fields,
+            layoutName: layoutName,
+            tabs: tabs
+        }
     }
 
     static async loadFields()
@@ -83,6 +125,12 @@ export class LayoutsController
     static async trash(ids)
     {
         await Entries.deleteEntryLayouts(ids, true);
+        return await LayoutsController.loadData(cols);
+    }
+
+    static async delete(ids)
+    {
+        await Entries.deleteEntryLayouts(ids, false);
         return await LayoutsController.loadData(cols);
     }
 

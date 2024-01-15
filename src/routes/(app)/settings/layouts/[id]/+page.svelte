@@ -42,39 +42,14 @@
         isAdding = true;
     }
 
-    let breadcrumb = [
-        {url: '/dashboard', label: 'systembar.dashboard', active: false},
-        {url: '/settings', label: 'system.settings', active: false},
-        {url: '/settings/layouts', label: 'layouts.title', active: false}
-    ];
-
     const init = async () =>
     {
-        fields = await LayoutsController.loadFields();
+        let info = await LayoutsController.initLayout(isAdding, data.id);
 
-        // TODO: MOVE TO CONTROLLER
-
-        if (!isAdding) {
-            // Load Layout data
-            let layoutData = await LayoutsController.loadLayout(data.id, fields);
-
-            if (layoutData.layout) {
-                layoutName = layoutData.layout.title;
-                tabs = layoutData.layout.schema;
-
-                // Update the fields to set those who are used
-                fields = layoutData.fields;
-
-                title = layoutData.layout.title;
-                breadcrumb = [...breadcrumb, {url: '', label: layoutData.layout.title, active: true}];
-            }
-        } else {
-            breadcrumb = [...breadcrumb, {url: '', label: title, active: true}];
-        }
-
-        // Breadcrumb
-        AppStore.setBreadcrumbs(breadcrumb);
-
+        layoutName = info.layoutName;
+        tabs = info.tabs;
+        fields = info.fields;
+        title = info.title;
         isReady = true;
     }
 

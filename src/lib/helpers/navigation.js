@@ -14,3 +14,8 @@ export function linkTo(url)
         goto(get(AppStore).baseURL + url);
     });
 }
+
+export function buildURL(url)
+{
+    return get(AppStore).baseURL + url;
+}

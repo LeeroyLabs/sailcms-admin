@@ -25,6 +25,12 @@ export class FieldsController
             return {rows: [], columns: []};
         }
 
+        AppStore.setBreadcrumbs([
+            {url: '/dashboard', label: 'systembar.dashboard', active: false},
+            {url: '/settings', label: 'system.settings', active: false},
+            {url: '/settings/fields', label: 'fields.title', active: true}
+        ]);
+
         return FieldsController.loadData();
     }
 
@@ -91,6 +97,4 @@ export class FieldsController
             field: field
         }
     }
-
-    // TODO: ADD INIT, SAVE CALLS FROM SINGLE FIELD PAGE
 }

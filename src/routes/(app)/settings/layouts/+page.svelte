@@ -80,9 +80,17 @@
         confirmId = -1;
     }
 
-    const deleteSelections = () =>
+    const deleteSelections = async () =>
     {
-        // TODO: FINISH THIS
+        isDeleting = true
+        let result = await LayoutsController.delete(selectedRowsTrash);
+
+        rows = result.rows;
+        trashRows = result.trash;
+        cols = result.columns;
+
+        isDeleting = false;
+        confirmId = -1;
     }
 
     init();
@@ -159,8 +167,8 @@
             {/if}
         </svelte:fragment>
         <svelte:fragment slot="buttons">
-            <button on:click={() => confirmId = -1} class="btn ">{$_('system.cancel')}</button>
-            <button on:click={deleteSelections} class="btn variant-filled-error">
+            <button on:click={() => confirmId = -1} class="btn {isDeleting ? 'pointer-events-none' : ''}">{$_('system.cancel')}</button>
+            <button on:click={deleteSelections} class="btn variant-filled-error {isDeleting ? 'pointer-events-none' : ''}">
                 {#if !isDeleting}
                     {$_('system.yes')}
                 {:else}

@@ -15,8 +15,6 @@
     import { Message } from '@stores/message.js';
     import { linkTo } from '$lib/helpers/navigation.js';
 
-    // TODO: REWORK FOR USE OF CONTROLLER
-
     let isReady = false;
     let fields = [];
     let optionSelected = '';
@@ -28,13 +26,6 @@
     let isDeleting = false;
 
     const isAllowed = hasPermission('readwrite_entry_fields');
-
-    // Breadcrumb
-    AppStore.setBreadcrumbs([
-        {url: '/dashboard', label: 'systembar.dashboard', active: false},
-        {url: '/settings', label: 'system.settings', active: false},
-        {url: '/settings/fields', label: 'fields.title', active: true}
-    ]);
 
     const bookmarkData = {
         url: '/settings/fields',

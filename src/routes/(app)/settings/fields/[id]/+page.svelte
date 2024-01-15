@@ -14,9 +14,10 @@
     import { Message } from '@stores/message.js';
     import { goto } from '$app/navigation';
     import { FieldsController } from '$lib/controllers/fields.js';
+    import { buildURL } from '$lib/helpers/navigation.js';
 
     export let data;
-    let isReady = true;
+    let isReady = false;
 
     let pageForm;
     let title;
@@ -55,7 +56,13 @@
         title = info.title;
 
         // Set only if set
-        if (info.field) fieldObject = info.field;
+        if (info.field) {
+            fieldObject = info.field;
+            selectedType = fieldObject.type;
+            selectedComponent = availableTypes.find(t => t.value===fieldObject.type).component;
+        }
+
+        isReady = true;
     }
 
     const loadComponent = (e) =>
@@ -87,6 +94,8 @@
 
             if (data.id === 'new') {
                 result = await Entries.createEntryField(fieldObject);
+            } else {
+                result = await Entries.updateEntryField(fieldObject);
             }
 
             isSaving = false;
@@ -97,18 +106,10 @@
             } else {
                 Message.set({show: true, message: 'fields.toast.error', type: 'error', ttl: 2500});
             }
-        } else {
-            console.log('here');
         }
     }
 
-    $: {
-        console.log(fieldObject);
-    }
-
     init();
-
-    // TODO: SAVE, LOAD, UPDATE
 </script>
 
 {#if isReady}
@@ -117,6 +118,7 @@
             {$_(title)}
         </svelte:fragment>
         <svelte:fragment slot="actions">
+            <a href="{buildURL('/settings/fields')}">CANCEL</a>
             <a href="javascript:void(0);" on:click={saveField} class="btn variant-filled-primary">
                 {#if isSaving}
                     <span><ProgressRadial width="w-4"/></span>
